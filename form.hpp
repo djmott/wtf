@@ -1,35 +1,12 @@
 #pragma once
-
-
 namespace wtf{
+
   namespace _{
-    template <WNDPROC _WP> using form_class = window_class_ex<_WP, WS_EX_WINDOWEDGE, WS_CLIPCHILDREN|WS_TILEDWINDOW, CS_GLOBALCLASS | CS_OWNDC | CS_PARENTDC, icons::null_icon, cursors::arrow, brushes::button_face, menus::null_menu, icons::null_icon>;
+    template <WNDPROC _wp> using form_class = window_class_ex<_wp, WS_EX_OVERLAPPEDWINDOW, WS_OVERLAPPED, CS_OWNDC | CS_HREDRAW | CS_VREDRAW, icons::application, cursors::arrow, create_window_system_brush<system_colors::button_face>, menus::null_menu, icons::application>;
   }
 
-  struct form : window<form, _::form_class, wm_move, wm_size, wm_moving>{
-  
-    form() : window(){}
-
-    virtual void OnMoved(int x, int y) override{
-      OutputDebugStringA("Window Moved!\n");
-    }
-    virtual void OnResized(type, int width, int height){
-      OutputDebugStringA("Window Resized!\n");
-    }
-    virtual void OnMoving(LPRECT coords){
-      OutputDebugStringA("Moving...\n");
-    }
-
-
-    int run(HWND Parent = nullptr){
-      message oMsg;
-      while (oMsg.get()){
-        oMsg.translate();
-        oMsg.dispatch();
-      }
-      return 0;
-    }
-  
-  };
+  template <typename _ImplT, template <typename> typename ... _PolicyListT> 
+  struct form : window<_ImplT, _::form_class, has_move, has_close, has_show, has_titlebar, _PolicyListT...>
+  {};
 
 }

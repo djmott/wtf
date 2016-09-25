@@ -1,26 +1,36 @@
 #pragma once
 
 namespace wtf{
+  template <typename _ImplT, template <WNDPROC> typename _WindowClassT, template <typename> typename ... _PolicyListT> struct window;
+  template <typename _ImplT, template <WNDPROC> typename _WindowClassT, template <typename> typename ... _PolicyListT> struct base_window;
 
-  template <typename _ImplT, template <WNDPROC> class _WindowClassT, template <typename> class ... _PolicyListT> struct base_window;
+  template <typename _ImplT, template <WNDPROC> typename _WindowClassT, template <typename> typename ... _PolicyListT>
+  struct window : base_window<_ImplT, _WindowClassT, _PolicyListT...>{
 
-  template <typename _ImplT, template <WNDPROC> class _WindowClassT, template <typename> class ... _PolicyListT> struct window : base_window<_ImplT, _WindowClassT, _PolicyListT...>{
-    window(HWND hParent=nullptr) : base_window(){
-      create_window(hParent);
+    using _base_window_t = base_window<_ImplT, _WindowClassT, _PolicyListT...>;
+
+    window(HWND hParent) : _base_window_t(){
+      _handle = wtf::exception::throw_lasterr_if(
+        ::CreateWindowEx(window_class_type::ex_window_style, window_class_type::get().name(), nullptr, window_class_type::window_style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, reinterpret_cast<HINSTANCE>(&__ImageBase), this),
+        [](HWND h){ return nullptr == h; });
     }
-    virtual ~window(){
-      DestroyWindow(*this);
-    }
+
+    virtual ~window() = default;
+
   };
 
-  template <typename _ImplT, template <WNDPROC> class _WindowClassT, template <typename> class _HeadT, template <typename> class ... _TailT> struct base_window<_ImplT, _WindowClassT, _HeadT, _TailT...> : _HeadT<base_window<_ImplT, _WindowClassT, _TailT...>>{
+
+
+  template <typename _ImplT, template <WNDPROC> typename _WindowClassT, template <typename> typename _HeadT, template <typename> typename ... _TailT>
+  struct base_window<_ImplT, _WindowClassT, _HeadT, _TailT...> : _HeadT<base_window<_ImplT,  _WindowClassT, _TailT...>>{
     using _super_t = _HeadT<base_window<_ImplT, _WindowClassT, _TailT...>>;
     using window_type = base_window<_ImplT, _WindowClassT, _HeadT, _TailT...>;
 
     base_window() = default;
+    virtual ~base_window() = default;
 
   private:
-    template <typename, template <WNDPROC> class , template <typename> class ... > friend struct base_window;
+    template <typename, template <WNDPROC> typename, template <typename> typename ... > friend struct base_window;
 
     virtual LRESULT propogate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled) override{
       auto handler_ret = _super_t::handle_message(hwnd, umsg, wparam, lparam, handled);
@@ -30,31 +40,26 @@ namespace wtf{
 
   };
 
-  template <typename _ImplT, template <WNDPROC> class _WindowClassT> struct base_window<_ImplT, _WindowClassT> {
+  template <typename _ImplT, template <WNDPROC> typename _WindowClassT> struct base_window<_ImplT, _WindowClassT> {
     using window_type = base_window<_ImplT, _WindowClassT>;
-    using _super_t = base_window<_ImplT, _WindowClassT>;
-    base_window() : _handle(nullptr){}
+
+    virtual ~base_window(){ ::DestroyWindow(_handle); }
+
+    base_window() : _handle(nullptr){
+      gdi_plus_initializer::get();
+    }
 
     HWND native_handle() const{ return _handle; }
     HWND operator()() const{ return _handle; }
     operator HWND() const{ return _handle; }
-
-    void show(){ ShowWindow(_handle, SW_SHOW); }
 
   protected:
 
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled){ return 0; }
 
   private:
-    template <typename, template <WNDPROC> class, template <typename> class ... > friend struct base_window;
-    template <typename, template <WNDPROC> class, template <typename> class ... > friend struct window;
-
-    void create_window(HWND hParent){
-      _handle = wtf::exception::throw_lasterr_if(
-        ::CreateWindowExA(window_class_type::ex_window_style, window_class_type::get().name(), nullptr, window_class_type::window_style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, reinterpret_cast<HINSTANCE>(&__ImageBase), this),
-        [](HWND h){ return nullptr == h; });
-    }
-
+    template <typename, template <WNDPROC> typename, template <typename> typename ... > friend struct base_window;
+	  template <typename, template <WNDPROC> typename, template <typename> typename ... > friend struct window;
 
 
     virtual LRESULT propogate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled){
@@ -80,12 +85,12 @@ namespace wtf{
           pThis = reinterpret_cast<typename _ImplT::window_type*>(pCreate->lpCreateParams);
           pThis->_handle = hwnd;
           assert(pThis);
-          SetWindowLongPtr(hwnd, 0, reinterpret_cast<LONG>(pThis));
+          SetWindowLongPtr(hwnd, 0, reinterpret_cast<LONG_PTR>(pThis));
           break;
         }
         default:
         {
-          pThis = reinterpret_cast<typename _ImplT::window_type*>(GetWindowLong(hwnd, 0));
+          pThis = reinterpret_cast<typename _ImplT::window_type*>(GetWindowLongPtr(hwnd, 0));
           break;
         }
       }

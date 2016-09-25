@@ -10,5 +10,13 @@ namespace wtf{
     bool peek(HWND hwnd = 0, UINT msgmin = 0, UINT msgmax = 0, UINT remove = PM_NOREMOVE){
       return (exception::throw_lasterr_if(::PeekMessage(this, hwnd, msgmin, msgmax, remove), [](BOOL b){ return FALSE == b; }) ? true : false);
     }
+    int pump(){
+      while (get()){
+        translate();
+        dispatch();
+      }
+      return 0;
+    }
+
   };
 }

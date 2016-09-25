@@ -1,11 +1,44 @@
 #pragma once
 namespace wtf{
 
-  template <UINT _colorID>
+  enum class system_colors{
+    scrollbar = COLOR_SCROLLBAR,
+    background = COLOR_BACKGROUND,
+    active_action = COLOR_ACTIVECAPTION,
+    inactive_caption = COLOR_INACTIVECAPTION,
+    menu = COLOR_MENU,
+    window = COLOR_WINDOW,
+    window_frame = COLOR_WINDOWFRAME,
+    menu_text = COLOR_MENUTEXT,
+    window_text = COLOR_WINDOWTEXT,
+    caption_text = COLOR_CAPTIONTEXT,
+    active_border = COLOR_ACTIVEBORDER,
+    inactive_border = COLOR_INACTIVEBORDER,
+    app_workspace = COLOR_APPWORKSPACE,
+    highlight = COLOR_HIGHLIGHT,
+    highlight_text = COLOR_HIGHLIGHTTEXT,
+    button_face = COLOR_BTNFACE,
+    button_shadow = COLOR_BTNSHADOW,
+    gray_text = COLOR_GRAYTEXT,
+    button_text = COLOR_BTNTEXT,
+    inactive_caption_text = COLOR_INACTIVECAPTIONTEXT,
+    button_highlight = COLOR_BTNHIGHLIGHT,
+    dark_shadow_3d = COLOR_3DDKSHADOW,
+    light_3d = COLOR_3DLIGHT,
+    info_text = COLOR_INFOTEXT,
+    info_background = COLOR_INFOBK,
+    hot_light = COLOR_HOTLIGHT,
+    gradient_active_caption = COLOR_GRADIENTACTIVECAPTION,
+    gradient_inactive_cation = COLOR_GRADIENTINACTIVECAPTION,
+    menu_highlight = COLOR_MENUHILIGHT,
+    menu_bar = COLOR_MENUBAR,
+  };
+
+  template <system_colors _ID>
   struct system_brush{
-    HBRUSH native_handle() const { return reinterpret_cast<HBRUSH>(_colorID); }
-    HBRUSH operator()() const { return reinterpret_cast<HBRUSH>(_colorID); }
-    operator HBRUSH() const { return reinterpret_cast<HBRUSH>(_colorID); }
+    HBRUSH native_handle() const { return GetSysColorBrush(static_cast<int>(_ID)); }
+    HBRUSH operator()() const { return GetSysColorBrush(static_cast<int>(_ID)); }
+    operator HBRUSH() const { return GetSysColorBrush(static_cast<int>(_ID)); }
   };
 
   template <COLORREF _Color>
@@ -19,6 +52,14 @@ namespace wtf{
     HBRUSH _hbrush;
   };
 
+  //these brushes should be used in the window class during window creation instead of system brushes
+  template <system_colors _ID>
+  struct create_window_system_brush{
+    HBRUSH native_handle() const{ return reinterpret_cast<HBRUSH>(1+ static_cast<int>(_ID)); }
+    HBRUSH operator()() const{ return reinterpret_cast<HBRUSH>(1 + static_cast<int>(_ID)); }
+    operator HBRUSH() const{ return reinterpret_cast<HBRUSH>(1 + static_cast<int>(_ID)); }
+  };
+
   namespace brushes{
 
     struct null_brush{
@@ -26,39 +67,6 @@ namespace wtf{
       HBRUSH operator()() const{ return nullptr; }
       operator HBRUSH() const{ return nullptr; }
     };
-
-    using scrollbar = system_brush< COLOR_SCROLLBAR >;
-    using background = system_brush< COLOR_BACKGROUND >;
-    using active_action= system_brush< COLOR_ACTIVECAPTION >;
-    using inactive_caption = system_brush< COLOR_INACTIVECAPTION >;
-    using menu = system_brush< COLOR_MENU >;
-    using window = system_brush< COLOR_WINDOW >;
-    using window_frame = system_brush< COLOR_WINDOWFRAME >;
-    using menu_text = system_brush< COLOR_MENUTEXT >;
-    using window_text = system_brush< COLOR_WINDOWTEXT >;
-    using caption_text = system_brush< COLOR_CAPTIONTEXT >;
-    using active_border = system_brush< COLOR_ACTIVEBORDER >;
-    using inactive_border = system_brush< COLOR_INACTIVEBORDER >;
-    using app_workspace = system_brush< COLOR_APPWORKSPACE >;
-    using highlight = system_brush< COLOR_HIGHLIGHT >;
-    using highlight_text= system_brush< COLOR_HIGHLIGHTTEXT >;
-    using button_face = system_brush< COLOR_BTNFACE >;
-    using button_shadow = system_brush< COLOR_BTNSHADOW >;
-    using gray_text = system_brush< COLOR_GRAYTEXT >;
-    using button_text = system_brush< COLOR_BTNTEXT >;
-    using inactive_caption_text = system_brush< COLOR_INACTIVECAPTIONTEXT >;
-    using button_highlight = system_brush< COLOR_BTNHIGHLIGHT >;
-    using dark_shadow_3d = system_brush< COLOR_3DDKSHADOW >;
-    using light_3d = system_brush< COLOR_3DLIGHT >;
-    using info_text = system_brush< COLOR_INFOTEXT >;
-    using info_background = system_brush< COLOR_INFOBK >;
-    using hot_light = system_brush< COLOR_HOTLIGHT >;
-    using gradient_active_caption = system_brush< COLOR_GRADIENTACTIVECAPTION >;
-    using gradient_inactive_cation = system_brush< COLOR_GRADIENTINACTIVECAPTION >;
-    using menu_highlight = system_brush< COLOR_MENUHILIGHT >;
-    using menu_bar = system_brush< COLOR_MENUBAR >;
-
-
 
   }
 

@@ -2,10 +2,10 @@
 
 namespace wtf{
 
-  template <LPTSTR _ID>
-  struct cursor{
-    cursor() : _hcursor(LoadCursor(reinterpret_cast<HINSTANCE>(&__ImageBase), reinterpret_cast<LPCTSTR>(_ID))){}
-    ~cursor(){ DestroyCursor(_hcursor); }
+  template <int _ID>
+  struct system_cursor{
+    system_cursor() : _hcursor(wtf::exception::throw_lasterr_if(LoadCursor(nullptr, MAKEINTRESOURCE(_ID)), [](HCURSOR h){return !h; })){}
+    ~system_cursor(){ DestroyCursor(_hcursor); }
     HCURSOR native_handle() const{ return _hcursor; }
     HCURSOR operator()() const{ return _hcursor; }
     operator HCURSOR() const{ return _hcursor; }
@@ -21,21 +21,21 @@ namespace wtf{
       operator HCURSOR() const{ return nullptr; }
     };
 
-    using app_starting = cursor<IDC_APPSTARTING>;
-    using arrow = cursor<IDC_ARROW>;
-    using cross = cursor<IDC_CROSS>;
-    using hand = cursor<IDC_HAND>;
-    using help = cursor<IDC_HELP>;
-    using ibeam = cursor<IDC_IBEAM>;
-    using icon = cursor<IDC_ICON>;
-    using no = cursor<IDC_NO>;
-    using size = cursor<IDC_SIZE>;
-    using size_all = cursor<IDC_SIZEALL>;
-    using size_nesw = cursor<IDC_SIZENESW>;
-    using size_ns = cursor<IDC_SIZENS>;
-    using size_we = cursor<IDC_SIZEWE>;
-    using up_arrow = cursor<IDC_UPARROW>;
-    using wait = cursor<IDC_WAIT>;
+    using app_starting = system_cursor<32650>;
+    using arrow = system_cursor<32512>;
+    using cross = system_cursor<32515>;
+    using hand = system_cursor<32649>;
+    using help = system_cursor<32651>;
+    using ibeam = system_cursor<32513>;
+    using icon = system_cursor<32641>;
+    using no = system_cursor<32648>;
+    using size = system_cursor<32640>;
+    using size_all = system_cursor<32646>;
+    using size_nesw = system_cursor<32643>;
+    using size_ns = system_cursor<32645>;
+    using size_we = system_cursor<32644>;
+    using up_arrow = system_cursor<32516>;
+    using wait = system_cursor<32514>;
   }
 
 }

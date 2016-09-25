@@ -2,18 +2,24 @@
 #include <iostream>
 #include "wtf.hpp"
 
-struct MyForm : wtf::form{
-  MyForm() : form(), oButton(*this) {}
+namespace theme = wtf::matrix_theme;
 
-  wtf::button oButton;
+struct MyForm : theme::form{
+  MyForm() : form(), oButton(*this) {
+    titlebar_text(L"MyForm");
+    oButton.move(25, 25, 100, 50);
+    oButton.label(L"Click me");
+    oButton.BackgroundBrush(Gdiplus::SolidBrush(GetSysColor(RGB(255, 0, 0))));
+  }
+  theme::button oButton;
 };
 
 int main(){
   try{
     MyForm oForm;
     oForm.show();
-    return oForm.run();
-    return 0;
+    wtf::message oMsg;
+    return oMsg.pump();
   }
   catch (const wtf::exception& ex){
     std::cerr << "A WTF exception occurred in " << ex.file() << "(" << ex.line() << ") : " << ex.code() << std::endl << ex.what() << std::endl;
