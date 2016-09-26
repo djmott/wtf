@@ -35,7 +35,8 @@ namespace wtf{
     virtual char const* what() const noexcept { return _what.c_str(); }    
 #elif (_MSC_VER)
     virtual char const* what() const{ return _what.c_str(); }
-#endif
+#endif
+
   private:
 
     std::string _file;

@@ -3,11 +3,13 @@
 namespace wtf{
   namespace default_theme{
 
+/*
     namespace _{
       template <WNDPROC _proc> using button_class = window_class_ex<_proc, 0, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, CS_GLOBALCLASS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW, icons::application, cursors::arrow, create_window_system_brush<system_colors::button_face>, menus::null_menu, icons::application>;
     }
+*/
 
-    struct button : wtf::window<button, _::button_class, wm_lbuttondown, wm_mousemove, wm_lbuttonup, wm_paint>{
+    struct button : wtf::window<button, 0, WS_CHILD|WS_VISIBLE|WS_CLIPSIBLINGS, wm_lbuttondown, wm_mousemove, wm_lbuttonup, wm_paint, has_cursor, has_move, has_text, has_font, has_background, has_border>{
 
       virtual void OnPaint(const RECT& area, Gdiplus::Graphics& oGraphics){
         oGraphics.DrawLine(&_HighlightPen, 0, 0, area.right, 0);

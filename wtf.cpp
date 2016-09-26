@@ -2,21 +2,26 @@
 #include <iostream>
 #include "wtf.hpp"
 
-namespace theme = wtf::matrix_theme;
+using namespace wtf::default_theme;
 
-struct MyForm : theme::form{
-  MyForm() : form(), oButton(*this) {
-    titlebar_text(L"MyForm");
+struct MyForm : form{
+  MyForm() : form(), oButton(*this), oLabel(*this){
+    text(L"MyForm");
+    BackgroundBrush(Gdiplus::SolidBrush(GetSysColor(RGB(0, 0, 255))));
     oButton.move(25, 25, 100, 50);
-    oButton.label(L"Click me");
+    oButton.text(L"Click me");
     oButton.BackgroundBrush(Gdiplus::SolidBrush(GetSysColor(RGB(255, 0, 0))));
+    oLabel.move(200, 200, 200, 100);
+    oButton.BackgroundBrush(Gdiplus::SolidBrush(GetSysColor(RGB(0, 255, 0))));
+    //     oLabel.label_string(L"Help!");
   }
-  theme::button oButton;
+  button oButton;
+  label oLabel;
 };
 
 int main(){
   try{
-    MyForm oForm;
+    wtf::default_theme::form oForm;
     oForm.show();
     wtf::message oMsg;
     return oMsg.pump();

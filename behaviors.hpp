@@ -10,17 +10,17 @@ namespace wtf{
       _Format.SetLineAlignment(Gdiplus::StringAlignment::StringAlignmentCenter);
     }
 
-    const std::basic_string<TCHAR>& label() const{ return _label; }
-    void label(const TCHAR * newval){ _label = newval; set_gdi_label(); }
-    void label(const std::basic_string<TCHAR>& newval){_label = newval; set_gdi_label();}
+    const std::basic_string<TCHAR>& label_string() const{ return _label; }
+    void label_string(const TCHAR * newval){ _label = newval; set_gdi_label(); }
+    void label_string(const std::basic_string<TCHAR>& newval){_label = newval; set_gdi_label();}
 
 
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
-      RECT update_rect;
+      __F(__FUNCTION__"\n");
       if (WM_PAINT == umsg){
         PAINTSTRUCT paint;
         BeginPaint(hwnd, &paint);
-        static Gdiplus::Graphics oGraphics(paint.hdc);
+        Gdiplus::Graphics oGraphics(paint.hdc);
         Gdiplus::RectF oGdiRect(static_cast<Gdiplus::REAL>(paint.rcPaint.left), static_cast<Gdiplus::REAL>(paint.rcPaint.top), static_cast<Gdiplus::REAL>(paint.rcPaint.right), static_cast<Gdiplus::REAL>(paint.rcPaint.bottom));
         oGraphics.DrawString(_gdi_label.c_str(), -1, &this->font(), oGdiRect, &_Format, &this->font_brush());
         EndPaint(hwnd, &paint);
@@ -46,25 +46,32 @@ namespace wtf{
     has_background() : _SuperT(), _Background(new Gdiplus::SolidBrush(Gdiplus::Color(GetSysColor(COLOR_BTNFACE)))){}
 
     const Gdiplus::Brush& BackgroundBrush() const{ return *_Background; }
-    void BackgroundBrush(const Gdiplus::Brush& newval){ _Background = std::unique_ptr<Gdiplus::Brush>(newval.Clone()) ; }
-
-
-    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
-      RECT update_rect;
-      if (WM_PAINT == umsg){
-        PAINTSTRUCT paint;
-        BeginPaint(hwnd, &paint);
-        static Gdiplus::Graphics oGraphics(paint.hdc);
-        oGraphics.FillRectangle(_Background.get(), paint.rcPaint.top, paint.rcPaint.left, paint.rcPaint.right, paint.rcPaint.bottom);
-
-        EndPaint(hwnd, &paint);
-      }
-      return 0;
+    void BackgroundBrush(const Gdiplus::Brush& newval){ 
+      _Background = std::unique_ptr<Gdiplus::Brush>(newval.Clone()) ;
+      SetClassLongPtr(*this, GCL_HBRBACKGROUND, _Background->nativeBrush());
     }
+
+
   private:
     std::unique_ptr<Gdiplus::Brush> _Background;
   };
 
+  template <typename _SuperT> struct has_cursor : _SuperT{
+
+    virtual ~has_cursor() = default;
+    has_cursor() : _SuperT(), _cursor(cursors::arrow()){}
+
+    const wtf::cursor& cursor() const{ return _cursor; }
+    void cursor(const wtf::cursor& newval){ 
+      _cursor = newval; 
+      //SetWindowLongPtr(*this, GWL_HCURSOR, _cursor.native_handle());
+      SetClassLongPtr(*this, GCLP_HCURSOR, _cursor.native_handle());
+    }
+
+
+  protected:
+    wtf::cursor _cursor;
+  };
 
   template <typename _SuperT> struct has_border : _SuperT{
     virtual ~has_border() = default;
@@ -75,12 +82,16 @@ namespace wtf{
 
 
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
-      RECT update_rect;
-      if (WM_PAINT == umsg && GetUpdateRect(hwnd, &update_rect, FALSE)){
+      __F(__FUNCTION__"\n");
+      if (WM_PAINT == umsg){
         PAINTSTRUCT paint;
         BeginPaint(hwnd, &paint);
+        Gdiplus::Graphics oGraphics(paint.hdc);
+        oGraphics.DrawLine(&BorderHighlight(), paint.rcPaint.left, paint.rcPaint.top, paint.rcPaint.right, paint.rcPaint.top);
+        oGraphics.DrawLine(&BorderHighlight(), paint.rcPaint.left, paint.rcPaint.top, paint.rcPaint.left, paint.rcPaint.top);
+        oGraphics.DrawLine(&BorderShadow(), paint.rcPaint.right-1, paint.rcPaint.top, paint.rcPaint.right-1, paint.rcPaint.bottom - 1);
+        oGraphics.DrawLine(&BorderShadow(), paint.rcPaint.left, paint.rcPaint.bottom-1, paint.rcPaint.right, paint.rcPaint.bottom-1);
 
-        
         EndPaint(hwnd, &paint);
       }
       return 0;
@@ -121,6 +132,7 @@ namespace wtf{
     void hide(){ ::ShowWindow(*this, SW_HIDE); }
   };
 
+
   template <typename _SuperT> struct has_move : _SuperT{
     has_move() = default;
     virtual ~has_move() = default;
@@ -129,14 +141,16 @@ namespace wtf{
     }
   };
 
-  template <typename _SuperT> struct has_titlebar : _SuperT{
-    has_titlebar() = default;
-    virtual ~has_titlebar() = default;
-    const std::basic_string<TCHAR>& titlebar_text() const{
+
+
+  template <typename _SuperT> struct has_text : _SuperT{
+    has_text() = default;
+    virtual ~has_text() = default;
+    const std::basic_string<TCHAR>& text() const{
       return _text;
     }
 
-    void titlebar_text(LPCTSTR newval){
+    void text(LPCTSTR newval){
       wtf::exception::throw_lasterr_if(::SetWindowText(*this, newval), [](BOOL b){return !b; });
       _text = newval;
     }

@@ -2,23 +2,49 @@
 
 namespace wtf{
 
-  template <int _ID>
-  struct system_cursor{
-    system_cursor() : _hcursor(wtf::exception::throw_lasterr_if(LoadCursor(nullptr, MAKEINTRESOURCE(_ID)), [](HCURSOR h){return !h; })){}
-    ~system_cursor(){ DestroyCursor(_hcursor); }
-    HCURSOR native_handle() const{ return _hcursor; }
-    HCURSOR operator()() const{ return _hcursor; }
-    operator HCURSOR() const{ return _hcursor; }
-  private:
+  struct cursor{
+    virtual ~cursor(){ if (_hcursor) DestroyCursor(_hcursor); }
+    cursor(HCURSOR hCursor) : _hcursor(hCursor){}
+    cursor(const cursor& src) : _hcursor(CopyCursor(src._hcursor)){}
+    cursor(cursor&& src) : _hcursor(std::move(src._hcursor)){}
+
+    cursor& operator=(const cursor& src){
+      if (&src == this) return *this;
+      if (_hcursor) DestroyCursor(_hcursor);
+      _hcursor = CopyCursor(src._hcursor);
+      return *this;
+    }
+    cursor& operator=(cursor&& src){
+      std::swap(_hcursor, src._hcursor);
+      return *this;
+    }
+    virtual HCURSOR native_handle() const { return _hcursor; }
+    virtual HCURSOR operator()() const { return _hcursor; }
+    virtual operator HCURSOR() const { return _hcursor; }
+  protected:
     HCURSOR _hcursor;
   };
 
   namespace cursors{
 
-    struct null_cursor{
-      HCURSOR native_handle() const{ return nullptr; }
-      HCURSOR operator()() const{ return nullptr; }
-      operator HCURSOR() const{ return nullptr; }
+
+
+    template <int _ID>
+    struct system_cursor : cursor{
+      virtual ~system_cursor() = default;
+      system_cursor() : cursor(wtf::exception::throw_lasterr_if(LoadCursor(nullptr, MAKEINTRESOURCE(_ID)), [](HCURSOR h){return !h; })){}
+      system_cursor(const system_cursor& src) : cursor(src){}
+      system_cursor(system_cursor&& src) : cursor(std::move(src)){}
+      
+    };
+
+
+    struct null_cursor : cursor{
+      virtual ~null_cursor() override{}
+      null_cursor() : cursor(nullptr){}
+      virtual HCURSOR native_handle() const override{ return nullptr; }
+      virtual HCURSOR operator()() const override{ return nullptr; }
+      virtual operator HCURSOR() const override{ return nullptr; }
     };
 
     using app_starting = system_cursor<32650>;

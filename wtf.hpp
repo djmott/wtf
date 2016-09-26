@@ -10,6 +10,8 @@
 #include <memory>
 #include <vector>
 
+#define __F OutputDebugStringA
+
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 namespace wtf{
@@ -30,8 +32,15 @@ namespace wtf{
 #include "behaviors.hpp"
 #include "form.hpp"
 
+#include "themes/system/button.hpp"
+#include "themes/system/form.hpp"
+#include "themes/system/label.hpp"
+
 #include "themes/default/button.hpp"
 #include "themes/default/form.hpp"
+#include "themes/default/label.hpp"
+
 #include "themes/matrix/button.hpp"
 #include "themes/matrix/form.hpp"
+#include "themes/matrix/label.hpp"
 
