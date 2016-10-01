@@ -1,7 +1,6 @@
 #pragma once
 #include <Windows.h>
 #include <windowsx.h>
-#include <gdiplus.h>
 
 #include <stdexcept>
 #include <string>
@@ -10,7 +9,8 @@
 #include <memory>
 #include <vector>
 
-#define __F OutputDebugStringA
+//#define __F OutputDebugStringA
+#define __F(...) 
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -19,14 +19,16 @@ namespace wtf{
 }
 
 #include "exception.hpp"
-#include "gdi_plus.hpp"
+#include "color.hpp"
+#include "rect.hpp"
 #include "message.hpp"
 #include "icon.hpp"
 #include "cursor.hpp"
 #include "brush.hpp"
+#include "pen.hpp"
+#include "region.hpp"
 #include "menu.hpp"
-
-#include "window_class_ex.hpp"
+#include "device_context.hpp"
 #include "window.hpp"
 #include "message_handlers.hpp"
 #include "behaviors.hpp"

@@ -9,25 +9,31 @@ namespace wtf{
     }
 */
 
-    struct button : wtf::window<button, 0, WS_CHILD|WS_VISIBLE|WS_CLIPSIBLINGS, wm_lbuttondown, wm_mousemove, wm_lbuttonup, wm_paint, has_cursor, has_move, has_text, has_font, has_background, has_border>{
+    struct button : wtf::window<button, wm_lbuttondown, wm_mousemove, wm_lbuttonup, wm_paint, has_cursor, has_move, has_text, has_background>{
 
+      static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
+
+/*
       virtual void OnPaint(const RECT& area, Gdiplus::Graphics& oGraphics){
         oGraphics.DrawLine(&_HighlightPen, 0, 0, area.right, 0);
         oGraphics.DrawLine(&_HighlightPen, 0, 0, 0, area.bottom);
         oGraphics.DrawLine(&_ShadowPen, area.right - 1, 0, area.right - 1, area.bottom);
         oGraphics.DrawLine(&_ShadowPen, 0, area.bottom - 1, area.right - 1, area.bottom - 1);
       }
+*/
 
 
-      button(HWND hParent) : window(hParent), _TextColor(GetSysColor(COLOR_BTNTEXT)), _Highlight(GetSysColor(COLOR_BTNHIGHLIGHT)), _Shadow(GetSysColor(COLOR_BTNSHADOW)), _HighlightPen(_Highlight), _ShadowPen(_Shadow), _TextBrush(_TextColor){}
+      button(HWND hParent) : window(hParent)/*, _TextColor(GetSysColor(COLOR_BTNTEXT)), _Highlight(GetSysColor(COLOR_BTNHIGHLIGHT)), _Shadow(GetSysColor(COLOR_BTNSHADOW)), _HighlightPen(_Highlight), _ShadowPen(_Shadow), _TextBrush(_TextColor)*/{}
 
     private:
+/*
       Gdiplus::Color _TextColor;
       Gdiplus::Color _Highlight;
       Gdiplus::Color _Shadow;
       Gdiplus::Pen _HighlightPen;
       Gdiplus::Pen _ShadowPen;
       Gdiplus::SolidBrush _TextBrush;
+*/
 
     };
 

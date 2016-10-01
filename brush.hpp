@@ -1,71 +1,59 @@
 #pragma once
 namespace wtf{
 
-  enum class system_colors{
-    scrollbar = COLOR_SCROLLBAR,
-    background = COLOR_BACKGROUND,
-    active_action = COLOR_ACTIVECAPTION,
-    inactive_caption = COLOR_INACTIVECAPTION,
-    menu = COLOR_MENU,
-    window = COLOR_WINDOW,
-    window_frame = COLOR_WINDOWFRAME,
-    menu_text = COLOR_MENUTEXT,
-    window_text = COLOR_WINDOWTEXT,
-    caption_text = COLOR_CAPTIONTEXT,
-    active_border = COLOR_ACTIVEBORDER,
-    inactive_border = COLOR_INACTIVEBORDER,
-    app_workspace = COLOR_APPWORKSPACE,
-    highlight = COLOR_HIGHLIGHT,
-    highlight_text = COLOR_HIGHLIGHTTEXT,
-    button_face = COLOR_BTNFACE,
-    button_shadow = COLOR_BTNSHADOW,
-    gray_text = COLOR_GRAYTEXT,
-    button_text = COLOR_BTNTEXT,
-    inactive_caption_text = COLOR_INACTIVECAPTIONTEXT,
-    button_highlight = COLOR_BTNHIGHLIGHT,
-    dark_shadow_3d = COLOR_3DDKSHADOW,
-    light_3d = COLOR_3DLIGHT,
-    info_text = COLOR_INFOTEXT,
-    info_background = COLOR_INFOBK,
-    hot_light = COLOR_HOTLIGHT,
-    gradient_active_caption = COLOR_GRADIENTACTIVECAPTION,
-    gradient_inactive_cation = COLOR_GRADIENTINACTIVECAPTION,
-    menu_highlight = COLOR_MENUHILIGHT,
-    menu_bar = COLOR_MENUBAR,
+  struct const_brush{
+
+    virtual ~const_brush() = default;
+
+    virtual const_brush clone() const{ return const_brush(_hbrush); }
+
+    const_brush(const const_brush&) = delete;
+
+    const_brush(const_brush&& src) : _hbrush(nullptr){
+      std::swap(_hbrush, src._hbrush);
+    }
+
+    HBRUSH operator*() const{ return _hbrush; }
+    operator HBRUSH() const{ return _hbrush; }
+
+  protected:
+    const_brush(HBRUSH newval) : _hbrush(newval){}
+    HBRUSH _hbrush;
   };
+
 
   template <system_colors _ID>
-  struct system_brush{
-    HBRUSH native_handle() const { return GetSysColorBrush(static_cast<int>(_ID)); }
-    HBRUSH operator()() const { return GetSysColorBrush(static_cast<int>(_ID)); }
-    operator HBRUSH() const { return GetSysColorBrush(static_cast<int>(_ID)); }
+  struct system_brush : const_brush{
+    virtual ~system_brush() override{}
+
+    virtual const_brush clone() const override{ return system_brush(); }
+
+    system_brush() : const_brush(GetSysColorBrush(static_cast<int>(_ID))){}
+
   };
 
+
   template <COLORREF _Color>
-  struct solid_brush{
-    solid_brush() : _hbrush(wtf::exception::throw_lasterr_if(CreateSolidBrush(_Color), [](HBRUSH h){ return !h; })){}
-    ~solid_brush(){ DeleteObject(_hbrush); }
-    HBRUSH native_handle() const { return _hbrush; }
-    HBRUSH operator()() const { return _hbrush; }
-    operator HBRUSH() const { return _hbrush; }
-  protected:
-    HBRUSH _hbrush;
+  struct solid_brush : const_brush{
+    solid_brush(solid_brush&& src) : const_brush(std::move(src)){}
+    solid_brush() : const_brush(wtf::exception::throw_lasterr_if(CreateSolidBrush(_Color), [](HBRUSH h){ return !h; })){}
+    virtual ~solid_brush() override{ DeleteObject(_hbrush); }
+    virtual const_brush clone() const override{ return solid_brush(); }
+
   };
 
   //these brushes should be used in the window class during window creation instead of system brushes
   template <system_colors _ID>
-  struct create_window_system_brush{
-    HBRUSH native_handle() const{ return reinterpret_cast<HBRUSH>(1+ static_cast<int>(_ID)); }
-    HBRUSH operator()() const{ return reinterpret_cast<HBRUSH>(1 + static_cast<int>(_ID)); }
-    operator HBRUSH() const{ return reinterpret_cast<HBRUSH>(1 + static_cast<int>(_ID)); }
+  struct create_window_system_brush : const_brush{
+    create_window_system_brush() : const_brush(reinterpret_cast<HBRUSH>(1+ static_cast<int>(_ID))){}
+    virtual const_brush clone() const override{ return create_window_system_brush(); }
   };
 
   namespace brushes{
 
-    struct null_brush{
-      HBRUSH native_handle() const{ return nullptr; }
-      HBRUSH operator()() const{ return nullptr; }
-      operator HBRUSH() const{ return nullptr; }
+    struct null_brush : const_brush{
+      null_brush() : const_brush((HBRUSH)nullptr){}
+      virtual const_brush clone() const override{ return null_brush(); }
     };
 
   }

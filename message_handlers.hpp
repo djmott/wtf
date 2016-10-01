@@ -15,20 +15,20 @@ namespace wtf{
     wm_paint() = default;
     virtual ~wm_paint() = default;
 
-    virtual void OnPaint(const RECT& area, Gdiplus::Graphics&){}
+    virtual void OnPaint(const RECT& area, device_context&){}
 
-    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
+    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       RECT update_rect;
       if (WM_PAINT == umsg && GetUpdateRect(hwnd, &update_rect, FALSE)){
         PAINTSTRUCT paint;
         BeginPaint(hwnd, &paint);
           
-        OnPaint(update_rect, Gdiplus::Graphics(paint.hdc));
+        device_context oCtx(hwnd);
+        OnPaint(update_rect, oCtx);
         EndPaint(hwnd, &paint);
       }
       return 0;
     }
-  private:
   };
 
 
@@ -37,7 +37,7 @@ namespace wtf{
     virtual ~wm_close() = default;
     
     virtual void OnClose(){}
-    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
+    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_CLOSE == umsg) OnClose();
       return 0;
     }
@@ -49,8 +49,8 @@ namespace wtf{
 
     virtual void OnLMouseDown(event_vkeys, int x, int y){}
 
-    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
-      if (WM_LBUTTONDOWN == umsg) OnLMouseDown(static_cast<event_vkeys>(wpara), GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
+    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
+      if (WM_LBUTTONDOWN == umsg) OnLMouseDown(static_cast<event_vkeys>(wparam), GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
       return 0;
     }
 
@@ -61,8 +61,8 @@ namespace wtf{
 
     virtual void OnLMouseUp(event_vkeys, int x, int y){}
 
-    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
-      if (WM_LBUTTONUP== umsg) OnLMouseUp(static_cast<event_vkeys>(wpara), GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
+    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
+      if (WM_LBUTTONUP== umsg) OnLMouseUp(static_cast<event_vkeys>(wparam), GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
       return 0;
     }
 
@@ -74,8 +74,8 @@ namespace wtf{
 
     virtual void OnMouseMove(event_vkeys, int x, int y){}
 
-    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
-      if (WM_MOUSEMOVE == umsg) OnMouseMove(static_cast<event_vkeys>(wpara), LOWORD(lparam), HIWORD(lparam));
+    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
+      if (WM_MOUSEMOVE == umsg) OnMouseMove(static_cast<event_vkeys>(wparam), LOWORD(lparam), HIWORD(lparam));
       return 0;
     }
 
@@ -95,8 +95,8 @@ namespace wtf{
 
     virtual void OnResized(type, int width, int height){}
 
-    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
-      if (WM_SIZE == umsg) OnResized(static_cast<type>(wpara), LOWORD(lparam), HIWORD(lparam));
+    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
+      if (WM_SIZE == umsg) OnResized(static_cast<type>(wparam), LOWORD(lparam), HIWORD(lparam));
       return 0;
     }
   };
@@ -108,7 +108,7 @@ namespace wtf{
 
     virtual void OnMoved(int x, int y){}
 
-    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
+    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_MOVE == umsg) OnMoved(LOWORD(lparam), HIWORD(lparam));
       return 0;
     }
@@ -121,7 +121,7 @@ namespace wtf{
 
     virtual void OnMoving(LPRECT coords){}
 
-    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled) override{
+    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_MOVING == umsg) OnMoving(reinterpret_cast<LPRECT>(lparam));
       return 0;
     }

@@ -15,8 +15,7 @@ namespace wtf{
   
     ~exception() = default;
 
-    exception(const char * sfile, int line, const char * code, Gdiplus::Status last_error) : _super_t(""), _file(sfile), _line(line), _code(code), _what(code){
-    }
+//     exception(const char * sfile, int line, const char * code, Gdiplus::Status last_error) : _super_t(""), _file(sfile), _line(line), _code(code), _what(code){}
 
     exception(const char * sfile, int line, const char * code, DWORD last_error) : _super_t(""), _file(sfile), _line(line), _code(code), _what(code){
       LPSTR sBuff = nullptr;

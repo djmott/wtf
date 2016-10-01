@@ -1,19 +1,18 @@
 #pragma once
 
 namespace wtf{
-  template <typename _ImplT,DWORD _ExStyle, DWORD _Style, template <typename> typename ... _PolicyListT> struct window;
+  template <typename _ImplT, template <typename> typename ... _PolicyListT> struct window;
   template <typename _ImplT, template <typename> typename ... _PolicyListT> struct base_window;
 
-  template <typename _ImplT, DWORD _ExStyle, DWORD _Style, template <typename> typename ... _PolicyListT>
+  template <typename _ImplT, template <typename> typename ... _PolicyListT>
   struct window : base_window<_ImplT, _PolicyListT...>{
 
     using _base_window_t = base_window<_ImplT, _PolicyListT...>;
 
-    window(HWND hParent) : _base_window_t(){
-      _handle = wtf::exception::throw_lasterr_if(
-        ::CreateWindowEx(_ExStyle, window_class_type::get().name(), nullptr, _Style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, reinterpret_cast<HINSTANCE>(&__ImageBase), this),
-        [](HWND h){ return nullptr == h; });
+    explicit window(HWND hParent) : _base_window_t(){
+      _base_window_t::create_window(hParent);
     }
+    window() : window(nullptr){}
 
     virtual ~window() = default;
 
@@ -43,27 +42,31 @@ namespace wtf{
 
   template <typename _ImplT> struct base_window<_ImplT> {
 
+    static const DWORD ExStyle = 0;
+    static const DWORD Style = 0;
+
     virtual ~base_window(){ ::DestroyWindow(_handle); }
 
-    base_window() : _handle(nullptr){
-      gdi_plus_initializer::get();
-    }
+    base_window() : _handle(nullptr){}
 
-    HWND native_handle() const{ return _handle; }
-    HWND operator()() const{ return _handle; }
-    operator HWND() const{ return _handle; }
 
   protected:
 
-    HWND _handle;
+    HWND operator*() const{ return _handle; }
+    operator HWND() const{ return _handle; }
 
-    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wpara, LPARAM lparam, bool& bhandled){ return 0; }
 
   private:
     template <typename, template <typename> typename ... > friend struct base_window;
-	  template <typename, DWORD, DWORD, template <typename> typename ... > friend struct window;
+    template <typename, template <typename> typename ... > friend struct window;
 
+    void create_window(HWND hParent){
+      _handle = wtf::exception::throw_lasterr_if(
+        ::CreateWindowEx(_ImplT::ExStyle, window_class_ex::get().name(), nullptr, _ImplT::Style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, reinterpret_cast<HINSTANCE>(&__ImageBase), this),
+        [](HWND h){ return nullptr == h; });
+    }
 
+    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled){ return 0; }
 
     virtual LRESULT propogate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled){
       __F(__FUNCTION__"\n");
@@ -77,39 +80,73 @@ namespace wtf{
     }
 
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
-      __F(__FUNCTION__"\n");
-      typename _ImplT::window_type * pThis = nullptr;
-      bool handled = false;
+      try{
+        typename _ImplT::window_type * pThis = nullptr;
+        bool handled = false;
 
-      switch (umsg){
-        case WM_NCCREATE:
-        case WM_CREATE:
-        {
-          auto pCreate = reinterpret_cast<CREATESTRUCT*>(lparam);
-          assert(pCreate);
-          pThis = reinterpret_cast<typename _ImplT::window_type*>(pCreate->lpCreateParams);
-          pThis->_handle = hwnd;
-          assert(pThis);
-          SetWindowLongPtr(hwnd, 0, reinterpret_cast<LONG_PTR>(pThis));
-          break;
+        switch (umsg){
+          case WM_NCCREATE:
+          case WM_CREATE:
+          {
+            auto pCreate = reinterpret_cast<CREATESTRUCT*>(lparam);
+            assert(pCreate);
+            pThis = reinterpret_cast<typename _ImplT::window_type*>(pCreate->lpCreateParams);
+            pThis->_handle = hwnd;
+            assert(pThis);
+            SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
+            break;
+          }
+          default:
+          {
+            pThis = reinterpret_cast<typename _ImplT::window_type*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+            break;
+          }
         }
-        default:
-        {
-          pThis = reinterpret_cast<typename _ImplT::window_type*>(GetWindowLongPtr(hwnd, 0));
-          break;
-        }
+
+        if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
+
+        auto handler_ret = pThis->propogate_message(hwnd, umsg, wparam, lparam, handled);
+        if (handled) return handler_ret;
+        return DefWindowProc(hwnd, umsg, wparam, lparam);
       }
-
-      if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
-
-      auto handler_ret = pThis->propogate_message(hwnd, umsg, wparam, lparam, handled);
-      if (handled) return handler_ret;
-      return DefWindowProc(hwnd, umsg, wparam, lparam);
+      catch (const wtf::exception& ex){
+        std::cerr << "A wtf exception occurred: " << ex.what() << std::endl;
+        throw;
+      }
     }
 
 
-    using window_class_type = window_class_ex < _ImplT, &window_proc, CS_OWNDC | CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW>;
+    struct window_class_ex : WNDCLASSEX{
+      static window_class_ex& get(){
+        static window_class_ex _window_class_ex;
+        return _window_class_ex;
+      }
 
+      LPCTSTR name(){ return _class_name.c_str(); }
+
+      ~window_class_ex(){ UnregisterClass(_class_name.c_str(), reinterpret_cast<HINSTANCE>(&__ImageBase)); }
+
+      window_class_ex(){
+        //this goofy looking bit of code creates a unique class name in unicode or multibyte
+        std::string sTemp = "wtf" + std::to_string(typeid(_ImplT).hash_code());
+        for (auto ch : sTemp){
+          _class_name.push_back(ch);
+        }
+        memset(this, 0, sizeof(WNDCLASSEX));
+        cbSize = sizeof(WNDCLASSEX);
+        style = CS_OWNDC | CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW;
+        lpfnWndProc = &window_proc;
+        cbClsExtra = sizeof(window<_ImplT>*);
+        hInstance = reinterpret_cast<HINSTANCE>(&__ImageBase);
+        lpszClassName = name();
+        exception::throw_lasterr_if(RegisterClassEx(this), [](ATOM x){ return 0 == x; });
+      }
+
+      std::basic_string<TCHAR> _class_name;
+    };
+
+
+    HWND _handle;
 
   };
   
