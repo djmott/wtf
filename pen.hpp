@@ -2,19 +2,39 @@
 
 namespace wtf{
 
-  struct pen{
-    HPEN operator*() const{ return _pen; }
-    operator HPEN() const{ return _pen; }
-    pen(pen&& src) : _pen(std::move(src._pen)){}
-    virtual ~pen(){}
+  struct pen : std::unique_ptr<HPEN__, void(*)(HPEN)>{
+
+    enum class style{
+      solid = PS_SOLID,
+      dash = PS_DASH,
+      dot = PS_DOT,
+      dash_dot = PS_DASHDOT,
+      dash_dot_dot = PS_DASHDOTDOT,
+      invisible = PS_NULL,
+      inside_frame = PS_INSIDEFRAME,
+    };
+
+    static pen create(style Style, int width, COLORREF color){
+      return pen(wtf::exception::throw_lasterr_if(CreatePen(static_cast<int>(Style), width, color), [](HPEN p){return !p; }), [](HPEN p){ ::DeleteObject(p); });
+    }
+    static pen create(style Style, int width, system_colors color){
+      return pen(wtf::exception::throw_lasterr_if(CreatePen(static_cast<int>(Style), width, GetSysColor(static_cast<int>(color))), [](HPEN p){return !p; }), [](HPEN p){ ::DeleteObject(p); });
+    }
+
+    pen(pen&& src) : unique_ptr(std::move(src)){}
+
+    operator HPEN() const{ return get(); }
+
+    pen& operator=(pen&& src){
+      unique_ptr::swap(src);
+      return *this;
+    }
+
   protected:
-    explicit pen(HPEN newval) : _pen(newval){}
-    HPEN _pen;
+    template <typename ... _ArgTs>
+    pen(_ArgTs...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...){}
+    
   };
 
-  template <int _width, typename _ColorT> struct solid_pen : pen{
-    solid_pen() : pen(wtf::exception::throw_lasterr_if(CreatePen(PS_SOLID, _width, _ColorT()), [](HPEN p){ return !p; })){}
-    virtual ~solid_pen() override{ DeleteObject(_pen); }
-  };
 
 }

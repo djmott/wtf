@@ -8,6 +8,7 @@
 #include <typeinfo>
 #include <memory>
 #include <vector>
+#include <functional>
 
 //#define __F OutputDebugStringA
 #define __F(...) 
@@ -15,10 +16,11 @@
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 namespace wtf{
-  struct empty{};
+  using tstring = std::basic_string<TCHAR>;
 }
 
 #include "exception.hpp"
+#include "point.hpp"
 #include "color.hpp"
 #include "rect.hpp"
 #include "message.hpp"
@@ -27,6 +29,7 @@ namespace wtf{
 #include "brush.hpp"
 #include "pen.hpp"
 #include "region.hpp"
+#include "font.hpp"
 #include "menu.hpp"
 #include "device_context.hpp"
 #include "window.hpp"
@@ -34,15 +37,21 @@ namespace wtf{
 #include "behaviors.hpp"
 #include "form.hpp"
 
+/*
 #include "themes/system/button.hpp"
 #include "themes/system/form.hpp"
 #include "themes/system/label.hpp"
+*/
 
 #include "themes/default/button.hpp"
 #include "themes/default/form.hpp"
 #include "themes/default/label.hpp"
+#include "themes/default/scroll_bar.hpp"
+#include "themes/default/listbox.hpp"
 
+/*
 #include "themes/matrix/button.hpp"
 #include "themes/matrix/form.hpp"
 #include "themes/matrix/label.hpp"
 
+*/

@@ -1,35 +1,24 @@
+#include <windows.h>
 
 #include <iostream>
+
+
+
+
 #include "wtf.hpp"
 
 using namespace wtf::default_theme;
 
 struct MyForm : form{
-  MyForm() : form(), oLabel(*this){
-    oLabel.move(0, 0, 100, 100);
+  MyForm() : form(), _lb(*this){
+    _lb.move(0, 0, 100, 100);
+    for (int i = 0; i < 100; i++){
+      _lb.items().push_back(std::to_wstring(i));
+    }
   }
-  virtual void OnPaint(const RECT& area, wtf::device_context& oCtx) override{
-  }
-  label oLabel;
-
+  listbox _lb;
 };
 
-/*
-
-struct MyForm : form{
-  MyForm() : form(), oButton(*this), oLabel(*this){
-    text(L"MyForm");
-//     BackgroundBrush(Gdiplus::SolidBrush(GetSysColor(RGB(0, 0, 255))));
-    oButton.move(25, 25, 100, 50);
-    oButton.text(L"Click me");
-//     oButton.BackgroundBrush(Gdiplus::SolidBrush(GetSysColor(RGB(255, 0, 0))));
-    oLabel.move(200, 200, 200, 100);
-//     oButton.BackgroundBrush(Gdiplus::SolidBrush(GetSysColor(RGB(0, 255, 0))));
-    //     oLabel.label_string(L"Help!");
-  }
-  button oButton;
-  label oLabel;
-};*/
 
 int main(){
   try{

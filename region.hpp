@@ -3,35 +3,30 @@
 namespace wtf{
 
 
-  struct const_region{
-    virtual ~const_region() = default;
-    HRGN operator*() const{ return _hrgn; }
-    operator HRGN() const{ return _hrgn; }
-    const_region(const const_region&) = delete;
-    const_region(const_region&& src) : _hrgn(nullptr){
-      std::swap(_hrgn, src._hrgn);
-    }
-  protected:
-    const_region(HRGN newval) : _hrgn(newval){}
-    HRGN _hrgn;
-  };
+  struct region : std::unique_ptr<HRGN__, void(*)(HRGN)>{
 
 
-  struct region : const_region{
 
-    virtual ~region() override{ if (_hrgn) DeleteObject(_hrgn); }
-
-    region(region&& src) : const_region(std::move(src)){}
-
-    static region get(HWND hWnd){
-      region oRet(wtf::exception::throw_lasterr_if(CreateRectRgn(0, 0, 0, 0), [](HRGN h){ return !h; }));
-      GetWindowRgn(hWnd, *oRet);
+    static region get_window_region(HWND hWnd){
+      region oRet(wtf::exception::throw_lasterr_if(CreateRectRgn(0, 0, 0, 0), [](HRGN h){ return !h; }), [](HRGN h){ DeleteObject(h); });
       return oRet;
     }
 
+    region(region&& src) : unique_ptr(std::move(src)){}
+
+    region& operator=(region&& src){
+      unique_ptr::swap(std::move(src));
+      return *this;
+    }
+
+
+    operator HRGN() const{ return get(); }
+
   protected:
-    region(HRGN newval) : const_region(newval){}
-  };
+    template <typename ... _ArgTs> region(_ArgTs&&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...){}
+    };
+
+
 
 
 }

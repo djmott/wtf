@@ -2,55 +2,87 @@
 
 namespace wtf{
 
-  struct cursor{
+  struct cursor : std::unique_ptr<HICON__, void(*)(HICON)>{
 
-    virtual ~cursor(){ if (_hcursor) DestroyCursor(_hcursor); }
+    enum class style{
+     arrow = (LONG_PTR)IDC_ARROW,
+     ibeam = (LONG_PTR)IDC_IBEAM,
+     wait = (LONG_PTR)IDC_WAIT,
+     cross = (LONG_PTR)IDC_CROSS,
+     up_arrow = (LONG_PTR)IDC_UPARROW,
+     size_nwse = (LONG_PTR)IDC_SIZENWSE,
+     size_nesw = (LONG_PTR)IDC_SIZENESW,
+     size_we = (LONG_PTR)IDC_SIZEWE,
+     size_ns = (LONG_PTR)IDC_SIZENS,
+     size_all = (LONG_PTR)IDC_SIZEALL,
+     no = (LONG_PTR)IDC_NO,
+     hand = (LONG_PTR)IDC_HAND,
+     app_starting = (LONG_PTR)IDC_APPSTARTING,
+     help = (LONG_PTR)IDC_HELP,
+    };
 
-    cursor(HCURSOR hCursor) : _hcursor(hCursor){}
-    cursor(const cursor& src) : _hcursor(CopyCursor(src._hcursor)){}
-    cursor(cursor&& src) : _hcursor(std::move(src._hcursor)){}
+    operator HCURSOR() const{ return get(); }
 
-    virtual HCURSOR operator*() const { return _hcursor; }
-    virtual operator HCURSOR() const { return _hcursor; }
+    static cursor system(style Style){
+      return cursor(wtf::exception::throw_lasterr_if(::LoadCursor(nullptr, reinterpret_cast<LPCTSTR>(Style)), [](HCURSOR h){return !h; }), [](HCURSOR){});
+    }
+
+    cursor(cursor&& src) : unique_ptr(std::move(src)){}
+
+    cursor& operator=(cursor&& src){
+      unique_ptr::swap(std::move(src));
+      return *this;
+    }
+
+    static int show() { return ::ShowCursor(TRUE); }
+    static int hide() { return ::ShowCursor(FALSE); }
+
+    static void position(int x, int y) { wtf::exception::throw_lasterr_if(::SetCursorPos(x, y), [](BOOL b){return !b; }); }
+    static void position(const point& p) { wtf::exception::throw_lasterr_if(::SetCursorPos(p.x, p.y), [](BOOL b){return !b; }); }
+    static point position() {
+      point oRet; 
+      wtf::exception::throw_lasterr_if(::GetCursorPos(&oRet), [](BOOL b){return !b; });
+      return oRet;
+    }
+
+    static void clip(const rect& area)  { wtf::exception::throw_lasterr_if(::ClipCursor(&area), [](BOOL b){return !b; }); }
+    static void clip(){ wtf::exception::throw_lasterr_if(::ClipCursor(nullptr), [](BOOL b){return !b; }); }
+
+    static const cursor& global(style Style){
+      static auto _arrow = system(style::arrow);
+      static auto _ibeam = system(style::ibeam);
+      static auto _wait = system(style::wait);
+      static auto _cross = system(style::cross);
+      static auto _up_arrow = system(style::up_arrow);
+      static auto _size_nwse = system(style::size_nwse);
+      static auto _size_nesw = system(style::size_nesw);
+      static auto _size_we = system(style::size_we);
+      static auto _size_ns = system(style::size_ns);
+      static auto _size_all = system(style::size_all);
+      static auto _no = system(style::no);
+      static auto _hand = system(style::hand);
+      static auto _app_starting = system(style::app_starting);
+      static auto _help = system(style::help);
+      switch (Style){
+        case (style::arrow): return _arrow;
+        case(style::ibeam): return _ibeam;
+        case(style::wait): return _wait;
+        case(style::cross): return _cross;
+        case(style::up_arrow): return _up_arrow;
+        case(style::size_nwse): return _size_nwse;
+        case(style::size_nesw): return _size_nesw;
+        case(style::size_we): return _size_we;
+        case(style::size_ns): return _size_ns;
+        case(style::size_all): return _size_all;
+        case(style::no): return _no;
+        case(style::hand): return _hand;
+        case(style::app_starting): return _app_starting;
+        default: return _help;
+      }
+    }
+
   protected:
-    HCURSOR _hcursor;
+    template <typename ... _ArgTs> cursor(_ArgTs&&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...){}
   };
-
-  namespace cursors{
-        
-    template <int _ID>
-    struct system_cursor : cursor{
-      virtual ~system_cursor() = default;
-      system_cursor() : cursor(wtf::exception::throw_lasterr_if(LoadCursor(nullptr, MAKEINTRESOURCE(_ID)), [](HCURSOR h){return !h; })){}
-      system_cursor(const system_cursor& src) : cursor(src){}
-      system_cursor(system_cursor&& src) : cursor(std::move(src)){}
-      
-    };
-
-
-    struct null_cursor : cursor{
-      virtual ~null_cursor() override{}
-      null_cursor() : cursor(nullptr){}
-
-      virtual HCURSOR operator*() const override{ return nullptr; }
-      virtual operator HCURSOR() const override{ return nullptr; }
-    };
-
-    using app_starting = system_cursor<32650>;
-    using arrow = system_cursor<32512>;
-    using cross = system_cursor<32515>;
-    using hand = system_cursor<32649>;
-    using help = system_cursor<32651>;
-    using ibeam = system_cursor<32513>;
-    using icon = system_cursor<32641>;
-    using no = system_cursor<32648>;
-    using size = system_cursor<32640>;
-    using size_all = system_cursor<32646>;
-    using size_nesw = system_cursor<32643>;
-    using size_ns = system_cursor<32645>;
-    using size_we = system_cursor<32644>;
-    using up_arrow = system_cursor<32516>;
-    using wait = system_cursor<32514>;
-  }
 
 }

@@ -45,6 +45,10 @@ namespace wtf{
     COLORREF _colorref;
   };
 
+  template <system_colors _id> struct system_rgb : rgb{
+    system_rgb() : rgb(GetSysColor(static_cast<int>(_id))){}
+  };
+
   template <uint8_t _r, uint8_t _g, uint8_t _b> struct static_rgb : rgb{
     static_rgb() : rgb(RGB(_r, _g, _b)){}
   };

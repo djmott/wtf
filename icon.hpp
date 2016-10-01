@@ -2,34 +2,34 @@
 
 namespace wtf{
 
-  template <int _ID>
-  struct system_icon{
-    system_icon() : _hicon(wtf::exception::throw_lasterr_if(LoadIcon(nullptr, MAKEINTRESOURCE(_ID)), [](HICON h){ return !h; })){}
-    ~system_icon(){ DestroyIcon(_hicon); }
-    HICON native_handle() const { return _hicon; }
-    HICON operator()() const { return _hicon; }
-    operator HICON() const { return _hicon; }
-    
-  private:
-    HICON _hicon;
+  struct icon : std::unique_ptr<HICON__, void (*)(HICON)>{
+    enum class style{
+      application = (LONG_PTR)IDI_APPLICATION,
+      asterisk = (LONG_PTR)IDI_ASTERISK,
+      exclamation = (LONG_PTR)IDI_EXCLAMATION,
+      hand = (LONG_PTR)IDI_HAND,
+      question = (LONG_PTR)IDI_QUESTION,
+      winlogo = (LONG_PTR)IDI_WINLOGO,
+      shield = (LONG_PTR)IDI_SHIELD,
+    };
+
+    static icon system(style Style){
+      return icon(wtf::exception::throw_lasterr_if(::LoadIcon(nullptr, reinterpret_cast<LPCTSTR>(Style)), [](HICON h){return !h; }), [](HICON){ });
+    }
+
+    icon(icon&& src) : unique_ptr(std::move(src)){}
+
+    icon& operator=(icon&& src){
+      unique_ptr::swap(std::move(src));
+      return *this;
+    }
+
+    operator HICON() const{ return get(); }
+
+  protected:
+    template <typename ... _ArgTs> icon(_ArgTs&&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...){}
+
   };
 
-
-  namespace icons{
-
-    using application = system_icon<32512>;
-    using hand = system_icon<32513>;
-    using question = system_icon<32514>;
-    using exclamation = system_icon<32515>;
-    using asterisk = system_icon<32516>;
-    using winlogo = system_icon<32517>;
-    using shield = system_icon<32518>;
-
-    struct null_icon{
-      HICON native_handle() const{ return nullptr; }
-      HICON operator()() const{ return nullptr; }
-      operator HICON() const{ return nullptr; }
-    };
-  }
 
 }

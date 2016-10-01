@@ -4,7 +4,7 @@ namespace wtf{
   namespace system_theme{
 
 
-    struct button : wtf::window<button, wm_lbuttondown, wm_mousemove, wm_lbuttonup, wm_paint, has_cursor, has_text,  has_show, has_move, has_background>{
+    struct button : wtf::window<button, wm_lbuttondown, wm_mousemove, wm_lbuttonup, wm_paint, has_cursor, has_titlebar,  has_show, has_move, has_background>{
       button(HWND hParent) : window(hParent){
 /*
         _handle = wtf::exception::throw_lasterr_if(

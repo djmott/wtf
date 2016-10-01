@@ -18,14 +18,22 @@ namespace wtf{
     operator HDC() const{ return _dc; }
 
     void line(const wtf::pen& oPen, int x1, int y1, int x2, int y2) const{
-      SelectObject(_dc, *oPen);
+      SelectObject(_dc, oPen);
       wtf::exception::throw_lasterr_if(MoveToEx(_dc, x1, y1, nullptr), [](BOOL b){ return !b; });
       wtf::exception::throw_lasterr_if(LineTo(_dc, x2, y2), [](BOOL b){ return !b; });
     }
 
-    void fill(const const_region& oRegion, const const_brush& oBrush){ FillRgn(_dc, *oRegion, *oBrush); }
+    void fill(const region& oRegion, const brush& oBrush) const { FillRgn(_dc, oRegion, oBrush); }
 
-    void fill(const rect& oRect, const const_brush& oBrush) const{ wtf::exception::throw_lasterr_if(FillRect(_dc, &oRect, *oBrush), [](int i){ return !i; }); }
+    void fill(const rect& oRect, const brush& oBrush) const { wtf::exception::throw_lasterr_if(FillRect(_dc, &oRect, oBrush), [](int i){ return !i; }); }
+
+    void fill(const std::vector<POINT>& oPoints, const pen& oPen, const brush& oBrush) const{
+      auto oldPen = SelectObject(_dc, oPen);
+      auto oldBrush = SelectObject(_dc, oBrush);
+      wtf::exception::throw_lasterr_if(Polygon(_dc, &oPoints[0], static_cast<int>(oPoints.size())), [](BOOL b){return !b; });
+      SelectObject(_dc, oldBrush);
+      SelectObject(_dc, oldPen);
+    }
 
   protected:
     HWND _hwnd;

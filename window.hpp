@@ -1,6 +1,23 @@
 #pragma once
 
 namespace wtf{
+
+  namespace _{
+    template <template <typename> typename _DeclT, template <typename> typename ... _TailT> struct has_policy;
+
+    template <template <typename> typename _DeclT, template <typename> typename ... _TailT>
+    struct has_policy<_DeclT, _DeclT, _TailT...>{ static const bool value = true; };
+
+    template <template <typename> typename _DeclT>
+    struct has_policy<_DeclT>{ static const bool value = false; };
+
+
+    template <template <typename> typename _DeclT, template <typename> typename _HeadT, template <typename> typename ... _TailT>
+    struct has_policy<_DeclT, _HeadT, _TailT...>{ static const bool value = has_policy<_PolicyT, _TailT...>::value; };
+
+  }
+
+
   template <typename _ImplT, template <typename> typename ... _PolicyListT> struct window;
   template <typename _ImplT, template <typename> typename ... _PolicyListT> struct base_window;
 
@@ -9,12 +26,14 @@ namespace wtf{
 
     using _base_window_t = base_window<_ImplT, _PolicyListT...>;
 
-    explicit window(HWND hParent) : _base_window_t(){
-      _base_window_t::create_window(hParent);
+    window(HWND hParent, bool bCreate) : _base_window_t(){ 
+      if (bCreate) window::create(hParent);
     }
-    window() : window(nullptr){}
 
     virtual ~window() = default;
+
+    template <template <typename> typename _PolicyT> bool has_policy() const{ return _::has_policy<_PolicyT, _PolicyListT...>::value; }
+
 
   };
 
@@ -28,11 +47,11 @@ namespace wtf{
     base_window() = default;
     virtual ~base_window() = default;
 
+
   private:
     template <typename, template <typename> typename ... > friend struct base_window;
 
     virtual LRESULT propogate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled) override{
-      __F(__FUNCTION__"\n");
       auto handler_ret = _super_t::handle_message(hwnd, umsg, wparam, lparam, handled);
       if (handled) return handler_ret;
       return base_window<_ImplT,  _TailT...>::propogate_message(hwnd, umsg, wparam, lparam, handled);
@@ -43,7 +62,7 @@ namespace wtf{
   template <typename _ImplT> struct base_window<_ImplT> {
 
     static const DWORD ExStyle = 0;
-    static const DWORD Style = 0;
+    static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
 
     virtual ~base_window(){ ::DestroyWindow(_handle); }
 
@@ -55,21 +74,20 @@ namespace wtf{
     HWND operator*() const{ return _handle; }
     operator HWND() const{ return _handle; }
 
-
-  private:
-    template <typename, template <typename> typename ... > friend struct base_window;
-    template <typename, template <typename> typename ... > friend struct window;
-
-    void create_window(HWND hParent){
+    void create(HWND hParent){
       _handle = wtf::exception::throw_lasterr_if(
         ::CreateWindowEx(_ImplT::ExStyle, window_class_ex::get().name(), nullptr, _ImplT::Style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, reinterpret_cast<HINSTANCE>(&__ImageBase), this),
         [](HWND h){ return nullptr == h; });
     }
 
+  private:
+    template <typename, template <typename> typename ... > friend struct base_window;
+    template <typename, template <typename> typename ... > friend struct window;
+
+
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled){ return 0; }
 
     virtual LRESULT propogate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled){
-      __F(__FUNCTION__"\n");
       switch (umsg){
         case WM_CLOSE:
           DestroyWindow(hwnd); _handle = nullptr; break;
@@ -105,7 +123,21 @@ namespace wtf{
 
         if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
 
+        PAINTSTRUCT oPaint;
+        if (WM_PAINT==umsg){
+          RECT r;
+          if (0 == GetUpdateRect(hwnd, &r, FALSE)){
+            return DefWindowProc(hwnd, umsg, wparam, lparam);
+          }
+          BeginPaint(hwnd, &oPaint);
+          lparam = reinterpret_cast<LPARAM>(&oPaint);
+          wparam = reinterpret_cast<WPARAM>(&r);
+        }
+
         auto handler_ret = pThis->propogate_message(hwnd, umsg, wparam, lparam, handled);
+        if (WM_PAINT == umsg){
+          EndPaint(hwnd, &oPaint);
+        }
         if (handled) return handler_ret;
         return DefWindowProc(hwnd, umsg, wparam, lparam);
       }
@@ -142,7 +174,7 @@ namespace wtf{
         exception::throw_lasterr_if(RegisterClassEx(this), [](ATOM x){ return 0 == x; });
       }
 
-      std::basic_string<TCHAR> _class_name;
+      tstring _class_name;
     };
 
 
@@ -150,4 +182,10 @@ namespace wtf{
 
   };
   
+  namespace _{
+
+
+
+  }
+
 }

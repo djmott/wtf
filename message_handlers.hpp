@@ -15,17 +15,14 @@ namespace wtf{
     wm_paint() = default;
     virtual ~wm_paint() = default;
 
-    virtual void OnPaint(const RECT& area, device_context&){}
-
+    virtual void OnPaint(const device_context&, const rect&) {}
+  protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
-      RECT update_rect;
-      if (WM_PAINT == umsg && GetUpdateRect(hwnd, &update_rect, FALSE)){
-        PAINTSTRUCT paint;
-        BeginPaint(hwnd, &paint);
-          
-        device_context oCtx(hwnd);
-        OnPaint(update_rect, oCtx);
-        EndPaint(hwnd, &paint);
+      if (WM_PAINT == umsg){
+        auto pPaint = reinterpret_cast<PAINTSTRUCT*>(lparam);
+        auto r = reinterpret_cast<rect*>(wparam);
+        device_context oCtx(pPaint->hdc);
+        OnPaint(oCtx, *r);
       }
       return 0;
     }
@@ -37,6 +34,7 @@ namespace wtf{
     virtual ~wm_close() = default;
     
     virtual void OnClose(){}
+  protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_CLOSE == umsg) OnClose();
       return 0;
@@ -49,6 +47,7 @@ namespace wtf{
 
     virtual void OnLMouseDown(event_vkeys, int x, int y){}
 
+  protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_LBUTTONDOWN == umsg) OnLMouseDown(static_cast<event_vkeys>(wparam), GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
       return 0;
@@ -60,6 +59,7 @@ namespace wtf{
     virtual ~wm_lbuttonup() = default;
 
     virtual void OnLMouseUp(event_vkeys, int x, int y){}
+  protected:
 
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_LBUTTONUP== umsg) OnLMouseUp(static_cast<event_vkeys>(wparam), GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
@@ -73,6 +73,7 @@ namespace wtf{
     virtual ~wm_mousemove() = default;
 
     virtual void OnMouseMove(event_vkeys, int x, int y){}
+  protected:
 
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_MOUSEMOVE == umsg) OnMouseMove(static_cast<event_vkeys>(wparam), LOWORD(lparam), HIWORD(lparam));
@@ -81,22 +82,24 @@ namespace wtf{
 
   };
 
+  enum class wm_size_flags{
+    hide = SIZE_MAXHIDE,
+    maximized = SIZE_MAXIMIZED,
+    show = SIZE_MAXSHOW,
+    minimized = SIZE_MINIMIZED,
+    restored = SIZE_RESTORED,
+  };
+
   template <typename _SuperT> struct wm_size : _SuperT{
     wm_size() = default;
     virtual ~wm_size() = default;
 
-    enum class type{
-      hide = SIZE_MAXHIDE,
-      maximized = SIZE_MAXIMIZED,
-      show = SIZE_MAXSHOW,
-      minimized = SIZE_MINIMIZED,
-      restored = SIZE_RESTORED,
-    };
 
-    virtual void OnResized(type, int width, int height){}
+    virtual void OnResized(wm_size_flags, int width, int height) {}
 
+  protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
-      if (WM_SIZE == umsg) OnResized(static_cast<type>(wparam), LOWORD(lparam), HIWORD(lparam));
+      if (WM_SIZE == umsg) OnResized(static_cast<wm_size_flags>(wparam), LOWORD(lparam), HIWORD(lparam));
       return 0;
     }
   };
@@ -108,6 +111,7 @@ namespace wtf{
 
     virtual void OnMoved(int x, int y){}
 
+  protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_MOVE == umsg) OnMoved(LOWORD(lparam), HIWORD(lparam));
       return 0;
@@ -121,8 +125,54 @@ namespace wtf{
 
     virtual void OnMoving(LPRECT coords){}
 
+  protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_MOVING == umsg) OnMoving(reinterpret_cast<LPRECT>(lparam));
+      return 0;
+    }
+  };
+
+
+  enum class wm_nchittest_flags{
+    error = HTERROR,
+    transparent = HTTRANSPARENT,
+    nowhere = HTNOWHERE,
+    client = HTCLIENT,
+    caption = HTCAPTION,
+    sysmenu = HTSYSMENU,
+    growbox = HTGROWBOX,
+    size = HTSIZE,
+    menu = HTMENU,
+    hscroll = HTHSCROLL,
+    vscroll = HTVSCROLL,
+    minbutton = HTMINBUTTON,
+    maxbutton = HTMAXBUTTON,
+    left = HTLEFT,
+    right = HTRIGHT,
+    top = HTTOP,
+    topleft = HTTOPLEFT,
+    topright = HTTOPRIGHT,
+    bottom = HTBOTTOM,
+    bottomleft = HTBOTTOMLEFT,
+    bottomright = HTBOTTOMRIGHT,
+    border = HTBORDER,
+    reduce = HTREDUCE,
+    zoom = HTZOOM,
+    sizefirst = HTSIZEFIRST,
+    sizelast = HTSIZELAST,
+    object = HTOBJECT,
+    close = HTCLOSE,
+    help = HTHELP,
+  };
+
+  template <typename _SuperT> struct wm_setcursor: _SuperT{
+    wm_setcursor() = default;
+    virtual ~wm_setcursor() = default;
+
+    virtual void OnSetCursor(wm_nchittest_flags flags){}
+  protected:
+    virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
+      if (WM_SETCURSOR == umsg) OnSetCursor(static_cast<wm_nchittest_flags>(LOWORD(lparam)));
       return 0;
     }
   };
