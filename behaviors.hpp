@@ -3,24 +3,33 @@
 namespace wtf{
 
 
-  template <typename _SuperT> struct has_font: _SuperT{
-    has_font() : _font(font::gui_default()){}
+  template <typename _SuperT> struct has_text_metrics : _SuperT{
+    size text_size() const{
+      size oRet;
+      wtf::exception::throw_lasterr_if(::GetTextExtentPoint32(*this, _text.c_str(), static_cast<int>(_text.size()), &oRet), [](BOOL b){ return !b; });
+      return oRet;
+    }
 
-    virtual const wtf::font::handle& font() const { return _font; }
+  };
+
+  template <typename _SuperT> struct has_font: _SuperT{
+    has_font() : _font(wtf::non_client_metrics::get().lfMenuFont){}
+
+    virtual const wtf::font& font() const { return _font; }
 
   protected:
-    wtf::font::handle _font;
+    wtf::font _font;
   };
 
 
 
   template <typename _SuperT> struct has_paint_event: _SuperT{
 
-    std::function<void(const device_context&, const rect&)> OnPaintEvent;
+    std::function<void(const paint_struct&)> OnPaintEvent;
 
   protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
-      if (WM_PAINT == umsg && OnPaintEvent) OnPaintEvent(device_context(reinterpret_cast<const PAINTSTRUCT*>(lparam)->hdc), *reinterpret_cast<const rect*>(wparam));
+      if (WM_PAINT == umsg && OnPaintEvent) OnPaintEvent(*reinterpret_cast<const paint_struct*>(lparam));
       return 0;
     }
   };
@@ -36,13 +45,11 @@ namespace wtf{
           auto p1 = pen::create(pen::style::solid, 1, system_colors::button_highlight);
           auto p2 = pen::create(pen::style::solid, 1, system_colors::button_shadow);
           if (_Down) std::swap(p1, p2);
-          auto pPaint = reinterpret_cast<PAINTSTRUCT*>(lparam);
-          device_context ctx(pPaint->hdc);
           auto rc = rect::get_client_rect(*this);
-          ctx.line(p1, 0, 0, rc.right, 0);
-          ctx.line(p1, 0, 0, 0, rc.bottom);
-          ctx.line(p2, rc.right - 1, 0, rc.right - 1, rc.bottom - 1);
-          ctx.line(p2, 0, rc.bottom - 1, rc.right, rc.bottom - 1);
+          DC().line(p1, 0, 0, rc.right, 0);
+          DC().line(p1, 0, 0, 0, rc.bottom);
+          DC().line(p2, rc.right - 1, 0, rc.right - 1, rc.bottom - 1);
+          DC().line(p2, 0, rc.bottom - 1, rc.right, rc.bottom - 1);
           break;
         }
         case WM_LBUTTONDOWN:{
@@ -193,7 +200,7 @@ namespace wtf{
 
     virtual ~has_border() = default;
 
-    has_border() : _SuperT(), _border_style(border_styles::none),
+    has_border() : _SuperT(), _border_style(border_styles::raised),
       _border_highlight(pen::create(pen::style::solid, 1, system_colors::button_highlight)),
       _border_shadow(pen::create(pen::style::solid, 1, system_colors::button_shadow)){}
 
@@ -209,24 +216,22 @@ namespace wtf{
   protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_PAINT == umsg && border_styles::none != _border_style){
-        auto pPaint = reinterpret_cast<PAINTSTRUCT*>(lparam);        
-        device_context ctx(pPaint->hdc);
 
         auto pri = [this]() -> const pen&{ return ((border_styles::raised == _border_style || border_styles::bumbed == _border_style) ? border_highlight() : border_shadow()); };
         auto sec = [this]() -> const pen&{ return ((border_styles::raised == _border_style || border_styles::bumbed == _border_style) ? border_shadow() : border_highlight()); };
 
         auto rc = rect::get_client_rect(*this);
 
-        ctx.line(pri(), 0, 0, rc.right, 0);
-        ctx.line(pri(), 0, 0, 0, rc.bottom);
-        ctx.line(sec(), rc.right - 1, 0, rc.right - 1, rc.bottom - 1);
-        ctx.line(sec(), 0, rc.bottom - 1, rc.right, rc.bottom - 1);
+        DC().line(pri(), 0, 0, rc.right, 0);
+        DC().line(pri(), 0, 0, 0, rc.bottom);
+        DC().line(sec(), rc.right - 1, 0, rc.right - 1, rc.bottom - 1);
+        DC().line(sec(), 0, rc.bottom - 1, rc.right, rc.bottom - 1);
 
         if (border_styles::bumbed == _border_style || border_styles::etched == _border_style){
-          ctx.line(sec(), 2, 2, rc.right - 4, 2);
-          ctx.line(sec(), 2, 2, 2, rc.bottom - 4);
-          ctx.line(pri(), rc.right - 4, 2, rc.right - 4, rc.bottom - 4);
-          ctx.line(pri(), 2, rc.bottom - 4, rc.right - 4, rc.bottom - 4);
+          DC().line(sec(), 2, 2, rc.right - 4, 2);
+          DC().line(sec(), 2, 2, 2, rc.bottom - 4);
+          DC().line(pri(), rc.right - 4, 2, rc.right - 4, rc.bottom - 4);
+          DC().line(pri(), 2, rc.bottom - 4, rc.right - 4, rc.bottom - 4);
         }
 
       }
@@ -250,10 +255,21 @@ namespace wtf{
   };
 
 
-  template <typename _SuperT> struct has_move : _SuperT{
+  template <typename _SuperT> struct has_size : _SuperT{
     void move(int x, int y, int width, int height, bool repaint = true){
+      _left = x;
+      _top = y;
+      _width = width;
+      _height = height;
       wtf::exception::throw_lasterr_if(::MoveWindow(*this, x, y, width, height, repaint ? TRUE : FALSE), [](BOOL b){return !b; });
     }
+    int top() const{ return _top; }
+    int left() const{ return _left; }
+    int width() const{ return _width; }
+    int height() const{ return _height; }
+    has_size() : _SuperT(), _top(CW_USEDEFAULT), _left(CW_USEDEFAULT), _width(CW_USEDEFAULT), _height(CW_USEDEFAULT){}
+  protected:
+    int _top, _left, _width, _height;
   };
 
 
@@ -285,7 +301,7 @@ namespace wtf{
 
     const tstring& text() const{ return _text; }
 
-    void text(LPCTSTR newval){
+    void text(const tstring& newval){
       _text = newval;
     }
 
@@ -293,16 +309,14 @@ namespace wtf{
 
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_PAINT == umsg){
-        auto pPaint = reinterpret_cast<PAINTSTRUCT*>(lparam);
-        device_context oCtx(pPaint->hdc);
+        auto pPaint = reinterpret_cast<paint_struct*>(lparam);
         HFONT hOldFont, hFont = (HFONT)GetStockObject(SYSTEM_FONT);
-        SetBkMode(*oCtx, TRANSPARENT);
-        if (hOldFont = (HFONT)SelectObject(*oCtx, hFont)){
-          rect r(pPaint->rcPaint);
-          DrawText(*oCtx, text().c_str(), static_cast<int>(text().size()), &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-          SelectObject(*oCtx, hOldFont);
+        SetBkMode(*this, TRANSPARENT);
+        if (hOldFont = (HFONT)SelectObject(*this, hFont)){
+          DrawText(*this, text().c_str(), static_cast<int>(text().size()), &pPaint->client_area(), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+          SelectObject(*this, hOldFont);
         }
-        SetBkMode(*oCtx, OPAQUE);
+        SetBkMode(*this, OPAQUE);
       }
       return 0;
     }

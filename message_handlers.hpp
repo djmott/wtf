@@ -15,14 +15,11 @@ namespace wtf{
     wm_paint() = default;
     virtual ~wm_paint() = default;
 
-    virtual void OnPaint(const device_context&, const rect&) {}
+    virtual void OnPaint(const paint_struct&) {}
   protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_PAINT == umsg){
-        auto pPaint = reinterpret_cast<PAINTSTRUCT*>(lparam);
-        auto r = reinterpret_cast<rect*>(wparam);
-        device_context oCtx(pPaint->hdc);
-        OnPaint(oCtx, *r);
+        OnPaint(*reinterpret_cast<paint_struct*>(lparam));
       }
       return 0;
     }

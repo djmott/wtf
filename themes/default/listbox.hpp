@@ -2,34 +2,48 @@
 namespace wtf{
   namespace default_theme{
 
-      struct listbox : wtf::window<listbox, has_move, has_background, has_border, has_click_event, has_paint_event, has_font>{
-        using vector_type = std::vector<tstring>;
+      struct listbox : wtf::window<listbox, has_background, has_border, has_click_event, has_paint_event, has_font, has_size>{
 
-        listbox(HWND hParent) : window(hParent, true), _background_brush(brush::system_brush(system_colors::window)), _items(), _selected_index(-1), _top_index(0), _vscroll(*this){}
+        listbox(HWND hParent) : window(hParent), _Panel(*this){
+          _Panel.move(0, 0, this->width(), 0);
+        }
+        void add_item(const tstring& newval){
+          std::shared_ptr<label> oItem(new label(*_Panel));
+          oItem->text(newval);
+          if (!_Items.size()){
+            oItem->move(0, 0, oItem->text_size().cx, oItem->text_size().cy);
+          } else{
+            auto& oLast = _Items.back();
+            oItem->move(0, oLast->top() + oLast->height(), oItem->text_size().cx, oItem->text_size().cy);
+          }
+          _Items.push_back(oItem);
+          auto oMaxMetrics = get_max_text_metrics();
+          _Panel.move(0,0, oMaxMetrics.cx, oItem->top() + oItem->height());
+        }
 
-        vector_type& items(){ return _items; }
-        const vector_type& items() const { return _items; }
-
-        vector_type::size_type selected_index() const{ return _selected_index; }
+        
 
       protected:
+        size get_max_text_metrics() const{
+          size oRet;
+          for (const auto & oItem : _Items){
+            auto oSize = oItem->text_size();
+            if (oRet.cx < oSize.cx) oRet.cx = oSize.cx;
+            if (oRet.cy < oSize.cy) oRet.cy = oSize.cy;
+          }
+          return oRet;
+        }
+
         virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
           if (WM_PAINT == umsg){
-            device_context(reinterpret_cast<const PAINTSTRUCT*>(lparam)->hdc);
-            auto pClient = reinterpret_cast<const rect*>(wparam);
 
           }
           return 0;
         }
 
-        virtual const brush& background_brush() const override{ return _background_brush; }
+        panel _Panel;
+        std::vector<std::shared_ptr<label>> _Items;
 
-        brush _background_brush;
-
-        vector_type _items;
-        vector_type::size_type _selected_index;
-        vector_type::size_type _top_index;
-        scroll_bar<orientation::vertical> _vscroll;
       };
     }
 

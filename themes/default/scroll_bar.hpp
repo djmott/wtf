@@ -9,7 +9,7 @@ namespace wtf{
 
 
     template <orientation _Orientation>
-    struct scroll_bar : window<scroll_bar<_Orientation>, has_move, has_border, wm_size, has_background>{
+    struct scroll_bar : window<scroll_bar<_Orientation>, has_border, wm_size, has_background>{
       
       static const orientation Orientation = _Orientation;
 

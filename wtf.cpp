@@ -11,13 +11,14 @@ namespace theme = wtf::default_theme;
 
 struct MyForm : theme::form{
   
-  MyForm() : oButton(*this){
-    oButton.move(10, 10, 150, 25);
-    oButton.text(L"Hello World");
-    oButton.OnClickEvent = [](){ std::cout << "Button clicked"; };
+  MyForm() : oList(*this){
+    oList.move(10, 10, 500, 500);
+    for (int i = 0; i < 100; i++){
+      oList.add_item(std::to_wstring(i));
+    }
   }
 
-  theme::button oButton;
+  theme::listbox oList;
 };
 
 

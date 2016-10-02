@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <windowsx.h>
+#include <tchar.h>
 
 #include <stdexcept>
 #include <string>
@@ -8,6 +9,7 @@
 #include <typeinfo>
 #include <memory>
 #include <vector>
+#include <map>
 #include <functional>
 
 //#define __F OutputDebugStringA
@@ -20,18 +22,21 @@ namespace wtf{
 }
 
 #include "exception.hpp"
+#include "SystemParameters.hpp"
 #include "point.hpp"
 #include "color.hpp"
 #include "rect.hpp"
+#include "size.hpp"
+#include "paint_struct.h"
 #include "message.hpp"
 #include "icon.hpp"
 #include "cursor.hpp"
 #include "brush.hpp"
 #include "pen.hpp"
 #include "region.hpp"
+#include "device_context.hpp"
 #include "font.hpp"
 #include "menu.hpp"
-#include "device_context.hpp"
 #include "window.hpp"
 #include "message_handlers.hpp"
 #include "behaviors.hpp"
@@ -47,6 +52,7 @@ namespace wtf{
 #include "themes/default/form.hpp"
 #include "themes/default/label.hpp"
 #include "themes/default/scroll_bar.hpp"
+#include "themes/default/panel.hpp"
 #include "themes/default/listbox.hpp"
 
 /*

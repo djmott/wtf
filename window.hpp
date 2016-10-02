@@ -26,7 +26,7 @@ namespace wtf{
 
     using _base_window_t = base_window<_ImplT, _PolicyListT...>;
 
-    window(HWND hParent, bool bCreate) : _base_window_t(){ 
+    window(HWND hParent, bool bCreate=true) : _base_window_t(){ 
       if (bCreate) window::create(hParent);
     }
 
@@ -62,22 +62,32 @@ namespace wtf{
   template <typename _ImplT> struct base_window<_ImplT> {
 
     static const DWORD ExStyle = 0;
-    static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
+    static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
     virtual ~base_window(){ ::DestroyWindow(_handle); }
 
-    base_window() : _handle(nullptr){}
+    base_window() : _handle(nullptr), _dc((HDC)nullptr){}
 
 
-  protected:
 
     HWND operator*() const{ return _handle; }
     operator HWND() const{ return _handle; }
+
+    wtf::device_context& DC(){ return _dc; }
+    const wtf::device_context& DC() const { return _dc; }
+
+    operator const wtf::device_context&() const{ return _dc; }
+    operator wtf::device_context&() { return _dc; }
+
+    operator HDC() const{ return _dc; }
+
+  protected:
 
     void create(HWND hParent){
       _handle = wtf::exception::throw_lasterr_if(
         ::CreateWindowEx(_ImplT::ExStyle, window_class_ex::get().name(), nullptr, _ImplT::Style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, reinterpret_cast<HINSTANCE>(&__ImageBase), this),
         [](HWND h){ return nullptr == h; });
+      std::swap(_dc, wtf::device_context(_handle));
     }
 
   private:
@@ -101,6 +111,7 @@ namespace wtf{
       try{
         typename _ImplT::window_type * pThis = nullptr;
         bool handled = false;
+        LRESULT handler_ret;
 
         switch (umsg){
           case WM_NCCREATE:
@@ -123,21 +134,20 @@ namespace wtf{
 
         if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
 
-        PAINTSTRUCT oPaint;
         if (WM_PAINT==umsg){
           RECT r;
           if (0 == GetUpdateRect(hwnd, &r, FALSE)){
             return DefWindowProc(hwnd, umsg, wparam, lparam);
           }
-          BeginPaint(hwnd, &oPaint);
-          lparam = reinterpret_cast<LPARAM>(&oPaint);
-          wparam = reinterpret_cast<WPARAM>(&r);
+          paint_struct oPaint(*pThis);
+          
+          handler_ret = pThis->propogate_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oPaint), handled);
+
+        } else{
+
+          handler_ret = pThis->propogate_message(hwnd, umsg, wparam, lparam, handled);
         }
 
-        auto handler_ret = pThis->propogate_message(hwnd, umsg, wparam, lparam, handled);
-        if (WM_PAINT == umsg){
-          EndPaint(hwnd, &oPaint);
-        }
         if (handled) return handler_ret;
         return DefWindowProc(hwnd, umsg, wparam, lparam);
       }
@@ -179,6 +189,7 @@ namespace wtf{
 
 
     HWND _handle;
+    wtf::device_context _dc;
 
   };
   
