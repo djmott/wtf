@@ -2,6 +2,7 @@
 
 namespace wtf{
 
+
   template <typename _SuperT> struct has_font: _SuperT{
     has_font() : _font(font::gui_default()){}
 
@@ -240,22 +241,16 @@ namespace wtf{
 
 
   template <typename _SuperT> struct has_close : _SuperT{
-    has_close() = default;
-    virtual ~has_close() = default;
     void close() { CloseWindow(*this); }
   };
 
   template <typename _SuperT> struct has_show : _SuperT{
-    has_show() = default;
-    virtual ~has_show() = default;
     void show(){ ::ShowWindow(*this, SW_SHOW); }
     void hide(){ ::ShowWindow(*this, SW_HIDE); }
   };
 
 
   template <typename _SuperT> struct has_move : _SuperT{
-    has_move() = default;
-    virtual ~has_move() = default;
     void move(int x, int y, int width, int height, bool repaint = true){
       wtf::exception::throw_lasterr_if(::MoveWindow(*this, x, y, width, height, repaint ? TRUE : FALSE), [](BOOL b){return !b; });
     }

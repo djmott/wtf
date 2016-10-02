@@ -7,31 +7,23 @@
 
 #include "wtf.hpp"
 
-using namespace wtf::default_theme;
+namespace theme = wtf::default_theme;
 
-struct MyForm : form{
-  MyForm() : form(), _lb(*this){
-    _lb.move(0, 0, 100, 100);
-    for (int i = 0; i < 100; i++){
-      _lb.items().push_back(std::to_wstring(i));
-    }
+struct MyForm : theme::form{
+  
+  MyForm() : oButton(*this){
+    oButton.move(10, 10, 150, 25);
+    oButton.text(L"Hello World");
+    oButton.OnClickEvent = [](){ std::cout << "Button clicked"; };
   }
-  listbox _lb;
+
+  theme::button oButton;
 };
 
 
 int main(){
-  try{
-	  MyForm oForm;
-    oForm.show();
-    wtf::message oMsg;
-    return oMsg.pump();
-  }
-  catch (const wtf::exception& ex){
-    std::cerr << "A WTF exception occurred in " << ex.file() << "(" << ex.line() << ") : " << ex.code() << std::endl << ex.what() << std::endl;
-  }
-  catch (const std::exception& ex){
-    std::cerr << "An STL exception occurred: " << ex.what() << std::endl;
-  }
-  return -1;
+  MyForm oForm;
+  oForm.show();
+  wtf::message oMsg;
+  return oMsg.pump();
 }

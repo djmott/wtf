@@ -12,9 +12,15 @@ namespace wtf{
 
         vector_type::size_type selected_index() const{ return _selected_index; }
 
-      
+      protected:
+        virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
+          if (WM_PAINT == umsg){
+            device_context(reinterpret_cast<const PAINTSTRUCT*>(lparam)->hdc);
+            auto pClient = reinterpret_cast<const rect*>(wparam);
 
-      private:
+          }
+          return 0;
+        }
 
         virtual const brush& background_brush() const override{ return _background_brush; }
 
