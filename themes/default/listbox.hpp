@@ -2,7 +2,7 @@
 namespace wtf{
   namespace default_theme{
 
-      struct listbox : wtf::window<listbox, has_background, has_border, has_click_event, has_paint_event, has_font, has_size>{
+      struct listbox : wtf::window<listbox, has_background, has_border, has_click, has_paint_event, has_font, has_size>{
 
         listbox(HWND hParent) : window(hParent), _Panel(*this){
           _Panel.move(0, 0, this->width(), 0);

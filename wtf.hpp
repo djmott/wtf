@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 #include <map>
-#include <functional>
+// #include <functional>
 
 //#define __F OutputDebugStringA
 #define __F(...) 
@@ -22,6 +22,7 @@ namespace wtf{
 }
 
 #include "exception.hpp"
+#include "callback.hpp"
 #include "SystemParameters.hpp"
 #include "point.hpp"
 #include "color.hpp"

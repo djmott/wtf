@@ -25,11 +25,11 @@ namespace wtf{
 
   template <typename _SuperT> struct has_paint_event: _SuperT{
 
-    std::function<void(const paint_struct&)> OnPaintEvent;
+    wtf::callback<void(const paint_struct&)> OnPaintEvent;
 
   protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
-      if (WM_PAINT == umsg && OnPaintEvent) OnPaintEvent(*reinterpret_cast<const paint_struct*>(lparam));
+      if (WM_PAINT == umsg) OnPaintEvent(*reinterpret_cast<const paint_struct*>(lparam));
       return 0;
     }
   };
@@ -91,7 +91,7 @@ namespace wtf{
   template <typename _SuperT> struct has_click : _SuperT{
     virtual ~has_click() = default;
 
-    virtual void OnClick(){}
+    wtf::callback<void()> OnClickEvent;
 
   protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
@@ -108,22 +108,14 @@ namespace wtf{
         }
       }
       if (WM_LBUTTONUP == umsg && _Down){
-        ReleaseCapture(); _Down = false; OnClick();
+        ReleaseCapture(); _Down = false; OnClickEvent();
       }
       return 0;
     }
     bool _Down = false;
   };
 
-
-
-  template <typename _SuperT> struct has_click_event : has_click<_SuperT>{
-    std::function<void()> OnClickEvent;
-  protected:
-    virtual void OnClick(){ if (OnClickEvent) OnClickEvent(); }
-  };
-
-  
+ 
 
   template <typename _SuperT> struct has_background : _SuperT{
     virtual ~has_background() = default;
@@ -134,9 +126,8 @@ namespace wtf{
   protected:
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       if (WM_ERASEBKGND == umsg){
-          device_context oCtx(reinterpret_cast<HDC>(wparam));
           auto oRect = rect::get_client_rect(*this);
-          oCtx.fill(oRect, background_brush());
+          DC().fill(oRect, background_brush());
           bhandled = true;
           return 1;
 
@@ -200,7 +191,7 @@ namespace wtf{
 
     virtual ~has_border() = default;
 
-    has_border() : _SuperT(), _border_style(border_styles::raised),
+    has_border() : _SuperT(), _border_style(border_styles::none),
       _border_highlight(pen::create(pen::style::solid, 1, system_colors::button_highlight)),
       _border_shadow(pen::create(pen::style::solid, 1, system_colors::button_shadow)){}
 

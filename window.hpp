@@ -66,7 +66,7 @@ namespace wtf{
 
     virtual ~base_window(){ ::DestroyWindow(_handle); }
 
-    base_window() : _handle(nullptr), _dc((HDC)nullptr){}
+    base_window() : _handle(nullptr), _dc(){}
 
 
 
@@ -87,7 +87,7 @@ namespace wtf{
       _handle = wtf::exception::throw_lasterr_if(
         ::CreateWindowEx(_ImplT::ExStyle, window_class_ex::get().name(), nullptr, _ImplT::Style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, reinterpret_cast<HINSTANCE>(&__ImageBase), this),
         [](HWND h){ return nullptr == h; });
-      std::swap(_dc, wtf::device_context(_handle));
+      _dc = wtf::device_context::get_client(_handle);
     }
 
   private:
@@ -118,10 +118,12 @@ namespace wtf{
           case WM_CREATE:
           {
             auto pCreate = reinterpret_cast<CREATESTRUCT*>(lparam);
+            
             assert(pCreate);
             pThis = reinterpret_cast<typename _ImplT::window_type*>(pCreate->lpCreateParams);
-            pThis->_handle = hwnd;
             assert(pThis);
+            pThis->_handle = hwnd;
+            pThis->_dc = device_context::get_client(hwnd);
             SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
             break;
           }
@@ -193,10 +195,5 @@ namespace wtf{
 
   };
   
-  namespace _{
-
-
-
-  }
 
 }

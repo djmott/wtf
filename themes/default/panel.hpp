@@ -3,14 +3,12 @@
 namespace wtf{
   namespace default_theme{
 
-    struct panel : wtf::window<panel, has_size, has_border, has_background>{
+    struct panel : wtf::window<panel, has_size, has_border>{
 
-      virtual const brush& background_brush() const{ return _bkg; }
 
-      panel(HWND parent) : window(parent), _bkg(brush::system_brush(system_colors::hot_light)){}
+      panel(HWND parent) : window(parent){}
 
     protected:
-      brush _bkg;
     };
 
   }
