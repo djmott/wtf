@@ -1,9 +1,9 @@
 ### Introduction
-The Windows Template Framework (WTF) is a header-only GUI library for Windows written in C++11. It's designed to be easy to use and quick to setup a GUI application. The architecture is highly modular with maximum code reuse by leveraging modern template meta-programming techniques.
+The Windows Template Framework (WTF) is a lightning fast, light-weight, header-only GUI library for Windows written in C++11. It's designed to be easy to use and quick to setup for a quick-and-dirty Windows GUI application. The architecture is highly modular with maximum code reuse by leveraging modern template meta-programming techniques.
 
-I hate duplicating code as every software engineer should. Maximum reuse is one of the motivating factors behind this library. There are many GUI toolkits around and they all seem to share the same trait of having far more code than is necessary. GUI toolkits present an interesting challenge because the various components and widgets have a mix-and-match composition of behaviors.  For example, a button contains a label that needs to produce click events while a drop-down box has several labels, produces click events and needs to editable, while a text box is editable but produces no click events. The various GUI components share a hodge-podge of behaviors and a variety of programming techniques have been employed in the various toolkits to minimize the maintenance effort but most fall short IMO.
+I hate duplicating code as every software engineer should. Maximum reuse is one of the motivating factors behind this library. There are many GUI toolkits around and they all seem to share the trait of code bloat. GUI toolkits present an interesting challenge because the various components and widgets have a mix-and-match composition of behaviors.  For example, a button contains a label that needs to produce click events while a drop-down box has several labels, produces click events and needs to editable, while a text box is editable but produces no click events. The various GUI components share a hodge-podge of behaviors and a variety of programming techniques have been employed in toolkits to minimize the maintenance effort but most fall short IMO.
 
-WTL for example should be more properly named Windows Macro Library than a template library but does a fairly good job at reducing duplication.  wxWidgets has lots of duplicate code but their goal is a cross platform toolkit.  It's clumsy and difficult to learn.  Qt has a nice programmer's interface but dont peek behind the sheets if you want to keep your lunch down. WinForms is easy to code but requires a terrabyte of framework libraries, CLI interop to do anything native and its slow as hell. GTK is for linux. The proper response to the current state of GUI toolkits is WTF!
+WTL for example should be more properly named Windows Macro Library than a template library but does a fairly good job at reducing duplication.  wxWidgets has lots of duplicate code but their goal is a cross platform toolkit.  It's clumsy and difficult to learn.  Qt has a nice programmer's interface but dont peek behind the sheets if you want to keep your lunch down. WinForms is easy to code but requires a terrabyte of framework libraries, CLI interop to do anything native and its slow as hell. GTK is for linux. The proper response to the current state of GUI toolkits is WTF! So here it is, WTF has arrived.  
 
 
 ### Getting Started
@@ -33,7 +33,7 @@ struct MyForm : theme::form{
   MyForm() : oButton(*this){
     oButton.move(10, 10, 150, 25);
     oButton.text(L"Hello World");
-    oButton.OnClickEvent = [](){ std::cout << "Button clicked"; };
+    oButton.ClickEvent = [](){ std::cout << "Button clicked"; };
   }
 
   theme::button oButton;
@@ -88,7 +88,22 @@ The window class template composes these behaviors in __linerarly__ to form some
 struct NewWidget : window<NewWidget, has_close<window<has_show<window<has_move<window<>>>>>>>...
 ~~~
 
-As the behavior count increases it can be to follow the construction when created manually so the `window` template takes care of constructing the hierarchy while keeping the declaration succinct and clear.
+As the behavior policies increase it would be difficult to debug and maintained with the traditional inheritance syntax so the `window` template takes care of constructing the hierarchy while keeping the declaration succinct and clear.
 
 The `window` template collects all the policies into a linear class hierarchy with the top-most super class being a `window<>` specialization that holds the HWND.
 
+There are a number of places where ease of code and architecture were chosen over performance but they're not of much concern.  I normally frown on virtual method calls particularly in process intensive paths but this is a GUI toolkit afterall and it's not intended render 120fps. Despite the inefficiencies it will probably skill smoke wxWidgets. I'm certain it will make a mockery of Qt in the performance and footprint department.  WinForms will be several light-years behind.
+
+### Painting
+WTF widgets are owner drawn. To improve performance a single device context is created when window receives a WM_PAINT or WM_ERASEBKGND message is received and it's reused by the policy templates. This is the traditional approach but the modular architecture of WTF present a few challenges here and there. In keeping with a uniform design goal the WM_PAINT and WM_ERASEBKGND message parameters are slightly modified:
+
+|  message  |  parameter  |  description  |
+|-----------|-------------|---------------|
+| WM_PAINT | wparam | `device_context*`|
+| WM_PAINT | lparam | `paint_struct*` |
+| WM_ERASEBKGND | wparam |`device_context*`|
+
+Casting to and from raw pointers makes my skin crawl but it's legacy C anyway so there's little chance of avoiding it entirely. The native WM_PAINT message doesn't use either wparam or lparam so the liberty was taken to repurpose them. The native WM_ERASEBKGND passes the native device context in the wparam so it's been replaced with the convenience wrapper.
+
+### Thread Safety
+There is none. Native Windows GDI APIs aren't supposed to be run from multiple threads for the most part. In most cases, the thread that creates a GUI window must be the thread to control it and close it. Running background threads is fine but the main thread that creates the window should control the window for it's lifetime.  Bring your own synchronization.

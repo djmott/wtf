@@ -13,7 +13,7 @@ namespace wtf{
 
 
     template <template <typename> typename _DeclT, template <typename> typename _HeadT, template <typename> typename ... _TailT>
-    struct has_policy<_DeclT, _HeadT, _TailT...>{ static const bool value = has_policy<_PolicyT, _TailT...>::value; };
+    struct has_policy<_DeclT, _HeadT, _TailT...>{ static const bool value = has_policy<_DeclT, _TailT...>::value; };
 
   }
 
@@ -27,6 +27,8 @@ namespace wtf{
     using _base_window_t = base_window<_ImplT, _PolicyListT...>;
 
     window(HWND hParent, bool bCreate=true) : _base_window_t(){ 
+      //its neccessary for all the constructors in the inheritance chain to initialize before creating the window
+      //otherwise the vtbl wont point to intended overloads
       if (bCreate) window::create(hParent);
     }
 
@@ -62,24 +64,18 @@ namespace wtf{
   template <typename _ImplT> struct base_window<_ImplT> {
 
     static const DWORD ExStyle = 0;
-    static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+    static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
     virtual ~base_window(){ ::DestroyWindow(_handle); }
 
-    base_window() : _handle(nullptr), _dc(){}
+    base_window() : _handle(nullptr){}
 
 
+    base_window(const base_window&) = delete;
+    base_window& operator=(const base_window&) = delete;
 
     HWND operator*() const{ return _handle; }
     operator HWND() const{ return _handle; }
-
-    wtf::device_context& DC(){ return _dc; }
-    const wtf::device_context& DC() const { return _dc; }
-
-    operator const wtf::device_context&() const{ return _dc; }
-    operator wtf::device_context&() { return _dc; }
-
-    operator HDC() const{ return _dc; }
 
   protected:
 
@@ -87,7 +83,6 @@ namespace wtf{
       _handle = wtf::exception::throw_lasterr_if(
         ::CreateWindowEx(_ImplT::ExStyle, window_class_ex::get().name(), nullptr, _ImplT::Style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, reinterpret_cast<HINSTANCE>(&__ImageBase), this),
         [](HWND h){ return nullptr == h; });
-      _dc = wtf::device_context::get_client(_handle);
     }
 
   private:
@@ -123,7 +118,6 @@ namespace wtf{
             pThis = reinterpret_cast<typename _ImplT::window_type*>(pCreate->lpCreateParams);
             assert(pThis);
             pThis->_handle = hwnd;
-            pThis->_dc = device_context::get_client(hwnd);
             SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
             break;
           }
@@ -135,15 +129,21 @@ namespace wtf{
         }
 
         if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
+        if (WM_ERASEBKGND == umsg){
 
-        if (WM_PAINT==umsg){
+          auto oDC = wtf::device_context::get_client(hwnd);
+
+          handler_ret = pThis->propogate_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oDC), handled);
+
+        }else if (WM_PAINT==umsg){
           RECT r;
           if (0 == GetUpdateRect(hwnd, &r, FALSE)){
             return DefWindowProc(hwnd, umsg, wparam, lparam);
           }
           paint_struct oPaint(*pThis);
-          
-          handler_ret = pThis->propogate_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oPaint), handled);
+          auto oDC = wtf::device_context::get_client(hwnd);
+
+          handler_ret = pThis->propogate_message(hwnd, umsg, reinterpret_cast<WPARAM>(&oDC), reinterpret_cast<LPARAM>(&oPaint), handled);
 
         } else{
 
@@ -154,7 +154,15 @@ namespace wtf{
         return DefWindowProc(hwnd, umsg, wparam, lparam);
       }
       catch (const wtf::exception& ex){
-        std::cerr << "A wtf exception occurred: " << ex.what() << std::endl;
+        tstring sMsg = _T("");
+        std::string swhat(ex.what());
+        std::string scode(ex.code());
+        std::copy(swhat.begin(), swhat.end(), std::back_inserter(sMsg));
+        sMsg += _T("\n");
+        std::copy(scode.begin(), scode.end(), std::back_inserter(sMsg));
+        auto iRet = message_box::exec(hwnd, sMsg.c_str(), _T("An exception occurred."), message_box::buttons::cancel_retry_continue, message_box::icons::stop);
+        if (message_box::response::cancel == iRet) abort();
+        if (message_box::response::retry == iRet) return -1;
         throw;
       }
     }
@@ -191,7 +199,6 @@ namespace wtf{
 
 
     HWND _handle;
-    wtf::device_context _dc;
 
   };
   

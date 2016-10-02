@@ -11,6 +11,7 @@ namespace wtf{
       y = src.y;
       return *this;
     }
+    bool is_in(const RECT& r) const { return PtInRect(&r, point(*this)) ? true : false; }
   };
 
 }
