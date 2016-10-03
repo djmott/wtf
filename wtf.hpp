@@ -25,9 +25,19 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 namespace wtf{
   using tstring = std::basic_string<TCHAR>;
   template <typename, template <typename> typename ...> struct window;
-  template <typename, template <typename> typename ...> struct base_window;
+
+
+  template <template <typename> typename ...> struct policy_list;
+
+  template <template <typename> typename _HeadT, template <typename> typename ..._TailT> 
+  struct policy_list<_HeadT, _TailT...> : policy_list<_TailT...>{};
+
+  template <> struct policy_list<>{};
+
 }
 
+#include "msg_names.hpp"
+#include "weak_enum_class.hpp"
 #include "exception.hpp"
 #include "message_box.hpp"
 #include "callback.hpp"
@@ -36,7 +46,7 @@ namespace wtf{
 #include "color.hpp"
 #include "rect.hpp"
 #include "size.hpp"
-#include "paint_struct.h"
+#include "paint_struct.hpp"
 #include "message.hpp"
 #include "icon.hpp"
 #include "cursor.hpp"
@@ -56,3 +66,4 @@ namespace wtf{
 #include "themes/default/panel.hpp"
 #include "themes/default/listbox.hpp"
 #include "themes/default/textbox.hpp"
+#include "themes/default/tab_container.hpp"

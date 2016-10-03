@@ -39,8 +39,14 @@ namespace wtf{
     uint8_t red() const{ return static_cast<uint8_t>(_colorref & 0xff); }
     uint8_t green() const{ return static_cast<uint8_t>((_colorref & 0xff00) >> 8); }
     uint8_t blue() const{ return static_cast<uint8_t>((_colorref & 0xff0000) >> 16); }
+    rgb(uint8_t r, uint8_t g, uint8_t b) : _colorref(RGB(r,g,b)){}
+    explicit rgb(COLORREF newval) : _colorref(newval){}
+    rgb(const rgb& src) : _colorref(src._colorref){}
+    rgb& operator=(const rgb& src){
+      _colorref = src._colorref;
+      return *this;
+    }
   protected:
-    rgb(COLORREF newval) : _colorref(newval){}
     COLORREF _colorref;
   };
 

@@ -1,7 +1,7 @@
 #pragma once
 namespace wtf{
   namespace default_theme{
-    struct listbox : wtf::window<listbox, has_background, has_border, has_click, has_paint, has_size, has_timer, has_mouse_events>{
+    struct listbox : wtf::window<listbox, has_border, has_click, has_paint, has_size, has_timer, has_mouse_events>{
       static const int scroll_width = 15;
       static const int left_margin = 2;
       static const int right_margin = 2;
@@ -44,9 +44,9 @@ namespace wtf{
             _ItemRects.push_back(rect(left_margin, i, listWidth, std::min(i + oTextSize.cy, oClientArea.bottom - bottom_margin)));
           }
 
-          for (int i = 0; i < _ItemRects.size() && (_TopIndex + i) < _Items.size(); ++i){
+          for (size_t i = 0; i < _ItemRects.size() && (_TopIndex + i) < _Items.size(); ++i){
             oDC.background_mix_mode(device_context::background_mix_modes::opaque);
-            for (int x = 0; x < _SelectedItems.size(); x++){
+            for (size_t x = 0; x < _SelectedItems.size(); x++){
               if (_SelectedItems[x] == (_TopIndex + i)){
                 oDC.fill(_ItemRects[i], brush::system_brush(system_colors::highlight));
                 oDC.background_mix_mode(device_context::background_mix_modes::transparent);
@@ -69,9 +69,9 @@ namespace wtf{
           if (selection_modes::single == _selection_mode){
             _SelectedItems.clear();
           }
-          for (int i = 0; i < _ItemRects.size() && (_TopIndex + i) < _Items.size(); ++i){
+          for (size_t i = 0; i < _ItemRects.size() && (_TopIndex + i) < _Items.size(); ++i){
             if (!_ItemRects[i].is_in(p)) continue;
-            _SelectedItems.push_back(_TopIndex + i);
+            _SelectedItems.push_back(_TopIndex + static_cast<int>(i));
           }
           refresh(true);
         });

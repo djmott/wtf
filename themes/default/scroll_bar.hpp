@@ -2,7 +2,7 @@
 namespace wtf{
   namespace default_theme{
 
-    struct scroll_bar : window<scroll_bar, has_border, has_size, has_background>{
+    struct scroll_bar : window<scroll_bar, has_border, has_size, has_paint>{
       
 
       enum class orientations{
