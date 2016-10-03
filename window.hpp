@@ -5,6 +5,8 @@ namespace wtf{
   //everything in the hidden _ namespace is for internal use by the library
   namespace _{
 
+    template <template <typename> typename> struct policy_traits;
+
     template <typename, template <typename> typename ...> struct base_window;
 
     // is_same_policy meta-function returns true if two policies are the same type
@@ -143,6 +145,7 @@ namespace wtf{
     struct base_window<_ImplT, _HeadT, _TailT...> : _HeadT<base_window<_ImplT, _TailT...>>{
       using _super_t = _HeadT<base_window<_ImplT, _TailT...>>;
       using window_type = base_window<_ImplT, _HeadT, _TailT...>;
+
       using requirements = policy_list<>;
 
 
@@ -152,15 +155,16 @@ namespace wtf{
       template <template <typename> typename _PolicyT> bool has_policy() const{ return _::has_policy<_PolicyT, _HeadT, _TailT...>::value; }
 
       template <template <typename> typename _PolicyT>
-      typename _::concrete_impl<_PolicyT, _ImplT, _HeadT, _TailT...>::type& get_policy(){
-        using return_type = typename _::concrete_impl<_PolicyT, _ImplT, _HeadT, _TailT...>::type;
-        return *static_cast<return_type*>(this);
+      using concrete_policy_type = typename _::concrete_impl<_PolicyT, _ImplT, _HeadT, _TailT...>::type;
+      
+      template <template <typename> typename _PolicyT>
+      concrete_policy_type<_PolicyT>& get_policy() {
+          return *static_cast<concrete_policy_type<_PolicyT>*>(this);
       }
 
       template <template <typename> typename _PolicyT>
-      const typename _::concrete_impl<_PolicyT, _ImplT, _HeadT, _TailT...>::type& get_policy() const{
-        using return_type = typename _::concrete_impl<_PolicyT, _ImplT, _HeadT, _TailT...>::type;
-        return *static_cast<const return_type*>(this);
+      const concrete_policy_type<_PolicyT>& get_policy() const {
+        return *static_cast<const concrete_policy_type<_PolicyT>*>(this);
       }
 
     private:

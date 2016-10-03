@@ -14,6 +14,8 @@ struct MyForm : form{
   }
   tab_container oTabs;
 };
+*/
+
 struct MyForm : form{
   MyForm() : oButton(*this){
     oButton.move(10, 10, 100, 25);
@@ -35,10 +37,8 @@ struct MyForm : form{
 
   button oButton;
 };
-*/
 
 /*
-*/
 
 struct MyForm : form{
   MyForm() : oText(*this){
@@ -48,6 +48,7 @@ struct MyForm : form{
 
   textbox oText;
 };
+*/
 
 int main(){
   try{

@@ -473,40 +473,59 @@ namespace wtf{
     tstring _titlebar;
   };
 
+  template <typename _SuperT> struct has_font : _SuperT{
+
+    using requirements = policy_list<>;
+
+
+    has_font() : _SuperT(),
+      _font(wtf::non_client_metrics::get().lfMessageFont),
+      _fore_color(system_rgb<system_colors::window_text>()),
+      _back_color(system_rgb<system_colors::window>()),
+      _background_mix_mode(background_mix_modes::transparent)
+      {}
+
+
+    using background_mix_modes = device_context::background_mix_modes;
+
+    virtual background_mix_modes background_mix_mode() const{ return _background_mix_mode; }
+    void background_mix_mode(background_mix_modes newval){ _background_mix_mode = newval; }
+
+    virtual const wtf::font& font() const{ return _font; }
+    virtual wtf::font& font(){ return _font; }
+
+    void font(wtf::font& newval){ _font = newval; }
+
+    virtual rgb fore_color() const{ return _fore_color; }
+    void fore_color(rgb newval){ _fore_color = newval; }
+
+    virtual rgb back_color() const{ return _back_color; }
+    void back_color(rgb newval){ _back_color = newval; }
+
+  protected:
+    wtf::font _font;
+    rgb _fore_color;
+    rgb _back_color;
+    background_mix_modes _background_mix_mode;
+
+
+
+  };
+
   /** has_text
    * provides members to draw text on UI elements
    */
   template <typename _SuperT> struct has_text : _SuperT{
 
+    using requirements = policy_list<has_font>;
     
     has_text() : _SuperT(),
-      _font(wtf::non_client_metrics::get().lfMessageFont), 
       _text(_T("")),
-      _fore_color(system_rgb<system_colors::window_text>()),
-      _back_color(system_rgb<system_colors::window>()),
       _vertical_alignment(alignment::Center),
       _horizontal_alignment(alignment::Center),
-      _background_mode(background_modes::transparent),
       _multiline(false)
     {}
 
-    enum class background_modes{
-      opaque,
-      transparent,
-    };
-
-    background_modes background_mode() const{ return _background_mode; }
-    void background_mode(background_modes newval){ _background_mode = newval; }
-
-    virtual const wtf::font& font() const{ return _font; }
-    virtual wtf::font& font() { return _font; }
-    void font(wtf::font& newval) { _font = newval; }
-
-    rgb fore_color() const{ return _fore_color; }
-    void fore_color(rgb newval) { _fore_color = newval; }
-
-    rgb back_color() const{ return _back_color; }
-    void back_color(rgb newval){ _back_color = newval; }
 
     alignment vertial_alignment() const { return _vertical_alignment; }
     void vertial_alignment(alignment newval) { _vertical_alignment = newval; }
@@ -522,14 +541,14 @@ namespace wtf{
     void text(const tstring& newval){ _text = newval; }
 
   protected:
-
     virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled) override{
       using text_align_modes = device_context::text_align_modes;
       using draw_text_flags = device_context::draw_text_flags;
       if (WM_PAINT == umsg){
+        auto & oFont = _SuperT::template get_policy<has_font>();
         auto pPaint = reinterpret_cast<paint_struct*>(lparam);
         auto & oDC = *reinterpret_cast<const device_context*>(wparam);
-        auto oHandle = _font.open();
+        auto oHandle = oFont.font().open();
         oDC.select_object(oHandle);
         oDC.move_to(0, 0);
         //weak_enum_class<draw_text_flags> Flags(draw_text_flags::word_ellipsis);
@@ -547,13 +566,13 @@ namespace wtf{
         }
         if (!_multiline) Flags |= draw_text_flags::single_line;
         oDC.text_align(weak_enum_class<text_align_modes>::set_flags(text_align_modes::left, text_align_modes::top, text_align_modes::no_update_cp));
-        if (background_modes::opaque == _background_mode){
+	      if (_SuperT::background_mix_modes::opaque == oFont.background_mix_mode()) {
           oDC.background_mix_mode( device_context::background_mix_modes::opaque );
         }else{
           oDC.background_mix_mode( device_context::background_mix_modes::transparent );
         }
-        oDC.text_color(_fore_color);
-        oDC.background_color(_back_color);
+        oDC.text_color(oFont.fore_color());
+        oDC.background_color(oFont.back_color());
         auto oClient = rect::get_client_rect(*this);
         oDC.draw_text(_text, oClient, Flags);
 
@@ -561,13 +580,9 @@ namespace wtf{
       return 0;
     }
 
-    wtf::font _font;
     tstring _text;
-    rgb _fore_color;
-    rgb _back_color;
     alignment _vertical_alignment;
     alignment _horizontal_alignment;
-    background_modes _background_mode;
     bool _multiline;
   };
 
