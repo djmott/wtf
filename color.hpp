@@ -1,6 +1,5 @@
 #pragma once
 namespace wtf{
-
   enum class system_colors{
     scrollbar = COLOR_SCROLLBAR,
     background = COLOR_BACKGROUND,
@@ -56,5 +55,4 @@ namespace wtf{
   struct dynamic_rgb : rgb{
     dynamic_rgb(uint8_t _r, uint8_t _g, uint8_t _b) : rgb(RGB(_r, _g, _b)){}
   };
-
 }

@@ -1,9 +1,7 @@
 #pragma once
 
 namespace wtf{
-
   struct pen : std::unique_ptr<HPEN__, void(*)(HPEN)>{
-
     enum class style{
       solid = PS_SOLID,
       dash = PS_DASH,
@@ -33,8 +31,5 @@ namespace wtf{
   protected:
     template <typename ... _ArgTs>
     pen(_ArgTs...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...){}
-    
   };
-
-
 }

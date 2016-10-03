@@ -1,26 +1,25 @@
 #pragma once
 
 namespace wtf{
-
-  struct icon : std::unique_ptr<HICON__, void (*)(HICON)>{
+  struct icon : std::unique_ptr<HICON__, void(*)(HICON)>{
     enum class style{
-      application = (LONG_PTR)IDI_APPLICATION,
-      asterisk = (LONG_PTR)IDI_ASTERISK,
-      exclamation = (LONG_PTR)IDI_EXCLAMATION,
-      hand = (LONG_PTR)IDI_HAND,
-      question = (LONG_PTR)IDI_QUESTION,
-      winlogo = (LONG_PTR)IDI_WINLOGO,
-      shield = (LONG_PTR)IDI_SHIELD,
+      application = 32512,
+      asterisk = 32516,
+      exclamation = 32515,
+      hand = 32513,
+      question = 32514,
+      winlogo = 32517,
+      shield = 32518,
     };
 
     static icon system(style Style){
-      return icon(wtf::exception::throw_lasterr_if(::LoadIcon(nullptr, reinterpret_cast<LPCTSTR>(Style)), [](HICON h){return !h; }), [](HICON){ });
+      return icon(wtf::exception::throw_lasterr_if(::LoadIcon(nullptr, MAKEINTRESOURCE(Style)), [](HICON h){return !h; }), [](HICON){});
     }
 
     icon(icon&& src) : unique_ptr(std::move(src)){}
 
     icon& operator=(icon&& src){
-      unique_ptr::swap(std::move(src));
+      unique_ptr::swap(src);
       return *this;
     }
 
@@ -28,8 +27,5 @@ namespace wtf{
 
   protected:
     template <typename ... _ArgTs> icon(_ArgTs&&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...){}
-
   };
-
-
 }

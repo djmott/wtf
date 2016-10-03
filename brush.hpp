@@ -1,9 +1,6 @@
 #pragma once
 namespace wtf{
-
-
   struct brush : std::unique_ptr<HBRUSH__, void(*)(HBRUSH)>{
-
     enum class hatch_style{
       b_diagonal = HS_BDIAGONAL,
       cross = HS_CROSS,
@@ -13,7 +10,15 @@ namespace wtf{
       vertical = HS_VERTICAL,
     };
 
+    brush(const brush&) = delete;
+    brush& operator=(const brush&) = delete;
+
     brush(brush&& src) : unique_ptr(std::move(src)){}
+
+    brush& operator=(brush&& src){
+      unique_ptr::swap(src);
+      return *this;
+    }
 
     static brush system_brush(system_colors color){
       return brush(wtf::exception::throw_lasterr_if(GetSysColorBrush(static_cast<int>(color)), [](HBRUSH b){ return !b; }), [](HBRUSH h){});
@@ -31,8 +36,5 @@ namespace wtf{
   protected:
     template <typename ... _ArgTs>
     explicit brush(_ArgTs&&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...){}
-
   };
-
-
 }

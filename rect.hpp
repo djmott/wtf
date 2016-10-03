@@ -2,7 +2,6 @@
 
 namespace wtf{
   struct rect : RECT{
-
     rect() = default;
 
     rect(const RECT& src){ memcpy(this, &src, sizeof(RECT)); }
@@ -27,6 +26,5 @@ namespace wtf{
     }
 
     bool is_in(const point& p) const{ return PtInRect(this, p) ? true : false; }
-
   };
 }

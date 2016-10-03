@@ -1,51 +1,49 @@
 #pragma once
 
 namespace wtf{
-
   struct cursor : std::unique_ptr<HICON__, void(*)(HICON)>{
-
     enum class style{
-     arrow = (LONG_PTR)IDC_ARROW,
-     ibeam = (LONG_PTR)IDC_IBEAM,
-     wait = (LONG_PTR)IDC_WAIT,
-     cross = (LONG_PTR)IDC_CROSS,
-     up_arrow = (LONG_PTR)IDC_UPARROW,
-     size_nwse = (LONG_PTR)IDC_SIZENWSE,
-     size_nesw = (LONG_PTR)IDC_SIZENESW,
-     size_we = (LONG_PTR)IDC_SIZEWE,
-     size_ns = (LONG_PTR)IDC_SIZENS,
-     size_all = (LONG_PTR)IDC_SIZEALL,
-     no = (LONG_PTR)IDC_NO,
-     hand = (LONG_PTR)IDC_HAND,
-     app_starting = (LONG_PTR)IDC_APPSTARTING,
-     help = (LONG_PTR)IDC_HELP,
+      arrow = 32512,
+      ibeam = 32513,
+      wait = 32514,
+      cross = 32515,
+      up_arrow = 32516,
+      size_nwse = 32642,
+      size_nesw = 32643,
+      size_we = 32644,
+      size_ns = 32645,
+      size_all = 32646,
+      no = 32648,
+      hand = 32649,
+      app_starting = 32650,
+      help = 32651,
     };
 
     operator HCURSOR() const{ return get(); }
 
     static cursor system(style Style){
-      return cursor(wtf::exception::throw_lasterr_if(::LoadCursor(nullptr, reinterpret_cast<LPCTSTR>(Style)), [](HCURSOR h){return !h; }), [](HCURSOR){});
+      return cursor(wtf::exception::throw_lasterr_if(::LoadCursor(nullptr, MAKEINTRESOURCE(Style)), [](HCURSOR h){return !h; }), [](HCURSOR){});
     }
 
     cursor(cursor&& src) : unique_ptr(std::move(src)){}
 
     cursor& operator=(cursor&& src){
-      unique_ptr::swap(std::move(src));
+      unique_ptr::swap(src);
       return *this;
     }
 
-    static int show() { return ::ShowCursor(TRUE); }
-    static int hide() { return ::ShowCursor(FALSE); }
+    static int show(){ return ::ShowCursor(TRUE); }
+    static int hide(){ return ::ShowCursor(FALSE); }
 
-    static void position(int x, int y) { wtf::exception::throw_lasterr_if(::SetCursorPos(x, y), [](BOOL b){return !b; }); }
-    static void position(const point& p) { wtf::exception::throw_lasterr_if(::SetCursorPos(p.x, p.y), [](BOOL b){return !b; }); }
-    static point position() {
-      point oRet; 
+    static void position(int x, int y){ wtf::exception::throw_lasterr_if(::SetCursorPos(x, y), [](BOOL b){return !b; }); }
+    static void position(const point& p){ wtf::exception::throw_lasterr_if(::SetCursorPos(p.x, p.y), [](BOOL b){return !b; }); }
+    static point position(){
+      point oRet;
       wtf::exception::throw_lasterr_if(::GetCursorPos(&oRet), [](BOOL b){return !b; });
       return oRet;
     }
 
-    static void clip(const rect& area)  { wtf::exception::throw_lasterr_if(::ClipCursor(&area), [](BOOL b){return !b; }); }
+    static void clip(const rect& area){ wtf::exception::throw_lasterr_if(::ClipCursor(&area), [](BOOL b){return !b; }); }
     static void clip(){ wtf::exception::throw_lasterr_if(::ClipCursor(nullptr), [](BOOL b){return !b; }); }
 
     static const cursor& global(style Style){
@@ -84,5 +82,4 @@ namespace wtf{
   protected:
     template <typename ... _ArgTs> cursor(_ArgTs&&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...){}
   };
-
 }

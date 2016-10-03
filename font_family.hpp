@@ -1,6 +1,5 @@
 #pragma once
 
-
 struct font_family{
   using ptr = std::shared_ptr<font_family>;
   using vector = std::vector<font_family>;
@@ -13,6 +12,5 @@ struct font_family{
 private:
   static int CALLBACK EnumFontFamProc(ENUMLOGFONT *lpelf, NEWTEXTMETRIC *lpntm, DWORD FontType, LPARAM lParam){
     auto oVector = reinterpret_cast<vector*>(lParam);
-
   }
 };

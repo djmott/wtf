@@ -1,6 +1,5 @@
 #pragma once
 namespace wtf{
-
   struct point : POINT{
     using vector = std::vector<point>;
     point(){ x = y = 0; }
@@ -11,7 +10,6 @@ namespace wtf{
       y = src.y;
       return *this;
     }
-    bool is_in(const RECT& r) const { return PtInRect(&r, point(*this)) ? true : false; }
+    bool is_in(const RECT& r) const{ return PtInRect(&r, point(*this)) ? true : false; }
   };
-
 }

@@ -18,12 +18,14 @@
 #include <iterator>
 
 //#define __F OutputDebugStringA
-#define __F(...) 
+#define __F(...)
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 namespace wtf{
   using tstring = std::basic_string<TCHAR>;
+  template <typename, template <typename> typename ...> struct window;
+  template <typename, template <typename> typename ...> struct base_window;
 }
 
 #include "exception.hpp"
@@ -53,4 +55,4 @@ namespace wtf{
 #include "themes/default/scroll_bar.hpp"
 #include "themes/default/panel.hpp"
 #include "themes/default/listbox.hpp"
-
+#include "themes/default/textbox.hpp"

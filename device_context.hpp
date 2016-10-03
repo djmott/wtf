@@ -1,21 +1,17 @@
 #pragma once
 
 namespace wtf{
-
-
-
   struct device_context : std::unique_ptr<HDC__, std::function<void(HDC)>>{
-
     using deleter_type = void(*)(HDC);
 
-    ~device_context() {}
+    ~device_context(){}
 
     operator HDC() const{ assert(get()); return get(); }
-    
+
     device_context(device_context&& src) : unique_ptr(std::move(src)){}
 
     device_context& operator=(device_context&& src){
-      unique_ptr::swap(std::move(src));
+      unique_ptr::swap(src);
       return *this;
     }
 
@@ -31,16 +27,16 @@ namespace wtf{
       return device_context(wtf::exception::throw_lasterr_if(::GetDC(nullptr), [](HDC dc){ return !dc; }), [](HDC dc){ ::ReleaseDC(nullptr, dc); });
     }
 
-    void select_object(const brush& oBrush) const {
+    void select_object(const brush& oBrush) const{
       wtf::exception::throw_lasterr_if(::SelectObject(*this, oBrush), [](HGDIOBJ o){ return !o || HGDI_ERROR == o; });
     }
-    void select_object(const font::handle& oFont) const {
+    void select_object(const font::handle& oFont) const{
       wtf::exception::throw_lasterr_if(::SelectObject(*this, oFont), [](HGDIOBJ o){ return !o || HGDI_ERROR == o; });
     }
-    void select_object(const pen& oPen) const {
+    void select_object(const pen& oPen) const{
       wtf::exception::throw_lasterr_if(::SelectObject(*this, oPen), [](HGDIOBJ o){ return !o || HGDI_ERROR == o; });
     }
-    void select_object(const region& oRegion) const {
+    void select_object(const region& oRegion) const{
       wtf::exception::throw_lasterr_if(::SelectObject(*this, oRegion), [](HGDIOBJ o){ return !o || HGDI_ERROR == o; });
     }
 
@@ -50,12 +46,12 @@ namespace wtf{
       wtf::exception::throw_lasterr_if(::LineTo(*this, x2, y2), [](BOOL b){ return !b; });
     }
 
-    void fill(const region& oRegion, const brush& oBrush) const{ 
+    void fill(const region& oRegion, const brush& oBrush) const{
       wtf::exception::throw_lasterr_if(::FillRgn(*this, oRegion, oBrush), [](BOOL b){ return !b; });
     }
 
-    void fill(const rect& oRect, const brush& oBrush) const{ 
-      wtf::exception::throw_lasterr_if(::FillRect(*this, &oRect, oBrush), [](int i){ return !i; }); 
+    void fill(const rect& oRect, const brush& oBrush) const{
+      wtf::exception::throw_lasterr_if(::FillRect(*this, &oRect, oBrush), [](int i){ return !i; });
     }
 
     void fill(const point::vector& oPoints, const pen& oPen, const brush& oBrush) const{
@@ -110,7 +106,6 @@ namespace wtf{
       transparent = TRANSPARENT,
     };
 
-
     background_mix_modes background_mix_mode() const{
       return static_cast<background_mix_modes>(wtf::exception::throw_lasterr_if(::GetBkMode(*this), [](int i){return !i; }));
     }
@@ -119,7 +114,7 @@ namespace wtf{
     }
 
     void invert(const rect& area) const{
-      wtf::exception::throw_lasterr_if(::InvertRect(*this, &area), [](BOOL b){return !b; });    
+      wtf::exception::throw_lasterr_if(::InvertRect(*this, &area), [](BOOL b){return !b; });
     }
 
     void draw_focus_rect(const rect& area) const{
@@ -128,17 +123,19 @@ namespace wtf{
 
     enum class border_edges{
       none = 0,
+      thin_raised = BDR_RAISEDOUTER,
+      thin_sunken = BDR_SUNKENOUTER,
       bumbed = EDGE_BUMP,
       etched = EDGE_ETCHED,
       raised = EDGE_RAISED,
       sunken = EDGE_SUNKEN,
     };
 
-    enum class border_flags{
-      left = BF_LEFT,
-      top = BF_TOP,
-      right = BF_RIGHT,
-      bottom = BF_BOTTOM,
+    enum border_flags{
+      left_border = BF_LEFT,
+      top_border = BF_TOP,
+      right_border = BF_RIGHT,
+      bottom_border = BF_BOTTOM,
       top_left = BF_TOPLEFT,
       top_right = BF_TOPRIGHT,
       bottom_left = BF_BOTTOMLEFT,
@@ -151,7 +148,7 @@ namespace wtf{
       diagonal_end_bottom_right = BF_DIAGONAL_ENDBOTTOMRIGHT,
       middle = BF_MIDDLE,
       soft = BF_SOFT,
-      adjst = BF_ADJUST,
+      adjust = BF_ADJUST,
       flat = BF_FLAT,
       mono = BF_MONO,
     };
@@ -163,7 +160,5 @@ namespace wtf{
 
   protected:
     template <typename ... _ArgTs> device_context(_ArgTs&&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...){}
-
   };
-
 }

@@ -3,7 +3,6 @@
 namespace wtf{
   struct menu{};
 
-
   namespace menus{
     struct null_menu{
       HMENU native_handle() const{ return nullptr; }
@@ -11,5 +10,4 @@ namespace wtf{
       operator HMENU() const{ return nullptr; }
     };
   }
-
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 namespace wtf{
-
   template <typename _FnSig> class callback;
 
   template <typename _ReturnT, typename ... _Args> class callback < _ReturnT(_Args...) >{
@@ -16,13 +15,13 @@ namespace wtf{
     template <typename _MethodT, _MethodT * _method> class method_invoker : public invoker{
     public:
       ~method_invoker() override = default;
-      virtual _ReturnT invoke(_Args...oArgs) const override { return (*_method)(std::forward<_Args>(oArgs)...); }
+      virtual _ReturnT invoke(_Args...oArgs) const override{ return (*_method)(std::forward<_Args>(oArgs)...); }
     };
 
     template <typename _LambdaT> class lamdba_invoker : public invoker{
     public:
       ~lamdba_invoker() override = default;
-      virtual _ReturnT invoke(_Args...oArgs) const override { return _Lambda(std::forward<_Args>(oArgs)...); }
+      virtual _ReturnT invoke(_Args...oArgs) const override{ return _Lambda(std::forward<_Args>(oArgs)...); }
       explicit lamdba_invoker(_LambdaT oLambda) : _Lambda(oLambda){} //NOSONAR
       lamdba_invoker(lamdba_invoker&& src) : _Lambda(std::move(src._Lambda)){} //NOSONAR
       lamdba_invoker(const lamdba_invoker& src) : _Lambda(src._Lambda){} //NOSONAR
@@ -44,14 +43,14 @@ namespace wtf{
       member_invoker(member_invoker&& oSrc) : _dest(oSrc._dest){}  //NOSONAR
       member_invoker(const member_invoker& oSrc) : _dest(oSrc._dest){}  //NOSONAR
       explicit member_invoker(_DestT* dest) : _dest(dest){} //NOSONAR
-      virtual _ReturnT invoke(_Args...oArgs) const override { return (_dest->*_member)(oArgs...); }
+      virtual _ReturnT invoke(_Args...oArgs) const override{ return (_dest->*_member)(oArgs...); }
       _DestT * _dest;
     };
 
     typename invoker::vector _Invokers;
 
   public:
-    /// behavior of invocation when multiple receivers are attached 
+    /// behavior of invocation when multiple receivers are attached
     enum result_policy{
       return_first, ///< return the result of the first attached target
       return_last ///< return the result of the last attached target
@@ -90,7 +89,7 @@ namespace wtf{
     template <typename _ClassT, _ReturnT(_ClassT::*_MemberT)(_Args...)>
     void connect(_ClassT *pClass){ _Invokers.emplace_back(new member_invoker<_ClassT, _MemberT>(pClass)); }
 
-    /// connect a lambda 
+    /// connect a lambda
     template <typename method>
     void connect(method oMethod){ _Invokers.emplace_back(new lamdba_invoker< method >(oMethod)); }
 
@@ -98,16 +97,13 @@ namespace wtf{
     template <_ReturnT(*method)(_Args...)>
     void connect(){ _Invokers.emplace_back(new method_invoker<_ReturnT(_Args...), method>()); }
 
-    /// connect a static method or lambda 
+    /// connect a static method or lambda
 
     template <typename _Ty>
     callback& operator += (_Ty&& addend){ connect(std::forward<_Ty>(addend)); return *this; }
-
   };
 
- 
   template <typename ... _Args> class callback < void(_Args...) >{
-
     using _ReturnT = void;
 
     class invoker{
@@ -121,13 +117,13 @@ namespace wtf{
     template <typename _MethodT, _MethodT * _method> class method_invoker : public invoker{
     public:
       ~method_invoker() override = default;
-      virtual _ReturnT invoke(_Args...oArgs) const override { (*_method)(std::forward<_Args>(oArgs)...); }
+      virtual _ReturnT invoke(_Args...oArgs) const override{ (*_method)(std::forward<_Args>(oArgs)...); }
     };
 
     template <typename _LambdaT> class lamdba_invoker : public invoker{
     public:
       ~lamdba_invoker() override = default;
-      virtual _ReturnT invoke(_Args...oArgs) const override { _Lambda(std::forward<_Args>(oArgs)...); }
+      virtual _ReturnT invoke(_Args...oArgs) const override{ _Lambda(std::forward<_Args>(oArgs)...); }
       explicit lamdba_invoker(_LambdaT oLambda) : _Lambda(oLambda){}
       lamdba_invoker(lamdba_invoker&& src) : _Lambda(std::move(src._Lambda)){}
       lamdba_invoker(const lamdba_invoker& src) : _Lambda(src._Lambda){}
@@ -149,7 +145,7 @@ namespace wtf{
       member_invoker(member_invoker&& oSrc) : _dest(oSrc._dest){}
       member_invoker(const member_invoker& oSrc) : _dest(oSrc._dest){}
       explicit member_invoker(_DestT* dest) : _dest(dest){}
-      virtual _ReturnT invoke(_Args...oArgs)const override { (_dest->*_member)(oArgs...); }
+      virtual _ReturnT invoke(_Args...oArgs)const override{ (_dest->*_member)(oArgs...); }
       _DestT * _dest;
     };
 
@@ -161,7 +157,6 @@ namespace wtf{
     callback(const callback&) = delete;
     callback(callback&& src) : _Invokers(std::move(src._Invokers)){}
     callback& operator=(const callback&) = delete;
-
 
     void operator()(_Args...oArgs) const{
       for (auto & oInvoker : _Invokers){
@@ -180,8 +175,5 @@ namespace wtf{
 
     template <typename _Ty>
     callback& operator += (_Ty&& addend){ connect(std::forward<_Ty>(addend)); return *this; }
-
-
   };
-
 }

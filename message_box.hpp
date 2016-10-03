@@ -23,7 +23,7 @@ namespace wtf{
       button1 = MB_DEFBUTTON1,
       button2 = MB_DEFBUTTON2,
       button3 = MB_DEFBUTTON3,
-      button4 = MB_DEFBUTTON4,      
+      button4 = MB_DEFBUTTON4,
     };
     enum class modality{
       application = MB_APPLMODAL,
@@ -50,8 +50,7 @@ namespace wtf{
       yes = IDYES,
     };
 
-
-    static response exec(HWND parent, const tstring& message, const tstring& caption = _T(""), 
+    static response exec(HWND parent, const tstring& message, const tstring& caption = _T(""),
                          buttons oButtons = buttons::ok, icons oIcon = icons::none, default_button oDefault = default_button::button1,
                          modality oModal = modality::application){
       auto flags = static_cast<UINT>(oButtons);
@@ -60,6 +59,5 @@ namespace wtf{
       flags |= static_cast<UINT>(oModal);
       return static_cast<response>(wtf::exception::throw_lasterr_if(MessageBoxEx(parent, message.c_str(), caption.c_str(), flags, 0), [](int i){return !i; }));
     }
-
   };
 }
