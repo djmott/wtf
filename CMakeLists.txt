@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 2.6)
+
 project(wtf)
 
-file(GLOB headers *.hpp)
-file(GLOB_RECURSE themes themes/*.hpp)
+file(GLOB_RECURSE HEADERS include/*.hpp)
 
-add_executable(wtf wtf.cpp ${headers} ${themes})
+add_custom_target(wtf SOURCES ${HEADERS})
 
-install(TARGETS wtf RUNTIME DESTINATION bin)
+include_directories(include)
+
+
+add_subdirectory(examples)
+

@@ -1,0 +1,34 @@
+#pragma once
+
+namespace wtf {
+  namespace policy {
+    /** has_timer
+    * Adds timer creation and produces timer events
+    */
+    template<typename _SuperT>
+    struct has_timer : _SuperT {
+      has_timer() : _next_timer_id(1) {}
+
+      callback<void(UINT_PTR)> TimerEvent;
+
+      UINT_PTR set_timer(UINT elapse) {
+        _next_timer_id++;
+        return wtf::exception::throw_lasterr_if(::SetTimer(*this, _next_timer_id, elapse, nullptr),
+                                                [](UINT_PTR x) { return !x; });
+      }
+
+      void kill_timer(UINT_PTR timer_id) {
+        wtf::exception::throw_lasterr_if(::KillTimer(*this, timer_id), [](UINT_PTR x) { return !x; });
+      }
+
+    protected:
+      UINT_PTR _next_timer_id;
+
+      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) override {
+        if (WM_TIMER == umsg) TimerEvent(static_cast<UINT_PTR>(wparam));
+        return 0;
+      }
+    };
+
+  }
+}
