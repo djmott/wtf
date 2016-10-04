@@ -20,6 +20,11 @@ namespace wtf {
                                                                 border_flags::soft, border_flags::flat,
                                                                 border_flags::mono)) {}
 
+      has_border(const has_border&) = delete;
+      has_border(has_border&&) = delete;
+      has_border &operator=(const has_border &) = delete;
+      has_border &operator=(has_border&&) = delete;
+
       border_edges border_edge() const { return _border_edge; }
 
       void border_edge(border_edges newval) { _border_edge = newval; }
@@ -29,10 +34,9 @@ namespace wtf {
       void border_flag(border_flags newval) { _border_flag = newval; }
 
     protected:
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) override {
+      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM, bool &) override {
         if (WM_PAINT == umsg && border_edges::none != _border_edge) {
           auto &oDC = *reinterpret_cast<const device_context *>(wparam);
-          auto &pPS = *reinterpret_cast<const paint_struct *>(lparam);
           oDC.draw_edge(rect::get_client_rect(*this), _border_edge, _border_flag);
         }
         return 0;

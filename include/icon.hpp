@@ -18,6 +18,8 @@ namespace wtf {
           wtf::exception::throw_lasterr_if(::LoadIcon(nullptr, MAKEINTRESOURCE(Style)), [](HICON h) { return !h; }),
           [](HICON) {});
       }
+      icon(const icon&) = delete;
+      icon &operator=(const icon &) = delete;
 
       icon(icon &&src) : unique_ptr(std::move(src)) {}
 

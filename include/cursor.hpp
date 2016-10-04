@@ -35,6 +35,10 @@ namespace wtf {
         return *this;
       }
 
+      cursor(const cursor&) = delete;
+      cursor &operator=(const cursor &) = delete;
+
+
       static int show() { return ::ShowCursor(TRUE); }
 
       static int hide() { return ::ShowCursor(FALSE); }
@@ -101,6 +105,7 @@ namespace wtf {
             return _hand;
           case (style::app_starting):
             return _app_starting;
+          case (style::help):
           default:
             return _help;
         }

@@ -7,6 +7,12 @@ namespace wtf {
     */
     template<typename _SuperT>
     struct has_caret : _SuperT {
+      has_caret() = default;
+      has_caret(const has_caret&) = delete;
+      has_caret(has_caret&&) = delete;
+      has_caret &operator=(const has_caret &) = delete;
+      has_caret &operator=(has_caret&&) = delete;
+
       void create_caret() const {
         wtf::exception::throw_lasterr_if(::CreateCaret(*this, nullptr, 1, 15), [](BOOL b) { return !b; });
       }
@@ -36,7 +42,7 @@ namespace wtf {
       }
 
     protected:
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) override {
+      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) override {
         if (WM_SETFOCUS == umsg) {
           std::cout << "make caret" << std::endl;
           create_caret();

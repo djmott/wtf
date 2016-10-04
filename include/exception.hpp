@@ -15,11 +15,11 @@ namespace wtf{
 
       ~exception() = default;
 
-      //     exception(const char * sfile, int line, const char * code, Gdiplus::Status last_error) : _super_t(""), _file(sfile), _line(line), _code(code), _what(code){}
-
       exception(const char *sfile, int line, const char *code, DWORD last_error) : _super_t(""), _file(sfile),
-        _line(line), _code(code),
-        _what(code){
+        _code(code),
+        _what(code),
+        _line(line)
+      {
         LPSTR sBuff = nullptr;
         if (::FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, last_error, 0,
             reinterpret_cast<LPSTR>(&sBuff), 0, nullptr) && sBuff){
@@ -34,18 +34,18 @@ namespace wtf{
 
       const char *code() const{ return _code.c_str(); }
 
-    #if (__MINGW)
+    #if defined(__MINGW)
       virtual char const* what() const noexcept{ return _what.c_str(); }
-    #elif (_MSC_VER)
+    #elif defined(_MSC_VER)
       virtual char const* what() const{ return _what.c_str(); }
     #endif
 
     private:
 
       std::string _file;
-      int _line;
       std::string _code;
       std::string _what;
+      int _line;
     };
 
 

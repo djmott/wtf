@@ -6,25 +6,23 @@ namespace wtf{
     {
       
 
-      enum class orientations{
-        horizontal,
-        vertical
-      };
+      virtual ~scroll_bar() = default;
+      scroll_bar(const scroll_bar&) = delete;
+      scroll_bar &operator=(const scroll_bar &) = delete;
+      scroll_bar(scroll_bar&&) = delete;
+      scroll_bar &operator=(scroll_bar&&) = delete;
 
-      orientations orientation() const{ return _orientation; }
-      void orientation(orientations newval){ _orientation = newval; }
-
-      scroll_bar(HWND pParent)
+      explicit scroll_bar(HWND pParent)
         : window(pParent, true),
-        _Outline(pen::create(pen::style::solid, 1, system_colors::button_text)), 
-        _Fill(brush::system_brush(system_colors::button_text)), 
         increment_button(*this), 
         decrement_button(*this), 
         slider(*this), 
         _background_brush(brush::system_brush(system_colors::gray_text)), 
+        _Outline(pen::create(pen::style::solid, 1, system_colors::button_text)),
+        _Fill(brush::system_brush(system_colors::button_text)),
         _orientation(orientations::horizontal)
       {
-        increment_button.PaintEvent.connect([this](const device_context& dc, const paint_struct& ps){
+        increment_button.PaintEvent.connect([this](const device_context& dc, const paint_struct& ){
           auto client = rect::get_client_rect(*this);
           point::vector arrow(3);
           if (orientations::horizontal == _orientation){
@@ -38,7 +36,7 @@ namespace wtf{
           }
           dc.fill(arrow, _Outline, _Fill);
         });
-        decrement_button.PaintEvent.connect([this](const device_context& dc, const paint_struct& ps){
+        decrement_button.PaintEvent.connect([this](const device_context& dc, const paint_struct& ){
           auto client = rect::get_client_rect(*this);
           point::vector arrow(3);
           if (orientations::horizontal == _orientation){
@@ -64,6 +62,15 @@ namespace wtf{
         });
           
       }
+
+      enum class orientations{
+        horizontal,
+        vertical
+      };
+
+      orientations orientation() const{ return _orientation; }
+      void orientation(orientations newval){ _orientation = newval; }
+
 
       push_button increment_button;
       push_button decrement_button;

@@ -9,6 +9,10 @@ namespace wtf {
     struct has_paint : _SuperT {
 
       has_paint() : _SuperT(), _background_brush(brush::system_brush(system_colors::button_face)) {}
+      has_paint(const has_paint&) = delete;
+      has_paint &operator=(const has_paint &) = delete;
+      has_paint(has_paint&&) = delete;
+      has_paint &operator=(has_paint &&) = delete;
 
       wtf::callback<void(const device_context &, const paint_struct&)> PaintEvent;
 
@@ -27,7 +31,7 @@ namespace wtf {
       void background_brush(brush &&newval) { _background_brush.swap(newval); }
 
     protected:
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) override {
+      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) override {
         if (WM_PAINT == umsg) {
           PaintEvent(*reinterpret_cast<const device_context *>(wparam),
                      *reinterpret_cast<const paint_struct *>(lparam));

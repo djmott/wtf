@@ -21,6 +21,9 @@ namespace wtf{
       return *this;
     }
 
+    device_context(const device_context&) = delete;
+    device_context &operator=(const device_context &) = delete;
+
     enum class background_mix_modes{
       opaque = OPAQUE,
       transparent = TRANSPARENT,
@@ -103,12 +106,11 @@ namespace wtf{
     }
 
     rgb background_color() const{
-      rgb(wtf::exception::throw_lasterr_if(::GetBkColor(*this), [](COLORREF c){ return CLR_INVALID == c; }));
+      return rgb(wtf::exception::throw_lasterr_if(::GetBkColor(*this), [](COLORREF c){ return CLR_INVALID == c; }));
     }
 
     background_mix_modes background_mix_mode() const{
-      return static_cast<background_mix_modes>(wtf::exception::throw_lasterr_if(::GetBkMode(*this),
-                                                                                [](int i){ return !i; }));
+      return static_cast<background_mix_modes>(wtf::exception::throw_lasterr_if(::GetBkMode(*this), [](int i){ return !i; }));
     }
 
     void background_mix_mode(background_mix_modes newval) const{

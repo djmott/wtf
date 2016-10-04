@@ -2,62 +2,59 @@
 
 namespace wtf{
 
-    struct form : window<form, policy::has_icon, policy::has_show, policy::has_cursor,
-      policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint,
-      policy::has_mouse, policy::has_click>
-    {
-      static const DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW | WS_EX_CONTROLPARENT;
-      static const DWORD Style = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
+  template <typename _Ty, DWORD _ExStyle, DWORD _Style>
+  struct form_base : window<form_base<_Ty, _ExStyle, _Style>, policy::has_icon, policy::has_show, policy::has_cursor,
+    policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint, policy::has_mouse, policy::has_click>
+  {
 
-      form(HWND hParent) : window(hParent, true){}
-      form() : form(nullptr){}
-      virtual ~form() = default;
+    using _super_t = window<form_base<_Ty, _ExStyle, _Style>, policy::has_icon, policy::has_show, policy::has_cursor,
+      policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint, policy::has_mouse, policy::has_click>;
 
-      int exec(bool show_window=true){
-        _QuitOnDestroy = true;
-        if (show_window) show();
-        try{
-          message oMsg;
-          while (oMsg.get()){
-            oMsg.translate();
-            oMsg.dispatch();
-          }
-          return 0;
-        }
-        catch (const wtf::exception& ex){
-          std::string sTemp = ex.what();
-          sTemp += "\n\nat:\n\n";
-          sTemp += ex.file();
-          sTemp += "(";
-          sTemp += std::to_string(ex.line());
-          sTemp += ")\n\n";
-          sTemp += ex.code();
-          tstring sMsg;
-          std::copy(sTemp.begin(), sTemp.end(), std::back_inserter(sMsg));
+    static const DWORD ExStyle = _ExStyle;
+    static const DWORD Style = _Style;
 
-          auto iRet = message_box::exec(nullptr, sMsg, _T("An exception occurred"), message_box::buttons::abort_retry_ignore, message_box::icons::stop);
-          if (message_box::response::abort == iRet) abort();
-          if (message_box::response::ignore == iRet) return -1;
-          throw;
-        }
-      }
+    form_base(HWND hParent) : _super_t(hParent){}
+    form_base() : form_base(nullptr){}
+    form_base(const form_base&) = delete;
+    form_base &operator=(const form_base &) = delete;
+    form_base(form_base&&) = delete;
+    form_base &operator=(form_base&&) = delete;
 
-    protected:
+    int exec(bool show_window = true){
+      _QuitOnDestroy = true;
+      if (show_window) this->show();
+      message oMsg;
+      auto iRet = oMsg.pump();
+      _QuitOnDestroy = true;
+      return iRet;
+    }
 
+  protected:
 
-      bool _QuitOnDestroy = false;
+    bool _QuitOnDestroy = false;
 
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled){
-        if (WM_DESTROY == umsg && _QuitOnDestroy){
-          PostQuitMessage(0);
-          bhandled = true;
-          return 0;
-        }
-        std::cout << "Form got a " << _::msg_name(umsg) << std::endl;
+    virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool& bhandled) override{
+      if (WM_DESTROY == umsg && _QuitOnDestroy){
+        PostQuitMessage(0);
+        bhandled = true;
         return 0;
       }
+      std::cout << typeid(_Ty).name() << " " << _::msg_name(umsg) << std::endl;
+      return 0;
+    }
+  };
 
 
-    };
+  struct form : form_base<form, WS_EX_OVERLAPPEDWINDOW, WS_OVERLAPPEDWINDOW>{
+
+
+    form(HWND hParent=nullptr) : form_base(hParent){}
+    form(const form&) = delete;
+    form &operator=(const form &) = delete;
+    form(form&&) = delete;
+    form &operator=(form&&) = delete;
+
+  };
+
 
 }

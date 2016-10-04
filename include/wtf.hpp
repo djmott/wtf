@@ -24,17 +24,20 @@ namespace wtf{
   inline static HINSTANCE instance_handle(){ return &__ImageBase; }
 
   using tstring = std::basic_string<TCHAR>;
-  template <typename, template <typename> typename ...> struct window;
+  template <typename, template <typename> class ...> struct window;
 
   namespace policy{
-    template <template <typename> typename> struct traits;
+    template <template <typename> class> struct traits;
 
-    template <template <typename> typename ...> struct list;
+    template <template <typename> class ...> struct list;
 
-    template <template <typename> typename _HeadT, template <typename> typename ..._TailT>
+    template <template <typename> class _HeadT, template <typename> class ..._TailT>
     struct list<_HeadT, _TailT...> : list<_TailT...>{};
 
     template <> struct list<>{};
+  }
+  namespace _{
+    template <typename, template <typename> class ... > struct base_window;
   }
 }
 
@@ -53,12 +56,13 @@ namespace wtf{
 #include "region.hpp"
 #include "font.hpp"
 
+#include "detail/window_class_ex.hpp"
 #include "detail/msg_names.hpp"
 #include "detail/weak_enum_class.hpp"
 #include "detail/device_context.hpp"
+#include "detail/paint_struct.hpp"
 #include "detail/base_window.hpp"
 #include "detail/SystemParameters.hpp"
-#include "detail/paint_struct.hpp"
 #include "detail/message.hpp"
 
 

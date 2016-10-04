@@ -10,6 +10,10 @@ namespace wtf {
       virtual ~has_cursor() = default;
 
       has_cursor() = default;
+      has_cursor(const has_cursor&) = delete;
+      has_cursor &operator=(const has_cursor &) = delete;
+      has_cursor(has_cursor&&) = delete;
+      has_cursor &operator=(has_cursor&&) = delete;
 
       virtual const wtf::cursor &cursor_pointer() const { return cursor::global(cursor::style::arrow); }
 
@@ -79,7 +83,7 @@ namespace wtf {
         }
       }
 
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) override {
+      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool &bhandled) override {
         if (WM_SETCURSOR == umsg) {
           OnSetCursor(static_cast<wm_nchittest_flags>(LOWORD(lparam)));
           bhandled = true;

@@ -4,35 +4,35 @@ namespace wtf{
   namespace _{
     //everything in the hidden _ namespace is for internal use by the library
 
-    template <typename, template <typename> typename ...> struct base_window;
+    template <typename, template <typename> class ...> struct base_window;
 
     // is_same_policy meta-function returns true if two policies are the same type
-    template <template <typename> typename _Policy1, template <typename> typename _Policy2> struct is_same_policy : std::false_type{};
+    template <template <typename> class _Policy1, template <typename> class _Policy2> struct is_same_policy : std::false_type{};
 
-    template <template <typename> typename _Policy1> struct is_same_policy<_Policy1, _Policy1> : std::true_type{};
+    template <template <typename> class _Policy1> struct is_same_policy<_Policy1, _Policy1> : std::true_type{};
 
 
     // has_policy compile time meta-function returns true if a concrete implementation inherits from a policy
-    template <template <typename> typename _DeclT, template <typename> typename ... _TailT> struct has_policy;
+    template <template <typename> class _DeclT, template <typename> class ... _TailT> struct has_policy;
 
-    template <template <typename> typename _DeclT>
+    template <template <typename> class _DeclT>
     struct has_policy<_DeclT>{ static const bool value = false; };
 
 
-    template <template <typename> typename _DeclT, template <typename> typename _HeadT, template <typename> typename ... _TailT>
+    template <template <typename> class _DeclT, template <typename> class _HeadT, template <typename> class ... _TailT>
     struct has_policy<_DeclT, _HeadT, _TailT...>{
       static const bool value = is_same_policy<_DeclT, _HeadT>::value ? true : has_policy<_DeclT, _TailT...>::value;
     };
 
 
     // concrete_impl compile time meta-function returns the fully defined concrete implementation of an inherited policy
-    template <template <typename> typename _TargetPolicyT, typename _ImplT, template <typename> typename ... _PolicyListT>
+    template <template <typename> class _TargetPolicyT, typename _ImplT, template <typename> class ... _PolicyListT>
     struct concrete_impl;
 
-    template <template <typename> typename _TargetPolicyT, typename _ImplT>
+    template <template <typename> class _TargetPolicyT, typename _ImplT>
     struct concrete_impl<_TargetPolicyT, _ImplT> : std::false_type{};
 
-    template <template <typename> typename _TargetT, typename _ImplT, template <typename> typename _HeadT, template <typename> typename ... _TailT>
+    template <template <typename> class _TargetT, typename _ImplT, template <typename> class _HeadT, template <typename> class ... _TailT>
     struct concrete_impl<_TargetT, _ImplT, _HeadT, _TailT...>{
       using __is_target_policy_t = is_same_policy<_TargetT, _HeadT>;
       using __is_target_return_t = base_window<_ImplT, _TargetT, _TailT...>;
@@ -42,21 +42,21 @@ namespace wtf{
 
 
     template <typename, typename> struct policy_list_concat;
-    template <template<typename>typename ... _list1, template<typename>typename ... _list2>
+    template <template<typename> class ... _list1, template<typename> class ... _list2>
     struct policy_list_concat<policy::list<_list1...>, policy::list<_list2...>>{
       using type = policy::list<_list1..., _list2...>;
     };
 
 
     //removes all occurances of Target in policy list
-    template <template <typename> typename _TargetT, typename _PolicyListT>
+    template <template <typename> class _TargetT, typename _PolicyListT>
     struct remove_policy_from;
 
-    template <template <typename> typename _TargetT>
+    template <template <typename> class _TargetT>
     struct remove_policy_from<_TargetT, policy::list<>>{ using type = policy::list<>; };
 
 
-    template <template <typename> typename _TargetT, template <typename> typename _HeadT, template <typename> typename ... _TailT>
+    template <template <typename> class _TargetT, template <typename> class _HeadT, template <typename> class ... _TailT>
     struct remove_policy_from<_TargetT, policy::list<_HeadT, _TailT...>>{
       static const bool __SkipIt = is_same_policy<_TargetT, _HeadT>::value;
       using head_list_t = typename std::conditional<__SkipIt, policy::list<>, policy::list<_HeadT>>::type;
@@ -69,7 +69,7 @@ namespace wtf{
 
     template <> struct remove_duplicate_policies<policy::list<>>{ using type = policy::list<>; };
 
-    template <template <typename> typename _HeadT, template <typename> typename ... _TailT>
+    template <template <typename> class _HeadT, template <typename> class ... _TailT>
     struct remove_duplicate_policies<policy::list<_HeadT, _TailT...>>{
       using __no_head_list = typename remove_policy_from<_HeadT, policy::list<_TailT...>>::type;
       using unique_tails = typename remove_duplicate_policies<__no_head_list>::type;
@@ -82,7 +82,7 @@ namespace wtf{
 
     template <> struct requirement_collector<policy::list<>>{ using type = policy::list<>; };
 
-    template <template <typename> typename _HeadT, template <typename> typename ..._TailT>
+    template <template <typename> class _HeadT, template <typename> class ..._TailT>
     struct requirement_collector<policy::list<_HeadT, _TailT...>>{
       using head_requirements = typename policy::traits<_HeadT>::requirements;
       using new_tail = typename policy_list_concat<policy::list<_TailT...>, head_requirements>::type;
@@ -94,13 +94,13 @@ namespace wtf{
     };
 
     template <typename _ImplT, typename _ListT> struct policy_list_to_base_win;
-    template <typename _ImplT, template <typename> typename ... _PolicyListT>
+    template <typename _ImplT, template <typename> class ... _PolicyListT>
     struct policy_list_to_base_win<_ImplT, policy::list<_PolicyListT...>>{
       using type = base_window<_ImplT, _PolicyListT...>;
       using window_type = window<_ImplT, _PolicyListT...>;
     };
 
-    template <typename _ImplT, template <typename> typename ... _PolicyListT>
+    template <typename _ImplT, template <typename> class ... _PolicyListT>
     struct window_impl{
       using policies_with_deps = typename requirement_collector<policy::list<_PolicyListT...>>::type;
       using type = typename policy_list_to_base_win<_ImplT, policies_with_deps>::type;
@@ -111,40 +111,43 @@ namespace wtf{
     /** base_window
       * constructs the inheritance chain of policies
       */
-    template <typename _ImplT, template <typename> typename _HeadT, template <typename> typename ... _TailT>
+    template <typename _ImplT, template <typename> class _HeadT, template <typename> class ... _TailT>
     struct base_window<_ImplT, _HeadT, _TailT...> : _HeadT<base_window<_ImplT, _TailT...>>{
       using _super_t = _HeadT<base_window<_ImplT, _TailT...>>;
       using window_type = base_window<_ImplT, _HeadT, _TailT...>;
 
-      template <template <typename> typename _PolicyT>
-      using concrete_policy_type = typename _::concrete_impl<_PolicyT, _ImplT, _HeadT, _TailT...>::type;
+      template <template <typename> class _PolicyT>
+      using concrete_policy_type =  _::concrete_impl<_PolicyT, _ImplT, _HeadT, _TailT...>;
 
 
       base_window() = default;
       virtual ~base_window() = default;
 
+      base_window(const base_window&) = delete;
+      base_window &operator=(const base_window &) = delete;
+
       /// returns true if the class inherits from the specified policy
-      template <template <typename> typename _PolicyT> bool has_policy() const{ 
+      template <template <typename> class _PolicyT> bool has_policy() const{ 
         return _::has_policy<_PolicyT, _HeadT, _TailT...>::value; 
       }
 
       /// returns a reference to the concrete policy implementation of this instance
-      template <template <typename> typename _PolicyT> concrete_policy_type<_PolicyT>& get_policy(){
-        return *static_cast<concrete_policy_type<_PolicyT>*>(this);
+      template <template <typename> class _PolicyT> typename concrete_policy_type<_PolicyT>::type& get_policy(){
+        return *static_cast<typename concrete_policy_type<_PolicyT>::type*>(this);
       }
 
       /// same as above but const
-      template <template <typename> typename _PolicyT> const concrete_policy_type<_PolicyT>& get_policy() const{
-        return *static_cast<const concrete_policy_type<_PolicyT>*>(this);
+      template <template <typename> class _PolicyT> const typename concrete_policy_type<_PolicyT>::type& get_policy() const{
+        return *static_cast<const typename concrete_policy_type<_PolicyT>::type*>(this);
       }
 
     private:
-      template <typename, template <typename> typename ... > friend struct base_window;
+      template <typename, template <typename> class ... > friend struct base_window;
 
-      virtual LRESULT propogate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled) override{
+      virtual LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled) override{
         auto handler_ret = _super_t::handle_message(hwnd, umsg, wparam, lparam, handled);
         if (handled) return handler_ret;
-        return base_window<_ImplT, _TailT...>::propogate_message(hwnd, umsg, wparam, lparam, handled);
+        return base_window<_ImplT, _TailT...>::propagate_message(hwnd, umsg, wparam, lparam, handled);
       }
     };
 
@@ -172,17 +175,17 @@ namespace wtf{
 
       void create(HWND hParent){
         _handle = wtf::exception::throw_lasterr_if(
-          ::CreateWindowEx(_ImplT::ExStyle, window_class_ex::get().name(), nullptr, _ImplT::Style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, instance_handle(), this),
+          ::CreateWindowEx(_ImplT::ExStyle, window_class_ex<_ImplT, &base_window<_ImplT>::window_proc>::get().name(), nullptr, _ImplT::Style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, instance_handle(), this),
           [](HWND h){ return nullptr == h; });
       }
 
     private:
-      template <typename, template <typename> typename ... > friend struct base_window;
-      template <typename, template <typename> typename ... > friend struct window;
+      template <typename, template <typename> class ... > friend struct base_window;
+      template <typename, template <typename> class ... > friend struct window;
 
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& bhandled){ return 0; }
+      virtual LRESULT handle_message(HWND , UINT , WPARAM , LPARAM , bool& ){ return 0; }
 
-      virtual LRESULT propogate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled){
+      virtual LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM , LPARAM , bool& handled){
         switch (umsg){
           case WM_CLOSE:
             DestroyWindow(hwnd); _handle = nullptr; break;
@@ -199,7 +202,7 @@ namespace wtf{
         sTemp += "\n";
         OutputDebugStringA(sTemp.c_str());
         try{
-          typename _ImplT::window_type * pThis = nullptr;
+          _ImplT * pThis = nullptr;
           bool handled = false;
           LRESULT handler_ret;
 
@@ -210,7 +213,7 @@ namespace wtf{
               auto pCreate = reinterpret_cast<CREATESTRUCT*>(lparam);
 
               assert(pCreate);
-              pThis = reinterpret_cast<typename _ImplT::window_type*>(pCreate->lpCreateParams);
+              pThis = reinterpret_cast<_ImplT*>(pCreate->lpCreateParams);
               assert(pThis);
               pThis->_handle = hwnd;
               SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
@@ -218,7 +221,7 @@ namespace wtf{
             }
             default:
             {
-              pThis = reinterpret_cast<typename _ImplT::window_type*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+              pThis = reinterpret_cast<_ImplT*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
               break;
             }
           }
@@ -227,7 +230,10 @@ namespace wtf{
           if (WM_ERASEBKGND == umsg){
             auto oDC = wtf::device_context::get_client(hwnd);
 
-            handler_ret = pThis->propogate_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oDC), handled);
+            //try implementation before propagating
+            handler_ret = pThis->try_impl_handle_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oDC), handled);
+            if (!handled) handler_ret = pThis->propagate_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oDC), handled);
+
           } else if (WM_PAINT == umsg){
             RECT r;
             if (0 == GetUpdateRect(hwnd, &r, FALSE)){
@@ -236,9 +242,12 @@ namespace wtf{
             paint_struct oPaint(*pThis);
             auto oDC = wtf::device_context::get_client(hwnd);
 
-            handler_ret = pThis->propogate_message(hwnd, umsg, reinterpret_cast<WPARAM>(&oDC), reinterpret_cast<LPARAM>(&oPaint), handled);
+            handler_ret = pThis->try_impl_handle_message(hwnd, umsg, reinterpret_cast<WPARAM>(&oDC), reinterpret_cast<LPARAM>(&oPaint), handled);
+            if (!handled) handler_ret = pThis->propagate_message(hwnd, umsg, reinterpret_cast<WPARAM>(&oDC), reinterpret_cast<LPARAM>(&oPaint), handled);
+
           } else{
-            handler_ret = pThis->propogate_message(hwnd, umsg, wparam, lparam, handled);
+            handler_ret = pThis->try_impl_handle_message(hwnd, umsg, wparam, lparam, handled);
+            if (!handled) handler_ret = pThis->propagate_message(hwnd, umsg, wparam, lparam, handled);
           }
 
           if (handled) return handler_ret;
@@ -258,36 +267,7 @@ namespace wtf{
         }
       }
 
-      struct window_class_ex : WNDCLASSEX{
-        static window_class_ex& get(){
-          static window_class_ex _window_class_ex;
-          return _window_class_ex;
-        }
-
-        LPCTSTR name(){ return _class_name.c_str(); }
-
-        ~window_class_ex(){ UnregisterClass(_class_name.c_str(), instance_handle()); }
-
-        window_class_ex(){
-          //this goofy looking bit of code creates a unique class name in unicode or multibyte
-          std::string sTemp = "detail" + std::to_string(typeid(_ImplT).hash_code());
-          for (auto ch : sTemp){
-            _class_name.push_back(ch);
-          }
-          memset(this, 0, sizeof(WNDCLASSEX));
-          cbSize = sizeof(WNDCLASSEX);
-          style = CS_OWNDC | CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW;
-          lpfnWndProc = &window_proc;
-          cbClsExtra = sizeof(window<_ImplT>*);
-          hInstance = instance_handle();
-          lpszClassName = name();
-          exception::throw_lasterr_if(RegisterClassEx(this), [](ATOM x){ return 0 == x; });
-        }
-
-        tstring _class_name;
-      };
-
       HWND _handle;
-    };
+  };
   }
 }

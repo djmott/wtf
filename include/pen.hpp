@@ -34,6 +34,9 @@ namespace wtf {
         return *this;
       }
 
+      pen(const pen&) = delete;
+      pen &operator=(const pen &) = delete;
+
     protected:
       template<typename ... _ArgTs>
       pen(_ArgTs...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...) {}

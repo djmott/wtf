@@ -8,13 +8,16 @@ namespace wtf {
     template<typename _SuperT>
     struct has_click : _SuperT {
       virtual ~has_click() = default;
+      has_click() = default;
+      has_click(const has_click&) = delete;
+      has_click(has_click&&) = delete;
+      has_click &operator=(const has_click &) = delete;
+      has_click &operator=(has_click&&) = delete;
 
-      wtf::callback<void( const point
-      &)>
-      ClickEvent;
+      wtf::callback<void( const point&)> ClickEvent;
 
     protected:
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) override {
+      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM , LPARAM lparam, bool &) override {
         if (WM_LBUTTONDOWN == umsg) {
           _Down = true;
           SetCapture(hwnd);

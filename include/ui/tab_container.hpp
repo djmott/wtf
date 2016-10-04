@@ -6,12 +6,18 @@ namespace wtf{
       policy::has_border, policy::has_paint, policy::has_show, policy::has_size>
     {
 
-      tab_container(HWND parent) : window(parent), 
+      explicit tab_container(HWND parent) : window(parent), 
         _button_bar(*this), _button_bar_slider(*this)
       {
         _button_bar_slider.orientation(scroll_bar::orientations::horizontal);
         ResizedEvent.connect<tab_container, &tab_container::OnResize>(this);
       }
+      tab_container() = delete;
+      tab_container(const tab_container&) = delete;
+      tab_container(tab_container&&) = delete;
+      tab_container &operator=(const tab_container &) = delete;
+      tab_container &operator=(tab_container&&) = delete;
+
 
       panel& add_page(const tstring& title){
         _pages.emplace_back(new page_info(*this, _button_bar, title));
@@ -32,7 +38,7 @@ namespace wtf{
 
     protected:
 
-      void OnResize(wm_size_flags, int width, int height){}
+      void OnResize(wm_size_flags, int , int ){}
 
       void HidePages(){
         for (auto & oPage : _pages){
@@ -51,6 +57,8 @@ namespace wtf{
 
         page_info(const page_info&) = delete;
         page_info(page_info&&) = delete;
+        page_info &operator=(const page_info &) = delete;
+        page_info &operator=(page_info&&) = delete;
 
         panel _panel;
         toggle_button _button;

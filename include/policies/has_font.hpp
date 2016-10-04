@@ -11,6 +11,10 @@ namespace wtf {
                    _back_color(system_rgb<system_colors::window>()),
                    _background_mix_mode(background_mix_modes::transparent) {}
 
+      has_font(const has_font&) = delete;
+      has_font &operator=(const has_font &) = delete;
+      has_font(has_font&&) = delete;
+      has_font &operator=(has_font&&) = delete;
 
       using background_mix_modes = device_context::background_mix_modes;
 

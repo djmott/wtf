@@ -24,7 +24,7 @@ namespace wtf {
       static brush system_brush(system_colors color) {
         return brush(
           wtf::exception::throw_lasterr_if(GetSysColorBrush(static_cast<int>(color)), [](HBRUSH b) { return !b; }),
-          [](HBRUSH h) {});
+          [](HBRUSH) {});
       }
 
       static brush solid_brush(COLORREF color) {

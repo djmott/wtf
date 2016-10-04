@@ -9,6 +9,11 @@ namespace wtf {
     struct has_icon : _SuperT {
       has_icon() : _SuperT(), _big_icon(icon::system(icon::style::shield)),
                    _small_icon(icon::system(icon::style::shield)) {}
+      ~has_icon() = default;
+      has_icon(const has_icon&) = delete;
+      has_icon &operator=(const has_icon &) = delete;
+      has_icon(has_icon&&) = delete;
+      has_icon &operator=(has_icon&&) = delete;
 
       virtual icon &big_icon() { return _big_icon; }
 
@@ -23,7 +28,7 @@ namespace wtf {
       void small_icon(icon &&src) { _small_icon = std::move(src); }
 
     protected:
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) override {
+      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM , bool &bhandled) override {
         if (WM_GETICON != umsg) return 0;
         bhandled = true;
         if (ICON_BIG == wparam) return reinterpret_cast<LRESULT>(static_cast<HICON>(big_icon()));

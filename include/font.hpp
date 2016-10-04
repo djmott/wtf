@@ -29,6 +29,9 @@ namespace wtf {
           return *this;
         }
 
+        handle(const handle&) = delete;
+        handle &operator=(const handle &) = delete;
+
         static handle ansi_fixed() {
           return handle(wtf::exception::throw_lasterr_if((HFONT)
           ::GetStockObject(ANSI_FIXED_FONT), [](HFONT f) { return !f; }), [](HFONT) {});

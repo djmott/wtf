@@ -9,8 +9,12 @@ namespace wtf {
     template<typename _SuperT>
     struct has_titlebar : _SuperT {
       has_titlebar() = default;
-
       virtual ~has_titlebar() = default;
+      has_titlebar(const has_titlebar&) = delete;
+      has_titlebar &operator=(const has_titlebar &) = delete;
+      has_titlebar(has_titlebar&&) = delete;
+      has_titlebar &operator=(has_titlebar&&) = delete;
+
 
       const tstring &titlebar() const {
         return _titlebar;

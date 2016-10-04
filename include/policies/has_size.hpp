@@ -7,6 +7,14 @@ namespace wtf {
     */
     template<typename _SuperT>
     struct has_size : _SuperT {
+      has_size()
+        : _SuperT(), _top(CW_USEDEFAULT), _left(CW_USEDEFAULT), _width(CW_USEDEFAULT), _height(CW_USEDEFAULT){}
+      virtual ~has_size() = default;
+      has_size(const has_size&) = delete;
+      has_size &operator=(const has_size &) = delete;
+      has_size(has_size&&) = delete;
+      has_size &operator=(has_size&&) = delete;
+
       enum class wm_size_flags {
         hide = SIZE_MAXHIDE,
         maximized = SIZE_MAXIMIZED,
@@ -32,8 +40,6 @@ namespace wtf {
 
       int height() const { return _height; }
 
-      has_size()
-        : _SuperT(), _top(CW_USEDEFAULT), _left(CW_USEDEFAULT), _width(CW_USEDEFAULT), _height(CW_USEDEFAULT) {}
 
       callback<void(
       const rect&)>
@@ -46,7 +52,7 @@ namespace wtf {
     protected:
       int _top, _left, _width, _height;
 
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) override {
+      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override {
         if (WM_MOVING == umsg) MovingEvent(*reinterpret_cast<const rect *>(lparam));
         if (WM_MOVE == umsg) MovedEvent(point(LOWORD(lparam), HIWORD(lparam)));
         if (WM_SIZE == umsg) ResizedEvent(static_cast<wm_size_flags>(wparam), LOWORD(lparam), HIWORD(lparam));
