@@ -9,42 +9,96 @@ namespace wtf {
     template<typename _SuperT>
     struct has_border : _SuperT {
 
-      using border_edges = device_context::border_edges;
-      using border_flags = device_context::border_flags;
-
       virtual ~has_border() = default;
 
-      has_border() : _SuperT(), _border_edge(border_edges::raised),
-                     _border_flag(
-                       weak_enum_class<border_flags>::set_flags(border_flags::adjust, border_flags::whole_rect,
-                                                                border_flags::soft, border_flags::flat,
-                                                                border_flags::mono)) {}
+      has_border() :
+        _SuperT(),
+        _border_style(border_styles::raised),
+        _border_highlight(system_rgb<system_colors::button_highlight>()),
+        _border_shadow(system_rgb<system_colors::button_shadow>())
+      {}
 
       has_border(const has_border&) = delete;
       has_border(has_border&&) = delete;
       has_border &operator=(const has_border &) = delete;
       has_border &operator=(has_border&&) = delete;
 
-      border_edges border_edge() const { return _border_edge; }
+      enum class border_styles{
+        none = 0,
+        flat,
+        raised,
+        lowered,
+        bumped,
+        etched,
+      };
 
-      void border_edge(border_edges newval) { _border_edge = newval; }
+      int border_width() const{
+        switch (_border_style){
+          case border_styles::none: return 0;
+          case border_styles::flat:
+          case border_styles::raised:
+          case border_styles::lowered: return 1;
+          default: return 2;
+        }
+      }
+      virtual rgb border_highlight() const{ return _border_highlight; }
+      virtual void border_highlight(rgb newval){ _border_highlight = newval; }
 
-      border_flags border_flag() const { return _border_flag; }
+      virtual rgb border_shadow() const{ return _border_shadow; }
+      virtual void border_shadow(rgb newval){ _border_shadow = newval; }
 
-      void border_flag(border_flags newval) { _border_flag = newval; }
+      virtual border_styles border_style() const{ return _border_style; }
+      virtual void border_style(border_styles newval){ _border_style = newval; }
 
     protected:
-      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM, bool &) override {
-        if (WM_PAINT == umsg && border_edges::none != _border_edge) {
-          auto &oDC = *reinterpret_cast<const device_context *>(wparam);
-          oDC.draw_edge(rect::get_client_rect(*this), _border_edge, _border_flag);
+
+      virtual void DrawBorderEvent(const device_context& dc, const paint_struct& ps){
+        auto highlight = pen::create(pen::style::solid, 1, border_highlight());
+        auto shadow = pen::create(pen::style::solid, 1, border_shadow());
+        //draw outer border
+        switch (border_style()){
+          case border_styles::none: return;
+          case border_styles::flat:
+            dc.line(shadow, ps.rcPaint.right - 1, 0, ps.rcPaint.right - 1, ps.rcPaint.bottom);
+            dc.line(shadow, 0, ps.rcPaint.bottom-1, ps.rcPaint.right, ps.rcPaint.bottom-1);
+            dc.line(shadow, 0, 0, ps.rcPaint.right, 0);
+            dc.line(shadow, 0, 0, 0, ps.rcPaint.bottom);
+            break;
+          case border_styles::etched:
+          case border_styles::lowered:
+            std::swap(highlight, shadow);
+          case border_styles::bumped:
+          case border_styles::raised:
+            dc.line(shadow, ps.rcPaint.right - 1, 0, ps.rcPaint.right - 1, ps.rcPaint.bottom );
+            dc.line(shadow, 0, ps.rcPaint.bottom - 1, ps.rcPaint.right, ps.rcPaint.bottom -1);
+            dc.line(highlight, 0, 0, ps.rcPaint.right, 0);
+            dc.line(highlight, 0, 0, 0, ps.rcPaint.bottom);
         }
+        //draw inner border
+        switch (border_style()){
+          case border_styles::raised:
+          case border_styles::lowered: return;
+          case border_styles::etched:
+            std::swap(highlight, shadow);
+          case border_styles::bumped:
+            dc.line(shadow, ps.rcPaint.right - 2, 1, ps.rcPaint.right - 2, ps.rcPaint.bottom - 2);
+            dc.line(shadow, 1, ps.rcPaint.bottom - 2, ps.rcPaint.right - 2, ps.rcPaint.bottom - 2);
+            dc.line(highlight, 1, 1, ps.rcPaint.right-1, 1);
+            dc.line(highlight, 1, 1, 1, ps.rcPaint.bottom-1);
+        }
+      }
+
+      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bProcessed) override {
+        if (WM_PAINT == umsg ) {
+          DrawBorderEvent(*reinterpret_cast<const device_context *>(wparam), *reinterpret_cast<const paint_struct *>(lparam));
+        } 
         return 0;
       }
 
     private:
-      border_edges _border_edge;
-      border_flags _border_flag;
+      border_styles _border_style;
+      rgb _border_highlight;
+      rgb _border_shadow;
     };
 
   }

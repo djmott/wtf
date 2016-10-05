@@ -10,7 +10,7 @@ namespace wtf{
         _button_bar(*this), _button_bar_slider(*this)
       {
         _button_bar_slider.orientation(scroll_bar::orientations::horizontal);
-        ResizedEvent.connect<tab_container, &tab_container::OnResize>(this);
+
       }
       tab_container() = delete;
       tab_container(const tab_container&) = delete;
@@ -38,7 +38,7 @@ namespace wtf{
 
     protected:
 
-      void OnResize(wm_size_flags, int , int ){}
+      virtual void ResizedEvent(wm_size_flags, uint16_t /*width*/, uint16_t /*height*/) override {}
 
       void HidePages(){
         for (auto & oPage : _pages){

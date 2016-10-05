@@ -30,7 +30,11 @@ namespace wtf {
       using requirements = list<>;
     };
     template<>
-    struct traits<has_icon> {
+    struct traits<has_icon>{
+      using requirements = list<>;
+    };
+    template<>
+    struct traits<has_keyboard>{
       using requirements = list<>;
     };
     template<>

@@ -13,10 +13,15 @@ namespace wtf {
       has_close &operator=(const has_close &) = delete;
       has_close(has_close&&) = delete;
       has_close &operator=(has_close&&) = delete;
-      callback<void()> CloseEvent;
+
     protected:
-      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) override {
-        if (WM_CLOSE == umsg) CloseEvent();
+
+      virtual void CloseEvent(bool& /*cancel*/){}
+
+      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool & bHandled) override {
+        if (WM_CLOSE == umsg){
+          CloseEvent(bHandled);
+        }
         return 0;
       }
     };

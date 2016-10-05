@@ -7,54 +7,74 @@ namespace wtf {
     */
     template<typename _SuperT>
     struct has_caret : _SuperT {
-      has_caret() = default;
       has_caret(const has_caret&) = delete;
       has_caret(has_caret&&) = delete;
       has_caret &operator=(const has_caret &) = delete;
       has_caret &operator=(has_caret&&) = delete;
+      virtual ~has_caret() = default;
+      has_caret() 
+        : _SuperT(),
+        _blink_rate(250),
+        _pos(1,1),
+        _width(1),
+        _height(1)
+      {}
 
-      void create_caret() const {
-        wtf::exception::throw_lasterr_if(::CreateCaret(*this, nullptr, 1, 15), [](BOOL b) { return !b; });
+      virtual int caret_width() const{ return _width; }
+      virtual void caret_width(int newval){ _width = newval; }
+
+      virtual int caret_height() const{ return _height; }
+      virtual void caret_height(int newval){ _height = newval; }
+
+      virtual void create_caret() const {
+        wtf::exception::throw_lasterr_if(::CreateCaret(*this, nullptr, _width, _height), [](BOOL b) { return !b; });
       }
 
-      void destroy_caret() const {
+      virtual void destroy_caret() const {
         wtf::exception::throw_lasterr_if(::DestroyCaret(), [](BOOL b) { return !b; });
       }
 
-      void show_caret() const {
+      virtual void show_caret() const {
         wtf::exception::throw_lasterr_if(::ShowCaret(*this), [](BOOL b) { return !b; });
       }
 
-      void hide_caret() const {
+      virtual void hide_caret() const {
         wtf::exception::throw_lasterr_if(::HideCaret(*this), [](BOOL b) { return !b; });
       }
 
-      UINT caret_blink_time() const {
-        return wtf::exception::throw_lasterr_if(::GetCaretBlinkTime(), [](UINT i) { return !i; });
-      }
+      virtual UINT caret_blink_rate() const { return _blink_rate; }
 
-      void caret_blink_time(UINT newval) const {
+      virtual void caret_blink_rate(UINT newval) {
+        _blink_rate = newval;
         wtf::exception::throw_lasterr_if(::SetCaretBlinkTime(newval), [](BOOL b) { return !b; });
       }
 
-      void set_caret_pos(const point &pos) const {
-        wtf::exception::throw_lasterr_if(::SetCaretPos(pos.x, pos.y), [](BOOL b) { return !b; });
+      virtual void caret_position(const point &pos) {
+        _pos = pos;
+        wtf::exception::throw_lasterr_if(::SetCaretPos(_pos.x, _pos.y), [](BOOL b) { return !b; });
       }
+
+      virtual point caret_position() const{ return _pos; }
 
     protected:
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) override {
         if (WM_SETFOCUS == umsg) {
           std::cout << "make caret" << std::endl;
           create_caret();
-          set_caret_pos(point(1, 1));
+          caret_position(_pos);
           show_caret();
-          caret_blink_time(250);
+          caret_blink_rate(_blink_rate);
         } else if (WM_KILLFOCUS == umsg) {
           std::cout << "destroy caret" << std::endl;
           destroy_caret();
         }
         return 0;
       }
+    private:
+      UINT _blink_rate;
+      point _pos;
+      int _width;
+      int _height;
     };
   }
 }

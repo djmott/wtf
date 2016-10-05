@@ -18,9 +18,12 @@ namespace wtf {
 
       bool got_focus() const { return _SuperT::_handle == ::GetFocus(); }
 
-      callback<void()> GotFocusEvent;
-      callback<void()> LostFocusEvent;
+
     protected:
+
+      virtual void GotFocusEvent(){}
+      virtual void LostFocusEvent(){}
+
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) override {
         if (WM_SETFOCUS == umsg) GotFocusEvent();
         else if (WM_KILLFOCUS == umsg) LostFocusEvent();

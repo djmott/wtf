@@ -27,11 +27,13 @@ namespace wtf {
       has_mouse &operator=(has_mouse &&) = delete;
 
 
-      callback<void(event_vkeys, const point &)> MouseMoveEvent;
-      callback<void(event_vkeys, const point &)> MouseLButtonDownEvent;
-      callback<void(event_vkeys, const point &)> MouseLButtonUpEvent;
-      callback<void(event_vkeys, short delta, const point &)> MouseWheelEvent;
     protected:
+
+      virtual void MouseMoveEvent(event_vkeys, const point&){}
+      virtual void MouseLButtonDownEvent(event_vkeys, const point&){}
+      virtual void MouseLButtonUpEvent(event_vkeys, const point&){}
+      virtual void MouseWheelEvent(event_vkeys, int16_t /*delta*/, const point&){}
+
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override {
         if (WM_MOUSEMOVE == umsg)
           MouseMoveEvent(static_cast<event_vkeys>(wparam), point(LOWORD(lparam), HIWORD(lparam)));
@@ -40,7 +42,7 @@ namespace wtf {
         if (WM_LBUTTONUP == umsg)
           MouseLButtonUpEvent(static_cast<event_vkeys>(wparam), point(LOWORD(lparam), HIWORD(lparam)));
         if (WM_MOUSEWHEEL == umsg)
-          MouseWheelEvent(static_cast<event_vkeys>(LOWORD(wparam)), static_cast<short>(HIWORD(wparam)),
+          MouseWheelEvent(static_cast<event_vkeys>(LOWORD(wparam)), static_cast<int16_t>(HIWORD(wparam)),
                           point(LOWORD(lparam), HIWORD(lparam)));
         return 0;
       }

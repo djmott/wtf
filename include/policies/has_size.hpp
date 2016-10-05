@@ -41,16 +41,12 @@ namespace wtf {
       int height() const { return _height; }
 
 
-      callback<void(
-      const rect&)>
-      MovingEvent;
-      callback<void(
-      const point&)>
-      MovedEvent;
-      callback<void(wm_size_flags, int /*width*/, int /*height*/)> ResizedEvent;
-
     protected:
-      int _top, _left, _width, _height;
+
+      virtual void MovingEvent(const rect&){}
+      virtual void MovedEvent(const point&){}
+      virtual void ResizedEvent(wm_size_flags, uint16_t /*width*/, uint16_t /*height*/){}
+
 
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override {
         if (WM_MOVING == umsg) MovingEvent(*reinterpret_cast<const rect *>(lparam));
@@ -58,6 +54,7 @@ namespace wtf {
         if (WM_SIZE == umsg) ResizedEvent(static_cast<wm_size_flags>(wparam), LOWORD(lparam), HIWORD(lparam));
         return 0;
       }
+      int _top, _left, _width, _height;
     };
 
   }

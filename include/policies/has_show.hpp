@@ -25,9 +25,11 @@ namespace wtf {
         parent_closing = SW_PARENTCLOSING,
         parent_opening = SW_PARENTOPENING,
       };
-      callback<void(visibility_change_flag)> VisibilityChangedEvent;
 
     protected:
+
+      virtual void VisibilityChangedEvent(visibility_change_flag){}
+
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool &) override {
         if (WM_SHOWWINDOW == umsg) VisibilityChangedEvent(static_cast<visibility_change_flag>(lparam));
         return 0;

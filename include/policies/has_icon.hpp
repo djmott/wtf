@@ -8,7 +8,8 @@ namespace wtf {
     template<typename _SuperT>
     struct has_icon : _SuperT {
       has_icon() : _SuperT(), _big_icon(icon::system(icon::style::shield)),
-                   _small_icon(icon::system(icon::style::shield)) {}
+                   _small_icon(icon::system(icon::style::shield)) 
+      {}
       ~has_icon() = default;
       has_icon(const has_icon&) = delete;
       has_icon &operator=(const has_icon &) = delete;

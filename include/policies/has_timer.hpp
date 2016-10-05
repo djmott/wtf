@@ -13,7 +13,6 @@ namespace wtf {
       has_timer &operator=(const has_timer &) = delete;
       has_timer &operator=(has_timer&&) = delete;
 
-      callback<void(UINT_PTR)> TimerEvent;
 
       UINT_PTR set_timer(UINT elapse) {
         _next_timer_id++;
@@ -26,12 +25,14 @@ namespace wtf {
       }
 
     protected:
-      UINT_PTR _next_timer_id;
+
+      virtual void TimerEvent(UINT_PTR){}
 
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM , bool &) override {
         if (WM_TIMER == umsg) TimerEvent(static_cast<UINT_PTR>(wparam));
         return 0;
       }
+      UINT_PTR _next_timer_id;
     };
 
   }

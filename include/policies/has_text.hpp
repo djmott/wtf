@@ -8,99 +8,79 @@ namespace wtf{
     template<typename _SuperT>
     struct has_text : _SuperT{
 
-
-      has_text() : _SuperT(),
+      has_text()
+        : _SuperT(),
         _text(_T("")),
-        _vertical_alignment(alignment::Center),
-        _horizontal_alignment(alignment::Center),
-        _multiline(false)
-      {}
+        _multiline(false),
+        _text_vertical_alignment(text_vertical_alignments::center),
+        _text_horizontal_alignment(text_horizontal_alignments::center){}
+
       virtual ~has_text() = default;
       has_text(const has_text&) = delete;
       has_text &operator=(const has_text &) = delete;
       has_text(has_text&&) = delete;
       has_text &operator=(has_text&&) = delete;
 
+      enum class text_vertical_alignments{
+        top,
+        center,
+        bottom,
+      };
 
-      enum class alignment{
-        Near,
-        Center,
-        Far,
+      enum class text_horizontal_alignments{
+        left,
+        center,
+        right,
       };
 
 
-      alignment vertial_alignment() const{ return _vertical_alignment; }
+      virtual bool multiline() const{ return _multiline; }
+      virtual void multiline(bool newval){ _multiline = newval; }
 
-      void vertial_alignment(alignment newval){ _vertical_alignment = newval; }
+      virtual const tstring &text() const{ return _text; }
+      virtual void text(const tstring &newval){ _text = newval; }
 
-      alignment horizontal_alignment() const{ return _horizontal_alignment; }
+      virtual text_vertical_alignments text_vertical_alignment() const{ return _text_vertical_alignment; }
+      virtual void text_vertical_alignment(text_vertical_alignments newval){ _text_vertical_alignment = newval; }
 
-      void horizontal_alignment(alignment newval){ _horizontal_alignment = newval; }
+      virtual text_horizontal_alignments text_horizontal_alignment() const{ return _text_horizontal_alignment; }
+      virtual void text_horizontal_alignment(text_horizontal_alignments newval){ _text_horizontal_alignment = newval; }
 
-      bool multiline() const{ return _multiline; }
-
-      void multiline(bool newval){ _multiline = newval; }
-
-      const tstring &text() const{ return _text; }
-
-      void text(const tstring &newval){ _text = newval; }
 
     protected:
 
-      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM , bool &) override{
-        using text_align_modes = device_context::text_align_modes;
-        using draw_text_flags = device_context::draw_text_flags;
-        if (WM_PAINT == umsg){
-          auto& oFont = this->template get_policy<policy::has_font>();
-          auto &oDC = *reinterpret_cast<const device_context *>(wparam);
-          auto oHandle = oFont.font().open();
-          oDC.select_object(oHandle);
-          oDC.move_to(0, 0);
-          weak_enum_class <draw_text_flags> Flags(draw_text_flags::word_break);
-          Flags |= draw_text_flags::word_break;
-          switch (_vertical_alignment){
-            case alignment::Near:
-              Flags |= draw_text_flags::top;
-              break;
-            case alignment::Center:
-              Flags |= draw_text_flags::vcenter;
-              break;
-            case alignment::Far:
-              Flags |= draw_text_flags::bottom;
-              break;
-          }
-          switch (_horizontal_alignment){
-            case alignment::Near:
-              Flags |= draw_text_flags::left;
-              break;
-            case alignment::Center:
-              Flags |= draw_text_flags::center;
-              break;
-            case alignment::Far:
-              Flags |= draw_text_flags::right;
-              break;
-          }
-          if (!_multiline) Flags |= draw_text_flags::single_line;
-          oDC.text_align(weak_enum_class<text_align_modes>::set_flags(text_align_modes::left, text_align_modes::top,
-                         text_align_modes::no_update_cp));
-          if (_SuperT::background_mix_modes::opaque == oFont.background_mix_mode()){
-            oDC.background_mix_mode(device_context::background_mix_modes::opaque);
-          } else{
-            oDC.background_mix_mode(device_context::background_mix_modes::transparent);
-          }
-          oDC.text_color(oFont.fore_color());
-          oDC.background_color(oFont.back_color());
-          auto oClient = rect::get_client_rect(*this);
-          oDC.draw_text(_text, oClient, Flags);
+      virtual void DrawText(const device_context& dc, rect& client){
+        ApplyFontEvent(dc);
+        wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
+                                         [](UINT i){ return GDI_ERROR == i; });
 
+        UINT format = DT_WORDBREAK | (multiline() ? 0 : DT_SINGLELINE);
+        switch (text_vertical_alignment()){
+          case text_vertical_alignments::top:
+            format |= DT_TOP; break;
+          case text_vertical_alignments::center:
+            format |= DT_VCENTER; break;
+          default:
+            format |= DT_BOTTOM; break;
         }
-        return 0;
+        switch (text_horizontal_alignment()){
+          case text_horizontal_alignments::left:
+            format |= DT_LEFT; break;
+          case text_horizontal_alignments::center:
+            format |= DT_CENTER; break;
+          default:
+            format |= DT_RIGHT; break;
+        }
+        wtf::exception::throw_lasterr_if(::DrawText(dc, _text.c_str(), -1, &client, format),
+                                         [](BOOL b){ return !b; });
+
       }
 
+    private:
       tstring _text;
-      alignment _vertical_alignment;
-      alignment _horizontal_alignment;
       bool _multiline;
+      text_vertical_alignments _text_vertical_alignment;
+      text_horizontal_alignments _text_horizontal_alignment;
     };
   }
 }

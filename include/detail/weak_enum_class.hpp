@@ -57,6 +57,8 @@ namespace wtf {
       return static_cast<_Ty>(vhead | vtail);
     }
 
+    template <typename _OtherT> _OtherT as() const{ return static_cast<_OtherT>(value); }
+
   private:
     _Ty value;
 

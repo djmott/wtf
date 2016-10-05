@@ -14,9 +14,11 @@ namespace wtf {
       has_click &operator=(const has_click &) = delete;
       has_click &operator=(has_click&&) = delete;
 
-      wtf::callback<void( const point&)> ClickEvent;
 
     protected:
+
+      virtual void ClickEvent(const point&){}
+
       virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM , LPARAM lparam, bool &) override {
         if (WM_LBUTTONDOWN == umsg) {
           _Down = true;

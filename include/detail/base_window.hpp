@@ -108,16 +108,17 @@ namespace wtf{
     };
 
 
-    /** base_window
-      * constructs the inheritance chain of policies
-      */
+    /* base_window
+     * constructs the inheritance chain of policies and arbitrates the propagation of messages through 
+     * the policy inheritance chain
+     */
     template <typename _ImplT, template <typename> class _HeadT, template <typename> class ... _TailT>
     struct base_window<_ImplT, _HeadT, _TailT...> : _HeadT<base_window<_ImplT, _TailT...>>{
       using _super_t = _HeadT<base_window<_ImplT, _TailT...>>;
       using window_type = base_window<_ImplT, _HeadT, _TailT...>;
 
       template <template <typename> class _PolicyT>
-      using concrete_policy_type =  _::concrete_impl<_PolicyT, _ImplT, _HeadT, _TailT...>;
+      using concrete_policy_type =  typename _::concrete_impl<_PolicyT, _ImplT, _HeadT, _TailT...>::type;
 
 
       base_window() = default;
@@ -132,13 +133,13 @@ namespace wtf{
       }
 
       /// returns a reference to the concrete policy implementation of this instance
-      template <template <typename> class _PolicyT> typename concrete_policy_type<_PolicyT>::type& get_policy(){
-        return *static_cast<typename concrete_policy_type<_PolicyT>::type*>(this);
+      template <template <typename> class _PolicyT>  concrete_policy_type<_PolicyT>& get_policy(){
+        return *static_cast<concrete_policy_type<_PolicyT>*>(this);
       }
 
       /// same as above but const
-      template <template <typename> class _PolicyT> const typename concrete_policy_type<_PolicyT>::type& get_policy() const{
-        return *static_cast<const typename concrete_policy_type<_PolicyT>::type*>(this);
+      template <template <typename> class _PolicyT> const concrete_policy_type<_PolicyT>& get_policy() const{
+        return *static_cast<const concrete_policy_type<_PolicyT>*>(this);
       }
 
     private:
@@ -195,6 +196,10 @@ namespace wtf{
         return 0;
       }
 
+      /* messages arrive here from windows then are propagated from the implementation, through the 
+       * inheritance chain and back through all the handle_message overrides in order from the
+       * bottom most inherited (_ImplT::handle_message) to top most parent (this class::handle_message)
+      */
       static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
         std::string sTemp = typeid(_ImplT).name();
         sTemp += " ";

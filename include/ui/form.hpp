@@ -39,7 +39,6 @@ namespace wtf{
         bhandled = true;
         return 0;
       }
-      std::cout << typeid(_Ty).name() << " " << _::msg_name(umsg) << std::endl;
       return 0;
     }
   };

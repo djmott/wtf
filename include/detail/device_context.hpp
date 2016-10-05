@@ -24,10 +24,13 @@ namespace wtf{
     device_context(const device_context&) = delete;
     device_context &operator=(const device_context &) = delete;
 
+/*
     enum class background_mix_modes{
       opaque = OPAQUE,
       transparent = TRANSPARENT,
     };
+*/
+/*
 
     enum class border_edges{
       none = 0,
@@ -60,47 +63,9 @@ namespace wtf{
       flat = BF_FLAT,
       mono = BF_MONO,
     };
+*/
 
-    enum class draw_text_flags{
-      top = DT_TOP,
-      left = DT_LEFT,
-      center = DT_CENTER,
-      right = DT_RIGHT,
-      vcenter = DT_VCENTER,
-      bottom = DT_BOTTOM,
-      word_break = DT_WORDBREAK,
-      single_line = DT_SINGLELINE,
-      expand_tabs = DT_EXPANDTABS,
-      tab_stop = DT_TABSTOP,
-      no_clip = DT_NOCLIP,
-      external_leading = DT_EXTERNALLEADING,
-      calc_rect = DT_CALCRECT,
-      no_prefix = DT_NOPREFIX,
-      internal = DT_INTERNAL,
-      edit_control = DT_EDITCONTROL,
-      path_ellipsis = DT_PATH_ELLIPSIS,
-      end_ellipsis = DT_END_ELLIPSIS,
-      modify_string = DT_MODIFYSTRING,
-      rtl_reading = DT_RTLREADING,
-      word_ellipsis = DT_WORD_ELLIPSIS,
-      no_full_width_char_break = DT_NOFULLWIDTHCHARBREAK,
-      hide_prefix = DT_HIDEPREFIX,
-    };
-
-    enum class text_align_modes{
-      baseline = TA_BASELINE,
-      bottom = TA_BOTTOM,
-      top = TA_TOP,
-      center = TA_CENTER,
-      left = TA_LEFT,
-      right = TA_RIGHT,
-      no_update_cp = TA_NOUPDATECP,
-      rtl_reading = TA_RTLREADING,
-      update_cp = TA_UPDATECP,
-      vbaseline = VTA_BASELINE,
-      vcenter = VTA_CENTER,
-    };
-
+/*
     void background_color(const rgb &color) const{
       wtf::exception::throw_lasterr_if(::SetBkColor(*this, color), [](COLORREF c){ return CLR_INVALID == c; });
     }
@@ -117,6 +82,7 @@ namespace wtf{
       wtf::exception::throw_lasterr_if(::SetBkMode(*this, static_cast<int>(newval)), [](int i){ return !i; });
     }
 
+*/
     static device_context get_client(HWND hwnd){
       return device_context(wtf::exception::throw_lasterr_if(::GetDC(hwnd), [](HDC dc){ return !dc; }),
                             [hwnd](HDC dc){ ::ReleaseDC(hwnd, dc); });
@@ -126,26 +92,34 @@ namespace wtf{
       return device_context(wtf::exception::throw_lasterr_if(::GetWindowDC(hwnd), [](HDC dc){ return !dc; }),
                             [hwnd](HDC dc){ ::ReleaseDC(hwnd, dc); });
     }
+    static device_context get_dcex(HWND hwnd, region& rgn, DWORD flags){
+      return device_context(wtf::exception::throw_lasterr_if(::GetDCEx(hwnd, rgn, flags), [](HDC dc){ return !dc; }),
+                            [hwnd](HDC dc){ ::ReleaseDC(hwnd, dc); });
+    }
 
     static device_context get_screen(){
       return device_context(wtf::exception::throw_lasterr_if(::GetDC(nullptr), [](HDC dc){ return !dc; }),
                             [](HDC dc){ ::ReleaseDC(nullptr, dc); });
     }
 
+/*
     void draw_edge(const rect &area, border_edges edge, border_flags flags) const{
       rect r(area);
       wtf::exception::throw_lasterr_if(::DrawEdge(*this, &r, static_cast<UINT>(edge), static_cast<UINT>(flags)),
                                        [](BOOL b){ return !b; });
     }
+*/
 
     void draw_focus_rect(const rect &area) const{
       wtf::exception::throw_lasterr_if(::DrawFocusRect(*this, &area), [](BOOL b){ return !b; });
     }
 
+/*
     void draw_text(const tstring &str, rect &client, draw_text_flags flags) const{
       wtf::exception::throw_lasterr_if(::DrawText(*this, str.c_str(), -1, &client, static_cast<UINT>(flags)),
                                        [](BOOL b){ return !b; });
     }
+*/
 
     void fill(const region &oRegion, const brush &oBrush) const{
       wtf::exception::throw_lasterr_if(::FillRgn(*this, oRegion, oBrush), [](BOOL b){ return !b; });
@@ -198,6 +172,7 @@ namespace wtf{
     void select_object(const region &oRegion) const{
       wtf::exception::throw_lasterr_if(::SelectObject(*this, oRegion), [](HGDIOBJ o){ return !o || HGDI_ERROR == o; });
     }
+/*
 
     text_align_modes text_align() const{
       return static_cast<text_align_modes>(wtf::exception::throw_lasterr_if(::GetTextAlign(*this),
@@ -220,7 +195,7 @@ namespace wtf{
     void text_out(int x, int y, const tstring &str) const{
       wtf::exception::throw_lasterr_if(::TextOut(*this, x, y, str.c_str(), static_cast<int>(str.size())),
                                        [](BOOL b){ return !b; });
-    }
+    }*/
 
   protected:
     template<typename ... _ArgTs> device_context(_ArgTs &&...oArgs) :

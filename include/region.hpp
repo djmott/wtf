@@ -14,6 +14,9 @@ namespace wtf {
       region(const region&) = delete;
       region &operator=(const region &) = delete;
 
+      static region attach(HRGN__* newval){
+        return region(newval, [](HRGN){});
+      }
 
       operator HRGN() const { return get(); }
 
