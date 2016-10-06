@@ -29,21 +29,21 @@ namespace wtf {
 
     protected:
 
-      virtual void MouseMoveEvent(event_vkeys, const point&){}
-      virtual void MouseLButtonDownEvent(event_vkeys, const point&){}
-      virtual void MouseLButtonUpEvent(event_vkeys, const point&){}
-      virtual void MouseWheelEvent(event_vkeys, int16_t /*delta*/, const point&){}
+      virtual void MouseMoveEvent(event_vkeys, const point::client_coords&){}
+      virtual void MouseLButtonDownEvent(event_vkeys, const point::client_coords&){}
+      virtual void MouseLButtonUpEvent(event_vkeys, const point::client_coords&){}
+      virtual void MouseWheelEvent(event_vkeys, int16_t /*delta*/, const point::screen_coords&){}
 
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override {
         if (WM_MOUSEMOVE == umsg)
-          MouseMoveEvent(static_cast<event_vkeys>(wparam), point(LOWORD(lparam), HIWORD(lparam)));
+          MouseMoveEvent(static_cast<event_vkeys>(wparam), point::client_coords(LOWORD(lparam), HIWORD(lparam)));
         if (WM_LBUTTONDOWN == umsg)
-          MouseLButtonDownEvent(static_cast<event_vkeys>(wparam), point(LOWORD(lparam), HIWORD(lparam)));
+          MouseLButtonDownEvent(static_cast<event_vkeys>(wparam), point::client_coords(LOWORD(lparam), HIWORD(lparam)));
         if (WM_LBUTTONUP == umsg)
-          MouseLButtonUpEvent(static_cast<event_vkeys>(wparam), point(LOWORD(lparam), HIWORD(lparam)));
+          MouseLButtonUpEvent(static_cast<event_vkeys>(wparam), point::client_coords(LOWORD(lparam), HIWORD(lparam)));
         if (WM_MOUSEWHEEL == umsg)
           MouseWheelEvent(static_cast<event_vkeys>(LOWORD(wparam)), static_cast<int16_t>(HIWORD(wparam)),
-                          point(LOWORD(lparam), HIWORD(lparam)));
+                          point::screen_coords(LOWORD(lparam), HIWORD(lparam)));
         return 0;
       }
     };

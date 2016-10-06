@@ -8,18 +8,19 @@ namespace wtf {
     template<typename _SuperT>
     struct has_paint : _SuperT {
 
-      has_paint() : _SuperT(), _background_brush(brush::system_brush(system_colors::button_face)) {}
       has_paint(const has_paint&) = delete;
       has_paint &operator=(const has_paint &) = delete;
       has_paint(has_paint&&) = delete;
       has_paint &operator=(has_paint &&) = delete;
+      virtual ~has_paint() = default;
+      has_paint() : _SuperT(), _background_brush(brush::system_brush(system_colors::button_face)){}
 
       void update() const {
         wtf::exception::throw_lasterr_if(::UpdateWindow(*this), [](BOOL b) { return !b; });
       }
 
       void refresh(bool erase = true) const {
-        auto area = rect::get_client_rect(*this);
+        auto area = rect::client_coord::get(*this);
         wtf::exception::throw_lasterr_if(::InvalidateRect(*this, &area, erase ? TRUE : FALSE),
                                          [](BOOL b) { return !b; });
       }
@@ -34,7 +35,7 @@ namespace wtf {
     protected:
 
       virtual void PaintEvent(const device_context&, const paint_struct&){}
-      virtual void EraseBackgroundEvent(const device_context& ctx, const rect& client, bool& handled ){
+      virtual void EraseBackgroundEvent(const device_context& ctx, const rect::client_coord& client, bool& handled ){
         ctx.fill(client, background_brush());
       }
 
@@ -44,7 +45,7 @@ namespace wtf {
                      *reinterpret_cast<const paint_struct *>(lparam));
         } else if (WM_ERASEBKGND == umsg) {
           auto &oDC = *reinterpret_cast<const device_context *>(lparam);
-          EraseBackgroundEvent(oDC, rect::get_client_rect(*this), bhandled);
+          EraseBackgroundEvent(oDC, rect::client_coord::get(*this), bhandled);
           if (bhandled) return 1;
         }
         return 0;

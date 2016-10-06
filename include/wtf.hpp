@@ -93,6 +93,7 @@ namespace wtf{
 #include "ui/push_button.hpp"
 #include "ui/scroll_bar.hpp"
 #include "ui/panel.hpp"
+#include "ui/rivet.hpp"
 #include "ui/listbox.hpp"
 #include "ui/textbox.hpp"
 #include "ui/toggle_button.hpp"

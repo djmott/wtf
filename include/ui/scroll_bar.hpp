@@ -46,23 +46,26 @@ namespace wtf{
           push_button(Parent), _Parent(Parent), _IsIncrementer(IsIncrementer)
         {}
 
-        virtual void ClickEvent(const point&) override {
+        virtual void ClickEvent(const point::client_coords&) override {
           if (_IsIncrementer) _Parent.IncrementEvent();
           else _Parent.DecrementEvent();
         }
 
-        virtual void MouseMoveEvent(event_vkeys k, const point& p){
-          auto client = rect::get_client_rect(*this);
+        virtual void MouseMoveEvent(event_vkeys k, const point::client_coords& p){
+          push_button::MouseMoveEvent(k, p);
+          auto client = rect::client_coord::get(*this);
           if (!client.is_in(p) && this == _Parent._ButtonHeldDown && _Parent._ButtonDownTimer){
             MouseLButtonUpEvent(k, p);
           }
         }
-        virtual void MouseLButtonDownEvent(event_vkeys, const point&){
+        virtual void MouseLButtonDownEvent(event_vkeys k, const point::client_coords& p){
+          push_button::MouseLButtonDownEvent(k, p);
           ::SetCapture(*this);
           _Parent._ButtonHeldDown = this;
           _Parent._ButtonDownTimer = _Parent.set_timer(500);
         }
-        virtual void MouseLButtonUpEvent(event_vkeys, const point&){
+        virtual void MouseLButtonUpEvent(event_vkeys k, const point::client_coords& p){
+          push_button::MouseLButtonUpEvent(k, p);
           if (this == _Parent._ButtonHeldDown && _Parent._ButtonDownTimer){
             _Parent.kill_timer(_Parent._ButtonDownTimer);
             _Parent._ButtonHeldDown = nullptr;
@@ -71,9 +74,10 @@ namespace wtf{
         }
 
 
-        virtual void PaintEvent(const device_context& dc, const paint_struct&) override {
-          auto client = rect::get_client_rect(*this);
-          point::vector arrow(3);
+        virtual void PaintEvent(const device_context& dc, const paint_struct&ps) override {
+          push_button::PaintEvent(dc, ps);
+          auto client = rect::client_coord::get(*this);
+          point::client_coords::vector arrow(3);
           if (_IsIncrementer && orientations::horizontal == _Parent._orientation){
             arrow[0].x = 5; arrow[0].y = 5;
             arrow[1].x = client.right - 5; arrow[1].y = client.bottom / 2;
@@ -95,22 +99,22 @@ namespace wtf{
         }
       };
 
-      virtual void MouseWheelEvent(event_vkeys, int16_t delta, const point&p) override{
+      virtual void MouseWheelEvent(event_vkeys, int16_t delta, const point::screen_coords&p) override{
         delta /= 120;
         if (delta > 0){
-          for (;delta>0;--delta) _Dec.ClickEvent(p);
+          for (;delta>0;--delta) _Dec.ClickEvent(p.to_client(*this));
         }else {
-          for (;delta<0;++delta) _Inc.ClickEvent(p);
+          for (;delta<0;++delta) _Inc.ClickEvent(p.to_client(*this));
         }
       }
 
-      virtual void ResizedEvent(wm_size_flags, uint16_t width, uint16_t height) override {
+      virtual void ResizedEvent(wm_size_flags, const point::client_coords& p) override {
         if (orientations::horizontal == _orientation){
-          _Dec.move(0, 0, height, height);
-          _Inc.move(width - height, 0, height, height);
+          _Dec.move(0, 0, p.y, p.y);
+          _Inc.move(p.x - p.y, 0, p.y, p.y);
         } else{
-          _Dec.move(0, 0, width, width);
-          _Inc.move(0, height - width, width, width);
+          _Dec.move(0, 0, p.x, p.x);
+          _Inc.move(0, p.y - p.x, p.x, p.x);
         }
       }
       
@@ -119,7 +123,7 @@ namespace wtf{
         kill_timer(_ButtonDownTimer);
         if (!_ButtonHeldDown) return;
         _ButtonDownTimer = set_timer(50);
-        _ButtonHeldDown->ClickEvent(point(0, 0));
+        _ButtonHeldDown->ClickEvent(cursor::position().to_client(*this));
       }
 
 

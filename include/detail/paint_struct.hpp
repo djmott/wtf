@@ -1,7 +1,7 @@
 #pragma once
 
 namespace wtf {
-  struct paint_struct : PAINTSTRUCT {
+  struct paint_struct : private PAINTSTRUCT {
     ~paint_struct() { ::EndPaint(_hwnd, this); }
 
     explicit paint_struct(HWND hwnd) : _hwnd(hwnd) {
@@ -9,6 +9,9 @@ namespace wtf {
     }
 
     paint_struct(const paint_struct &) = delete;
+
+    rect::client_coord& client(){ return *static_cast<rect::client_coord*>(&rcPaint); }
+    const rect::client_coord& client() const { return *static_cast<const rect::client_coord*>(&rcPaint); }
 
   protected:
     HWND _hwnd;

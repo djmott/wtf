@@ -30,6 +30,8 @@ namespace wtf {
         lowered,
         bumped,
         etched,
+        double_raised,
+        double_lowered,
       };
 
       int border_width() const{
@@ -50,41 +52,49 @@ namespace wtf {
       virtual border_styles border_style() const{ return _border_style; }
       virtual void border_style(border_styles newval){ _border_style = newval; }
 
+      virtual void enable_border_elements(bool top, bool right, bool bottom, bool left){
+        _draw_top = top; _draw_left = left; _draw_right = right; _draw_bottom = bottom;
+      }
     protected:
 
       virtual void DrawBorderEvent(const device_context& dc, const paint_struct& ps){
         auto highlight = pen::create(pen::style::solid, 1, border_highlight());
         auto shadow = pen::create(pen::style::solid, 1, border_shadow());
         //draw outer border
+        rect::client_coord client = ps.client();
         switch (border_style()){
           case border_styles::none: return;
           case border_styles::flat:
-            dc.line(shadow, ps.rcPaint.right - 1, 0, ps.rcPaint.right - 1, ps.rcPaint.bottom);
-            dc.line(shadow, 0, ps.rcPaint.bottom-1, ps.rcPaint.right, ps.rcPaint.bottom-1);
-            dc.line(shadow, 0, 0, ps.rcPaint.right, 0);
-            dc.line(shadow, 0, 0, 0, ps.rcPaint.bottom);
+            if (_draw_right) dc.line(shadow, client.right - 1, 0, client.right - 1, client.bottom);
+            if (_draw_bottom) dc.line(shadow, 0, client.bottom-1, client.right, client.bottom-1);
+            if (_draw_top) dc.line(shadow, 0, 0, client.right, 0);
+            if (_draw_left) dc.line(shadow, 0, 0, 0, client.bottom);
             break;
           case border_styles::etched:
           case border_styles::lowered:
+          case border_styles::double_lowered:
             std::swap(highlight, shadow);
           case border_styles::bumped:
           case border_styles::raised:
-            dc.line(shadow, ps.rcPaint.right - 1, 0, ps.rcPaint.right - 1, ps.rcPaint.bottom );
-            dc.line(shadow, 0, ps.rcPaint.bottom - 1, ps.rcPaint.right, ps.rcPaint.bottom -1);
-            dc.line(highlight, 0, 0, ps.rcPaint.right, 0);
-            dc.line(highlight, 0, 0, 0, ps.rcPaint.bottom);
+          case border_styles::double_raised:
+            if (_draw_right) dc.line(shadow, client.right - 1, 0, client.right - 1, client.bottom );
+            if (_draw_bottom) dc.line(shadow, 0, client.bottom - 1, client.right, client.bottom -1);
+            if (_draw_top) dc.line(highlight, 0, 0, client.right, 0);
+            if (_draw_left) dc.line(highlight, 0, 0, 0, client.bottom);
         }
         //draw inner border
         switch (border_style()){
           case border_styles::raised:
           case border_styles::lowered: return;
           case border_styles::etched:
+          case border_styles::double_lowered:
             std::swap(highlight, shadow);
           case border_styles::bumped:
-            dc.line(shadow, ps.rcPaint.right - 2, 1, ps.rcPaint.right - 2, ps.rcPaint.bottom - 2);
-            dc.line(shadow, 1, ps.rcPaint.bottom - 2, ps.rcPaint.right - 2, ps.rcPaint.bottom - 2);
-            dc.line(highlight, 1, 1, ps.rcPaint.right-1, 1);
-            dc.line(highlight, 1, 1, 1, ps.rcPaint.bottom-1);
+          case border_styles::double_raised:
+            if (_draw_right) dc.line(shadow, client.right - 2, 2, client.right - 2, client.bottom - 2);
+            if (_draw_bottom) dc.line(shadow, 2, client.bottom - 2, client.right - 1, client.bottom - 2);
+            if (_draw_top) dc.line(highlight, 2, 2, client.right-2, 2);
+            if (_draw_left) dc.line(highlight, 2, 2, 2, client.bottom-2);
         }
       }
 
@@ -99,6 +109,7 @@ namespace wtf {
       border_styles _border_style;
       rgb _border_highlight;
       rgb _border_shadow;
+      bool _draw_top = true, _draw_left = true, _draw_right = true, _draw_bottom = true;
     };
 
   }

@@ -17,12 +17,12 @@ namespace wtf{
     protected:
 
       virtual void PaintEvent(const device_context& oDC, const paint_struct& oPS){
-        rect area = oPS.rcPaint;
-        area.top += border_width();
-        area.left += border_width();
-        area.bottom -= border_width();
-        area.right -= border_width();
-        this->DrawText(oDC, area);
+        auto client = oPS.client();
+        client.top += border_width();
+        client.left += border_width();
+        client.bottom -= border_width();
+        client.right -= border_width();
+        this->DrawText(oDC, client);
       }
 
     };

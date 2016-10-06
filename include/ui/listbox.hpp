@@ -41,8 +41,8 @@ namespace wtf{
     protected:
       friend struct vscroll;
 
-      virtual void ResizedEvent(wm_size_flags, uint16_t width, uint16_t height) override {
-        _vscroll.move(width - scroll_width - right_margin, top_margin, scroll_width, height - top_margin - bottom_margin);
+      virtual void ResizedEvent(wm_size_flags, const point::client_coords& p) override {
+        _vscroll.move(p.x - scroll_width - right_margin, top_margin, scroll_width, p.y - top_margin - bottom_margin);
       };
 
       virtual const brush &background_brush() const{ return _background_brush; }
@@ -50,12 +50,12 @@ namespace wtf{
       virtual void PaintEvent(const device_context& dc, const paint_struct& ps) override {
         if (!_Items.size()) return;
         ApplyFontEvent(dc);
-        rect client(ps.rcPaint);
+        rect::client_coord client = ps.client();
         auto oTextSize = dc.get_text_extent(_Items[0]);
         _ItemRects.clear();
         int listWidth = client.right - right_margin - scroll_width - left_margin;
         for (int i = top_margin; i < client.bottom; i += oTextSize.cy){
-          _ItemRects.push_back(rect(left_margin, i, listWidth, std::min(i + oTextSize.cy, client.bottom - bottom_margin)));
+          _ItemRects.push_back(rect::client_coord(left_margin, i, listWidth, std::min(i + oTextSize.cy, client.bottom - bottom_margin)));
         }
 
         for (size_t i = 0; i < _ItemRects.size() && (_TopIndex + i) < _Items.size(); ++i){
@@ -88,13 +88,13 @@ namespace wtf{
         listbox& _Parent;
       };
 
-      virtual void MouseWheelEvent(event_vkeys, int16_t delta, const point&p) override{
+      virtual void MouseWheelEvent(event_vkeys, int16_t delta, const point::screen_coords&p) override{
         if (delta > 0) _vscroll.DecrementEvent();
         else _vscroll.IncrementEvent();
       }
 
 
-      virtual void ClickEvent(const point& p) override {
+      virtual void ClickEvent(const point::client_coords& p) override {
         if (selection_modes::single == _selection_mode){
           _SelectedItems.clear();
         }
@@ -115,7 +115,7 @@ namespace wtf{
       point _MouseDownAt;
       int _TopIndex;
       std::vector<tstring> _Items;
-      std::vector<rect> _ItemRects;
+      rect::client_coord::vector _ItemRects;
       std::vector<int> _SelectedItems;
       vscroll _vscroll;
       selection_modes _selection_mode;

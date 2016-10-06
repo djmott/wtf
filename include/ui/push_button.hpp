@@ -16,24 +16,24 @@ namespace wtf{
       border_style(border_styles::raised);
     }
     
-  private:
+  protected:
     
-    virtual void MouseMoveEvent(event_vkeys, const point& p) override{
+    virtual void MouseMoveEvent(event_vkeys, const point::client_coords& p) override{
       if (!_Down) return;
-      if (!rect::get_client_rect(*this).is_in(p)){
+      if (!rect::client_coord::get(*this).is_in(p)){
         ::ReleaseCapture();
         _Down = false;
         border_style(border_styles::raised);
         refresh();
       }
     }
-    virtual void MouseLButtonDownEvent(event_vkeys, const point&) override{
+    virtual void MouseLButtonDownEvent(event_vkeys, const point::client_coords&) override{
       _Down = true;
       border_style(border_styles::lowered);
       ::SetCapture(*this);
       refresh();
     }
-    virtual void MouseLButtonUpEvent(event_vkeys, const point&) override{
+    virtual void MouseLButtonUpEvent(event_vkeys, const point::client_coords&) override{
       if (!_Down) return;
       _Down = false;
       border_style(border_styles::raised);
@@ -42,7 +42,7 @@ namespace wtf{
     }
 
     virtual void PaintEvent(const device_context& dc, const paint_struct& ps){
-      rect client = ps.rcPaint;
+      auto client = ps.client();
       client.top += border_width();
       client.left += border_width();
       client.bottom -= border_width();
@@ -54,7 +54,7 @@ namespace wtf{
       DrawText(dc, client);
     }
 
-
+  private:
     bool _Down = false;
   };
 

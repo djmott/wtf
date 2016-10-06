@@ -43,25 +43,21 @@ namespace wtf {
 
       static int hide() { return ::ShowCursor(FALSE); }
 
-      static void position(int x, int y) {
-        wtf::exception::throw_lasterr_if(::SetCursorPos(x, y), [](BOOL b) { return !b; });
-      }
-
-      static void position(const point &p) {
+      static void position(const point::screen_coords &p) {
         wtf::exception::throw_lasterr_if(::SetCursorPos(p.x, p.y), [](BOOL b) { return !b; });
       }
 
-      static point position() {
-        point oRet;
+      static point::screen_coords position() {
+        point::screen_coords oRet;
         wtf::exception::throw_lasterr_if(::GetCursorPos(&oRet), [](BOOL b) { return !b; });
         return oRet;
       }
 
-      static void clip(const rect &area) {
+      static void clip(const rect::screen_coords &area) {
         wtf::exception::throw_lasterr_if(::ClipCursor(&area), [](BOOL b) { return !b; });
       }
 
-      static void clip() { wtf::exception::throw_lasterr_if(::ClipCursor(nullptr), [](BOOL b) { return !b; }); }
+      static void unclip() { wtf::exception::throw_lasterr_if(::ClipCursor(nullptr), [](BOOL b) { return !b; }); }
 
       static const cursor &global(style Style) {
         static auto _arrow = system(style::arrow);

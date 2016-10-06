@@ -4,15 +4,19 @@
 
 struct main_form : wtf::form{
   main_form() :
-    oTextbox(*this)
+    oTabs(*this)
   {
-    titlebar("Textbox example");
-//     oTextbox.font().lfHeight = 25;
-    oTextbox.move(5, 5, 100, 40);
-//    oTextbox.text("The quick brown fox jumped over the lazy dog.");
+    titlebar("Tab container example");
+    OnResize.connect([this](const wtf::point::client_coords& p){ 
+      oTabs.move(5, 5, p.x-10, p.y-10); 
+    });
+    for (int i = 0; i < 10; i++){
+      wtf::tstring sTemp = _T("ERER");
+      oTabs.add_page(sTemp);
+    }
   }
 
-  wtf::textbox oTextbox;
+  wtf::tab_container oTabs;
 };
 
 

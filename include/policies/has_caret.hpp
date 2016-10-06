@@ -49,12 +49,12 @@ namespace wtf {
         wtf::exception::throw_lasterr_if(::SetCaretBlinkTime(newval), [](BOOL b) { return !b; });
       }
 
-      virtual void caret_position(const point &pos) {
+      virtual void caret_position(const point::client_coords &pos) {
         _pos = pos;
         wtf::exception::throw_lasterr_if(::SetCaretPos(_pos.x, _pos.y), [](BOOL b) { return !b; });
       }
 
-      virtual point caret_position() const{ return _pos; }
+      virtual point::client_coords caret_position() const{ return _pos; }
 
     protected:
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) override {
@@ -72,7 +72,7 @@ namespace wtf {
       }
     private:
       UINT _blink_rate;
-      point _pos;
+      point::client_coords _pos;
       int _width;
       int _height;
     };

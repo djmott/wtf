@@ -16,3 +16,9 @@ add_dependencies(listbox_example examples)
 
 add_executable(textbox_example textbox_example.cpp)
 add_dependencies(textbox_example examples)
+
+add_executable(tab_example tab_example.cpp)
+add_dependencies(tab_example examples)
+
+add_executable(eye_candy_example eye_candy_example.cpp)
+add_dependencies(eye_candy_example examples)

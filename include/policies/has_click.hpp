@@ -17,7 +17,7 @@ namespace wtf {
 
     protected:
 
-      virtual void ClickEvent(const point&){}
+      virtual void ClickEvent(const point::client_coords&){}
 
       virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM , LPARAM lparam, bool &) override {
         if (WM_LBUTTONDOWN == umsg) {
@@ -25,7 +25,7 @@ namespace wtf {
           SetCapture(hwnd);
         }
         if (WM_MOUSEMOVE == umsg && _Down) {
-          auto oRect = rect::get_client_rect(hwnd);
+          auto oRect = rect::client_coord::get(hwnd);
           auto x = LOWORD(lparam);
           auto y = HIWORD(lparam);
           if (x < 0 || y < 0 || x > oRect.right || y > oRect.bottom) {
@@ -36,7 +36,7 @@ namespace wtf {
         if (WM_LBUTTONUP == umsg && _Down) {
           ReleaseCapture();
           _Down = false;
-          ClickEvent(point(LOWORD(lparam), HIWORD(lparam)));
+          ClickEvent(point::client_coords(LOWORD(lparam), HIWORD(lparam)));
         }
         return 0;
       }

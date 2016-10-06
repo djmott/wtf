@@ -24,65 +24,6 @@ namespace wtf{
     device_context(const device_context&) = delete;
     device_context &operator=(const device_context &) = delete;
 
-/*
-    enum class background_mix_modes{
-      opaque = OPAQUE,
-      transparent = TRANSPARENT,
-    };
-*/
-/*
-
-    enum class border_edges{
-      none = 0,
-      thin_raised = BDR_RAISEDOUTER,
-      thin_sunken = BDR_SUNKENOUTER,
-      bumbed = EDGE_BUMP,
-      etched = EDGE_ETCHED,
-      raised = EDGE_RAISED,
-      sunken = EDGE_SUNKEN,
-    };
-
-    enum class border_flags{
-      left_border = BF_LEFT,
-      top_border = BF_TOP,
-      right_border = BF_RIGHT,
-      bottom_border = BF_BOTTOM,
-      top_left = BF_TOPLEFT,
-      top_right = BF_TOPRIGHT,
-      bottom_left = BF_BOTTOMLEFT,
-      bottom_right = BF_BOTTOMRIGHT,
-      whole_rect = BF_RECT,
-      diagonal = BF_DIAGONAL,
-      diagonal_end_top_right = BF_DIAGONAL_ENDTOPRIGHT,
-      diagonal_end_top_left = BF_DIAGONAL_ENDTOPLEFT,
-      diagonal_end_bottom_left = BF_DIAGONAL_ENDBOTTOMLEFT,
-      diagonal_end_bottom_right = BF_DIAGONAL_ENDBOTTOMRIGHT,
-      middle = BF_MIDDLE,
-      soft = BF_SOFT,
-      adjust = BF_ADJUST,
-      flat = BF_FLAT,
-      mono = BF_MONO,
-    };
-*/
-
-/*
-    void background_color(const rgb &color) const{
-      wtf::exception::throw_lasterr_if(::SetBkColor(*this, color), [](COLORREF c){ return CLR_INVALID == c; });
-    }
-
-    rgb background_color() const{
-      return rgb(wtf::exception::throw_lasterr_if(::GetBkColor(*this), [](COLORREF c){ return CLR_INVALID == c; }));
-    }
-
-    background_mix_modes background_mix_mode() const{
-      return static_cast<background_mix_modes>(wtf::exception::throw_lasterr_if(::GetBkMode(*this), [](int i){ return !i; }));
-    }
-
-    void background_mix_mode(background_mix_modes newval) const{
-      wtf::exception::throw_lasterr_if(::SetBkMode(*this, static_cast<int>(newval)), [](int i){ return !i; });
-    }
-
-*/
     static device_context get_client(HWND hwnd){
       return device_context(wtf::exception::throw_lasterr_if(::GetDC(hwnd), [](HDC dc){ return !dc; }),
                             [hwnd](HDC dc){ ::ReleaseDC(hwnd, dc); });
@@ -102,34 +43,21 @@ namespace wtf{
                             [](HDC dc){ ::ReleaseDC(nullptr, dc); });
     }
 
-/*
-    void draw_edge(const rect &area, border_edges edge, border_flags flags) const{
-      rect r(area);
-      wtf::exception::throw_lasterr_if(::DrawEdge(*this, &r, static_cast<UINT>(edge), static_cast<UINT>(flags)),
-                                       [](BOOL b){ return !b; });
-    }
-*/
 
-    void draw_focus_rect(const rect &area) const{
+    void draw_focus_rect(const rect::client_coord& area) const{
       wtf::exception::throw_lasterr_if(::DrawFocusRect(*this, &area), [](BOOL b){ return !b; });
     }
 
-/*
-    void draw_text(const tstring &str, rect &client, draw_text_flags flags) const{
-      wtf::exception::throw_lasterr_if(::DrawText(*this, str.c_str(), -1, &client, static_cast<UINT>(flags)),
-                                       [](BOOL b){ return !b; });
-    }
-*/
 
     void fill(const region &oRegion, const brush &oBrush) const{
       wtf::exception::throw_lasterr_if(::FillRgn(*this, oRegion, oBrush), [](BOOL b){ return !b; });
     }
 
-    void fill(const rect &oRect, const brush &oBrush) const{
+    void fill(const rect::client_coord &oRect, const brush &oBrush) const{
       wtf::exception::throw_lasterr_if(::FillRect(*this, &oRect, oBrush), [](int i){ return !i; });
     }
 
-    void fill(const point::vector &oPoints, const pen &oPen, const brush &oBrush) const{
+    void fill(const point::client_coords::vector &oPoints, const pen &oPen, const brush &oBrush) const{
       select_object(oPen);
       select_object(oBrush);
       wtf::exception::throw_lasterr_if(::Polygon(*this, &oPoints[0], static_cast<int>(oPoints.size())),
@@ -143,7 +71,16 @@ namespace wtf{
       return ret;
     }
 
-    void invert(const rect &area) const{
+    size get_text_extent(const TCHAR *str, int len) const{
+      size ret;
+      wtf::exception::throw_lasterr_if(::GetTextExtentPoint32(*this, str, len, &ret),
+                                       [](BOOL b){ return !b; });
+      return ret;
+    }
+
+
+
+    void invert(const rect::client_coord &area) const{
       wtf::exception::throw_lasterr_if(::InvertRect(*this, &area), [](BOOL b){ return !b; });
     }
 
@@ -172,30 +109,6 @@ namespace wtf{
     void select_object(const region &oRegion) const{
       wtf::exception::throw_lasterr_if(::SelectObject(*this, oRegion), [](HGDIOBJ o){ return !o || HGDI_ERROR == o; });
     }
-/*
-
-    text_align_modes text_align() const{
-      return static_cast<text_align_modes>(wtf::exception::throw_lasterr_if(::GetTextAlign(*this),
-                                                                            [](UINT i){ return GDI_ERROR == i; }));
-    }
-
-    void text_align(text_align_modes newval) const{
-      wtf::exception::throw_lasterr_if(::SetTextAlign(*this, static_cast<UINT>(newval)),
-                                       [](UINT i){ return GDI_ERROR == i; });
-    }
-
-    void text_color(const rgb &color) const{
-      wtf::exception::throw_lasterr_if(::SetTextColor(*this, color), [](COLORREF c){ return CLR_INVALID == c; });
-    }
-
-    rgb text_color() const{
-      return rgb(wtf::exception::throw_lasterr_if(::GetTextColor(*this), [](COLORREF c){ return CLR_INVALID == c; }));
-    }
-
-    void text_out(int x, int y, const tstring &str) const{
-      wtf::exception::throw_lasterr_if(::TextOut(*this, x, y, str.c_str(), static_cast<int>(str.size())),
-                                       [](BOOL b){ return !b; });
-    }*/
 
   protected:
     template<typename ... _ArgTs> device_context(_ArgTs &&...oArgs) :

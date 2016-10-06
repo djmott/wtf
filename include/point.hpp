@@ -2,28 +2,41 @@
 
 namespace wtf {
 
-    struct point : POINT {
-      using vector = std::vector<point>;
+    struct point {
 
-      point() { x = y = 0; }
+      template <typename _Ty>
+      struct base : POINT{
+        base(){ x = y = 0; }
+        base(LONG X, LONG Y){ x = X; y = Y; }
+        using vector = std::vector<base>;
+        bool is_in(const RECT &r) const{ return PtInRect(&r, base(*this)) ? true : false; }
+      };
 
-      point(LONG X, LONG Y) {
-        x = X;
-        y = Y;
-      }
+      struct client_coords;
 
-      point(const point &src) {
-        x = src.x;
-        y = src.y;
-      }
+      struct screen_coords : base<screen_coords>{
+        screen_coords() = default;
+        screen_coords(LONG X, LONG Y) : base(X, Y){}
+        inline client_coords to_client(HWND) const ;
+      };
+      struct client_coords : base<screen_coords>{
+        client_coords() = default;
+        client_coords(LONG X, LONG Y) : base(X,Y){}
+        screen_coords to_screen(HWND hwnd) const {
+          screen_coords oRet;
+          wtf::exception::throw_lasterr_if(::ClientToScreen(hwnd, &oRet), [](BOOL b){ return !b; });
+          return oRet;
+        }
+      };
 
-      point &operator=(const point &src) {
-        x = src.x;
-        y = src.y;
-        return *this;
-      }
-
-      bool is_in(const RECT &r) const { return PtInRect(&r, point(*this)) ? true : false; }
     };
+
+
+    inline point::client_coords point::screen_coords::to_client(HWND hwnd) const{
+      client_coords oRet;
+      wtf::exception::throw_lasterr_if(::ScreenToClient(hwnd, &oRet), [](BOOL b){ return !b; });
+      return oRet;
+    }
+
   }
 

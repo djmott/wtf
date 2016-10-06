@@ -49,7 +49,7 @@ namespace wtf{
 
     protected:
 
-      virtual void DrawText(const device_context& dc, rect& client){
+      virtual void DrawText(const device_context& dc, rect::client_coord& client){
         ApplyFontEvent(dc);
         wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
                                          [](UINT i){ return GDI_ERROR == i; });

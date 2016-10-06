@@ -41,11 +41,9 @@ namespace wtf {
         const auto & oFont = font();
         auto oFontHandle = oFont.open();
         dc.select_object(oFontHandle);
-        wtf::exception::throw_lasterr_if(::SetBkMode(dc, static_cast<int>(background_mode())),
-                                         [](int i){ return !i; });
+        wtf::exception::throw_lasterr_if(::SetBkMode(dc, static_cast<int>(background_mode())), [](int i){ return !i; });
         wtf::exception::throw_lasterr_if(::SetTextColor(dc, fore_color()), [](COLORREF c){ return CLR_INVALID == c; });
         wtf::exception::throw_lasterr_if(::SetBkColor(dc, back_color()), [](COLORREF c){ return CLR_INVALID == c; });
-
       }
 
       virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bProcessed) override{

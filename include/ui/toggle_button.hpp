@@ -30,12 +30,12 @@ namespace wtf{
 
     private:
 
-      virtual void MouseLButtonUpEvent(event_vkeys, const point&) override{
+      virtual void MouseLButtonUpEvent(event_vkeys, const point::client_coords&) override{
         button_state(button_states::down == _button_state ? button_states::up : button_states::down);
       }
 
       virtual void PaintEvent(const device_context& dc, const paint_struct& ps){
-        rect client = ps.rcPaint;
+        rect::client_coord client = ps.client();
         client.top += border_width();
         client.left += border_width();
         client.bottom -= border_width();
