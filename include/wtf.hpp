@@ -24,20 +24,20 @@ namespace wtf{
   inline static HINSTANCE instance_handle(){ return &__ImageBase; }
 
   using tstring = std::basic_string<TCHAR>;
-  template <typename, template <typename> class ...> struct window;
+  template <typename, template <typename,typename> class ...> struct window;
 
   namespace policy{
-    template <template <typename> class> struct traits;
+    template <template <typename, typename> class> struct traits;
 
-    template <template <typename> class ...> struct list;
+    template <template <typename, typename> class ...> struct list;
 
-    template <template <typename> class _HeadT, template <typename> class ..._TailT>
+    template <template <typename, typename> class _HeadT, template <typename, typename> class ..._TailT>
     struct list<_HeadT, _TailT...> : list<_TailT...>{};
 
     template <> struct list<>{};
   }
   namespace _{
-    template <typename, template <typename> class ... > struct base_window;
+    template <typename, template <typename, typename> class ... > struct base_window;
   }
 }
 
@@ -99,3 +99,4 @@ namespace wtf{
 #include "ui/textbox.hpp"
 #include "ui/toggle_button.hpp"
 #include "ui/tab_container.hpp"
+#include "ui/split_container.hpp"

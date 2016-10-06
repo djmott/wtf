@@ -5,7 +5,7 @@ namespace wtf{
     /** has_text
     * provides members to draw text on UI elements
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_text : _SuperT{
 
       has_text()
@@ -81,13 +81,28 @@ namespace wtf{
       }
 
       virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override{
-        if (WM_PAINT == umsg){
-          draw_text(*reinterpret_cast<const device_context *>(wparam), reinterpret_cast<const paint_struct *>(lparam)->client());
+        if (WM_PAINT == umsg && _auto_draw_text){
+          rect::client_coord oClient = reinterpret_cast<const paint_struct *>(lparam)->client();
+          using _impl_window_t = typename _ImplT::window_type;
+          using has_border_t = typename _impl_window_t::has_policy_t<policy::has_border>;
+          adjust_area_for_borders<has_border_t::value>(oClient);
+          draw_text(*reinterpret_cast<const device_context *>(wparam), oClient);
         }
         return 0;
       }
 
     private:
+
+      template <bool> void adjust_area_for_borders(rect::client_coord&){}
+
+      template <> void adjust_area_for_borders<true>(rect::client_coord& oClient){
+        auto & oBorder = static_cast<_ImplT*>(this)->get_policy<policy::has_border>();
+        oClient.top += oBorder.border_width();
+        oClient.left += oBorder.border_width();
+        oClient.right -= oBorder.border_width();
+        oClient.bottom -= oBorder.border_width();
+      }
+
       tstring _text;
       bool _multiline;
       bool _auto_draw_text = true;

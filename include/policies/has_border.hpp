@@ -6,7 +6,7 @@ namespace wtf {
     /** has_border
     * Creates borders
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_border : _SuperT {
 
       virtual ~has_border() = default;
@@ -88,13 +88,13 @@ namespace wtf {
           case border_styles::lowered: return;
           case border_styles::etched:
           case border_styles::double_lowered:
-            std::swap(highlight, shadow);
           case border_styles::bumped:
+            std::swap(highlight, shadow);
           case border_styles::double_raised:
-            if (_draw_right) dc.line(shadow, client.right - 2, 2, client.right - 2, client.bottom - 2);
-            if (_draw_bottom) dc.line(shadow, 2, client.bottom - 2, client.right - 1, client.bottom - 2);
-            if (_draw_top) dc.line(highlight, 2, 2, client.right-2, 2);
-            if (_draw_left) dc.line(highlight, 2, 2, 2, client.bottom-2);
+            if (_draw_right) dc.line(shadow, client.right - 2, 1, client.right - 2, client.bottom - 1);
+            if (_draw_bottom) dc.line(shadow, 1, client.bottom - 2, client.right - 1, client.bottom - 2);
+            if (_draw_top) dc.line(highlight, 1, 1, client.right-1, 1);
+            if (_draw_left) dc.line(highlight, 1, 1, 1, client.bottom-1);
         }
       }
 

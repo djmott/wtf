@@ -33,6 +33,12 @@ namespace wtf {
       weights weight() const{ return static_cast<weights>(lfWeight); }
       void weight(weights newval){ lfWeight = static_cast<LONG>(newval); }
 
+      bool italic() const{ return (lfItalic ? true : false); }
+      void italic(bool newval){ lfItalic = (newval ? 1 : 0); }
+
+      LONG height() const{ return lfHeight; }
+      void height(LONG newval){ lfHeight = newval; }
+
       struct handle : std::unique_ptr<HFONT__, void (*)(HFONT)> {
         operator HFONT() const { return get(); }
 

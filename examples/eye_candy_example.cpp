@@ -3,11 +3,21 @@
 
 
 struct main_form : wtf::form{
-  main_form() : l(*this)
+  main_form() : l1(*this), l2(*this), l3(*this)
   {
     titlebar("eye candy example");
-    l.move(5, 5, 10, 10);
-    l.border_style(wtf::label::border_styles::etched);
+    l1.move(100, 100, 100, 100);
+    l1.border_style(wtf::label::border_styles::etched);
+    l2.move(150, 150, 100, 100);
+    l2.border_style(wtf::label::border_styles::bumped);
+    l3.move(120, 120, 100, 100);
+    l3.border_style(wtf::label::border_styles::double_raised);
+
+    l1.OnClick += [this](){ l1.zorder(wtf::label::zorders::top); };
+    l2.OnClick += [this](){ l2.zorder(wtf::label::zorders::top); };
+    l3.OnClick += [this](){ l3.zorder(wtf::label::zorders::top); };
+
+//     l1.zorder(l2);
 
 /*
     OnResize.connect([this](const wtf::point::client_coords& p){
@@ -27,7 +37,7 @@ struct main_form : wtf::form{
     });
 */
   }
-  wtf::label l;
+  wtf::label l1, l2, l3;
 };
 
 

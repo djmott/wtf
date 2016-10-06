@@ -5,7 +5,7 @@ namespace wtf {
     /** has_click
     * produces click and double click events
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_click : _SuperT {
       virtual ~has_click() = default;
       has_click() = default;

@@ -5,7 +5,7 @@ namespace wtf {
     /** has_paint
     * adds members and events related to painting
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_paint : _SuperT {
 
       has_paint(const has_paint&) = delete;

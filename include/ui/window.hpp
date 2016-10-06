@@ -3,7 +3,7 @@
 namespace wtf{
 
 
-  template <typename _ImplT, template <typename> class ... _PolicyListT>
+  template <typename _ImplT, template <typename, typename> class ... _PolicyListT>
   struct window :  _::window_impl<_ImplT, _PolicyListT...>::type {
 
     using _base_window_t = typename  _::window_impl<_ImplT, _PolicyListT...>::type;
@@ -25,7 +25,7 @@ namespace wtf{
   protected:
     virtual LRESULT handle_message(HWND , UINT , WPARAM , LPARAM , bool& ){ return 0; }
   private:
-    template <typename, template <typename> class ... > friend struct _::base_window;
+    template <typename, template <typename,typename> class ... > friend struct _::base_window;
 
     /* 
     here messages are received from the main message pump and they're just fowarded to handle_message

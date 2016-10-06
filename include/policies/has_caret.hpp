@@ -5,7 +5,7 @@ namespace wtf {
     /** has_caret
     * Controls the caret of text/input elements
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_caret : _SuperT {
       has_caret(const has_caret&) = delete;
       has_caret(has_caret&&) = delete;

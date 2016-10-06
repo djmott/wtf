@@ -5,7 +5,7 @@ namespace wtf {
     /** has_cursor
     * Provides mouse pointer customization
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_cursor : _SuperT {
       virtual ~has_cursor() = default;
 

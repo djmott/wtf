@@ -5,7 +5,7 @@ namespace wtf {
     /** has_timer
     * Adds timer creation and produces timer events
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_timer : _SuperT {
       has_timer() : _next_timer_id(1) {}
       has_timer(const has_timer&) = delete;

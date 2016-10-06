@@ -6,7 +6,7 @@ namespace wtf {
     /** has_titlebar
     * Adds titlebar text features to windows
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_titlebar : _SuperT {
       has_titlebar() = default;
       virtual ~has_titlebar() = default;

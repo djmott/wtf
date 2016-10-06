@@ -11,11 +11,10 @@ namespace wtf{
       tab_container &operator=(tab_container&&) = delete;
       virtual ~tab_container() = default;
       explicit tab_container(HWND parent) 
-        : window(parent),
-        _button_bar_slider(*this), 
-        _tab_orientation(tab_orientations::top)
+        : window(parent), _active_page(0), _button_bar_slider(*this), _tab_orientation(tab_orientations::top)
       {        
         _button_bar_slider.orientation(scroll_bar::orientations::horizontal);
+        _button_bar_slider.hide();
       }
 
       enum class tab_orientations{
@@ -26,12 +25,12 @@ namespace wtf{
       };
 
       panel& add_page(const tstring& title){
-        _pages.emplace_back(new page_info(*this, title));
+        _pages.emplace_back(new page_info(*this, title, _pages.size()));
         ResizedEvent(window::wm_size_flags::restored, rect::client_coord::get(*this).dimensions());
         auto & oPanelInfo = _pages.back();
         oPanelInfo->_panel.border_style(panel::border_styles::raised);
         oPanelInfo->_button.border_style(label::border_styles::flat);
-        if (1 == _pages.size()) _active_page = 0;
+        active_page(_active_page);
         return oPanelInfo->_panel;
       }
 
@@ -58,48 +57,82 @@ namespace wtf{
           oPageInfo->_button.move(iBtnPos, 0, _tab_width, _tab_height); 
           iBtnPos += _tab_width;
           iBtnPos--;
-          oPageInfo->_panel.move(0, _tab_height, p.x, p.y - _tab_height);
+          oPageInfo->_panel.move(0, _tab_height-1, p.x, p.y - _tab_height);
         }
       }
 
-      void HidePages(){
-        for (auto & oPage : _pages){
-          oPage->_panel.hide();
-          oPage->_button.border_style(label::border_styles::flat);
-          oPage->_button.font().weight(font::weights::normal);
-          oPage->_button.refresh();
+      size_t active_page() const{ return _active_page; }
+      void active_page(size_t newval) { 
+        _active_page = newval;
+        for (size_t i=0 ; i<_pages.size() ; ++i){
+          if (i==_active_page) continue;
+          _pages[i]->deactivate();
         }
+        _pages[newval]->activate();
+        for (size_t i = 0; i < _pages.size(); ++i){
+          if (i == _active_page) continue;
+          _pages[i]->_button.zorder(_pages[_active_page]->_panel);
+        }
+        _pages[_active_page]->_panel.zorder(_pages[_active_page]->_button);
       }
 
 
       struct page_info{
         using ptr = std::unique_ptr<page_info>;
         using vector = std::vector<ptr>;
-        page_info(tab_container& parent, const tstring& sTitle) 
-          : _parent(parent), _panel(parent), _button(*this, sTitle){}
+        page_info(tab_container& parent, const tstring& sTitle, size_t PageIndex) 
+          : _parent(parent), _PageIndex(PageIndex), _panel(parent), _button(*this, sTitle){}
 
         page_info(const page_info&) = delete;
         page_info(page_info&&) = delete;
         page_info &operator=(const page_info &) = delete;
         page_info &operator=(page_info&&) = delete;
 
+        size_t _PageIndex;
         tab_container& _parent;
         panel _panel;
 
+        void deactivate(){
+          _panel.hide();
+          _panel.zorder(panel::zorders::bottom);
+          _button.deactivate();
+        }
+
+        void activate(){
+          _panel.show();
+          _button.activate();
+          _panel.refresh();
+        }
+
+
+
         struct tab_button : label{
+
           tab_button(page_info& parent, const tstring& sTitle) : label(parent._parent), _parent(parent){
             text(sTitle);
-            border_style(border_styles::flat);
             enable_border_elements(true, true, false, true);
+            deactivate();
           }
 
-          virtual void ClickEvent(const point::client_coords&) override{
-            _parent._parent.HidePages();
-            _parent._panel.show();
-            border_style(border_styles::double_raised);
+          void deactivate(){
+            border_style(label::border_styles::flat);
+            fore_color(wtf::system_rgb<system_colors::gray_text>());
+            font().weight(font::weights::normal);
+            zorder(zorders::bottom);
+            refresh();
+          }
+
+          void activate(){
+            border_style(border_styles::raised);
+            fore_color(wtf::system_rgb<system_colors::button_text>());
             font().weight(font::weights::bold);
             refresh();
           }
+
+          virtual void ClickEvent(const point::client_coords&) override{
+            _parent._parent.active_page(_parent._PageIndex);
+          }
+
 
           page_info& _parent;
 
@@ -110,11 +143,11 @@ namespace wtf{
 
 
 
+      size_t _active_page;
       tab_orientations _tab_orientation;
       page_info::vector _pages;      
       scroll_bar _button_bar_slider;
-      size_t _active_page;
-      int _tab_height = 15;
+      int _tab_height = 20;
       int _tab_width = 50;
       int _button_left = 0;
     };

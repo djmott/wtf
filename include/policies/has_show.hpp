@@ -5,7 +5,7 @@ namespace wtf {
     /** has_show
     * Adds members to change the display state and capture display state changes
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_show : _SuperT {
       has_show() = default;
       ~has_show() = default;

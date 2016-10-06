@@ -5,7 +5,7 @@ namespace wtf {
     /** has_size
     * Adds members to reposition/resize and events to capture them
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_size : _SuperT {
       has_size(): _SuperT(){}
       virtual ~has_size() = default;
@@ -31,8 +31,9 @@ namespace wtf {
       virtual int top() const {
         auto rc = rect::client_coord::get(*this);
         auto hParent = wtf::exception::throw_lasterr_if(::GetParent(*this), [](HWND h){ return !h; });
+        SetLastError(ERROR_INVALID_PARAMETER);
         auto iRet = MapWindowPoints( *this, hParent, reinterpret_cast<LPPOINT>(&rc), 2);
-        wtf::exception::throw_lasterr_if(iRet, [](int i){ return !i; });
+//         wtf::exception::throw_lasterr_if(iRet, [](int i){ return i == ERROR_INVALID_PARAMETER; });
         return rc.top; 
       }
 
@@ -40,7 +41,7 @@ namespace wtf {
         auto rc = rect::client_coord::get(*this);
         auto hParent = wtf::exception::throw_lasterr_if(::GetParent(*this), [](HWND h){ return !h; });
         auto iRet = MapWindowPoints( *this, hParent, reinterpret_cast<LPPOINT>(&rc), 2);
-        wtf::exception::throw_lasterr_if(iRet, [](int i){ return !i; });
+//         wtf::exception::throw_lasterr_if(iRet, [](int i){ return !i; });
         return rc.left;
       }
 

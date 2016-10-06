@@ -26,13 +26,13 @@ struct main_form : wtf::form{
     oCenterAligned.text("Center aligned");
     oCenterAligned.text_horizontal_alignment(wtf::label::text_horizontal_alignments::center);
     oCenterAligned.fore_color(wtf::rgb(0, 0, 100));
-    oCenterAligned.font().lfItalic = TRUE;
-    oCenterAligned.font().lfHeight = 20;
+    oCenterAligned.font().italic(true);
+    oCenterAligned.font().height(20);
 
     oHugeFont.move(5, oCenterAligned.top() + oCenterAligned.height() + 5, oCenterAligned.width(), oCenterAligned.height());
     oHugeFont.text("Large text");
     oHugeFont.border_style(wtf::label::border_styles::flat);
-    oHugeFont.font().lfHeight = 35;
+    oHugeFont.font().height(35);
   }
 
   wtf::label oRightAligned;

@@ -41,10 +41,6 @@ namespace wtf{
       ::ReleaseCapture();
     }
 
-    virtual void PaintEvent(const device_context& dc, const paint_struct& ps){
-      draw_text(dc, ps.client());
-    }
-
   private:
     bool _Down = false;
   };

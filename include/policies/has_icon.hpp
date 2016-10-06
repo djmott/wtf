@@ -5,7 +5,7 @@ namespace wtf {
     /** has_icon
     * Provides an icon associated with the window
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_icon : _SuperT {
       has_icon() : _SuperT(), _big_icon(icon::system(icon::style::shield)),
                    _small_icon(icon::system(icon::style::shield)) 

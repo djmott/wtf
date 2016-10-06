@@ -5,7 +5,7 @@ namespace wtf {
     /** has_focus
     * Provides members and events related to keyboard/mouse focus
     */
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_focus : _SuperT {
       virtual ~has_focus() = default;
       has_focus() = default;

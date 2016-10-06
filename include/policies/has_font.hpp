@@ -2,7 +2,7 @@
 
 namespace wtf {
   namespace policy {
-    template<typename _SuperT>
+    template<typename _SuperT, typename _ImplT>
     struct has_font : _SuperT {
 
       has_font() : _SuperT(),

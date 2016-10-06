@@ -22,6 +22,7 @@ namespace wtf{
         text_vertical_alignment(text_vertical_alignments::top);
         text_horizontal_alignment(text_horizontal_alignments::left);
         caret_width(2);
+        auto_draw_text(false);
       }
     
       virtual const wtf::cursor& cursor_pointer() const override{ return cursor::global(cursor::style::ibeam); }

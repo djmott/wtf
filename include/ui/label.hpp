@@ -14,11 +14,10 @@ namespace wtf{
       {
         this->border_style(border_styles::none);
       }
+      callback<void()> OnClick;
     protected:
+      virtual void ClickEvent(const point::client_coords&){ OnClick(); }
 
-      virtual void PaintEvent(const device_context& oDC, const paint_struct& oPS){
-        draw_text(oDC, oPS.client());
-      }
 
     };
 

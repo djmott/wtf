@@ -22,3 +22,6 @@ add_dependencies(tab_example examples)
 
 add_executable(eye_candy_example eye_candy_example.cpp)
 add_dependencies(eye_candy_example examples)
+
+add_executable(splitter_example splitter_example.cpp)
+add_dependencies(splitter_example examples)

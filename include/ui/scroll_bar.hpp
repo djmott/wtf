@@ -2,7 +2,8 @@
 namespace wtf{
 
 
-    struct scroll_bar : window<scroll_bar, policy::has_border, policy::has_size, policy::has_paint, policy::has_mouse, policy::has_timer>
+    struct scroll_bar : window<scroll_bar, policy::has_border, policy::has_size, policy::has_paint, 
+      policy::has_mouse, policy::has_timer, policy::has_show>
     {
       
 

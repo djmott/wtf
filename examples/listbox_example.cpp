@@ -8,7 +8,7 @@ struct main_form : wtf::form{
     oListbox(*this)
   {
     titlebar("Label example");
-    oListbox.font().lfHeight = 25;
+    oListbox.font().height(25);
     oListbox.move(5, 5, 100, 200);
     oListbox.lock_update();
     for (int i = 0; i < 100; i++){

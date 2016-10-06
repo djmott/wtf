@@ -34,11 +34,6 @@ namespace wtf{
         button_state(button_states::down == _button_state ? button_states::up : button_states::down);
       }
 
-      virtual void PaintEvent(const device_context& dc, const paint_struct& ps){
-        draw_text(dc, ps.client());
-      }
-
-
       button_states _button_state;
     };
 
