@@ -83,6 +83,7 @@ namespace wtf{
 #include "policies/has_text.hpp"
 #include "policies/has_timer.hpp"
 #include "policies/has_titlebar.hpp"
+#include "policies/has_zorder.hpp"
 #include "policies/policy_traits.hpp"
 
 

@@ -73,7 +73,7 @@ namespace wtf{
         hide_caret();
         CaretPos.y = border_width();
 
-        DrawText(dc, client);
+        draw_text(dc, client);
 
         show_caret();
         caret_position(CaretPos);

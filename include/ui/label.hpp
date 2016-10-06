@@ -2,7 +2,7 @@
 namespace wtf{
 
     struct label : window<label, policy::has_cursor, policy::has_paint, policy::has_size,
-      policy::has_show, policy::has_text, policy::has_border, policy::has_click>
+      policy::has_show, policy::has_text, policy::has_border, policy::has_click, policy::has_zorder>
     {
       label() = delete;
       label(const label&) = delete;
@@ -17,12 +17,7 @@ namespace wtf{
     protected:
 
       virtual void PaintEvent(const device_context& oDC, const paint_struct& oPS){
-        auto client = oPS.client();
-        client.top += border_width();
-        client.left += border_width();
-        client.bottom -= border_width();
-        client.right -= border_width();
-        this->DrawText(oDC, client);
+        draw_text(oDC, oPS.client());
       }
 
     };

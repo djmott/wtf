@@ -66,7 +66,7 @@ namespace wtf{
             }
           }
           text(_Items[i + _TopIndex]);
-          DrawText(dc, _ItemRects[i]);
+          draw_text(dc, _ItemRects[i]);
         }
       }
 

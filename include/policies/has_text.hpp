@@ -46,10 +46,11 @@ namespace wtf{
       virtual text_horizontal_alignments text_horizontal_alignment() const{ return _text_horizontal_alignment; }
       virtual void text_horizontal_alignment(text_horizontal_alignments newval){ _text_horizontal_alignment = newval; }
 
-
+      virtual bool auto_draw_text() const{ return _auto_draw_text; }
+      virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
     protected:
 
-      virtual void DrawText(const device_context& dc, rect::client_coord& client){
+      virtual void draw_text(const device_context& dc, const rect::client_coord& client){
         ApplyFontEvent(dc);
         wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
                                          [](UINT i){ return GDI_ERROR == i; });
@@ -71,14 +72,26 @@ namespace wtf{
           default:
             format |= DT_RIGHT; break;
         }
-        wtf::exception::throw_lasterr_if(::DrawText(dc, _text.c_str(), -1, &client, format),
+
+        rect::client_coord oTextArea = client;
+
+        wtf::exception::throw_lasterr_if(::DrawText(dc, _text.c_str(), -1, &oTextArea, format),
                                          [](BOOL b){ return !b; });
 
+      }
+
+      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override{
+        if (WM_PAINT == umsg){
+          draw_text(*reinterpret_cast<const device_context *>(wparam), reinterpret_cast<const paint_struct *>(lparam)->client());
+        }
+        return 0;
       }
 
     private:
       tstring _text;
       bool _multiline;
+      bool _auto_draw_text = true;
+
       text_vertical_alignments _text_vertical_alignment;
       text_horizontal_alignments _text_horizontal_alignment;
     };

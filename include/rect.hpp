@@ -4,7 +4,7 @@ namespace wtf {
 
     struct rect {
 
-      template <typename _Ty>
+      template <typename _Ty, typename _PointT>
       struct base : RECT{
         using vector = std::vector<_Ty>;
         base() = default;
@@ -24,13 +24,14 @@ namespace wtf {
           bottom = Bottom;
         }
 
-        template <typename _PointT>
         bool is_in(const _PointT & p) const{ return PtInRect(this, p) ? true : false; }
       
+        _PointT position() const{ return _PointT(left, top); }
+        _PointT dimensions() const{ return _PointT(right, bottom); }
       };
 
 
-      struct screen_coords : base<screen_coords>{
+      struct screen_coords : base<screen_coords, point::screen_coords>{
         template <typename ... _Ty> screen_coords(_Ty&&... src) : base(std::forward<_Ty>(src)...){}
 
         static screen_coords get(HWND hwnd){
@@ -41,7 +42,7 @@ namespace wtf {
 
       };
 
-      struct client_coord : base<client_coord>{
+      struct client_coord : base<client_coord, point::client_coords>{
         template <typename ... _Ty> client_coord(_Ty&&... src) : base(std::forward<_Ty>(src)...){}
 
         static client_coord get(HWND hwnd){

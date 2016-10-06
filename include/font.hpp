@@ -3,7 +3,7 @@
 namespace wtf {
 
 
-    struct font : LOGFONT {
+    struct font : private LOGFONT {
 
 
       using map = std::map<tstring, font>;
@@ -18,6 +18,20 @@ namespace wtf {
         return *this;
       }
 
+      enum class weights{
+        thin = FW_THIN,
+        extra_light = FW_EXTRALIGHT,
+        light = FW_LIGHT,
+        normal = FW_NORMAL,
+        semi_bold = FW_SEMIBOLD,
+        bold = FW_BOLD,
+        extra_bold = FW_EXTRABOLD,
+        heavy = FW_HEAVY,
+        black = FW_BLACK,
+      };
+
+      weights weight() const{ return static_cast<weights>(lfWeight); }
+      void weight(weights newval){ lfWeight = static_cast<LONG>(newval); }
 
       struct handle : std::unique_ptr<HFONT__, void (*)(HFONT)> {
         operator HFONT() const { return get(); }

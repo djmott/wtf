@@ -35,16 +35,7 @@ namespace wtf{
       }
 
       virtual void PaintEvent(const device_context& dc, const paint_struct& ps){
-        rect::client_coord client = ps.client();
-        client.top += border_width();
-        client.left += border_width();
-        client.bottom -= border_width();
-        client.right -= border_width();
-        if (button_states::down == _button_state){
-          client.top++;
-          client.left++;
-        }
-        DrawText(dc, client);
+        draw_text(dc, ps.client());
       }
 
 
