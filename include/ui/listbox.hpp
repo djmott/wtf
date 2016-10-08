@@ -36,6 +36,7 @@ namespace wtf{
       {
         border_style(border_styles::raised);
         _vscroll.border_style(vscroll::border_styles::none);
+        auto_draw_text(false);
       }
 
     protected:

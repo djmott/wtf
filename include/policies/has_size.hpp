@@ -32,16 +32,14 @@ namespace wtf {
         auto rc = rect::client_coord::get(*this);
         auto hParent = wtf::exception::throw_lasterr_if(::GetParent(*this), [](HWND h){ return !h; });
         SetLastError(ERROR_INVALID_PARAMETER);
-        auto iRet = MapWindowPoints( *this, hParent, reinterpret_cast<LPPOINT>(&rc), 2);
-//         wtf::exception::throw_lasterr_if(iRet, [](int i){ return i == ERROR_INVALID_PARAMETER; });
+        MapWindowPoints( *this, hParent, reinterpret_cast<LPPOINT>(&rc), 2);
         return rc.top; 
       }
 
       virtual int left() const { 
         auto rc = rect::client_coord::get(*this);
         auto hParent = wtf::exception::throw_lasterr_if(::GetParent(*this), [](HWND h){ return !h; });
-        auto iRet = MapWindowPoints( *this, hParent, reinterpret_cast<LPPOINT>(&rc), 2);
-//         wtf::exception::throw_lasterr_if(iRet, [](int i){ return !i; });
+        MapWindowPoints( *this, hParent, reinterpret_cast<LPPOINT>(&rc), 2);
         return rc.left;
       }
 
@@ -55,13 +53,17 @@ namespace wtf {
         return r.bottom - r.top;
       }
 
+      callback<void(rect::screen_coords&)> OnMoving;
+      callback<void(const point::client_coords&)> OnMoved;
+      callback<void(rect::screen_coords&)> OnResizing;
+      callback<void(const point::client_coords&)> OnResized;
 
     protected:
 
-      virtual void MovingEvent(rect::screen_coords&){}
-      virtual void MovedEvent(const point::client_coords&){}
-      virtual void ResizingEvent(rect::screen_coords&){}
-      virtual void ResizedEvent(wm_size_flags, const point::client_coords&){}
+      virtual void MovingEvent(rect::screen_coords& r){ OnMoving(r); }
+      virtual void MovedEvent(const point::client_coords& r){ OnMoved(r); }
+      virtual void ResizingEvent(rect::screen_coords& r){ OnResizing(r); }
+      virtual void ResizedEvent(wm_size_flags, const point::client_coords& r){ OnResized(r); }
 
 
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) override {

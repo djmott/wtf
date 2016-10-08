@@ -37,14 +37,19 @@ namespace wtf {
       using requirements = list<>;
     };
     
-    template<> struct traits<has_mouse> {
+    template<> struct traits<has_mouse>{
       using requirements = list<>;
     };
-    
-    template<> struct traits<has_paint> {
+
+    template<> struct traits<has_button_border>{
+      using requirements = list<has_mouse, has_border>;
+    };
+
+    template<> struct traits<has_paint>{
       using requirements = list<>;
     };
-    
+
+
     template<> struct traits<has_show> {
       using requirements = list<>;
     };
@@ -61,6 +66,10 @@ namespace wtf {
       using requirements = list<>;
     };
     
+    template<> struct traits<has_repeat_click>{
+      using requirements = list<has_click, has_timer, has_mouse>;
+    };
+
     template<> struct traits<has_titlebar>{
       using requirements = list<>;
     };

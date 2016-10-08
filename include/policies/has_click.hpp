@@ -14,10 +14,11 @@ namespace wtf {
       has_click &operator=(const has_click &) = delete;
       has_click &operator=(has_click&&) = delete;
 
+      callback<void()> OnClick;
 
     protected:
 
-      virtual void ClickEvent(const point::client_coords&){}
+      virtual void ClickEvent(const point::client_coords&){ OnClick(); }
 
       virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM , LPARAM lparam, bool &) override {
         if (WM_LBUTTONDOWN == umsg) {

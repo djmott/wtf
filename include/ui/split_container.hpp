@@ -46,7 +46,7 @@ namespace wtf{
 
     orientations _orientation;
 
-    virtual void ResizedEvent(wm_size_flags, const point::client_coords& p){
+    virtual void ResizedEvent(wm_size_flags, const point::client_coords& p) override{
       if (orientations::horizontal == _orientation){
         auto NewTop = _splitter.top();
         if (NewTop < 10) NewTop = 10;
@@ -64,15 +64,16 @@ namespace wtf{
       }
     }
 
-    void SplitterMoved(short x, short y){
+    void SplitterMoved(const point::client_coords& p){
       if (orientations::horizontal == _orientation){
-        _splitter.move(0, _splitter.top() + y, width(), SplitterWidth);
+        _splitter.move(0, _splitter.top() + p.y, width(), SplitterWidth);
       } else{
-        _splitter.move(_splitter.left() + x, 0, SplitterWidth, height());
+        _splitter.move(_splitter.left() + p.x, 0, SplitterWidth, height());
       }
       ResizedEvent(wm_size_flags::restored, rect::client_coord::get(*this).dimensions());
       refresh();
     }
+
 
     struct splitter : wtf::window<splitter, policy::has_cursor, policy::has_mouse, policy::has_size, policy::has_border, policy::has_paint>{
 
@@ -90,16 +91,16 @@ namespace wtf{
         }
       }
 
-      virtual void MouseMoveEvent(event_vkeys k, const point::client_coords& p){
+      virtual void MouseMoveEvent(event_vkeys k, const point::client_coords& p) override{
         if (event_vkeys::left != k) return;
-        _parent.SplitterMoved(p.x, p.y);
+        _parent.SplitterMoved(p);
       }
 
-      virtual void MouseLButtonDownEvent(event_vkeys k, const point::client_coords&p){
+      virtual void MouseLButtonDownEvent(event_vkeys k, const point::client_coords&p) override{
         SetCapture(*this);
       }
 
-      virtual void MouseLButtonUpEvent(event_vkeys k, const point::client_coords&p){
+      virtual void MouseLButtonUpEvent(event_vkeys k, const point::client_coords&p) override{
         ReleaseCapture();
       }
 

@@ -26,13 +26,16 @@ namespace wtf {
       has_mouse(has_mouse&&) = delete;
       has_mouse &operator=(has_mouse &&) = delete;
 
-
+      callback<void(event_vkeys, const point::client_coords&)> OnMouseMove;
+      callback<void(event_vkeys, const point::client_coords&)> OnMouseLButtonDown;
+      callback<void(event_vkeys, const point::client_coords&)> OnMouseLButtonUp;
+      callback<void(event_vkeys, int16_t, const point::screen_coords&)> OnMouseWheel;
     protected:
 
-      virtual void MouseMoveEvent(event_vkeys, const point::client_coords&){}
-      virtual void MouseLButtonDownEvent(event_vkeys, const point::client_coords&){}
-      virtual void MouseLButtonUpEvent(event_vkeys, const point::client_coords&){}
-      virtual void MouseWheelEvent(event_vkeys, int16_t /*delta*/, const point::screen_coords&){}
+      virtual void MouseMoveEvent(event_vkeys k, const point::client_coords& p){ OnMouseMove(k, p); }
+      virtual void MouseLButtonDownEvent(event_vkeys k, const point::client_coords& p){ OnMouseLButtonDown(k, p); }
+      virtual void MouseLButtonUpEvent(event_vkeys k, const point::client_coords& p){ OnMouseLButtonUp(k, p); }
+      virtual void MouseWheelEvent(event_vkeys k, int16_t delta, const point::screen_coords& p){ OnMouseWheel(k, delta, p); }
 
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override {
         if (WM_MOUSEMOVE == umsg)

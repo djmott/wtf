@@ -35,13 +35,19 @@ namespace wtf{
         ::SetFocus(*this);
       }
 
+      callback<void(TCHAR, key_data)> OnCharPress;
+      callback<void(TCHAR, key_data)> OnKeyDown;
+      callback<void(TCHAR, key_data)> OnKeyUp;
+      callback<void()> OnGotKeyboardFocus;
+      callback<void()> OnLostKeyboardFocus;
+
     protected:
 
-      virtual void CharEvent(TCHAR, key_data){}
-      virtual void KeyDownEvent(TCHAR, key_data){}
-      virtual void KeyUpEvent(TCHAR, key_data){}
-      virtual void GotKeyboardFocusEvent(){}
-      virtual void LoosingKeyboardFocusEvent(){}
+      virtual void CharEvent(TCHAR c, key_data d){ OnCharPress(c, d); }
+      virtual void KeyDownEvent(TCHAR c, key_data d){ OnKeyDown(c, d); }
+      virtual void KeyUpEvent(TCHAR c, key_data d){ OnKeyUp(c, d); }
+      virtual void GotKeyboardFocusEvent(){ OnGotKeyboardFocus(); }
+      virtual void LoosingKeyboardFocusEvent(){ OnLostKeyboardFocus(); }
 
       virtual LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool&){
         switch (umsg){

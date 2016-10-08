@@ -29,9 +29,6 @@ namespace wtf{
       return iRet;
     }
 
-    callback<void(const point::client_coords& p)> OnResize;
-    callback<void(const point::client_coords& p)> OnMoved;
-
     virtual int top() const override{
       return rect::screen_coords::get(*this).top;
     }
@@ -53,10 +50,6 @@ namespace wtf{
 
   protected:
 
-    virtual void MovingEvent(rect::screen_coords&){}
-    virtual void MovedEvent(const point::client_coords& p) override{ OnMoved(p); }
-    virtual void ResizingEvent(rect::screen_coords&){}
-    virtual void ResizedEvent(typename _super_t::wm_size_flags, const point::client_coords& p) override{ OnResize(p); }
 
     bool _QuitOnDestroy = false;
 

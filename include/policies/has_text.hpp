@@ -38,7 +38,11 @@ namespace wtf{
       virtual void multiline(bool newval){ _multiline = newval; }
 
       virtual const tstring &text() const{ return _text; }
-      virtual void text(const tstring &newval){ _text = newval; }
+      virtual void text(const tstring &newval){
+        _text = newval; 
+        auto client = rect::client_coord::get(*this);
+        if (_auto_draw_text) ::InvalidateRect(*this, &client,TRUE);
+      }
 
       virtual text_vertical_alignments text_vertical_alignment() const{ return _text_vertical_alignment; }
       virtual void text_vertical_alignment(text_vertical_alignments newval){ _text_vertical_alignment = newval; }
@@ -48,6 +52,13 @@ namespace wtf{
 
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
+
+      virtual size prefered_text_size() const{
+        auto dc = device_context::get_client(*this);
+        auto hFont = font().open();
+        dc.select_object(hFont);
+        return dc.get_text_extent(_text);
+      }
     protected:
 
       virtual void draw_text(const device_context& dc, const rect::client_coord& client){

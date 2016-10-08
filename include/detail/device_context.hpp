@@ -64,6 +64,15 @@ namespace wtf{
                                        [](BOOL b){ return !b; });
     }
 
+    void arch(const pen& oPen, bool clockwise, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) const{
+      select_object(oPen);
+      wtf::exception::throw_lasterr_if(::SetArcDirection(*this, clockwise ? AD_CLOCKWISE : AD_COUNTERCLOCKWISE),
+                                       [](BOOL b){ return !b; });
+      wtf::exception::throw_lasterr_if(::Arc(*this, x1, y1, x2, y2, x3, y3, x4, y4),
+                                       [](BOOL b){ return !b; });
+      
+    }
+
     size get_text_extent(const tstring &str) const{
       size ret;
       wtf::exception::throw_lasterr_if(::GetTextExtentPoint32(*this, str.c_str(), static_cast<int>(str.size()), &ret),

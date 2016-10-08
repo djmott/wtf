@@ -59,13 +59,11 @@ namespace wtf {
     protected:
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) override {
         if (WM_SETFOCUS == umsg) {
-          std::cout << "make caret" << std::endl;
           create_caret();
           caret_position(_pos);
           show_caret();
           caret_blink_rate(_blink_rate);
         } else if (WM_KILLFOCUS == umsg) {
-          std::cout << "destroy caret" << std::endl;
           destroy_caret();
         }
         return 0;

@@ -14,10 +14,15 @@ namespace wtf {
       has_timer &operator=(has_timer&&) = delete;
 
 
-      UINT_PTR set_timer(UINT elapse) {
+      UINT_PTR set_timer(UINT elapse){
         _next_timer_id++;
         return wtf::exception::throw_lasterr_if(::SetTimer(*this, _next_timer_id, elapse, nullptr),
-                                                [](UINT_PTR x) { return !x; });
+                                                [](UINT_PTR x){ return !x; });
+      }
+
+      void set_timer(UINT elapse, UINT_PTR timer_id){
+        wtf::exception::throw_lasterr_if(::SetTimer(*this, timer_id, elapse, nullptr),
+                                                [](UINT_PTR x){ return !x; });
       }
 
       void kill_timer(UINT_PTR timer_id) {

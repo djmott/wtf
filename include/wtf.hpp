@@ -16,14 +16,18 @@
 #include <map>
 #include <functional>
 #include <iterator>
+#include <sstream>
 
 
 namespace wtf{
 
+  using tstring = std::basic_string<TCHAR>;
+  using tstringstream = std::basic_stringstream<TCHAR>;
+
   extern "C" HINSTANCE__ __ImageBase;
   inline static HINSTANCE instance_handle(){ return &__ImageBase; }
 
-  using tstring = std::basic_string<TCHAR>;
+
   template <typename, template <typename,typename> class ...> struct window;
 
   namespace policy{
@@ -78,12 +82,14 @@ namespace wtf{
 #include "policies/has_keyboard.hpp"
 #include "policies/has_mouse.hpp"
 #include "policies/has_paint.hpp"
+#include "policies/has_repeat_click.hpp"
 #include "policies/has_show.hpp"
 #include "policies/has_size.hpp"
 #include "policies/has_text.hpp"
 #include "policies/has_timer.hpp"
 #include "policies/has_titlebar.hpp"
 #include "policies/has_zorder.hpp"
+#include "policies/has_button_border.hpp"
 #include "policies/policy_traits.hpp"
 
 
@@ -94,6 +100,7 @@ namespace wtf{
 #include "ui/push_button.hpp"
 #include "ui/scroll_bar.hpp"
 #include "ui/panel.hpp"
+#include "ui/checkbox.hpp"
 #include "ui/rivet.hpp"
 #include "ui/listbox.hpp"
 #include "ui/textbox.hpp"

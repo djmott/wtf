@@ -63,13 +63,14 @@ namespace wtf {
         //draw outer border
         rect::client_coord client = ps.client();
         switch (border_style()){
-          case border_styles::none: return;
+          case border_styles::none: 
+            return;
           case border_styles::flat:
             if (_draw_right) dc.line(shadow, client.right - 1, 0, client.right - 1, client.bottom);
             if (_draw_bottom) dc.line(shadow, 0, client.bottom-1, client.right, client.bottom-1);
             if (_draw_top) dc.line(shadow, 0, 0, client.right, 0);
             if (_draw_left) dc.line(shadow, 0, 0, 0, client.bottom);
-            break;
+            return;
           case border_styles::etched:
           case border_styles::lowered:
           case border_styles::double_lowered:
@@ -85,7 +86,8 @@ namespace wtf {
         //draw inner border
         switch (border_style()){
           case border_styles::raised:
-          case border_styles::lowered: return;
+          case border_styles::lowered: 
+            return;
           case border_styles::etched:
           case border_styles::double_lowered:
           case border_styles::bumped:
