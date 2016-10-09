@@ -107,3 +107,4 @@ namespace wtf{
 #include "ui/toggle_button.hpp"
 #include "ui/tab_container.hpp"
 #include "ui/split_container.hpp"
+#include "ui/tree.hpp"

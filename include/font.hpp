@@ -39,6 +39,9 @@ namespace wtf {
       LONG height() const{ return lfHeight; }
       void height(LONG newval){ lfHeight = newval; }
 
+      LONG width() const{ return lfWidth; }
+      void width(LONG newval){ lfWidth = newval; }
+
       struct handle : std::unique_ptr<HFONT__, void (*)(HFONT)> {
         operator HFONT() const { return get(); }
 

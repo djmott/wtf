@@ -62,6 +62,10 @@ namespace wtf{
         client.right--;
         dc.fill(client, brush::solid_brush(rgb(255, 255, 255)));
         if (_value){
+          client.top+=2;
+          client.left+=2;
+          client.bottom-=2;
+          client.right-=2;
           auto black = pen::create(pen::style::solid, 2, rgb(0, 0, 0));
           dc.line(black, client.left, client.top, client.right, client.bottom);
           dc.line(black, client.right, client.top, client.left, client.bottom);

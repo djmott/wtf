@@ -29,22 +29,26 @@ namespace wtf {
       callback<void(event_vkeys, const point::client_coords&)> OnMouseMove;
       callback<void(event_vkeys, const point::client_coords&)> OnMouseLButtonDown;
       callback<void(event_vkeys, const point::client_coords&)> OnMouseLButtonUp;
+      callback<void(event_vkeys, const point::client_coords&)> OnMouseLButtonDblClick;
       callback<void(event_vkeys, int16_t, const point::screen_coords&)> OnMouseWheel;
     protected:
 
       virtual void MouseMoveEvent(event_vkeys k, const point::client_coords& p){ OnMouseMove(k, p); }
       virtual void MouseLButtonDownEvent(event_vkeys k, const point::client_coords& p){ OnMouseLButtonDown(k, p); }
       virtual void MouseLButtonUpEvent(event_vkeys k, const point::client_coords& p){ OnMouseLButtonUp(k, p); }
+      virtual void MouseLButtonDblClickEvent(event_vkeys k, const point::client_coords& p){ OnMouseLButtonUp(k, p); }
       virtual void MouseWheelEvent(event_vkeys k, int16_t delta, const point::screen_coords& p){ OnMouseWheel(k, delta, p); }
 
       virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override {
         if (WM_MOUSEMOVE == umsg)
           MouseMoveEvent(static_cast<event_vkeys>(wparam), point::client_coords(LOWORD(lparam), HIWORD(lparam)));
-        if (WM_LBUTTONDOWN == umsg)
+        else if (WM_LBUTTONDOWN == umsg)
           MouseLButtonDownEvent(static_cast<event_vkeys>(wparam), point::client_coords(LOWORD(lparam), HIWORD(lparam)));
-        if (WM_LBUTTONUP == umsg)
+        else if (WM_LBUTTONUP == umsg)
           MouseLButtonUpEvent(static_cast<event_vkeys>(wparam), point::client_coords(LOWORD(lparam), HIWORD(lparam)));
-        if (WM_MOUSEWHEEL == umsg)
+        else if (WM_LBUTTONDBLCLK == umsg)
+          MouseLButtonDblClickEvent(static_cast<event_vkeys>(wparam), point::client_coords(LOWORD(lparam), HIWORD(lparam)));
+        else if (WM_MOUSEWHEEL == umsg)
           MouseWheelEvent(static_cast<event_vkeys>(LOWORD(wparam)), static_cast<int16_t>(HIWORD(wparam)),
                           point::screen_coords(LOWORD(lparam), HIWORD(lparam)));
         return 0;

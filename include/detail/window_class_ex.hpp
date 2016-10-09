@@ -20,7 +20,7 @@ namespace wtf{
         std::string sTemp = "wtf:" + std::to_string(typeid(_ImplT).hash_code());
         std::copy(sTemp.begin(), sTemp.end(), std::back_inserter(_class_name));
         cbSize = sizeof(WNDCLASSEX);
-        style = CS_OWNDC | CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW;
+        style = CS_OWNDC | CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
         lpfnWndProc = window_proc;
         cbClsExtra = sizeof(window<_ImplT>*);
         hInstance = instance_handle();

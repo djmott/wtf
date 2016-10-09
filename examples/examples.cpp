@@ -118,6 +118,23 @@ struct scroll_page : panel{
   scroll_bar _hor, _vert;
 };
 
+struct split_page : panel{
+  split_page(tab_container& parent) : panel(parent), _splitter(*this){
+    OnResized += [this](const point::client_coords& p){ _splitter.move(0, 0, p.x, p.y); };
+  }
+
+  struct splitter : split_container{
+    splitter(panel& parent) : split_container(parent), _text1(first()), _text2(second()){
+      first().OnResized += [this](const point::client_coords& p){ _text1.move(0, 0, p.x, p.y); };
+      second().OnResized += [this](const point::client_coords& p){ _text2.move(0, 0, p.x, p.y); };
+    }
+
+
+    textbox _text1, _text2;
+  }_splitter;
+
+};
+
 struct main_form : form{
   main_form() :
     _tabs(*this)
@@ -126,11 +143,9 @@ struct main_form : form{
     _tabs.add_custom_page<checkbox_page>("checkbox");
     _tabs.add_custom_page<label_page>("label");
     _tabs.add_custom_page<listbox_page>("listbox");
-    _tabs.add_custom_page<button_page>("push_button");
+    _tabs.add_custom_page<button_page>("buttons");
     _tabs.add_custom_page<scroll_page>("scroll_bar");
-    _tabs.add_page("split_container");
-    _tabs.add_page("textbox");
-    _tabs.add_page("toggle_button");
+    _tabs.add_custom_page<split_page>("split_container");
 
     OnResized += [this](const point::client_coords& p){ 
       _tabs.move(5, 5, p.x - 10, p.y - 10); 
