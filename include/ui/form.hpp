@@ -4,11 +4,11 @@ namespace wtf{
 
   template <typename _Ty, DWORD _ExStyle, DWORD _Style>
   struct form_base : window<form_base<_Ty, _ExStyle, _Style>, policy::has_icon, policy::has_show, policy::has_cursor,
-    policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint, policy::has_mouse, policy::has_click>
+    policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint, policy::has_click>
   {
 
     using _super_t = window<form_base<_Ty, _ExStyle, _Style>, policy::has_icon, policy::has_show, policy::has_cursor,
-      policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint, policy::has_mouse, policy::has_click>;
+      policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint, policy::has_click>;
 
     static const DWORD ExStyle = _ExStyle;
     static const DWORD Style = _Style;

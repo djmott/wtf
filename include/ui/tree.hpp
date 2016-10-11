@@ -1,7 +1,7 @@
 #pragma once
 namespace wtf{
   struct tree : window<tree, policy::has_border, policy::has_click, policy::has_text,
-    policy::has_paint, policy::has_size, policy::has_mouse, policy::has_font>{
+    policy::has_paint, policy::has_size, policy::has_click, policy::has_mouse_wheel, policy::has_font>{
 
     explicit tree(HWND hParent) : window(hParent), _vscroll(*this), _hscroll(*this), _background_brush(brush::system_brush(system_colors::window))
     {
@@ -116,9 +116,10 @@ namespace wtf{
     node::vector _DisplayedNodes;
     brush _background_brush;
 
-    virtual void MouseLButtonDownEvent(event_vkeys k, const point::client_coords& p) override { 
+    virtual void ClickEvent(const policy::mouse_event& m) override { 
+      if (policy::mouse_event::buttons::left != m.button) return;
       for (size_t i = 0; i < _RowRects.size(); ++i){
-        if (!_RowRects[i].is_in(p)) continue;
+        if (!_RowRects[i].is_in(m.position)) continue;
         _DisplayedNodes[i]->selected(true);
         refresh();
         break;
@@ -245,6 +246,7 @@ namespace wtf{
       }
       refresh();
     }
+
     void ScrollDown(){
       if (_top->expanded() && _top->children().size()){
         _top = _top->children()[0];

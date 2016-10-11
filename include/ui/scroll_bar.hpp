@@ -3,7 +3,7 @@ namespace wtf{
 
 
     struct scroll_bar : window<scroll_bar, policy::has_border, policy::has_size, policy::has_paint, 
-      policy::has_mouse, policy::has_timer, policy::has_show>
+      policy::has_timer, policy::has_show, policy::has_mouse_wheel>
     {
       
 
@@ -71,7 +71,8 @@ namespace wtf{
           window(Parent), _Parent(Parent), _IsIncrementer(IsIncrementer)
         {}
 
-        virtual void ClickEvent(const point::client_coords&) override {
+        virtual void ClickEvent(const policy::mouse_event& m) override {
+          if (policy::mouse_event::buttons::left != m.button) return;
           if (_IsIncrementer) _Parent.IncrementEvent();
           else _Parent.DecrementEvent();
         }
@@ -112,18 +113,18 @@ namespace wtf{
         bool _is_increment;
       };
 
-      struct slider : push_button{
-        slider(scroll_bar& parent) : push_button(parent){}
+      struct slider : button{
+        slider(scroll_bar& parent) : button(parent){}
       }_slider;
 
 
 
-      virtual void MouseWheelEvent(event_vkeys, int16_t delta, const point::screen_coords&p) override{
+      virtual void MouseWheelEvent(int16_t delta, const policy::mouse_event& m) override{
         delta /= 120;
         if (delta > 0){
-          for (;delta>0;--delta) _dec.ClickEvent(p.to_client(*this));
+          for (;delta>0;--delta) _dec.ClickEvent(m);
         }else {
-          for (;delta<0;++delta) _inc.ClickEvent(p.to_client(*this));
+          for (;delta<0;++delta) _inc.ClickEvent(m);
         }
       }
 
@@ -143,14 +144,6 @@ namespace wtf{
         }
       }
       
-
-      virtual void TimerEvent(UINT_PTR iTimer) override{
-        if (iTimer != _ButtonDownTimer) return;
-        kill_timer(_ButtonDownTimer);
-        if (!_ButtonHeldDown) return;
-        _ButtonDownTimer = set_timer(50);
-        _ButtonHeldDown->ClickEvent(cursor::position().to_client(*this));
-      }
 
       virtual const brush& background_brush() const override{ return _background_brush; }
 

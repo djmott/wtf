@@ -2,7 +2,7 @@
 namespace wtf{
 
   struct listbox : wtf::window<listbox, policy::has_border, policy::has_click, policy::has_text,
-    policy::has_paint, policy::has_size, policy::has_mouse, policy::has_font>{
+    policy::has_paint, policy::has_size, policy::has_mouse_wheel, policy::has_font>{
 
     explicit listbox(HWND hParent) :
       window(hParent),
@@ -84,18 +84,19 @@ namespace wtf{
       listbox& _Parent;
     };
 
-    virtual void MouseWheelEvent(event_vkeys, int16_t delta, const point::screen_coords&p) override{
+    virtual void MouseWheelEvent(int16_t delta, const policy::mouse_event&) override{
       if (delta > 0) _vscroll.DecrementEvent();
       else _vscroll.IncrementEvent();
     }
 
 
-    virtual void ClickEvent(const point::client_coords& p) override{
+    virtual void ClickEvent(const policy::mouse_event& m) override{
+      if (policy::mouse_event::buttons::left != m.button) return;
       if (selection_modes::single == _selection_mode){
         _SelectedItems.clear();
       }
       for (size_t i = 0; i < _ItemRects.size() && (_TopIndex + i) < _Items.size(); ++i){
-        if (!_ItemRects[i].is_in(p)) continue;
+        if (!_ItemRects[i].is_in(m.position)) continue;
         _SelectedItems.push_back(_TopIndex + static_cast<int>(i));
       }
       refresh(true);

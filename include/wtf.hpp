@@ -33,12 +33,12 @@ namespace wtf{
   namespace policy{
     template <template <typename, typename> class> struct traits;
 
-    template <template <typename, typename> class ...> struct list;
+    template <template <typename, typename> class ...> struct type_list;
 
     template <template <typename, typename> class _HeadT, template <typename, typename> class ..._TailT>
-    struct list<_HeadT, _TailT...> : list<_TailT...>{};
+    struct type_list<_HeadT, _TailT...> : type_list<_TailT...>{};
 
-    template <> struct list<>{};
+    template <> struct type_list<>{};
   }
   namespace _{
     template <typename, template <typename, typename> class ... > struct base_window;
@@ -62,7 +62,7 @@ namespace wtf{
 
 #include "detail/window_class_ex.hpp"
 #include "detail/msg_names.hpp"
-#include "detail/weak_enum_class.hpp"
+#include "detail/weak_enum.hpp"
 #include "detail/device_context.hpp"
 #include "detail/text_metrics.hpp"
 #include "detail/paint_struct.hpp"
@@ -71,16 +71,21 @@ namespace wtf{
 #include "detail/message.hpp"
 
 
+#include "policies/mouse_event.hpp"
 #include "policies/has_border.hpp"
 #include "policies/has_caret.hpp"
 #include "policies/has_click.hpp"
 #include "policies/has_close.hpp"
 #include "policies/has_cursor.hpp"
+#include "policies/has_dblclick.hpp"
 #include "policies/has_focus.hpp"
 #include "policies/has_font.hpp"
 #include "policies/has_icon.hpp"
 #include "policies/has_keyboard.hpp"
-#include "policies/has_mouse.hpp"
+#include "policies/has_mouse_down.hpp"
+#include "policies/has_mouse_up.hpp"
+#include "policies/has_mouse_move.hpp"
+#include "policies/has_mouse_wheel.hpp"
 #include "policies/has_paint.hpp"
 #include "policies/has_repeat_click.hpp"
 #include "policies/has_show.hpp"
@@ -97,7 +102,7 @@ namespace wtf{
 #include "ui/menu.hpp"
 #include "ui/form.hpp"
 #include "ui/label.hpp"
-#include "ui/push_button.hpp"
+#include "ui/button.hpp"
 #include "ui/scroll_bar.hpp"
 #include "ui/panel.hpp"
 #include "ui/checkbox.hpp"

@@ -1,3 +1,4 @@
+
 #pragma once
 
 namespace wtf{
@@ -12,26 +13,27 @@ namespace wtf{
         border_style(border_styles::raised);
       }
 
-      virtual void MouseMoveEvent(event_vkeys k, const point::client_coords& p) override{
-        _SuperT::MouseMoveEvent(k, p);
-        if (!_Down) return;
-        if (!rect::client_coord::get(*this).is_in(p)){
+      virtual void MouseMoveEvent(const policy::mouse_event& m) override{
+        _SuperT::MouseMoveEvent(m);
+        if (!_Down || policy::mouse_event::buttons::left != m.button) return;
+        if (!rect::client_coord::get(*this).is_in(m.position)){
           ::ReleaseCapture();
           _Down = false;
           border_style(border_styles::raised);
           refresh();
         }
       }
-      virtual void MouseLButtonDownEvent(event_vkeys k, const point::client_coords&p) override{
-        _SuperT::MouseLButtonDownEvent(k, p);
+      virtual void MouseDownEvent(const policy::mouse_event& m) override{
+        _SuperT::MouseDownEvent(m);
+        if (policy::mouse_event::buttons::left != m.button) return;
         _Down = true;
         border_style(border_styles::lowered);
         ::SetCapture(*this);
         refresh();
       }
-      virtual void MouseLButtonUpEvent(event_vkeys k, const point::client_coords&p) override{
-        _SuperT::MouseLButtonUpEvent(k, p);
-        if (!_Down) return;
+      virtual void MouseUpEvent(const policy::mouse_event& m) override{
+        _SuperT::MouseUpEvent(m);
+        if (!_Down || policy::mouse_event::buttons::left != m.button) return;
         _Down = false;
         border_style(border_styles::raised);
         refresh();

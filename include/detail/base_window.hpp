@@ -43,66 +43,66 @@ namespace wtf{
 
     template <typename, typename> struct policy_list_concat;
     template <template<typename, typename> class ... _list1, template<typename, typename> class ... _list2>
-    struct policy_list_concat<policy::list<_list1...>, policy::list<_list2...>>{
-      using type = policy::list<_list1..., _list2...>;
+    struct policy_list_concat<policy::type_list<_list1...>, policy::type_list<_list2...>>{
+      using type = policy::type_list<_list1..., _list2...>;
     };
 
 
-    //removes all occurances of Target in policy list
+    //removes all occurances of Target in policy type list
     template <template <typename, typename> class _TargetT, typename _PolicyListT>
     struct remove_policy_from;
 
     template <template <typename, typename> class _TargetT>
-    struct remove_policy_from<_TargetT, policy::list<>>{ using type = policy::list<>; };
+    struct remove_policy_from<_TargetT, policy::type_list<>>{ using type = policy::type_list<>; };
 
 
     template <template <typename, typename> class _TargetT, template <typename, typename> class _HeadT, template <typename, typename> class ... _TailT>
-    struct remove_policy_from<_TargetT, policy::list<_HeadT, _TailT...>>{
+    struct remove_policy_from<_TargetT, policy::type_list<_HeadT, _TailT...>>{
       static const bool __SkipIt = is_same_policy<_TargetT, _HeadT>::value;
-      using head_list_t = typename std::conditional<__SkipIt, policy::list<>, policy::list<_HeadT>>::type;
-      using tail_list_t = typename remove_policy_from<_TargetT, policy::list<_TailT...>>::type;
+      using head_list_t = typename std::conditional<__SkipIt, policy::type_list<>, policy::type_list<_HeadT>>::type;
+      using tail_list_t = typename remove_policy_from<_TargetT, policy::type_list<_TailT...>>::type;
       using type = typename policy_list_concat<head_list_t, tail_list_t>::type;
     };
 
     //removes duplicates from a policy list
     template <typename> struct remove_duplicate_policies;
 
-    template <> struct remove_duplicate_policies<policy::list<>>{ using type = policy::list<>; };
+    template <> struct remove_duplicate_policies<policy::type_list<>>{ using type = policy::type_list<>; };
 
     template <template <typename, typename> class _HeadT, template <typename, typename> class ... _TailT>
-    struct remove_duplicate_policies<policy::list<_HeadT, _TailT...>>{
-      using __no_head_list = typename remove_policy_from<_HeadT, policy::list<_TailT...>>::type;
+    struct remove_duplicate_policies<policy::type_list<_HeadT, _TailT...>>{
+      using __no_head_list = typename remove_policy_from<_HeadT, policy::type_list<_TailT...>>::type;
       using unique_tails = typename remove_duplicate_policies<__no_head_list>::type;
-      using type = typename policy_list_concat<policy::list<_HeadT>, unique_tails>::type;
+      using type = typename policy_list_concat<policy::type_list<_HeadT>, unique_tails>::type;
     };
 
 
     //recursively traverses the policy requirements and appends them to the the list
     template <typename> struct requirement_collector;
 
-    template <> struct requirement_collector<policy::list<>>{ using type = policy::list<>; };
+    template <> struct requirement_collector<policy::type_list<>>{ using type = policy::type_list<>; };
 
     template <template <typename, typename> class _HeadT, template <typename, typename> class ..._TailT>
-    struct requirement_collector<policy::list<_HeadT, _TailT...>>{
+    struct requirement_collector<policy::type_list<_HeadT, _TailT...>>{
       using head_requirements = typename policy::traits<_HeadT>::requirements;
-      using new_tail = typename policy_list_concat<policy::list<_TailT...>, head_requirements>::type;
+      using new_tail = typename policy_list_concat<policy::type_list<_TailT...>, head_requirements>::type;
       using unique_tail = typename remove_duplicate_policies<new_tail>::type;
       using tail_requirements = typename requirement_collector<unique_tail>::type;
       using unique_tail_requirements = typename remove_duplicate_policies<tail_requirements>::type;
-      using full_policy_list = typename policy_list_concat<policy::list<_HeadT>, unique_tail_requirements>::type;
+      using full_policy_list = typename policy_list_concat<policy::type_list<_HeadT>, unique_tail_requirements>::type;
       using type = typename remove_duplicate_policies<full_policy_list>::type;
     };
 
     template <typename _ImplT, typename _ListT> struct policy_list_to_base_win;
     template <typename _ImplT, template <typename, typename> class ... _PolicyListT>
-    struct policy_list_to_base_win<_ImplT, policy::list<_PolicyListT...>>{
+    struct policy_list_to_base_win<_ImplT, policy::type_list<_PolicyListT...>>{
       using type = base_window<_ImplT, _PolicyListT...>;
       using window_type = window<_ImplT, _PolicyListT...>;
     };
 
     template <typename _ImplT, template <typename, typename> class ... _PolicyListT>
     struct window_impl{
-      using policies_with_deps = typename requirement_collector<policy::list<_PolicyListT...>>::type;
+      using policies_with_deps = typename requirement_collector<policy::type_list<_PolicyListT...>>::type;
       using type = typename policy_list_to_base_win<_ImplT, policies_with_deps>::type;
       using window_type = typename policy_list_to_base_win<_ImplT, policies_with_deps>::window_type;
     };

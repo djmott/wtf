@@ -89,10 +89,10 @@ namespace wtf {
           case border_styles::lowered: 
             return;
           case border_styles::etched:
-          case border_styles::double_lowered:
           case border_styles::bumped:
             std::swap(highlight, shadow);
           case border_styles::double_raised:
+          case border_styles::double_lowered:
             if (_draw_right) dc.line(shadow, client.right - 2, 1, client.right - 2, client.bottom - 1);
             if (_draw_bottom) dc.line(shadow, 1, client.bottom - 2, client.right - 1, client.bottom - 2);
             if (_draw_top) dc.line(highlight, 1, 1, client.right-1, 1);

@@ -1,21 +1,20 @@
 #include <strstream>
+#include <iostream>
+#include <random>
 #include "wtf.hpp"
 
 using namespace wtf;
 
-#if 0
+#if 1
 struct main_form : form{
-  main_form() : form(), _tree(*this){
+  main_form() : form(), rd(), gen(rd()), dist(1,1000), _tree(*this){
     for (int i = 0; i < 20; i++){
-      tstring sTemp;
-      auto s = std::to_string(i);
-      std::copy(s.begin(), s.end(), std::back_inserter(sTemp));
-      auto oNode = _tree.add_node(sTemp);
+      auto oNode = _tree.add_node(tsRandom());
       oNode->expander_display_policy(tree::node::expander_display_policies::always);
       for (int x = 0; x < 20; x++){
-        auto oChild = oNode->add_child(sTemp);
+        auto oChild = oNode->add_child(tsRandom());
         for (int j = 0; j < 20; j++){
-          oChild->add_child(sTemp);
+          oChild->add_child(tsRandom());
         }
         oChild->expander_display_policy(tree::node::expander_display_policies::always);
         oChild->expanded(true);
@@ -24,6 +23,17 @@ struct main_form : form{
     }
     OnResized += [this](const point::client_coords& p){ _tree.move(0, 0, p.x, p.y); };
   }
+
+  tstring tsRandom(){
+    tstring sTemp;
+    auto s = std::to_string(dist(gen));
+    std::copy(s.begin(), s.end(), std::back_inserter(sTemp));
+    return sTemp;
+  }
+
+  std::random_device rd;
+  std::mt19937 gen;
+  std::uniform_int_distribution<int> dist;
 
   tree _tree;
 };
@@ -50,7 +60,9 @@ struct checkbox_page : panel{
 struct label_page : panel{
   label_page(tab_container& parent) : panel(parent),
     _left(*this), _right(*this), _center(*this),
-    _raised(*this), _lowered(*this), _flat(*this){
+    _raised(*this), _lowered(*this), _flat(*this), 
+    _etched(*this), _bumped(*this), _double_raised(*this), _double_lowered(*this)
+  {
     _left.move(5, 5, 150, 25);
     _left.text("Left aligned");
     _left.text_horizontal_alignment(label::text_horizontal_alignments::left);
@@ -75,9 +87,27 @@ struct label_page : panel{
     _flat.text("Flat border");
     _flat.border_style(label::border_styles::flat);
 
+    _etched.move(5, _flat.top() + _flat.height() + 5, 150, 25);
+    _etched.text("Etched border");
+    _etched.border_style(label::border_styles::etched);
+
+    _bumped.move(5, _etched.top() + _etched.height() + 5, 150, 25);
+    _bumped.text("Bumped border");
+    _bumped.border_style(label::border_styles::bumped);
+
+    _double_raised.move(5, _bumped.top() + _bumped.height() + 5, 150, 25);
+    _double_raised.text("Double raised border");
+    _double_raised.border_style(label::border_styles::double_raised);
+
+    _double_lowered.move(5, _double_raised.top() + _double_raised.height() + 5, 150, 25);
+    _double_lowered.text("Double lowered border");
+    _double_lowered.border_style(label::border_styles::double_lowered);
+
   }
 
-  label _left, _center, _right, _raised, _lowered, _flat;
+  label _left, _center, _right;
+  label _raised, _lowered, _flat;
+  label _etched, _bumped, _double_raised, _double_lowered;
 };
 
 struct listbox_page : panel{
@@ -126,7 +156,7 @@ struct button_page : panel{
     };
   }
 
-  push_button _button1;
+  button _button1;
   toggle_button _button2;
   label _label1;
   label _label2;

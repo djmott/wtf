@@ -64,7 +64,7 @@ namespace wtf{
       }
     }
 
-    void SplitterMoved(const point::client_coords& p){
+    void size_bar_moved(const point::client_coords& p){
       if (orientations::horizontal == _orientation){
         _splitter.move(0, _splitter.top() + p.y, width(), SplitterWidth);
       } else{
@@ -75,9 +75,9 @@ namespace wtf{
     }
 
 
-    struct splitter : wtf::window<splitter, policy::has_cursor, policy::has_mouse, policy::has_size, policy::has_border, policy::has_paint>{
+    struct size_bar : label{
 
-      splitter(split_container& parent) : window(parent), _parent(parent){
+      size_bar(split_container& parent) : label(parent), _parent(parent){
         border_style(border_styles::none);
       }
 
@@ -91,16 +91,17 @@ namespace wtf{
         }
       }
 
-      virtual void MouseMoveEvent(event_vkeys k, const point::client_coords& p) override{
-        if (event_vkeys::left != k) return;
-        _parent.SplitterMoved(p);
+      virtual void MouseMoveEvent(const policy::mouse_event& m) override{
+        if (!(m.key_state & policy::mouse_event::key_states::left)) return;
+        _parent.size_bar_moved(m.position);
       }
 
-      virtual void MouseLButtonDownEvent(event_vkeys k, const point::client_coords&p) override{
+      virtual void MouseDownEvent(const policy::mouse_event& m) override{
+        if (policy::mouse_event::buttons::left != m.button) return;
         SetCapture(*this);
       }
 
-      virtual void MouseLButtonUpEvent(event_vkeys k, const point::client_coords&p) override{
+      virtual void MouseUpEvent(const policy::mouse_event& m) override{
         ReleaseCapture();
       }
 

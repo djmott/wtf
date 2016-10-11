@@ -153,17 +153,16 @@ namespace wtf{
             refresh();
           }
 
-          virtual void ClickEvent(const point::client_coords&) override{
+          virtual void ClickEvent(const policy::mouse_event& m) override{
+            if (policy::mouse_event::buttons::left != m.button) return;
             _parent._parent.active_page(_parent._PageIndex);
           }
 
-
-
           page_info& _parent;
 
-
-
         }_button;
+
+
 
       private:
         page_info(tab_container& parent, const tstring& sTitle, size_t PageIndex)

@@ -10,13 +10,13 @@ namespace wtf {
 * all the casts outside the main application logic code. Dont do this at home without parental supervision.
 */
   template<typename _Ty>
-  struct weak_enum_class {
+  struct weak_enum {
 
-    explicit weak_enum_class(_Ty init) : value(init) {}
+    explicit weak_enum(_Ty init) : value(init) {}
 
-    weak_enum_class(const weak_enum_class &src) : value(src.value) {}
+    weak_enum(const weak_enum &src) : value(src.value) {}
 
-    weak_enum_class() : value(static_cast<_Ty>(0)) {}
+    weak_enum() : value(static_cast<_Ty>(0)) {}
 
     operator _Ty() const { return value; }
 
@@ -30,22 +30,26 @@ namespace wtf {
 
     const _Ty &operator*() const { return value; }
 
-    weak_enum_class &operator=(_Ty newval) {
+    weak_enum &operator=(_Ty newval) {
       value = newval;
       return *this;
     }
 
-    weak_enum_class &operator=(const weak_enum_class &src) {
+    weak_enum &operator=(const weak_enum &src) {
       value = src.value;
       return *this;
     }
 
-    weak_enum_class &operator|=(_Ty newval) {
+    weak_enum &operator|=(_Ty newval) {
       value = static_cast<_Ty>(
         static_cast<uint64_t>(value) |
         static_cast<uint64_t>(newval)
       );
       return *this;
+    }
+
+    bool operator&(_Ty val) const{
+      return (static_cast<uint64_t>(value) & static_cast<uint64_t>(val)) ? true : false;
     }
 
     static _Ty set_flags() { return static_cast<_Ty>(0); }

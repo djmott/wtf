@@ -3,7 +3,7 @@
 namespace wtf{
 
     struct textbox : wtf::window<textbox, policy::has_focus, policy::has_cursor, policy::has_caret, policy::has_keyboard,
-      policy::has_size, policy::has_border, policy::has_click, policy::has_text, policy::has_paint, policy::has_mouse>
+      policy::has_size, policy::has_border, policy::has_click, policy::has_text, policy::has_paint, policy::has_mouse_down>
     {
 
       textbox() = delete;
@@ -71,17 +71,21 @@ namespace wtf{
         
         concrete_policy_type<policy::has_text>::text(_text.substr(_print_pos, EndPrintPos -_print_pos));
 
-        hide_caret();
+        bool bCaretVisible = caret_visible();
+        if (bCaretVisible) caret_visible(false);
+
         CaretPos.y = border_width();
 
         draw_text(dc, client);
 
-        show_caret();
-        caret_position(CaretPos);
+        if (bCaretVisible){
+          caret_visible(true);
+          caret_position(CaretPos);
+        }
       }
 
 
-      virtual void MouseLButtonDownEvent(event_vkeys, const point::client_coords& p) override{
+      virtual void MouseDownEvent(const policy::mouse_event& p) override{
         set_focus();
       }
       

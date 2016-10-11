@@ -1,6 +1,6 @@
 #pragma once
 namespace wtf{
-  struct checkbox : window<checkbox, policy::has_paint, policy::has_click, policy::has_size, policy::has_text>{
+  struct checkbox : window<checkbox, policy::has_paint, policy::has_click, policy::has_dblclick, policy::has_size, policy::has_text>{
     checkbox(HWND parent) : window(parent), _check(*this){
       _check.border_style(panel::border_styles::raised);
       auto_draw_text(false);
@@ -28,8 +28,14 @@ namespace wtf{
 
     static const int checkbox_size = 15;
 
-    virtual void ClickEvent(const point::client_coords&) override{
-      _check.value(!_check.value());
+    virtual void ClickEvent(const policy::mouse_event& m) override{
+      if (policy::mouse_event::buttons::left == m.button){
+        _check.value(!_check.value());
+      }
+    }
+
+    virtual void DblClickEvent(const policy::mouse_event& m) override{
+      if (policy::mouse_event::buttons::left == m.button) _check.value(!_check.value());
     }
 
     virtual void PaintEvent(const device_context& dc, const paint_struct& ps) override{
@@ -50,8 +56,8 @@ namespace wtf{
         _parent(parent)
       {}
 
-      virtual void ClickEvent(const point::client_coords&) override{
-        value(!_value);
+      virtual void ClickEvent(const policy::mouse_event& m) override{
+        if (policy::mouse_event::buttons::left == m.button) value(!_value);
       }
 
       virtual void PaintEvent(const device_context& dc, const paint_struct& ps) override{

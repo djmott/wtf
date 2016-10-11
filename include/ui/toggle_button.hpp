@@ -3,7 +3,7 @@
 namespace wtf{
 
     struct toggle_button : wtf::window<toggle_button, policy::has_size, policy::has_border,
-      policy::has_click, policy::has_text, policy::has_font, policy::has_paint, policy::has_mouse>
+      policy::has_click, policy::has_text, policy::has_font, policy::has_paint, policy::has_mouse_up>
     {
       toggle_button() = delete;
       toggle_button(const toggle_button&) = delete;
@@ -30,8 +30,9 @@ namespace wtf{
 
     private:
 
-      virtual void MouseLButtonUpEvent(event_vkeys, const point::client_coords&) override{
-        button_state(button_states::down == _button_state ? button_states::up : button_states::down);
+      virtual void MouseUpEvent(const policy::mouse_event& m) override{
+        if (policy::mouse_event::buttons::left != m.button) return;
+        button_state(button_states::down == _button_state  ? button_states::up : button_states::down);
       }
 
       button_states _button_state;
