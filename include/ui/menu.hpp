@@ -1,16 +1,12 @@
 #pragma once
 
 namespace wtf {
-    struct menu {
+
+    struct menu : std::shared_ptr<HMENU__> {
+      menu() : shared_ptr(CreateMenu(), ::DestroyMenu){}
+    private:
+      
     };
 
-    namespace menus {
-      struct null_menu {
-        HMENU native_handle() const { return nullptr; }
 
-        HMENU operator()() const { return nullptr; }
-
-        operator HMENU() const { return nullptr; }
-      };
-    }
   }

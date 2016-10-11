@@ -5,7 +5,6 @@ namespace wtf {
 
     struct font : private LOGFONT {
 
-
       using map = std::map<tstring, font>;
 
       font(const font &src) { memcpy(this, &src, sizeof(LOGFONT)); }
@@ -41,6 +40,8 @@ namespace wtf {
 
       LONG width() const{ return lfWidth; }
       void width(LONG newval){ lfWidth = newval; }
+
+
 
       struct handle : std::unique_ptr<HFONT__, void (*)(HFONT)> {
         operator HFONT() const { return get(); }
