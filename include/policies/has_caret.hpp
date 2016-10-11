@@ -38,9 +38,7 @@ namespace wtf {
         wtf::exception::throw_lasterr_if(::ShowCaret(*this), [](BOOL b) { return !b; });
       }
 
-      virtual void hide_caret() const {
-        wtf::exception::throw_lasterr_if(::HideCaret(*this), [](BOOL b) { return !b; });
-      }
+      virtual void hide_caret() const { ::HideCaret(*this); }
 
       virtual UINT caret_blink_rate() const { return _blink_rate; }
 

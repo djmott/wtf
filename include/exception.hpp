@@ -28,6 +28,32 @@ namespace wtf{
         if (sBuff) ::LocalFree(sBuff);
       }
 
+      exception(const exception& src) 
+        : runtime_error(src), _file(src._file), _code(src._code), _what(src._what), _line(src._line){}
+      exception(exception&& src) 
+        : runtime_error(std::move(src)), _file(std::move(src._file)), _code(std::move(src._code)), 
+        _what(std::move(src._what)), _line(src._line){}
+
+      exception& operator=(const exception& src){
+        if (&src == this) return *this;
+        runtime_error::operator=(src);
+        _file = src._file;
+        _code = src._code;
+        _what = src._what;
+        _line = src._line;
+        return *this;
+      }
+
+      exception& operator=(exception&& src){
+        if (&src == this) return *this;
+        runtime_error::operator=(std::move(src));
+        _file = std::move(src._file);
+        _code = std::move(src._code);
+        _what = std::move(src._what);
+        _line = src._line;
+        return *this;
+      }
+
       const char *file() const{ return _file.c_str(); }
 
       int line() const{ return _line; }

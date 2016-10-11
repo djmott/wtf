@@ -3,6 +3,31 @@
 
 using namespace wtf;
 
+#if 0
+struct main_form : form{
+  main_form() : form(), _tree(*this){
+    for (int i = 0; i < 20; i++){
+      tstring sTemp;
+      auto s = std::to_string(i);
+      std::copy(s.begin(), s.end(), std::back_inserter(sTemp));
+      auto oNode = _tree.add_node(sTemp);
+      oNode->expander_display_policy(tree::node::expander_display_policies::always);
+      for (int x = 0; x < 20; x++){
+        auto oChild = oNode->add_child(sTemp);
+        for (int j = 0; j < 20; j++){
+          oChild->add_child(sTemp);
+        }
+        oChild->expander_display_policy(tree::node::expander_display_policies::always);
+        oChild->expanded(true);
+      }
+      oNode->expanded(true);
+    }
+    OnResized += [this](const point::client_coords& p){ _tree.move(0, 0, p.x, p.y); };
+  }
+
+  tree _tree;
+};
+#else
 
 
 struct checkbox_page : panel{
@@ -135,6 +160,22 @@ struct split_page : panel{
 
 };
 
+struct tree_page : panel{
+  tree_page(tab_container& parent) : panel(parent), _tree(*this){
+    OnResized += [this](const point::client_coords& p){ _tree.move(0, 0, p.x, p.y); };
+    for (int i = 0; i < 100; i++){
+
+      tstring sTemp;
+      auto s = std::to_string(i);
+      std::copy(s.begin(), s.end(), std::back_inserter(sTemp));
+      _tree.add_node(sTemp);
+    }
+
+  }
+
+  tree _tree;
+};
+
 struct main_form : form{
   main_form() :
     _tabs(*this)
@@ -145,7 +186,8 @@ struct main_form : form{
     _tabs.add_custom_page<listbox_page>("listbox");
     _tabs.add_custom_page<button_page>("buttons");
     _tabs.add_custom_page<scroll_page>("scroll_bar");
-    _tabs.add_custom_page<split_page>("split_container");
+    _tabs.add_custom_page<split_page>("splitter");
+    _tabs.add_custom_page<tree_page>("tree");
 
     OnResized += [this](const point::client_coords& p){ 
       _tabs.move(5, 5, p.x - 10, p.y - 10); 
@@ -154,7 +196,7 @@ struct main_form : form{
 
   tab_container _tabs;
 };
-
+#endif
 
 int main(){
   try{

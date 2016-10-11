@@ -20,8 +20,7 @@ namespace wtf {
       }
 
       void refresh(bool erase = true) const {
-        auto area = rect::client_coord::get(*this);
-        wtf::exception::throw_lasterr_if(::InvalidateRect(*this, &area, erase ? TRUE : FALSE),
+        wtf::exception::throw_lasterr_if(::InvalidateRect(*this, nullptr, erase ? TRUE : FALSE),
                                          [](BOOL b) { return !b; });
       }
 

@@ -50,8 +50,6 @@ namespace wtf{
       virtual text_horizontal_alignments text_horizontal_alignment() const{ return _text_horizontal_alignment; }
       virtual void text_horizontal_alignment(text_horizontal_alignments newval){ _text_horizontal_alignment = newval; }
 
-      virtual bool auto_draw_text() const{ return _auto_draw_text; }
-      virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
 
       virtual size prefered_text_size() const{
         auto dc = device_context::get_client(*this);
@@ -60,6 +58,9 @@ namespace wtf{
         return dc.get_text_extent(_text);
       }
     protected:
+
+      virtual bool auto_draw_text() const{ return _auto_draw_text; }
+      virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
 
       virtual void draw_text(const device_context& dc, const rect::client_coord& client){
         ApplyFontEvent(dc);

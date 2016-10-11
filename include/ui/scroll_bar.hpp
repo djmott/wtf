@@ -21,6 +21,8 @@ namespace wtf{
         _fill(brush::system_brush(system_colors::button_text)),
         _inc(*this, true),
         _dec(*this, false),
+        _page_inc(*this, true),
+        _page_dec(*this, false),
         _slider(*this),
         _min(0),
         _max(100),
@@ -110,8 +112,8 @@ namespace wtf{
         bool _is_increment;
       };
 
-      struct slider : label{
-        slider(scroll_bar& parent) : label(parent){}
+      struct slider : push_button{
+        slider(scroll_bar& parent) : push_button(parent){}
       }_slider;
 
 
@@ -126,9 +128,15 @@ namespace wtf{
       }
 
       virtual void ResizedEvent(wm_size_flags, const point::client_coords& p) override {
+        auto iValRange = _max - _min;
+        
         if (orientations::horizontal == _orientation){
           _dec.move(0, 0, p.y, p.y);
           _inc.move(p.x - p.y, 0, p.y, p.y);
+          auto iRepRange = p.x - p.y;//representative range
+          auto iSliderPos = _value * iRepRange / iValRange;
+          _slider.move(iSliderPos, 0, p.y, p.y);
+
         } else{
           _dec.move(0, 0, p.x, p.x);
           _inc.move(0, p.y - p.x, p.x, p.x);
@@ -152,6 +160,8 @@ namespace wtf{
       brush _fill;
       value_step_button _inc;
       value_step_button _dec;
+      value_page_button _page_inc;
+      value_page_button _page_dec;
       int _min = 0;
       int _max = 100;
       int _value = 50;
