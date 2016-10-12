@@ -70,12 +70,12 @@ namespace wtf{
         orientation(scroll_bar::orientations::vertical);
       }
 
-      virtual void IncrementEvent(){
+      virtual void StepIncEvent(){
         if ((_Parent._TopIndex + _Parent._ItemRects.size()) < _Parent._Items.size()) _Parent._TopIndex++;
         _Parent.refresh(true);
       }
 
-      virtual void DecrementEvent(){
+      virtual void StepDecEvent(){
         if (!_Parent._TopIndex) return;
         --_Parent._TopIndex;
         _Parent.refresh(true);
@@ -84,8 +84,8 @@ namespace wtf{
     };
 
     virtual void MouseWheelEvent(int16_t delta, const policy::mouse_event&) override{
-      if (delta > 0) _vscroll.DecrementEvent();
-      else _vscroll.IncrementEvent();
+      if (delta > 0) _vscroll.StepDecEvent();
+      else _vscroll.StepIncEvent();
     }
 
 

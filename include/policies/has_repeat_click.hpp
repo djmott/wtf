@@ -12,13 +12,15 @@ namespace wtf{
     protected:
 
       virtual void TimerEvent(UINT_PTR iTimer){
+        _SuperT::TimerEvent(iTimer);
         if (iTimer == _timerid){
           ClickEvent(policy::mouse_event(mouse_event::buttons::left, mouse_event::key_states::unspecified, 0,0));
           set_timer(_repeat_rate, iTimer);
         }
       }
 
-      virtual void MouseMoveEvent(const policy::mouse_event& m)override{
+      virtual void MouseMoveEvent(const policy::mouse_event& m) override {
+        _SuperT::MouseMoveEvent(m);
         auto client = rect::client_coord::get(*this);
         if (!client.is_in(m.position) && _down && _timerid){
           kill_timer(_timerid);
@@ -27,13 +29,15 @@ namespace wtf{
         }
       }
 
-      virtual void MouseDownEvent(const policy::mouse_event& m) override{
+      virtual void MouseDownEvent(const policy::mouse_event& m) override {
+        _SuperT::MouseDownEvent(m);
         if (policy::mouse_event::buttons::left != m.button) return;
         _down = true;
         _timerid = set_timer(_repeat_delay);
       }
 
-      virtual void MouseUpEvent(const policy::mouse_event& m) override{
+      virtual void MouseUpEvent(const policy::mouse_event& m) override {
+        _SuperT::MouseUpEvent(m);
         if (_down && _timerid){
           kill_timer(_timerid);
           _timerid = 0;

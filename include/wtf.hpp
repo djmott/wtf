@@ -82,6 +82,7 @@ namespace wtf{
 #include "policies/has_font.hpp"
 #include "policies/has_icon.hpp"
 #include "policies/has_keyboard.hpp"
+#include "policies/has_mouse_leave.hpp"
 #include "policies/has_mouse_down.hpp"
 #include "policies/has_mouse_up.hpp"
 #include "policies/has_mouse_move.hpp"

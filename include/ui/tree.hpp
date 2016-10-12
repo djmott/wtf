@@ -381,15 +381,15 @@ namespace wtf{
 
     struct vscroll : scroll_bar{
       vscroll(tree& parent) : scroll_bar(parent), _parent(parent){}
-      virtual void IncrementEvent() override{ _parent.ScrollNext(); }
-      virtual void DecrementEvent() override{ _parent.ScrollPrev(); }
+      virtual void StepIncEvent() override{ _parent.ScrollNext(); }
+      virtual void StepDecEvent() override{ _parent.ScrollPrev(); }
       tree& _parent;
     }_vscroll;
 
     struct hscroll : scroll_bar{
       hscroll(tree& parent) : scroll_bar(parent), _parent(parent){}
-      virtual void IncrementEvent() override{}
-      virtual void DecrementEvent() override{}
+      virtual void StepIncEvent() override{}
+      virtual void StepDecEvent() override{}
       tree& _parent;
     }_hscroll;
   };

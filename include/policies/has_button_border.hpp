@@ -10,8 +10,8 @@ namespace wtf{
       }
 
       virtual void MouseMoveEvent(const policy::mouse_event& m) override{
-        _SuperT::MouseMoveEvent(m);
         if (!_Down || policy::mouse_event::buttons::left != m.button) return;
+        _SuperT::MouseMoveEvent(m);
         if (!rect::client_coord::get(*this).is_in(m.position)){
           ::ReleaseCapture();
           _Down = false;
