@@ -13,9 +13,10 @@ namespace wtf{
     void dispatch() const { ::DispatchMessage(this); }
 
     bool peek(HWND hWnd = 0, UINT msgmin = 0, UINT msgmax = 0, UINT remove = PM_NOREMOVE) {
-      return (exception::throw_lasterr_if(
-        ::PeekMessage(this, hWnd, msgmin, msgmax, remove), [](BOOL b) { return FALSE == b; }
-      ) ? true : false);
+      return ::PeekMessage(this, hWnd, msgmin, msgmax, remove) ? true : false;
+    }
+    bool peek(HWND hwnd, UINT msg, bool remove){
+      return ::PeekMessage(this, hwnd, msg, msg, remove ? PM_REMOVE : PM_NOREMOVE) ? true : false;
     }
 
     int pump() {

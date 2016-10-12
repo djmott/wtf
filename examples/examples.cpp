@@ -8,20 +8,29 @@ using namespace wtf;
 #if 1
 struct main_form : form{
   main_form() : form(), rd(), gen(rd()), dist(1,1000), _tree(*this){
-    for (int i = 0; i < 20; i++){
+    _tree.border_style(tree::border_styles::lowered);
+    OnResized += [this](const point::client_coords& p){ _tree.move(5, 5, p.x - 10, p.y - 10); };
+
+/*
+    auto oNode = _tree.add_node(tsRandom());
+    oNode = oNode->add_child(tsRandom());
+    return;
+*/
+
+    for (int i = 0; i < 50; i++){
       auto oNode = _tree.add_node(tsRandom());
-      oNode->expander_display_policy(tree::node::expander_display_policies::always);
-      for (int x = 0; x < 20; x++){
-        auto oChild = oNode->add_child(tsRandom());
-        for (int j = 0; j < 20; j++){
-          oChild->add_child(tsRandom());
-        }
-        oChild->expander_display_policy(tree::node::expander_display_policies::always);
-        oChild->expanded(true);
-      }
       oNode->expanded(true);
+      oNode->expander_display_policy(tree::node::expander_display_policies::always);
+      for (int x = 0; x < 1; x++){
+        auto oChild = oNode->add_node(tsRandom());
+        oChild->expander_display_policy(tree::node::expander_display_policies::always);
+        oChild->expanded(false);
+        for (int j = 0; j < 1; j++){
+          oChild->add_node(tsRandom());
+        }
+      }
+
     }
-    OnResized += [this](const point::client_coords& p){ _tree.move(0, 0, p.x, p.y); };
   }
 
   tstring tsRandom(){

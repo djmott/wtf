@@ -1,17 +1,28 @@
 #pragma once
+
 namespace wtf{
   struct tree : window<tree, policy::has_border, policy::has_click, policy::has_text,
     policy::has_paint, policy::has_size, policy::has_dblclick, policy::has_mouse_wheel, policy::has_font>{
 
-    explicit tree(HWND hParent) : window(hParent), _vscroll(*this), _hscroll(*this),
+    explicit tree(HWND hParent)
+      : window(hParent),
+      _root(new node(this)),
+      _black_pen(pen::create(pen::style::solid, 1, rgb(0, 0, 0))),
       _background_brush(brush::system_brush(system_colors::window)),
-      blackPen(pen::create(pen::style::solid, 1, rgb(0, 0, 0))),
-      blackBrush(brush::solid_brush(rgb(0, 0, 0))),
-      whiteBrush(brush::solid_brush(rgb(255, 255, 255)))
+      _button_face_brush(brush::system_brush(system_colors::button_face)),
+      _black_brush(brush::solid_brush(rgb(0, 0, 0))),
+      _white_brush(brush::solid_brush(rgb(255, 255, 255))),
+      _highlight_background_brush(brush::system_brush(system_colors::highlight)),
+      _highlight_text_brush(brush::system_brush(system_colors::highlight_text)),
+      _vscroll(*this),
+      _hscroll(*this)
     {
       _vscroll.orientation(scroll_bar::orientations::vertical);
       _hscroll.orientation(scroll_bar::orientations::horizontal);
       auto_draw_text(false);
+      text_vertical_alignment(text_vertical_alignments::center);
+      text_horizontal_alignment(text_horizontal_alignments::left);
+      full_row_select(false);
     }
 
     bool full_row_select() const{ return _full_row_select; }
@@ -44,50 +55,93 @@ namespace wtf{
 
       expander_display_policies expander_display_policy() const{ return _expander_display_policy; }
       void expander_display_policy(expander_display_policies newval){ _expander_display_policy = newval; }
-    
+
       const tstring& text() const{ return _text; }
       void text(const tstring& newval){ _text = newval; }
 
       bool expanded() const{ return _expanded; }
       void expanded(bool newval){ _expanded = newval; }
 
-      bool selected() const{ return _selected; }
-      void selected(bool newval){ _selected = newval; }
+      bool selected() const{
+        const auto & oSelectedNodes = get_tree()._selected_nodes;
+        return oSelectedNodes.cend() != std::find_if(oSelectedNodes.cbegin(), oSelectedNodes.cend(),
+                                                     [this](const node::pointer& oNode){ return oNode.get() == this;  });
+      }
+      void selected(bool newval){
+        auto & oSelectedNodes = get_tree()._selected_nodes;
+        if (newval){
+          if (oSelectedNodes.cend() == std::find_if(oSelectedNodes.cbegin(), oSelectedNodes.cend(),
+              [this](const node::pointer& oNode){ return oNode.get() == this;  })){
+            oSelectedNodes.push_back(shared_from_this());
+          }
+        } else{
+          auto oItem = std::find_if(oSelectedNodes.cbegin(), oSelectedNodes.cend(),
+                                    [this](const node::pointer& oNode){ return oNode.get() == this;  });
+          oSelectedNodes.erase(oItem);
+        }
+      }
 
-      pointer parent(){ return _parent.lock(); }
+      pointer parent() const{ return _parent.lock(); }
 
       const vector& children() const{ return _children; }
 
-      pointer add_child(const tstring& Text){
+      pointer add_node(const tstring& Text){
         _children.push_back(pointer(new node(shared_from_this(), Text)));
         return _children.back();
       }
-      void add_child(pointer oChild){
+      void add_node(pointer oChild){
         oChild->_parent = shared_from_this();
         _children.push_back(oChild);
       }
 
-
-      pointer next_sibbling() {
-        auto oParent = parent();
-        if (!oParent) return oParent;
-        for (size_t i = 0; i < oParent->children().size() - 2; ++i){
-          if (this == oParent->children()[i].get()) return oParent->children()[1 + i];
-        }
-        return pointer();
-      }
-      pointer prev_sibbling() {
-        auto oParent = parent();
-        if (!oParent) return oParent;
-        for (size_t i = 1; i> oParent->children().size() - 1; ++i){
-          if (this == oParent->children()[i].get()) return oParent->children()[i - 1];
-        }
-        return pointer();
-      }
-
-
-
     private:
+      friend struct tree;
+
+      node(tree * pTree) : _tree(pTree){}
+
+      tree& get_tree(){
+        if (_tree) return *_tree;
+        return parent()->get_tree();
+      }
+      const tree& get_tree() const{
+        if (_tree)  return *_tree;
+        return parent()->get_tree();
+      }
+
+      pointer get_last(){
+        if (!children().size() || !expanded()) return shared_from_this();
+        return children().back()->get_last();
+      }
+
+      pointer get_next(bool recurse_to_children = true){
+        if (recurse_to_children && children().size() && expanded()) return _children[0];
+        auto oParent = parent();
+        if (!oParent) return oParent;
+        const auto & oSibblings = oParent->children();
+        for (int i = 0; i < (static_cast<int>(oSibblings.size()) - 2); ++i){
+          if (oSibblings[i].get() == this) return oSibblings[i + 1];
+        }
+        return oParent->get_next(false);
+      }
+
+      pointer get_prev(){
+        auto oParent = parent();
+        if (!oParent) return oParent;
+        const auto & oSibblings = oParent->children();
+        for (int i = 1; i < oSibblings.size() - 1; ++i){
+          if (oSibblings[i].get() == this) return oSibblings[i - 1]->get_last();
+        }
+        if (oParent->parent()) return oParent;
+        return pointer();
+      }
+
+      int depth(){
+        auto oParent = parent();
+        if (oParent) return 1 + oParent->depth();
+        return 1;
+      }
+
+      tree * _tree = nullptr;
       bool _selected = false;
       tstring _text;
       bool _expanded = false;
@@ -96,44 +150,87 @@ namespace wtf{
       expander_display_policies _expander_display_policy = expander_display_policies::with_children;
     };
 
-    node::pointer add_node(const tstring& name){
-      auto oRet = std::make_shared<node>(node::pointer(), name);
-      if (!_top) _top = oRet;
-      _nodes.push_back(oRet);
-      return oRet;
+    node::pointer add_node(const tstring& Text){
+      auto oNode = _root->add_node(Text);
+      if (!_top) _top = oNode;
+      if (!_bottom) _bottom = oNode;
+      refresh();
+      return oNode;
     }
+
+    void add_node(node::pointer oNode){
+      _root->add_node(oNode);
+      if (!_top) _top = oNode;
+      if (!_bottom) _bottom = oNode;
+      refresh();
+    }
+
+    callback<void(node::pointer)> OnNodeSelected;
+    callback<void(node::pointer)> OnNodeDblClicked;
+
+    const node::vector& selected_items() const{ return _selected_nodes; }
 
   protected:
     static const int scroll_width = 15;
-    static const int left_margin = 2;
-    static const int right_margin = 2;
-    static const int top_margin = 2;
-    static const int bottom_margin = 2;
-    static const int node_indent = 15;
-    
-    select_modes _select_mode = select_modes::multi;
-    bool _full_row_select = true;
-    node::vector _nodes;
-    node::pointer _top; //the node at the top of the display window
-    rect::client_coord::vector _ItemRects; //rect around item text
-    rect::client_coord::vector _ExpanderRects; //rect around expander
-    rect::client_coord::vector _RowRects; //rect around entire row
-    node::vector _DisplayedNodes; //the displayed item
+
+    node::pointer _root;
+    node::pointer _top; //node at the top of the display window
+    node::pointer _bottom; //node at the bottom of the display window
+    rect::client_coord::vector _item_rects; //rect around item text
+    rect::client_coord::vector _expander_rects; //rect around expander
+    rect::client_coord::vector _row_rects; //rect around entire row
+    node::vector _displayed_nodes; //the displayed items
+    node::vector _selected_nodes;
+    pen _black_pen;
     brush _background_brush;
-    pen blackPen;
-    brush blackBrush;
-    brush whiteBrush;
-    int expander_width = 10;
+    brush _button_face_brush;
+    brush _black_brush;
+    brush _white_brush;
+    brush _highlight_background_brush;
+    brush _highlight_text_brush;
+    select_modes _select_mode = select_modes::extended;
+    bool _full_row_select = true;
+    bool _disable_scroll_up = false;
 
-    virtual void ClickEvent(const policy::mouse_event& m) override { 
+    virtual void ClickEvent(const policy::mouse_event& m) override{
       if (policy::mouse_event::buttons::left != m.button) return;
-      for (size_t i = 0; i < _RowRects.size(); ++i){
-        if (_ExpanderRects[i].is_in(m.position)){
-          _DisplayedNodes[i]->expanded(!_DisplayedNodes[i]->expanded());
-        } else if (_full_row_select && _RowRects[i].is_in(m.position)){
-          _DisplayedNodes[i]->selected(!_DisplayedNodes[i]->selected());
-        } else if (_ItemRects[i].is_in(m.position)){
-          _DisplayedNodes[i]->selected(!_DisplayedNodes[i]->selected());
+      node::pointer oClickedNode;
+      for (size_t i = 0; i < _row_rects.size(); ++i){
+        if (_expander_rects[i].is_in(m.position)){
+          _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
+          refresh();
+          return;
+        } else if (_item_rects[i].is_in(m.position) || (_full_row_select && _row_rects[i].is_in(m.position))){
+          oClickedNode = _displayed_nodes[i];
+          break;
+        }
+      }
+      if (!oClickedNode) return;
+      if (select_modes::single == _select_mode){
+        bool bExists = _selected_nodes.end() != std::find_if(_selected_nodes.begin(), _selected_nodes.end(), [oClickedNode](node::pointer oNode){ return oClickedNode.get() != oNode.get(); });
+        _selected_nodes.clear();
+        _selected_nodes.push_back(oClickedNode);
+        if (!bExists) OnNodeSelected(oClickedNode);
+      } else if (select_modes::multi == _select_mode){
+        bool bSelected = !oClickedNode->selected();
+        oClickedNode->selected(bSelected);
+        if (!bSelected) OnNodeSelected(oClickedNode);
+      } else{ //extended
+        if (!(m.key_state & policy::mouse_event::key_states::control)){
+          _selected_nodes.clear();
+        }
+        bool bSelected = !oClickedNode->selected();
+        oClickedNode->selected(bSelected);
+        if (!bSelected) OnNodeSelected(oClickedNode);
+      }
+      refresh();
+    }
+
+    virtual void DblClickEvent(const policy::mouse_event& m) override{
+      if (policy::mouse_event::buttons::left != m.button) return;
+      for (size_t i = 0; i < _row_rects.size(); ++i){
+        if (_item_rects[i].is_in(m.position)){
+          _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
         } else{
           continue;
         }
@@ -141,20 +238,6 @@ namespace wtf{
         break;
       }
     }
-
-    virtual void DblClickEvent(const policy::mouse_event& m) override{ 
-      if (policy::mouse_event::buttons::left != m.button) return;
-      for (size_t i = 0; i < _RowRects.size(); ++i){
-        if (_ItemRects[i].is_in(m.position)){
-          _DisplayedNodes[i]->expanded(!_DisplayedNodes[i]->expanded());
-        } else{
-          continue;
-        }
-        refresh();
-        break;
-      }
-    }
-
 
     static int get_item_depth(const node::pointer& oNode){
       if (!oNode) return 0;
@@ -162,170 +245,133 @@ namespace wtf{
     }
 
     virtual void ResizedEvent(wm_size_flags, const point::client_coords& p) override{
-      _vscroll.move(p.x - scroll_width - right_margin, top_margin, scroll_width, p.y - top_margin - bottom_margin - scroll_width);
-      _hscroll.move(left_margin, p.y - bottom_margin - scroll_width, p.x - scroll_width - right_margin - left_margin, scroll_width);
+      _vscroll.move(p.x - scroll_width - border_width(), border_width(), scroll_width, p.y - (border_width() * 2) - scroll_width);
+      _hscroll.move(border_width(), p.y - border_width() - scroll_width, p.x - scroll_width - (border_width() * 2), scroll_width);
     };
 
+    virtual const brush &background_brush() const{ return _background_brush; }
 
-    bool print_nodes(const device_context& dc, const node::pointer& oNode, int & iTop, int iLeft, const rect::client_coord& oMaxExtents){
-      if (iTop > oMaxExtents.bottom) return false;
+    virtual void EraseBackgroundEvent(const device_context& ctx, const rect::client_coord& client, bool& handled){
+      ctx.fill(client, background_brush());
+      rect::client_coord oTmp(client.right - scroll_width - (border_width() * 2),
+                              client.bottom - scroll_width - (border_width() * 2),
+                              client.right, client.bottom);
+      ctx.fill(oTmp, _button_face_brush);
+    }
 
-
-      auto oTextSize = dc.get_text_extent(oNode->text());
-
-      _DisplayedNodes.push_back(oNode);
-
-      auto iTmpLeft = iLeft;
-      bool bPrintExpander = false;
-      bool bExpanded = false;
-
+    bool print_node(const node::pointer& oNode, const device_context& dc, const text_metrics& oTextMetrics, rect::client_coord& oClient){
+      if (oClient.top > oClient.bottom) return false;
+      _bottom = oNode;
+      bool PrintExpander = false;
       if (node::expander_display_policies::always == oNode->expander_display_policy()){
-        bPrintExpander = true;
-        bExpanded = oNode->expanded();
-      } else if (node::expander_display_policies::never == oNode->expander_display_policy()){
-        bPrintExpander = false;
-        bExpanded = false;
-      } else{
-        bPrintExpander = oNode->children().size() ? true : false;
-        bExpanded = oNode->expanded();
+        PrintExpander = true;
+      } else if (node::expander_display_policies::with_children == oNode->expander_display_policy()){
+        PrintExpander = oNode->children().size() ? true : false;
       }
-
-      if (bPrintExpander){
-        auto vcenter = std::abs((oTextSize.cy - expander_width) / 2);
-        auto hcenter = std::abs((oTextSize.cx - expander_width) / 2);
-        _ExpanderRects.emplace_back(iTmpLeft + hcenter, iTop + vcenter, iTmpLeft + std::abs(oTextSize.cx - hcenter), iTop + std::abs(oTextSize.cy - vcenter));
-        iTmpLeft += (expander_width * 2);
-      } else{
-        _ExpanderRects.emplace_back(-1, -1, -1, -1);
-      }
-      auto & oExpanderRect = _ExpanderRects.back();
-
-      _ItemRects.emplace_back(iTmpLeft, iTop, iTmpLeft + oTextSize.cx, iTop + oTextSize.cy);
-
-      _RowRects.emplace_back(oMaxExtents.left, iTop, oMaxExtents.right, iTop + oTextSize.cy);
+      auto iExpanderWidth = 8;
+      auto iItemLeft = oNode->depth() * oTextMetrics.tmAveCharWidth * 2;
+      auto iExpanderLeft = iItemLeft - iExpanderWidth - 5;
+      auto iExpanderTop = (oTextMetrics.tmHeight - iExpanderWidth) / 2;
+      auto oTE = dc.get_text_extent(oNode->text());
+      _item_rects.emplace_back(iItemLeft, oClient.top, iItemLeft + oTE.cx, oClient.top + oTE.cy);
+      _expander_rects.emplace_back(iExpanderLeft, oClient.top + iExpanderTop, iExpanderLeft + iExpanderWidth, oClient.top + iExpanderTop + iExpanderWidth);
+      _row_rects.emplace_back(oClient.left, oClient.top, oClient.right, oClient.top + oTextMetrics.tmHeight);
+      _displayed_nodes.push_back(oNode);
 
       if (oNode->selected()){
-        if (full_row_select()){
-          dc.fill(_RowRects.back(), brush::system_brush(system_colors::highlight));
+        if (_full_row_select){
+          dc.fill(_row_rects.back(), _highlight_background_brush);
         } else{
-          dc.fill(_ItemRects.back(), brush::system_brush(system_colors::highlight));
+          dc.fill(_item_rects.back(), _highlight_background_brush);
         }
+        dc.text_color(system_rgb<system_colors::highlight_text>());
+      } else{
+        dc.text_color(system_rgb<system_colors::button_text>());
       }
-
-      if (bPrintExpander){
-        point::client_coords::vector arrow(3);
-        if (bExpanded){
-          arrow[0].x = oExpanderRect.left; arrow[0].y = oExpanderRect.top;
-          arrow[1].x = oExpanderRect.right; arrow[1].y = oExpanderRect.top;
-          arrow[2].x = oExpanderRect.left + ((oExpanderRect.right - oExpanderRect.left) / 2); arrow[2].y = oExpanderRect.bottom;
-          dc.fill(arrow, blackPen, blackBrush);
-        } else{
-          arrow[0].x = oExpanderRect.left; arrow[0].y = oExpanderRect.top;
-          arrow[1].x = oExpanderRect.right; arrow[1].y = oExpanderRect.top + ((oExpanderRect.bottom - oExpanderRect.top) / 2);
-          arrow[2].x = oExpanderRect.left; arrow[2].y = oExpanderRect.bottom;
-          dc.fill(arrow, blackPen, whiteBrush);
-        }
-      }
-
 
       text(oNode->text());
-      draw_text(dc, _ItemRects.back());
 
-      iTop += oTextSize.cy;
-
-
-      if (bExpanded){
-        for (auto & oChild : oNode->children()){
-          if (!print_nodes(dc, oChild, iTop, iTmpLeft + node_indent, oMaxExtents)) break;
+      draw_text(dc, _item_rects.back());
+      if (PrintExpander){
+        const auto & oExpander = _expander_rects.back();
+        point::client_coords::vector oArrow(3);
+        if (oNode->expanded()){
+          oArrow[0].x = oExpander.left; oArrow[0].y = oExpander.top;
+          oArrow[1].x = oExpander.right; oArrow[1].y = oExpander.top;
+          oArrow[2].x = oExpander.left + ((oExpander.right - oExpander.left) / 2); oArrow[2].y = oExpander.bottom;
+          dc.fill(oArrow, _black_pen, _black_brush);
+        } else{
+          oArrow[0].x = oExpander.left; oArrow[0].y = oExpander.top;
+          oArrow[1].x = oExpander.right; oArrow[1].y = oExpander.top + ((oExpander.bottom - oExpander.top) / 2);
+          oArrow[2].x = oExpander.left; oArrow[2].y = oExpander.bottom;
+          dc.fill(oArrow, _black_pen, _white_brush);
         }
       }
-
+      oClient.top += oTextMetrics.tmHeight;
+      if (oNode->children().size() && oNode->expanded()){
+        for (const auto & oChild : oNode->children()){
+          if (!print_node(oChild, dc, oTextMetrics, oClient)) return false;
+        }
+      }
       return true;
     }
 
-    virtual const brush &background_brush() const{ return _background_brush; }
-        
-    const node::vector& sibblings(const node::pointer& oNode) const {
-      if (oNode->parent()) return oNode->parent()->children();
-      return _nodes;
-    }
-
-    node::pointer EndOfVisible(node::pointer oNode){
-      auto oRet = oNode;
-      for (;;){
-        if (oRet->children().size() && oRet->expanded()) oRet = oRet->children()[0];
-        else return oRet;
-      }
-    }
-
-    node::pointer GetPrevVisible(node::pointer oNode){
-      auto & oSibblings = sibblings(oNode);
-      for (size_t i = 1; i < oSibblings.size(); ++i){
-        if (oSibblings[i].get() == oNode.get()){
-          return EndOfVisible(oSibblings[i - 1]);
-        }
-      }
-      return oNode->parent();
-    }
-
-    node::pointer GetNextVisible(node::pointer oNode) {
-      for ( auto oParent = oNode ; oParent; oParent = oParent->parent()){
-
-        if (oParent->children().size() && oParent->expanded()) return oParent->children()[0];
-
-        auto & oSibblings = sibblings(oParent);
-        for (size_t i = 0; i < oSibblings.size() - 1; ++i){
-          if (oSibblings[i].get() == oParent.get()) return oSibblings[i + 1];
-        }
-      }
-      return node::pointer();
-    }
-
-    int GetNodeDepth(const node::pointer& oNode) const{
-      if (!oNode) return 0;
-      return 1 + GetNodeDepth(oNode->parent());
-    }
-
     virtual void PaintEvent(const device_context& dc, const paint_struct& ps) override{
-      if (!_nodes.size()) return;
+      if (!_root->children().size()) return;
       ApplyFontEvent(dc);
       auto client = ps.client();
-      client.bottom -= scroll_width;
-      client.right -= scroll_width;
-      client.left += left_margin;
-      client.top += top_margin;
-      _ItemRects.clear();
-      _ExpanderRects.clear();
-      _DisplayedNodes.clear();
-      _RowRects.clear();
-      int iTop = top_margin;
-
-      for (auto oNode = _top; oNode; oNode = GetNextVisible(oNode)){
-        if (!print_nodes(dc, oNode, iTop, left_margin + (GetNodeDepth(oNode) * node_indent), client)) break;
+      client.bottom -= scroll_width + border_width();
+      client.right -= scroll_width + border_width();
+      client.left += border_width();
+      client.top += border_width();
+      _item_rects.clear();
+      _expander_rects.clear();
+      _displayed_nodes.clear();
+      _row_rects.clear();
+      auto oTextMetrics = text_metrics::get(dc);
+      for (auto oNode = _top; oNode; oNode = oNode->get_next(false)){
+        if (!print_node(oNode, dc, oTextMetrics, client)) break;
       }
-
     }
 
-
-    void ScrollDown(){
-      auto oPrev = GetPrevVisible(_top);
-      if (oPrev) _top = oPrev;
+    void ScrollPrev(){
+      if (!_top || !_bottom) return;
+      auto oTopPrev = _top->get_prev();
+      auto oBottomPrev = _bottom->get_prev();
+      if (!oTopPrev || !oBottomPrev) return;
+      _top = oTopPrev;
+      _bottom = oBottomPrev;
       refresh();
     }
 
-    void ScrollUp(){
-      auto oNext = GetNextVisible(_top);
-      if (oNext) _top = oNext;
+    void ScrollNext(){
+      if (!_top || !_bottom) return;
+      auto oTopNext = _top->get_next(true);
+      auto oBottomNext = _bottom->get_next(true);
+      if (!oTopNext || !oBottomNext) return;
+      _top = oTopNext;
+      _bottom = oBottomNext;
       refresh();
     }
 
     void ScrollLeft(){}
     void ScrollRight(){}
 
+    virtual void MouseWheelEvent(int16_t delta, const policy::mouse_event& m) override{ 
+      bool bUp = (delta > 0);
+      for (int i = 0; i <= (delta % WHEEL_DELTA); ++i){
+        if (bUp){
+          ScrollPrev();
+        } else{
+          ScrollNext();
+        }
+      }
+    }
+
     struct vscroll : scroll_bar{
       vscroll(tree& parent) : scroll_bar(parent), _parent(parent){}
-      virtual void IncrementEvent() override{ _parent.ScrollUp(); }
-      virtual void DecrementEvent() override{ _parent.ScrollDown(); }
+      virtual void IncrementEvent() override{ _parent.ScrollNext(); }
+      virtual void DecrementEvent() override{ _parent.ScrollPrev(); }
       tree& _parent;
     }_vscroll;
 

@@ -44,7 +44,7 @@ namespace wtf{
     private:
       UINT_PTR _timerid = 0;
       bool _down = false;
-      int _repeat_delay = 250;
+      int _repeat_delay = 500;
       int _repeat_rate = 50;
     };
   }

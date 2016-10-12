@@ -87,7 +87,13 @@ namespace wtf{
       return ret;
     }
 
+    rgb text_color() const{
+      return rgb(wtf::exception::throw_lasterr_if(::GetTextColor(*this), [](COLORREF c){ return CLR_INVALID == c; }));
+    }
 
+    void text_color(const rgb& newval) const{
+      wtf::exception::throw_lasterr_if(::SetTextColor(*this, newval), [](COLORREF c){ return CLR_INVALID == c; });
+    }
 
     void invert(const rect::client_coord &area) const{
       wtf::exception::throw_lasterr_if(::InvertRect(*this, &area), [](BOOL b){ return !b; });
