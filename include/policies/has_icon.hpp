@@ -7,14 +7,6 @@ namespace wtf {
     */
     template<typename _SuperT, typename _ImplT>
     struct has_icon : _SuperT {
-      has_icon() : _SuperT(), _big_icon(icon::system(icon::style::shield)),
-                   _small_icon(icon::system(icon::style::shield)) 
-      {}
-      ~has_icon() = default;
-      has_icon(const has_icon&) = delete;
-      has_icon &operator=(const has_icon &) = delete;
-      has_icon(has_icon&&) = delete;
-      has_icon &operator=(has_icon&&) = delete;
 
       virtual icon &big_icon() { return _big_icon; }
 
@@ -36,8 +28,8 @@ namespace wtf {
         else return reinterpret_cast<LRESULT>(static_cast<HICON>(small_icon()));
       }
 
-      icon _big_icon;
-      icon _small_icon;
+      icon _big_icon = icon::system(icon::style::winlogo);
+      icon _small_icon = icon::system(icon::style::winlogo);
     };
   }
 }

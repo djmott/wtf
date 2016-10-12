@@ -1,5 +1,9 @@
 #pragma once
 
+#if !defined(__WTF_DEBUG_MESSAGES__)
+#define __WTF_DEBUG_MESSAGES__ 0
+#endif
+
 namespace wtf{
   namespace _{
     //everything in the hidden _ namespace is for internal use by the library
@@ -160,7 +164,7 @@ namespace wtf{
      */
     template <typename _ImplT> struct base_window<_ImplT>{
       /// an implementation may want to use different window styles so add their definitions as class wide static constants
-      static const DWORD ExStyle = 0;
+      static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
       static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
       virtual ~base_window(){ if (_handle) ::DestroyWindow(_handle); }
@@ -203,11 +207,13 @@ namespace wtf{
        * bottom most inherited (_ImplT::handle_message) to top most parent (this class::handle_message)
       */
       static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
+      #if __WTF_DEBUG_MESSAGES__
         std::string sTemp = typeid(_ImplT).name();
         sTemp += " ";
         sTemp += msg_name(umsg);
         sTemp += "\n";
         OutputDebugStringA(sTemp.c_str());
+      #endif
         try{
           _ImplT * pThis = nullptr;
           bool handled = false;
@@ -264,6 +270,7 @@ namespace wtf{
           tstring sMsg = _T("");
           std::string swhat(ex.what());
           std::string scode(ex.code());
+          //poor mans utf8 conversion until mingw supports codecvt
           std::copy(swhat.begin(), swhat.end(), std::back_inserter(sMsg));
           sMsg += _T("\n");
           std::copy(scode.begin(), scode.end(), std::back_inserter(sMsg));

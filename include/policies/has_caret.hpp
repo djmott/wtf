@@ -5,20 +5,8 @@ namespace wtf {
     /** has_caret
     * Controls the caret of text/input elements
     */
-    template<typename _SuperT, typename _ImplT>
+    template<typename _SuperT, typename>
     struct has_caret : _SuperT {
-      has_caret(const has_caret&) = delete;
-      has_caret(has_caret&&) = delete;
-      has_caret &operator=(const has_caret &) = delete;
-      has_caret &operator=(has_caret&&) = delete;
-      virtual ~has_caret() = default;
-      has_caret() 
-        : _SuperT(),
-        _blink_rate(250),
-        _pos(1,1),
-        _width(1),
-        _height(1)
-      {}
 
       virtual int caret_width() const{ return _width; }
       virtual void caret_width(int newval){ _width = newval; }
@@ -75,11 +63,11 @@ namespace wtf {
         return 0;
       }
     private:
-      UINT _blink_rate;
-      point::client_coords _pos;
+      UINT _blink_rate = 250;
+      point::client_coords _pos = point::client_coords(0,0);
       bool _caret_visible = false;
-      int _width;
-      int _height;
+      int _width = 1;
+      int _height = 1;
     };
   }
 }

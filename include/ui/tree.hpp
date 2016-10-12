@@ -1,7 +1,7 @@
 #pragma once
 
 namespace wtf{
-  struct tree : window<tree, policy::has_border, policy::has_click, policy::has_text,
+  struct tree : window<tree, policy::has_border, policy::has_click, policy::has_text, 
     policy::has_paint, policy::has_size, policy::has_dblclick, policy::has_mouse_wheel, policy::has_font>{
 
     explicit tree(HWND hParent)
@@ -36,6 +36,16 @@ namespace wtf{
 
     select_modes select_mode() const{ return _select_mode; }
     void select_mode(select_modes newval){ _select_mode = newval; }
+
+
+    enum class edit_modes{
+      disabled,
+      automatic,
+    };
+
+    edit_modes edit_mode() const{ return _edit_mode; }
+    void edit_mode(edit_modes newval){ _edit_mode = newval; }
+
 
     struct node : std::enable_shared_from_this<node>{
       using pointer = std::shared_ptr<node>;
@@ -189,6 +199,7 @@ namespace wtf{
     brush _highlight_background_brush;
     brush _highlight_text_brush;
     select_modes _select_mode = select_modes::extended;
+    edit_modes _edit_mode = edit_modes::disabled;
     bool _full_row_select = true;
     bool _disable_scroll_up = false;
 

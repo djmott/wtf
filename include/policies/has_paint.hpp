@@ -8,13 +8,6 @@ namespace wtf {
     template<typename _SuperT, typename _ImplT>
     struct has_paint : _SuperT {
 
-      has_paint(const has_paint&) = delete;
-      has_paint &operator=(const has_paint &) = delete;
-      has_paint(has_paint&&) = delete;
-      has_paint &operator=(has_paint &&) = delete;
-      virtual ~has_paint() = default;
-      has_paint() : _SuperT(), _background_brush(brush::system_brush(system_colors::button_face)){}
-
       void update() const {
         wtf::exception::throw_lasterr_if(::UpdateWindow(*this), [](BOOL b) { return !b; });
       }
@@ -25,6 +18,7 @@ namespace wtf {
       }
 
       void lock_update() const{ ::LockWindowUpdate(*this); }
+
       void unlock_update() const{ ::LockWindowUpdate(nullptr); }
 
       virtual const brush &background_brush() const { return _background_brush; }
@@ -50,7 +44,7 @@ namespace wtf {
         return 0;
       }
 
-      brush _background_brush;
+      brush _background_brush = brush::system_brush(system_colors::button_face);
 
     };
 

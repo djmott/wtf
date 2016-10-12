@@ -5,12 +5,7 @@ namespace wtf {
     template<typename _SuperT, typename _ImplT>
     struct has_font : _SuperT {
 
-      has_font() : _SuperT(),
-                   _font(_::non_client_metrics::get().lfMessageFont),
-                   _fore_color(system_rgb<system_colors::window_text>()),
-                   _back_color(system_rgb<system_colors::window>()),
-                   _background_mode(background_modes::transparent)
-      {}
+      has_font() : _SuperT(), _font(_::non_client_metrics::get().lfMessageFont){}
 
       has_font(const has_font&) = delete;
       has_font &operator=(const has_font &) = delete;
@@ -57,9 +52,9 @@ namespace wtf {
 
 
       wtf::font _font;
-      rgb _fore_color;
-      rgb _back_color;
-      background_modes _background_mode;
+      rgb _fore_color = system_rgb<system_colors::window_text>();
+      rgb _back_color = system_rgb<system_colors::window>();
+      background_modes _background_mode = background_modes::transparent;
 
 
     };

@@ -18,7 +18,13 @@ namespace wtf {
         screen_coords() = default;
         screen_coords(LONG X, LONG Y) : base(X, Y){}
         inline client_coords to_client(HWND) const ;
+        static screen_coords get_size(HWND hwnd){
+          RECT r;
+          wtf::exception::throw_lasterr_if(::GetWindowRect(hwnd, &r), [](BOOL b){ return !b; });
+          return screen_coords(r.right - r.left, r.bottom - r.top);
+        }
       };
+
       struct client_coords : base<screen_coords>{
         client_coords() = default;
         client_coords(LONG X, LONG Y) : base(X,Y){}
@@ -26,6 +32,11 @@ namespace wtf {
           screen_coords oRet;
           wtf::exception::throw_lasterr_if(::ClientToScreen(hwnd, &oRet), [](BOOL b){ return !b; });
           return oRet;
+        }
+        static client_coords get_size(HWND hwnd){
+          RECT r;
+          wtf::exception::throw_lasterr_if(::GetClientRect(hwnd, &r), [](BOOL b){ return !b; });
+          return client_coords(r.right - r.left, r.bottom - r.top);
         }
       };
 

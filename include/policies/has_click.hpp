@@ -50,7 +50,7 @@ namespace wtf {
 
         return 0;
       }
-
+    private:
        mouse_event::buttons _Down = mouse_event::buttons::unspecified;
     };
   }

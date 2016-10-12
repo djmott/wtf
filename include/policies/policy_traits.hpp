@@ -45,13 +45,20 @@ namespace wtf {
     template<> struct traits<has_mouse_down>{
       using requirements = type_list<>;
     };
+
     template<> struct traits<has_mouse_move>{
       using requirements = type_list<>;
     };
+
     template<> struct traits<has_mouse_up>{
       using requirements = type_list<>;
     };
+
     template<> struct traits<has_mouse_wheel>{
+      using requirements = type_list<>;
+    };
+
+    template<> struct traits<has_orientation>{
       using requirements = type_list<>;
     };
 

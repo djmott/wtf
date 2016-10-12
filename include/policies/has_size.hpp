@@ -7,12 +7,6 @@ namespace wtf {
     */
     template<typename _SuperT, typename _ImplT>
     struct has_size : _SuperT {
-      has_size(): _SuperT(){}
-      virtual ~has_size() = default;
-      has_size(const has_size&) = delete;
-      has_size &operator=(const has_size &) = delete;
-      has_size(has_size&&) = delete;
-      has_size &operator=(has_size&&) = delete;
 
       enum class wm_size_flags {
         hide = SIZE_MAXHIDE,
@@ -27,6 +21,14 @@ namespace wtf {
                                          [](BOOL b) { return !b; });
       }
 
+      void poke() {
+        wtf::exception::throw_lasterr_if(::SetWindowPos(*this, HWND_TOP, 0, 0, 0, 0, 
+                                         SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOREDRAW |
+                                         SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER | 
+                                         SWP_NOSENDCHANGING | SWP_NOREPOSITION
+                                         ),
+                                         [](BOOL b){ return !b; });
+      }
 
       virtual int top() const {
         auto rc = rect::client_coord::get(*this);

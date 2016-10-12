@@ -1,26 +1,13 @@
 #pragma once
 namespace wtf{
-  struct split_container : window<split_container, policy::has_size, policy::has_border, policy::has_paint>{
+  struct split_container : window<split_container, policy::has_size, policy::has_border, policy::has_paint, policy::has_orientation>{
 
-    split_container(HWND parent) 
-      : window(parent),
-      _first(*this), _second(*this),
-      _orientation(orientations::vertical),
-      _splitter(*this)
-    {
+    split_container(HWND parent) : window(parent), _first(*this), _second(*this), _splitter(*this){
       border_style(border_styles::none);
       set_split_position(25);
       _first.border_style(panel::border_styles::raised);
       _second.border_style(panel::border_styles::raised);
     }
-
-    enum class orientations{
-      horizontal,
-      vertical,
-    };
-
-    orientations orientation() const{ return _orientation; }
-    void orientation(orientations newval){ _orientation; }
 
     void set_split_position(int percentage){
       int newPos = percentage * width() / 100;
@@ -43,8 +30,6 @@ namespace wtf{
     static const int SplitterWidth = 5;
 
     panel _first, _second;
-
-    orientations _orientation;
 
     virtual void ResizedEvent(wm_size_flags, const point::client_coords& p) override{
       if (orientations::horizontal == _orientation){

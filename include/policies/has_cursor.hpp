@@ -7,13 +7,6 @@ namespace wtf {
     */
     template<typename _SuperT, typename _ImplT>
     struct has_cursor : _SuperT {
-      virtual ~has_cursor() = default;
-
-      has_cursor() = default;
-      has_cursor(const has_cursor&) = delete;
-      has_cursor &operator=(const has_cursor &) = delete;
-      has_cursor(has_cursor&&) = delete;
-      has_cursor &operator=(has_cursor&&) = delete;
 
       virtual const wtf::cursor &cursor_pointer() const { return cursor::global(cursor::style::arrow); }
 

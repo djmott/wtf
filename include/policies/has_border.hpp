@@ -9,20 +9,6 @@ namespace wtf {
     template<typename _SuperT, typename _ImplT>
     struct has_border : _SuperT {
 
-      virtual ~has_border() = default;
-
-      has_border() :
-        _SuperT(),
-        _border_style(border_styles::raised),
-        _border_highlight(system_rgb<system_colors::button_highlight>()),
-        _border_shadow(system_rgb<system_colors::button_shadow>())
-      {}
-
-      has_border(const has_border&) = delete;
-      has_border(has_border&&) = delete;
-      has_border &operator=(const has_border &) = delete;
-      has_border &operator=(has_border&&) = delete;
-
       enum class border_styles{
         none = 0,
         flat,
@@ -108,10 +94,13 @@ namespace wtf {
       }
 
     private:
-      border_styles _border_style;
-      rgb _border_highlight;
-      rgb _border_shadow;
-      bool _draw_top = true, _draw_left = true, _draw_right = true, _draw_bottom = true;
+      border_styles _border_style = border_styles::raised;
+      rgb _border_highlight = system_rgb<system_colors::button_highlight>();
+      rgb _border_shadow = system_rgb<system_colors::button_shadow>();
+      bool _draw_top = true;
+      bool _draw_left = true;
+      bool _draw_right = true;
+      bool _draw_bottom = true;
     };
 
   }

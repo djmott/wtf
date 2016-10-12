@@ -8,19 +8,6 @@ namespace wtf{
     template<typename _SuperT, typename _ImplT>
     struct has_text : _SuperT{
 
-      has_text()
-        : _SuperT(),
-        _text(_T("")),
-        _multiline(false),
-        _text_vertical_alignment(text_vertical_alignments::center),
-        _text_horizontal_alignment(text_horizontal_alignments::center){}
-
-      virtual ~has_text() = default;
-      has_text(const has_text&) = delete;
-      has_text &operator=(const has_text &) = delete;
-      has_text(has_text&&) = delete;
-      has_text &operator=(has_text&&) = delete;
-
       enum class text_vertical_alignments{
         top,
         center,
@@ -115,12 +102,12 @@ namespace wtf{
         oClient.bottom -= oBorder.border_width();
       }
 
-      tstring _text;
-      bool _multiline;
+      tstring _text = _T("");
+      bool _multiline = false;
       bool _auto_draw_text = true;
 
-      text_vertical_alignments _text_vertical_alignment;
-      text_horizontal_alignments _text_horizontal_alignment;
+      text_vertical_alignments _text_vertical_alignment = text_vertical_alignments::center;
+      text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::center;
     };
   }
 }

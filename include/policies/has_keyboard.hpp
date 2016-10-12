@@ -5,15 +5,6 @@ namespace wtf{
     template <typename _SuperT, typename _ImplT>
     struct has_keyboard : _SuperT{
 
-      has_keyboard(const has_keyboard&) = delete;
-      has_keyboard(has_keyboard&&) = delete;
-      has_keyboard &operator=(const has_keyboard &) = delete;
-      has_keyboard &operator=(has_keyboard&&) = delete;
-      virtual ~has_keyboard() = default;
-      has_keyboard() : _SuperT(){
-
-      }
-
       enum class hotkey_modifiers{
         alt = MOD_ALT,
         control = MOD_CONTROL,
@@ -62,10 +53,9 @@ namespace wtf{
           }
           case WM_SETFOCUS:{
             GotKeyboardFocusEvent(); break;
-
+          }
           case WM_KILLFOCUS:{
             LoosingKeyboardFocusEvent(); break;
-          }
           }
         }
         return 0; 

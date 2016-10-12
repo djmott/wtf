@@ -7,12 +7,8 @@ namespace wtf {
     */
     template<typename _SuperT, typename _ImplT>
     struct has_close : _SuperT {
+
       void close() { CloseWindow(*this); }
-      has_close() = default;
-      has_close(const has_close&) = delete;
-      has_close &operator=(const has_close &) = delete;
-      has_close(has_close&&) = delete;
-      has_close &operator=(has_close&&) = delete;
 
     protected:
 

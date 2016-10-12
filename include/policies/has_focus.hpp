@@ -7,12 +7,7 @@ namespace wtf {
     */
     template<typename _SuperT, typename _ImplT>
     struct has_focus : _SuperT {
-      virtual ~has_focus() = default;
-      has_focus() = default;
-      has_focus(const has_focus&) = delete;
-      has_focus(has_focus&&) = delete;
-      has_focus &operator=(const has_focus &) = delete;
-      has_focus &operator=(has_focus&&) = delete;
+
 
       void set_focus() const { wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h) { return !h; }); }
 

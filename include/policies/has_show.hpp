@@ -7,12 +7,6 @@ namespace wtf {
     */
     template<typename _SuperT, typename _ImplT>
     struct has_show : _SuperT {
-      has_show() = default;
-      ~has_show() = default;
-      has_show(const has_show&) = delete;
-      has_show &operator=(const has_show &) = delete;
-      has_show(has_show&&) = delete;
-      has_show &operator=(has_show&&) = delete;
 
       void show() { ::ShowWindow(*this, SW_SHOW); }
 

@@ -7,12 +7,6 @@ namespace wtf {
     */
     template<typename _SuperT, typename _ImplT>
     struct has_timer : _SuperT {
-      has_timer() : _next_timer_id(1) {}
-      has_timer(const has_timer&) = delete;
-      has_timer(has_timer&&) = delete;
-      has_timer &operator=(const has_timer &) = delete;
-      has_timer &operator=(has_timer&&) = delete;
-
 
       UINT_PTR set_timer(UINT elapse){
         _next_timer_id++;
@@ -37,7 +31,7 @@ namespace wtf {
         if (WM_TIMER == umsg) TimerEvent(static_cast<UINT_PTR>(wparam));
         return 0;
       }
-      UINT_PTR _next_timer_id;
+      UINT_PTR _next_timer_id = 1;
     };
 
   }

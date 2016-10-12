@@ -8,13 +8,6 @@ namespace wtf {
     */
     template<typename _SuperT, typename _ImplT>
     struct has_titlebar : _SuperT {
-      has_titlebar() = default;
-      virtual ~has_titlebar() = default;
-      has_titlebar(const has_titlebar&) = delete;
-      has_titlebar &operator=(const has_titlebar &) = delete;
-      has_titlebar(has_titlebar&&) = delete;
-      has_titlebar &operator=(has_titlebar&&) = delete;
-
 
       const tstring &titlebar() const {
         return _titlebar;
@@ -27,7 +20,7 @@ namespace wtf {
 
     protected:
 
-      tstring _titlebar;
+      tstring _titlebar = _T("");
     };
 
   }

@@ -4,11 +4,7 @@
 namespace wtf{
   namespace policy{
     template <typename _SuperT, typename _ImplT> struct has_button_border : _SuperT{
-      has_button_border(const has_button_border&) = delete;
-      has_button_border &operator=(const has_button_border &) = delete;
-      has_button_border(has_button_border&&) = delete;
-      has_button_border &operator=(has_button_border&&) = delete;
-      virtual ~has_button_border() = default;
+
       has_button_border() : _SuperT(){
         border_style(border_styles::raised);
       }
@@ -23,6 +19,7 @@ namespace wtf{
           refresh();
         }
       }
+
       virtual void MouseDownEvent(const policy::mouse_event& m) override{
         _SuperT::MouseDownEvent(m);
         if (policy::mouse_event::buttons::left != m.button) return;
@@ -31,6 +28,7 @@ namespace wtf{
         ::SetCapture(*this);
         refresh();
       }
+
       virtual void MouseUpEvent(const policy::mouse_event& m) override{
         _SuperT::MouseUpEvent(m);
         if (!_Down || policy::mouse_event::buttons::left != m.button) return;

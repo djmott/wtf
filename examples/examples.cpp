@@ -5,66 +5,29 @@
 
 using namespace wtf;
 
-#if 1
+#if 0
 struct main_form : form{
-  main_form() : form(), rd(), gen(rd()), dist(1,1000), _tree(*this){
-    _tree.border_style(tree::border_styles::lowered);
-    OnResized += [this](const point::client_coords& p){ _tree.move(5, 5, p.x - 10, p.y - 10); };
-
-/*
-    auto oNode = _tree.add_node(tsRandom());
-    oNode = oNode->add_child(tsRandom());
-    return;
-*/
-
-    for (int i = 0; i < 50; i++){
-      auto oNode = _tree.add_node(tsRandom());
-      oNode->expanded(true);
-      oNode->expander_display_policy(tree::node::expander_display_policies::always);
-      for (int x = 0; x < 1; x++){
-        auto oChild = oNode->add_node(tsRandom());
-        oChild->expander_display_policy(tree::node::expander_display_policies::always);
-        oChild->expanded(false);
-        for (int j = 0; j < 1; j++){
-          oChild->add_node(tsRandom());
-        }
-      }
-
-    }
+  main_form() : form(), _pb(*this){
+    _pb.move(10, 10, 100, 25);
+    _pb.value(50);
   }
-
-  tstring tsRandom(){
-    tstring sTemp;
-    auto s = std::to_string(dist(gen));
-    std::copy(s.begin(), s.end(), std::back_inserter(sTemp));
-    return sTemp;
+  progress_bar _pb;
+};
+#elif 0
+struct main_form : form{
+  main_form() : form(), _scroll(*this){
+    _scroll.orientation(scroll_bar::orientations::horizontal);
+    _scroll.move(10, 10, 100, 20);
+    _scroll.min(0);
+    _scroll.max(10);
+    _scroll.value(5);
   }
-
-  std::random_device rd;
-  std::mt19937 gen;
-  std::uniform_int_distribution<int> dist;
-
-  tree _tree;
+  scroll_bar _scroll;
 };
 #else
 
 
-struct checkbox_page : panel{
-  checkbox_page(tab_container& parent) : panel(parent), _left(*this), _right(*this){
 
-    _left.move(5, 5, 150, 25);
-    _left.text("Left aligned");
-    _left.check_location(checkbox::check_locations::left);
-
-    _right.move(5, 30, 150, 25);
-    _right.text("Right aligned");
-    _right.check_location(checkbox::check_locations::right);
-
-  }
-
-
-  checkbox _left, _right;
-};
 
 struct label_page : panel{
   label_page(tab_container& parent) : panel(parent),
@@ -118,6 +81,25 @@ struct label_page : panel{
   label _raised, _lowered, _flat;
   label _etched, _bumped, _double_raised, _double_lowered;
 };
+
+
+struct checkbox_page : panel{
+  checkbox_page(tab_container& parent) : panel(parent), _left(*this), _right(*this){
+
+    _left.move(5, 5, 150, 25);
+    _left.text("Left aligned");
+    _left.check_location(checkbox::check_locations::left);
+
+    _right.move(5, 30, 150, 25);
+    _right.text("Right aligned");
+    _right.check_location(checkbox::check_locations::right);
+
+  }
+
+
+  checkbox _left, _right;
+};
+
 
 struct listbox_page : panel{
   listbox_page(tab_container& parent) : panel(parent),
@@ -188,31 +170,53 @@ struct split_page : panel{
   }
 
   struct splitter : split_container{
-    splitter(panel& parent) : split_container(parent), _text1(first()), _text2(second()){
-      first().OnResized += [this](const point::client_coords& p){ _text1.move(0, 0, p.x, p.y); };
-      second().OnResized += [this](const point::client_coords& p){ _text2.move(0, 0, p.x, p.y); };
+    splitter(panel& parent) : split_container(parent), _inner_splitter(first()), _text1(second()){
+      first().OnResized += [this](const point::client_coords& p){ _inner_splitter.move(0, 0, p.x, p.y); };
+      second().OnResized += [this](const point::client_coords& p){ _text1.move(0, 0, p.x, p.y); };
     }
 
+    struct inner_splitter : split_container{
+      inner_splitter(panel& parent) : split_container(parent), _texta(first()), _textb(second()){
+        orientation(inner_splitter::orientations::vertical);
+        first().OnResized += [this](const point::client_coords& p){ _texta.move(0, 0, p.x, p.y); };
+        second().OnResized += [this](const point::client_coords& p){ _textb.move(0, 0, p.x, p.y); };
+      }
+      textbox _texta, _textb;
+    }_inner_splitter;
 
-    textbox _text1, _text2;
+    textbox _text1;
   }_splitter;
 
 };
 
 struct tree_page : panel{
-  tree_page(tab_container& parent) : panel(parent), _tree(*this){
+  tree_page(tab_container& parent) : panel(parent), _tree(*this), rd(), gen(rd()), dist(1, 999999) {
     OnResized += [this](const point::client_coords& p){ _tree.move(0, 0, p.x, p.y); };
-    for (int i = 0; i < 100; i++){
-
-      tstring sTemp;
-      auto s = std::to_string(i);
-      std::copy(s.begin(), s.end(), std::back_inserter(sTemp));
-      _tree.add_node(sTemp);
+    for (int i = 0; i < 20; i++){
+      auto oChild1 = _tree.add_node(RandomString());
+      for (int x = 0; x < 20; x++){
+        auto oChild2 = oChild1->add_node(RandomString());
+        for (int j = 0; j < 20; j++){
+          oChild2->add_node(RandomString());
+        }
+      }
     }
 
   }
 
+  tstring RandomString(){
+    tstring sTemp;
+    auto s = std::to_string(dist(gen));
+    std::copy(s.begin(), s.end(), std::back_inserter(sTemp));
+    return sTemp;
+  }
+
   tree _tree;
+
+  std::random_device rd;
+  std::mt19937 gen;
+  std::uniform_int_distribution<int> dist;
+
 };
 
 struct main_form : form{
@@ -220,8 +224,8 @@ struct main_form : form{
     _tabs(*this)
   {
     titlebar("WTF example");
-    _tabs.add_custom_page<checkbox_page>("checkbox");
     _tabs.add_custom_page<label_page>("label");
+    _tabs.add_custom_page<checkbox_page>("checkbox");
     _tabs.add_custom_page<listbox_page>("listbox");
     _tabs.add_custom_page<button_page>("buttons");
     _tabs.add_custom_page<scroll_page>("scroll_bar");
