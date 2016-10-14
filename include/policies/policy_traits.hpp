@@ -2,6 +2,11 @@
 // traits ensure dependent policies are inherited in concrete classes if they're missing from the declaration
 namespace wtf {
   namespace policy {
+
+    template<> struct traits<has_activate>{
+      using requirements = type_list<>;
+    };
+
     template<> struct traits<has_border> {
       using requirements = type_list<>;
     };

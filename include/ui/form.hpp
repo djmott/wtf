@@ -13,8 +13,8 @@ namespace wtf{
     static const DWORD ExStyle = _ExStyle;
     static const DWORD Style = _Style;
 
-    form_base(HWND hParent) : _super_t(hParent){}
-    form_base() : form_base(nullptr){}
+    form_base(HWND hParent, bool bCreate = true) : _super_t(hParent, bCreate){}
+    form_base(bool bCreate = true) : form_base(nullptr, bCreate){}
     form_base(const form_base&) = delete;
     form_base &operator=(const form_base &) = delete;
     form_base(form_base&&) = delete;

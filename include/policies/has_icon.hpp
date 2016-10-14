@@ -28,8 +28,8 @@ namespace wtf {
         else return reinterpret_cast<LRESULT>(static_cast<HICON>(small_icon()));
       }
 
-      icon _big_icon = icon::system(icon::style::winlogo);
-      icon _small_icon = icon::system(icon::style::winlogo);
+      icon _big_icon = icon::from_system(icon::system_icons::winlogo);
+      icon _small_icon = icon::from_system(icon::system_icons::winlogo);
     };
   }
 }

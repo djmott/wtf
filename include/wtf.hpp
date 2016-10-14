@@ -72,6 +72,7 @@ namespace wtf{
 
 
 #include "policies/mouse_event.hpp"
+#include "policies/has_activate.hpp"
 #include "policies/has_border.hpp"
 #include "policies/has_caret.hpp"
 #include "policies/has_click.hpp"
@@ -116,3 +117,4 @@ namespace wtf{
 #include "ui/tab_container.hpp"
 #include "ui/split_container.hpp"
 #include "ui/tree.hpp"
+#include "ui/timer.hpp"

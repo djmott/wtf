@@ -7,6 +7,16 @@ using namespace wtf;
 
 #if 0
 struct main_form : form{
+  main_form() : form(), _text(*this){
+    OnResized += [this](const point::client_coords& p){
+      _text.move(0, 0, p.x, p.y);
+    };
+  }
+  textbox _text;
+};
+
+#elif 0
+struct main_form : form{
   main_form() : form(), _pb(*this){
     _pb.move(10, 10, 100, 25);
     _pb.value(50);
@@ -48,31 +58,31 @@ struct label_page : panel{
     _right.text_horizontal_alignment(label::text_horizontal_alignments::right);
 
     _raised.move(5, _right.top() + _right.height() + 5, 150, 25);
-    _raised.text("Raised border");
+    _raised.text("Raised");
     _raised.border_style(label::border_styles::raised);
 
     _lowered.move(5, _raised.top() + _raised.height() + 5, 150, 25);
-    _lowered.text("Lowered border");
+    _lowered.text("Lowered");
     _lowered.border_style(label::border_styles::lowered);
 
     _flat.move(5, _lowered.top() + _lowered.height() + 5, 150, 25);
-    _flat.text("Flat border");
+    _flat.text("Flat");
     _flat.border_style(label::border_styles::flat);
 
     _etched.move(5, _flat.top() + _flat.height() + 5, 150, 25);
-    _etched.text("Etched border");
+    _etched.text("Etched");
     _etched.border_style(label::border_styles::etched);
 
     _bumped.move(5, _etched.top() + _etched.height() + 5, 150, 25);
-    _bumped.text("Bumped border");
+    _bumped.text("Bumped");
     _bumped.border_style(label::border_styles::bumped);
 
     _double_raised.move(5, _bumped.top() + _bumped.height() + 5, 150, 25);
-    _double_raised.text("Double raised border");
+    _double_raised.text("Double raised");
     _double_raised.border_style(label::border_styles::double_raised);
 
     _double_lowered.move(5, _double_raised.top() + _double_raised.height() + 5, 150, 25);
-    _double_lowered.text("Double lowered border");
+    _double_lowered.text("Double lowered");
     _double_lowered.border_style(label::border_styles::double_lowered);
 
   }
@@ -153,26 +163,41 @@ struct button_page : panel{
   label _label2;
 };
 
+
 struct scroll_page : panel{
-  scroll_page(tab_container& parent) : panel(parent), _hor(*this), _vert(*this) {
-    _hor.move(5, 5, 100, 20);
-    _hor.orientation(scroll_bar::orientations::horizontal);
-    _vert.move(20, 30, 20, 100);
-    _vert.orientation(scroll_bar::orientations::vertical);
+  scroll_page(tab_container& parent) 
+    : panel(parent), _hor_scroll(*this), _vert_scroll(*this), _hor_progress(*this), _vert_progress(*this)  
+  {
+    _hor_scroll.move(5, 5, 100, 20);
+    _hor_scroll.orientation(scroll_bar::orientations::horizontal);
+
+    _hor_progress.move(5, 30, 100, 20);
+    _hor_progress.orientation(progress_bar::orientations::horizontal);
+
+    _vert_scroll.move(120, 30, 20, 100);
+    _vert_scroll.orientation(scroll_bar::orientations::vertical);
+
+    _vert_progress.move(150, 30, 20, 100);
+    _vert_progress.orientation(progress_bar::orientations::vertical);
   }
 
-  scroll_bar _hor, _vert;
+  scroll_bar _hor_scroll, _vert_scroll;
+  progress_bar _hor_progress, _vert_progress;
 };
+
+
 
 struct split_page : panel{
   split_page(tab_container& parent) : panel(parent), _splitter(*this){
     OnResized += [this](const point::client_coords& p){ _splitter.move(0, 0, p.x, p.y); };
+    _splitter.set_split_position(50);
   }
 
   struct splitter : split_container{
     splitter(panel& parent) : split_container(parent), _inner_splitter(first()), _text1(second()){
       first().OnResized += [this](const point::client_coords& p){ _inner_splitter.move(0, 0, p.x, p.y); };
       second().OnResized += [this](const point::client_coords& p){ _text1.move(0, 0, p.x, p.y); };
+      _inner_splitter.set_split_position(25);
     }
 
     struct inner_splitter : split_container{
@@ -180,6 +205,7 @@ struct split_page : panel{
         orientation(inner_splitter::orientations::vertical);
         first().OnResized += [this](const point::client_coords& p){ _texta.move(0, 0, p.x, p.y); };
         second().OnResized += [this](const point::client_coords& p){ _textb.move(0, 0, p.x, p.y); };
+        _texta.multiline(true);
       }
       textbox _texta, _textb;
     }_inner_splitter;

@@ -12,7 +12,7 @@ namespace wtf{
 
     window(HWND hParent, bool bCreate = true) : _base_window_t(){
       //its neccessary for all the constructors in the inheritance chain to initialize before creating the window
-      //otherwise the vtbl wont point to intended overloads
+      //otherwise the vtbl wont point to intended virtual overrides
       if (bCreate) window::create(hParent);
     }
 

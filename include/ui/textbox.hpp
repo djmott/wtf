@@ -6,17 +6,7 @@ namespace wtf{
       policy::has_size, policy::has_border, policy::has_click, policy::has_text, policy::has_paint, policy::has_mouse_down>
     {
 
-      textbox() = delete;
-      textbox(const textbox&) = delete;
-      textbox(textbox&&) = delete;
-      textbox &operator=(const textbox &) = delete;
-      textbox &operator=(textbox&&) = delete;
-      virtual ~textbox() = default;
-      explicit textbox(HWND hParent) : window(hParent),
-        _text(_T("")),
-        _edit_pos(0),
-        _print_pos(0)
-      {
+      explicit textbox(HWND hParent) : window(hParent){
         background_brush(brush::system_brush(system_colors::window));
         border_style(border_styles::lowered);
         text_vertical_alignment(text_vertical_alignments::top);
@@ -29,6 +19,7 @@ namespace wtf{
 
       virtual const tstring &text() const{ return _text; }
       virtual void text(const tstring &newval){ _edit_pos = 0; _text = newval; }
+
 
     private:
 
@@ -132,9 +123,12 @@ namespace wtf{
     private:
 
       text_metrics _text_metrics;
-      int _edit_pos;
-      int _print_pos;
-      tstring _text;
+      // _edit_pos tracks the index into _text for the edit cursor 
+      int _edit_pos = 0;
+      // _print_pos helps ensure the cursor is always visible e.g. text length > window length
+      int _print_pos = 0;
+      tstring _text = _T("");
+      bool _word_wrap = false;
       std::map<TCHAR, uint8_t> _CharWidths;
     };
 

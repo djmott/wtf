@@ -24,6 +24,9 @@ namespace wtf{
       virtual bool multiline() const{ return _multiline; }
       virtual void multiline(bool newval){ _multiline = newval; }
 
+      bool word_wrap() const{ return _word_wrap; }
+      void word_wrap(bool newval){ _word_wrap = newval; }
+
       virtual const tstring &text() const{ return _text; }
       virtual void text(const tstring &newval){
         _text = newval; 
@@ -54,7 +57,7 @@ namespace wtf{
         wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
                                          [](UINT i){ return GDI_ERROR == i; });
 
-        UINT format = DT_WORDBREAK | (multiline() ? 0 : DT_SINGLELINE);
+        UINT format = (multiline() ? 0 : DT_SINGLELINE) | (word_wrap() ? DT_WORDBREAK : 0);
         switch (text_vertical_alignment()){
           case text_vertical_alignments::top:
             format |= DT_TOP; break;
@@ -105,6 +108,7 @@ namespace wtf{
       tstring _text = _T("");
       bool _multiline = false;
       bool _auto_draw_text = true;
+      bool _word_wrap = false;
 
       text_vertical_alignments _text_vertical_alignment = text_vertical_alignments::center;
       text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::center;
