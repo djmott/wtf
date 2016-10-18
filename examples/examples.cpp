@@ -5,21 +5,23 @@
 
 using namespace wtf;
 
-#if 1
+#if 0
 struct main_form : form{
   main_form() : form(), _text(this){}
 
   virtual void CreateEvent() override{
     OnResized += [this](const point::client_coords& p){
-      _text.move(0, 0, p.x, p.y);
+      _text.move(0, 0, p.x-2, p.y-2);
     };
   }
   textbox _text;
 };
 
-#elif 0
+#elif 1
 struct main_form : form{
-  main_form() : form(), _pb(*this){
+  main_form() : form(), _pb(this){}
+
+  virtual void CreateEvent() override{
     _pb.move(10, 10, 100, 25);
     _pb.value(50);
   }

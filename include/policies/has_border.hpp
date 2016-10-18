@@ -20,7 +20,7 @@ namespace wtf {
         double_lowered,
       };
 
-      int border_width() const{
+      virtual int border_width() const{
         switch (_border_style){
           case border_styles::none: return 0;
           case border_styles::flat:
