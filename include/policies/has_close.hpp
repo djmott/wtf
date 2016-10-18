@@ -11,10 +11,10 @@ namespace wtf {
       void close() { CloseWindow(*this); }
 
     protected:
-
+      has_close(iwindow * pParent) : _SuperT(pParent){}
       virtual void CloseEvent(bool& /*cancel*/){}
 
-      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool & bHandled) override {
+      LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool & bHandled) {
         if (WM_CLOSE == umsg){
           CloseEvent(bHandled);
         }

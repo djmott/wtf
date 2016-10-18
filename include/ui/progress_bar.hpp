@@ -5,7 +5,7 @@ namespace wtf{
   struct progress_bar : wtf::window < progress_bar, policy::has_border, policy::has_size, 
     policy::has_text, policy::has_font, policy::has_paint, policy::has_orientation>{
 
-    explicit progress_bar(HWND hParent) : window(hParent, true){
+    explicit progress_bar(iwindow * hParent) : window(hParent){
       border_style(border_styles::lowered);
       auto_draw_text(false);
     }

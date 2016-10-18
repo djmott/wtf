@@ -11,7 +11,7 @@ namespace wtf{
       toggle_button &operator=(const toggle_button &) = delete;
       toggle_button &operator=(toggle_button&&) = delete;
       virtual ~toggle_button() = default;
-      explicit toggle_button(HWND hParent) : window(hParent, true), _button_state(button_states::up){
+      explicit toggle_button(iwindow * pParent) : window(pParent), _button_state(button_states::up){
         border_style(border_styles::raised);
       }
 

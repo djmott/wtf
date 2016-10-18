@@ -7,7 +7,7 @@ namespace wtf{
     rivet &operator=(const rivet &) = delete;
     rivet &operator=(rivet&&) = delete;
     virtual ~rivet() = default;
-    explicit rivet(HWND hParent, int x, int y) : window(hParent),
+    explicit rivet(iwindow * pParent, int x, int y) : window(pParent),
       _region(region::create_round_rect(0,0,10,10, 9, 9))
     {
       move(x, y, 10, 10);

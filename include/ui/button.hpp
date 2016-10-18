@@ -6,7 +6,7 @@ namespace wtf{
     policy::has_text, policy::has_font, policy::has_paint, policy::has_click>
   {
 
-    explicit button(HWND hParent) : window(hParent, true){}
+    explicit button(iwindow * hParent) : window(hParent){}
     
   };
 

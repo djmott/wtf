@@ -11,10 +11,11 @@ namespace wtf{
       callback<void(const mouse_event&)> OnDblClick;
 
     protected:
+      has_dblclick(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void DblClickEvent(const mouse_event& m){ OnDblClick(m); }
 
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) override{
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
         if (WM_LBUTTONDBLCLK == umsg){
           mouse_event oEvent(mouse_event::buttons::left, static_cast<mouse_event::key_states>(wparam),
                              static_cast<int16_t>(LOWORD(lparam)), static_cast<int16_t>(HIWORD(lparam)));

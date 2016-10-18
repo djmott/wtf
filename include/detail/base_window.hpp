@@ -125,9 +125,10 @@ namespace wtf{
       using concrete_policy_type =  typename _::concrete_impl<_PolicyT, _ImplT, _HeadT, _TailT...>::type;
 
 
-      base_window() = default;
       virtual ~base_window() = default;
 
+      explicit base_window(iwindow * pParent) : _super_t(pParent){}
+      base_window() = delete;
       base_window(const base_window&) = delete;
       base_window &operator=(const base_window &) = delete;
 
@@ -151,7 +152,7 @@ namespace wtf{
     private:
       template <typename, template <typename, typename> class ... > friend struct base_window;
 
-      virtual LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled) override{
+      LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled) {
         auto handler_ret = _super_t::handle_message(hwnd, umsg, wparam, lparam, handled);
         if (handled) return handler_ret;
         return base_window<_ImplT, _TailT...>::propagate_message(hwnd, umsg, wparam, lparam, handled);
@@ -162,37 +163,49 @@ namespace wtf{
     /** Specialization that terminates the inheritance hierarchy
       * super most base class of all windows
      */
-    template <typename _ImplT> struct base_window<_ImplT>{
+    template <typename _ImplT> struct base_window<_ImplT> : iwindow{
       /// an implementation may want to use different window styles so add their definitions as class wide static constants
       static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
       static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
       virtual ~base_window(){ if (_handle) ::DestroyWindow(_handle); }
 
-      base_window() : _handle(nullptr){}
+      explicit base_window(iwindow * parent) :  iwindow(parent){}
 
       base_window(const base_window&) = delete;
       base_window& operator=(const base_window&) = delete;
+      
+      base_window(base_window&& src) : iwindow(std::move(src)){}
 
-      HWND operator*() const{ return _handle; }
-      operator HWND() const{ return _handle; }
 
+      virtual const type_info& type() const override{ return typeid(_ImplT); }
 
     protected:
-
-      void create(HWND hParent){
-        _handle = wtf::exception::throw_lasterr_if(
-          ::CreateWindowEx(_ImplT::ExStyle, window_class_ex<_ImplT, &base_window<_ImplT>::window_proc>::get().name(), nullptr, _ImplT::Style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hParent, nullptr, instance_handle(), this),
-          [](HWND h){ return nullptr == h; });
-      }
-
-    private:
       template <typename, template <typename, typename> class ... > friend struct base_window;
       template <typename, template <typename, typename> class ... > friend struct window;
+      template <typename, DWORD, DWORD> friend struct form_base;
 
-      virtual LRESULT handle_message(HWND , UINT , WPARAM , LPARAM , bool& ){ return 0; }
+      virtual void make_window() override{
+        HWND hParent = (_parent ? (HWND)*_parent : nullptr);
+        _handle = wtf::exception::throw_lasterr_if(::CreateWindowEx(
+          _ImplT::ExStyle, 
+          window_class_ex<_ImplT, &base_window<_ImplT>::window_proc>::get().name(),
+          nullptr, 
+          _ImplT::Style, 
+          CW_USEDEFAULT, 
+          CW_USEDEFAULT, 
+          CW_USEDEFAULT, 
+          CW_USEDEFAULT, 
+          hParent,
+          nullptr, 
+          instance_handle(), 
+          this
+        ),[](HWND h){ return nullptr == h; });
+      }
+      
+      LRESULT handle_message(HWND, UINT, WPARAM, LPARAM, bool&){ return 0; }
 
-      virtual LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM , LPARAM , bool& handled){
+      LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM , LPARAM , bool& handled){
         switch (umsg){
           case WM_CLOSE:
             DestroyWindow(hwnd); _handle = nullptr; break;
@@ -219,24 +232,18 @@ namespace wtf{
           bool handled = false;
           LRESULT handler_ret;
 
-          switch (umsg){
-            case WM_NCCREATE:
-            case WM_CREATE:
-            {
-              auto pCreate = reinterpret_cast<CREATESTRUCT*>(lparam);
-
-              assert(pCreate);
-              pThis = reinterpret_cast<_ImplT*>(pCreate->lpCreateParams);
-              assert(pThis);
-              pThis->_handle = hwnd;
-              SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
-              break;
+          if (WM_NCCREATE == umsg){
+            auto pCreate = reinterpret_cast<CREATESTRUCT*>(lparam);
+            assert(pCreate);
+            pThis = reinterpret_cast<_ImplT*>(pCreate->lpCreateParams);
+            assert(pThis);
+            pThis->_handle = hwnd;
+            SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
+            for (auto pChild : pThis->children()){
+              pChild->make_window();
             }
-            default:
-            {
-              pThis = reinterpret_cast<_ImplT*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-              break;
-            }
+          }else{
+            pThis = reinterpret_cast<_ImplT*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
           }
 
           if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
@@ -281,7 +288,6 @@ namespace wtf{
         }
       }
 
-      HWND _handle;
   };
   }
 }

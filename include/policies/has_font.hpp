@@ -31,6 +31,7 @@ namespace wtf {
       virtual void back_color(rgb newval) { _back_color = newval; }
 
     protected:
+      has_font(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void ApplyFontEvent(const device_context& dc){
         const auto & oFont = font();
@@ -41,7 +42,7 @@ namespace wtf {
         wtf::exception::throw_lasterr_if(::SetBkColor(dc, back_color()), [](COLORREF c){ return CLR_INVALID == c; });
       }
 
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bProcessed) override{
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bProcessed) {
         if (WM_PAINT == umsg){
           ApplyFontEvent(*reinterpret_cast<const device_context *>(wparam));
         }
@@ -51,7 +52,7 @@ namespace wtf {
     private:
 
 
-      wtf::font _font;
+      wtf::font _font = _::non_client_metrics::get().lfMessageFont;
       rgb _fore_color = system_rgb<system_colors::window_text>();
       rgb _back_color = system_rgb<system_colors::window>();
       background_modes _background_mode = background_modes::transparent;

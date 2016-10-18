@@ -5,9 +5,11 @@
 
 using namespace wtf;
 
-#if 0
+#if 1
 struct main_form : form{
-  main_form() : form(), _text(*this){
+  main_form() : form(), _text(this){}
+
+  virtual void CreateEvent() override{
     OnResized += [this](const point::client_coords& p){
       _text.move(0, 0, p.x, p.y);
     };
@@ -40,10 +42,10 @@ struct main_form : form{
 
 
 struct label_page : panel{
-  label_page(tab_container& parent) : panel(parent),
-    _left(*this), _right(*this), _center(*this),
-    _raised(*this), _lowered(*this), _flat(*this), 
-    _etched(*this), _bumped(*this), _double_raised(*this), _double_lowered(*this)
+  label_page(tab_container * parent) : panel(parent),
+    _left(this), _right(this), _center(this),
+    _raised(this), _lowered(this), _flat(this), 
+    _etched(this), _bumped(this), _double_raised(this), _double_lowered(this)
   {
     _left.move(5, 5, 150, 25);
     _left.text("Left aligned");
@@ -94,7 +96,7 @@ struct label_page : panel{
 
 
 struct checkbox_page : panel{
-  checkbox_page(tab_container& parent) : panel(parent), _left(*this), _right(*this){
+  checkbox_page(tab_container * parent) : panel(parent), _left(this), _right(this){
 
     _left.move(5, 5, 150, 25);
     _left.text("Left aligned");
@@ -112,8 +114,8 @@ struct checkbox_page : panel{
 
 
 struct listbox_page : panel{
-  listbox_page(tab_container& parent) : panel(parent),
-    _left(*this), _center(*this), _right(*this){
+  listbox_page(tab_container * parent) : panel(parent),
+    _left(this), _center(this), _right(this){
     for (int i = 0; i < 100; i++){
       tstringstream ss;
       ss << i;
@@ -135,8 +137,8 @@ struct listbox_page : panel{
 };
 
 struct button_page : panel{
-  button_page(tab_container& parent) : panel(parent), 
-    _button1(*this), _button2(*this), _label1(*this), _label2(*this)
+  button_page(tab_container * parent) : panel(parent), 
+    _button1(this), _button2(this), _label1(this), _label2(this)
   {
     _button1.move(5, 5, 100, 35);
     _button1.text("Push button");
@@ -165,8 +167,8 @@ struct button_page : panel{
 
 
 struct scroll_page : panel{
-  scroll_page(tab_container& parent) 
-    : panel(parent), _hor_scroll(*this), _vert_scroll(*this), _hor_progress(*this), _vert_progress(*this)  
+  scroll_page(tab_container * parent) 
+    : panel(parent), _hor_scroll(this), _vert_scroll(this), _hor_progress(this), _vert_progress(this)  
   {
     _hor_scroll.move(5, 5, 100, 20);
     _hor_scroll.orientation(scroll_bar::orientations::horizontal);
@@ -188,23 +190,23 @@ struct scroll_page : panel{
 
 
 struct split_page : panel{
-  split_page(tab_container& parent) : panel(parent), _splitter(*this){
+  split_page(tab_container * parent) : panel(parent), _splitter(this){
     OnResized += [this](const point::client_coords& p){ _splitter.move(0, 0, p.x, p.y); };
     _splitter.set_split_position(50);
   }
 
   struct splitter : split_container{
-    splitter(panel& parent) : split_container(parent), _inner_splitter(first()), _text1(second()){
-      first().OnResized += [this](const point::client_coords& p){ _inner_splitter.move(0, 0, p.x, p.y); };
-      second().OnResized += [this](const point::client_coords& p){ _text1.move(0, 0, p.x, p.y); };
+    splitter(panel * parent) : split_container(parent), _inner_splitter(first()), _text1(second()){
+      first()->OnResized += [this](const point::client_coords& p){ _inner_splitter.move(0, 0, p.x, p.y); };
+      second()->OnResized += [this](const point::client_coords& p){ _text1.move(0, 0, p.x, p.y); };
       _inner_splitter.set_split_position(25);
     }
 
     struct inner_splitter : split_container{
-      inner_splitter(panel& parent) : split_container(parent), _texta(first()), _textb(second()){
+      inner_splitter(panel * parent) : split_container(parent), _texta(first()), _textb(second()){
         orientation(inner_splitter::orientations::vertical);
-        first().OnResized += [this](const point::client_coords& p){ _texta.move(0, 0, p.x, p.y); };
-        second().OnResized += [this](const point::client_coords& p){ _textb.move(0, 0, p.x, p.y); };
+        first()->OnResized += [this](const point::client_coords& p){ _texta.move(0, 0, p.x, p.y); };
+        second()->OnResized += [this](const point::client_coords& p){ _textb.move(0, 0, p.x, p.y); };
         _texta.multiline(true);
       }
       textbox _texta, _textb;
@@ -216,7 +218,7 @@ struct split_page : panel{
 };
 
 struct tree_page : panel{
-  tree_page(tab_container& parent) : panel(parent), _tree(*this), rd(), gen(rd()), dist(1, 999999) {
+  tree_page(tab_container * parent) : panel(parent), _tree(this), rd(), gen(rd()), dist(1, 999999) {
     OnResized += [this](const point::client_coords& p){ _tree.move(0, 0, p.x, p.y); };
     for (int i = 0; i < 20; i++){
       auto oChild1 = _tree.add_node(RandomString());
@@ -247,8 +249,9 @@ struct tree_page : panel{
 
 struct main_form : form{
   main_form() :
-    _tabs(*this)
-  {
+    _tabs(this){}
+
+  virtual void CreateEvent(){
     titlebar("WTF example");
     _tabs.add_custom_page<label_page>("label");
     _tabs.add_custom_page<checkbox_page>("checkbox");

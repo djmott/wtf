@@ -51,6 +51,7 @@ namespace wtf {
         help = HTHELP,
       };
     protected:
+      has_cursor(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void OnSetCursor(wm_nchittest_flags flags) {
         switch (flags) {
@@ -76,7 +77,7 @@ namespace wtf {
         }
       }
 
-      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool &bhandled) override {
+      LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool &bhandled) {
         if (WM_SETCURSOR == umsg) {
           OnSetCursor(static_cast<wm_nchittest_flags>(LOWORD(lparam)));
           bhandled = true;

@@ -6,7 +6,7 @@ namespace wtf{
       policy::has_size, policy::has_border, policy::has_click, policy::has_text, policy::has_paint, policy::has_mouse_down>
     {
 
-      explicit textbox(HWND hParent) : window(hParent){
+      explicit textbox(iwindow * pParent) : window(pParent){
         background_brush(brush::system_brush(system_colors::window));
         border_style(border_styles::lowered);
         text_vertical_alignment(text_vertical_alignments::top);

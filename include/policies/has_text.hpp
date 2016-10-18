@@ -49,6 +49,7 @@ namespace wtf{
       }
     protected:
 
+      has_text(iwindow * pParent) : _SuperT(pParent){}
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
 
@@ -82,7 +83,7 @@ namespace wtf{
 
       }
 
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override{
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_PAINT == umsg && _auto_draw_text){
           rect::client_coord oClient = reinterpret_cast<const paint_struct *>(lparam)->client();
           using _impl_window_t = typename _ImplT::window_type;

@@ -2,7 +2,7 @@
 namespace wtf{
   struct split_container : window<split_container, policy::has_size, policy::has_border, policy::has_paint, policy::has_orientation>{
 
-    split_container(HWND parent) : window(parent), _first(*this), _second(*this), _splitter(*this){
+    explicit split_container(iwindow * pParent) : window(pParent), _first(this), _second(this), _splitter(this){
       border_style(border_styles::none);
       set_split_position(25);
       _first.border_style(panel::border_styles::raised);
@@ -19,11 +19,11 @@ namespace wtf{
       ResizedEvent(has_size::wm_size_flags::restored, point::client_coords(width(), height()));
     }
     
-    panel& first(){ return _first; }
-    const panel& first() const{ return _first; }
+    panel * first(){ return &_first; }
+    const panel * first() const{ return &_first; }
 
-    panel& second(){ return _second; }
-    const panel& second() const{ return _second; }
+    panel * second(){ return &_second; }
+    const panel * second() const{ return &_second; }
 
   private:
 
@@ -62,14 +62,14 @@ namespace wtf{
 
     struct size_bar : label{
 
-      size_bar(split_container& parent) : label(parent), _parent(parent){
+      size_bar(split_container * pParent) : label(pParent), _parent(pParent){
         border_style(border_styles::none);
       }
 
-      split_container& _parent;
+      split_container * _parent;
 
       virtual const wtf::cursor &cursor_pointer() const override{
-        if (orientations::horizontal == _parent._orientation){
+        if (orientations::horizontal == _parent->_orientation){
           return cursor::global(cursor::style::size_ns);
         } else{
           return cursor::global(cursor::style::size_we);
@@ -78,7 +78,7 @@ namespace wtf{
 
       virtual void MouseMoveEvent(const policy::mouse_event& m) override{
         if (!(m.key_state & policy::mouse_event::key_states::left)) return;
-        _parent.size_bar_moved(m.position);
+        _parent->size_bar_moved(m.position);
       }
 
       virtual void MouseDownEvent(const policy::mouse_event& m) override{

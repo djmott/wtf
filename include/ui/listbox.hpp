@@ -4,11 +4,11 @@ namespace wtf{
   struct listbox : wtf::window<listbox, policy::has_border, policy::has_click, policy::has_text,
     policy::has_paint, policy::has_size, policy::has_mouse_wheel, policy::has_font>{
 
-    explicit listbox(HWND hParent) :
-      window(hParent),
+    explicit listbox(iwindow * pParent) :
+      window(pParent),
       _TopIndex(0),
       _SelectedItems(1, 0),
-      _vscroll(*this),
+      _vscroll(this),
       _selection_mode(selection_modes::single),
       _background_brush(brush::system_brush(system_colors::window))
     {
@@ -66,21 +66,21 @@ namespace wtf{
     }
 
     struct vscroll : scroll_bar{
-      vscroll(listbox& parent) : scroll_bar(parent), _Parent(parent){
+      vscroll(listbox * pParent) : scroll_bar(pParent), _Parent(pParent){
         orientation(scroll_bar::orientations::vertical);
       }
 
       virtual void StepIncEvent(){
-        if ((_Parent._TopIndex + _Parent._ItemRects.size()) < _Parent._Items.size()) _Parent._TopIndex++;
-        _Parent.refresh(true);
+        if ((_Parent->_TopIndex + _Parent->_ItemRects.size()) < _Parent->_Items.size()) _Parent->_TopIndex++;
+        _Parent->refresh(true);
       }
 
       virtual void StepDecEvent(){
-        if (!_Parent._TopIndex) return;
-        --_Parent._TopIndex;
-        _Parent.refresh(true);
+        if (!_Parent->_TopIndex) return;
+        --_Parent->_TopIndex;
+        _Parent->refresh(true);
       }
-      listbox& _Parent;
+      listbox * _Parent;
     };
 
     virtual void MouseWheelEvent(int16_t delta, const policy::mouse_event&) override{

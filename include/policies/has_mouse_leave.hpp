@@ -10,11 +10,12 @@ namespace wtf{
     struct has_mouse_leave : _SuperT{
 
     protected:
+      has_mouse_leave(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void MouseLeaveEvent(){}
 
 
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM, LPARAM, bool &) override{
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM, LPARAM, bool &) {
         if (WM_CREATE == umsg){
           TRACKMOUSEEVENT oEvent;
           memset(&oEvent, 0, sizeof(TRACKMOUSEEVENT));

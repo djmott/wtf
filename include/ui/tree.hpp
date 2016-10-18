@@ -4,8 +4,8 @@ namespace wtf{
   struct tree : window<tree, policy::has_border, policy::has_click, policy::has_text, 
     policy::has_paint, policy::has_size, policy::has_dblclick, policy::has_mouse_wheel, policy::has_font>{
 
-    explicit tree(HWND hParent)
-      : window(hParent),
+    explicit tree(iwindow * pParent)
+      : window(pParent),
       _root(new node(this)),
       _black_pen(pen::create(pen::style::solid, 1, rgb(0, 0, 0))),
       _background_brush(brush::system_brush(system_colors::window)),
@@ -14,8 +14,8 @@ namespace wtf{
       _white_brush(brush::solid_brush(rgb(255, 255, 255))),
       _highlight_background_brush(brush::system_brush(system_colors::highlight)),
       _highlight_text_brush(brush::system_brush(system_colors::highlight_text)),
-      _vscroll(*this),
-      _hscroll(*this)
+      _vscroll(this),
+      _hscroll(this)
     {
       _vscroll.orientation(scroll_bar::orientations::vertical);
       _hscroll.orientation(scroll_bar::orientations::horizontal);
@@ -380,17 +380,17 @@ namespace wtf{
     }
 
     struct vscroll : scroll_bar{
-      vscroll(tree& parent) : scroll_bar(parent), _parent(parent){}
-      virtual void StepIncEvent() override{ _parent.ScrollNext(); }
-      virtual void StepDecEvent() override{ _parent.ScrollPrev(); }
-      tree& _parent;
+      vscroll(tree * parent) : scroll_bar(parent), _parent(parent){}
+      virtual void StepIncEvent() override{ _parent->ScrollNext(); }
+      virtual void StepDecEvent() override{ _parent->ScrollPrev(); }
+      tree * _parent;
     }_vscroll;
 
     struct hscroll : scroll_bar{
-      hscroll(tree& parent) : scroll_bar(parent), _parent(parent){}
+      hscroll(tree * parent) : scroll_bar(parent), _parent(parent){}
       virtual void StepIncEvent() override{}
       virtual void StepDecEvent() override{}
-      tree& _parent;
+      tree * _parent;
     }_hscroll;
   };
 }

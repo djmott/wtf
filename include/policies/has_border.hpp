@@ -29,11 +29,11 @@ namespace wtf {
           default: return 2;
         }
       }
-      virtual rgb border_highlight() const{ return _border_highlight; }
-      virtual void border_highlight(rgb newval){ _border_highlight = newval;  }
+      virtual const rgb& border_highlight() const{ return _border_highlight; }
+      virtual void border_highlight(const rgb& newval){ _border_highlight = newval;  }
 
-      virtual rgb border_shadow() const{ return _border_shadow; }
-      virtual void border_shadow(rgb newval){ _border_shadow = newval; }
+      virtual const rgb& border_shadow() const{ return _border_shadow; }
+      virtual void border_shadow(const rgb& newval){ _border_shadow = newval; }
 
       virtual border_styles border_style() const{ return _border_style; }
       virtual void border_style(border_styles newval){ _border_style = newval; }
@@ -42,6 +42,7 @@ namespace wtf {
         _draw_top = top; _draw_left = left; _draw_right = right; _draw_bottom = bottom;
       }
     protected:
+      has_border(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void draw_border(const device_context& dc, const rect::client_coord & oClient){
         auto highlight = pen::create(pen::style::solid, 1, border_highlight());
@@ -98,7 +99,7 @@ namespace wtf {
         draw_border(dc, oClient);
       }
 
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bProcessed) override {
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bProcessed) {
         if (WM_PAINT == umsg ) {
           DrawBorderEvent(*reinterpret_cast<const device_context *>(wparam), *reinterpret_cast<const paint_struct *>(lparam));
         } 

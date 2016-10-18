@@ -26,13 +26,14 @@ namespace wtf {
       void background_brush(brush &&newval) { _background_brush.swap(newval); }
 
     protected:
+      has_paint(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void PaintEvent(const device_context&, const paint_struct&){}
       virtual void EraseBackgroundEvent(const device_context& ctx, const rect::client_coord& client, bool& handled ){
         ctx.fill(client, background_brush());
       }
 
-      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) override {
+      LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) {
         if (WM_PAINT == umsg) {
           PaintEvent(*reinterpret_cast<const device_context *>(wparam),
                      *reinterpret_cast<const paint_struct *>(lparam));

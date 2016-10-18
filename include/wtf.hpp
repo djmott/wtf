@@ -47,6 +47,7 @@ namespace wtf{
 
 
 #include "exception.hpp"
+#include "iwindow.hpp"
 #include "message_box.hpp"
 #include "callback.hpp"
 #include "point.hpp"
@@ -77,6 +78,7 @@ namespace wtf{
 #include "policies/has_caret.hpp"
 #include "policies/has_click.hpp"
 #include "policies/has_close.hpp"
+#include "policies/has_create.hpp"
 #include "policies/has_cursor.hpp"
 #include "policies/has_dblclick.hpp"
 #include "policies/has_focus.hpp"

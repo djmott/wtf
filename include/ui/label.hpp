@@ -7,7 +7,7 @@ namespace wtf{
     >
     {
 
-      explicit label(HWND hParent) : window(hParent, true)
+      explicit label(iwindow * hParent) : window(hParent)
       {
         this->border_style(border_styles::none);
       }

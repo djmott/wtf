@@ -5,13 +5,13 @@ namespace wtf{
   //overweight scrollbar can be much thinner
   struct scroll_bar : window<scroll_bar, policy::has_size, policy::has_show, policy::has_orientation>{
 
-    explicit scroll_bar(HWND pParent)
-      : window(pParent, true),
-      _inc(*this, true),
-      _dec(*this, false),
-      _page_inc(*this, true),
-      _page_dec(*this, false),
-      _slider(*this){}
+    explicit scroll_bar(iwindow * pParent)
+      : window(pParent),
+      _inc(this, true),
+      _dec(this, false),
+      _page_inc(this, true),
+      _page_dec(this, false),
+      _slider(this){}
 
 
     orientations orientation() const{ return _orientation; }
@@ -77,22 +77,22 @@ namespace wtf{
 
     struct value_step_button : window<value_step_button, policy::has_button_border, policy::has_repeat_click, policy::has_size, policy::has_paint, policy::has_click>{
       bool _is_increment;
-      scroll_bar& _parent;
+      scroll_bar * _parent;
 
-      value_step_button(scroll_bar& Parent, bool IsIncrementer) :
-        window(Parent), _parent(Parent), _is_increment(IsIncrementer){}
+      value_step_button(scroll_bar * pParent, bool IsIncrementer) :
+        window(pParent), _parent(pParent), _is_increment(IsIncrementer){}
 
       virtual void ClickEvent(const policy::mouse_event& m) override{
         if (policy::mouse_event::buttons::left != m.button) return;
-        if (_is_increment) _parent.StepIncEvent();
-        else _parent.StepDecEvent();
+        if (_is_increment) _parent->StepIncEvent();
+        else _parent->StepDecEvent();
       }
 
       virtual void PaintEvent(const device_context& dc, const paint_struct&ps) override{
         window::PaintEvent(dc, ps);
         auto client = ps.client();
         point::client_coords::vector arrow(3);
-        if (orientations::horizontal == _parent._orientation){
+        if (orientations::horizontal == _parent->_orientation){
           if (_is_increment){ // >
             arrow[0].x = 5; arrow[0].y = 5;
             arrow[1].x = client.right - 5; arrow[1].y = client.bottom / 2;
@@ -113,25 +113,25 @@ namespace wtf{
             arrow[2].x = 5; arrow[2].y = client.bottom - 5;
           }
         }
-        dc.fill(arrow, _parent._outline, _parent._fill);
+        dc.fill(arrow, _parent->_outline, _parent->_fill);
       }
     };
 
     struct value_page_button : window<value_step_button, policy::has_repeat_click, policy::has_size, policy::has_paint, policy::has_click>{
-      value_page_button(scroll_bar& parent, bool IsIncrement) : window(parent), _parent(parent), _is_increment(IsIncrement){}
+      explicit value_page_button(scroll_bar * pParent, bool IsIncrement) : window(pParent), _parent(pParent), _is_increment(IsIncrement){}
 
       virtual void ClickEvent(const policy::mouse_event& m) override{
         if (policy::mouse_event::buttons::left != m.button) return;
-        if (_is_increment) _parent.PageUpEvent();
-        else _parent.PageDownEvent();
+        if (_is_increment) _parent->PageUpEvent();
+        else _parent->PageDownEvent();
       }
 
-      scroll_bar& _parent;
+      scroll_bar * _parent;
       bool _is_increment;
     };
 
     struct slider : button{
-      slider(scroll_bar& parent) : button(parent){}
+      explicit slider(scroll_bar * pParent) : button(pParent){}
     }_slider;
 
 

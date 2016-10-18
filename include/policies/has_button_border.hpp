@@ -37,7 +37,8 @@ namespace wtf{
         refresh();
         ::ReleaseCapture();
       }
-
+    protected:
+      has_button_border(iwindow * pParent) : _SuperT(pParent){}
     private:
       bool _Down = false;
     };

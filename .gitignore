@@ -33,4 +33,4 @@
 CodeDB
 **/.*
 *.vgdbsettings
-/wtf.VC.db
+**/*.VC.db

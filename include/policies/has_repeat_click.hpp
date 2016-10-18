@@ -10,6 +10,7 @@ namespace wtf{
       void repeat_rate(int newval){ _repeat_rate = newval; }
 
     protected:
+      has_repeat_click(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void TimerEvent(UINT_PTR iTimer){
         _SuperT::TimerEvent(iTimer);

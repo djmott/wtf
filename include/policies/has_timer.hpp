@@ -25,9 +25,11 @@ namespace wtf {
 
     protected:
 
+      has_timer(iwindow * pParent) : _SuperT(pParent){}
+
       virtual void TimerEvent(UINT_PTR){}
 
-      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM , bool &) override {
+      LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM , bool &) {
         if (WM_TIMER == umsg) TimerEvent(static_cast<UINT_PTR>(wparam));
         return 0;
       }

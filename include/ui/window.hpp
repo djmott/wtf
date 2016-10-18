@@ -10,20 +10,17 @@ namespace wtf{
     using window_type = typename  _::window_impl<_ImplT, _PolicyListT...>::window_type;
 
 
-    window(HWND hParent, bool bCreate = true) : _base_window_t(){
-      //its neccessary for all the constructors in the inheritance chain to initialize before creating the window
-      //otherwise the vtbl wont point to intended virtual overrides
-      if (bCreate) window::create(hParent);
-    }
+    explicit window(iwindow * parent) : _base_window_t(parent){ }
 
     virtual ~window() = default;
+    window() = delete;
     window(const window&) = delete;
     window &operator=(const window &) = delete;
     window(window&&) = delete;
     window &operator=(window&&) = delete;
 
   protected:
-    virtual LRESULT handle_message(HWND , UINT , WPARAM , LPARAM , bool& ){ return 0; }
+    LRESULT handle_message(HWND , UINT , WPARAM , LPARAM , bool& ){ return 0; }
   private:
     template <typename, template <typename,typename> class ... > friend struct _::base_window;
 

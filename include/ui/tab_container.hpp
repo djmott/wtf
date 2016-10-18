@@ -2,19 +2,12 @@
 namespace wtf{
 
 
-    struct tab_container : wtf::window<tab_container, policy::has_size, policy::has_paint, policy::has_show>
+    struct tab_container : wtf::window<tab_container, policy::has_size, policy::has_paint, policy::has_show, policy::has_create>
     {
-      tab_container() = delete;
-      tab_container(const tab_container&) = delete;
-      tab_container(tab_container&&) = delete;
-      tab_container &operator=(const tab_container &) = delete;
-      tab_container &operator=(tab_container&&) = delete;
-      virtual ~tab_container() = default;
-      explicit tab_container(HWND parent) 
-        : window(parent), _active_page(0), _button_bar_slider(*this), _tab_orientation(tab_orientations::top)
+
+      explicit tab_container(iwindow * pParent)
+        : window(pParent), _active_page(0), _button_bar_slider(this), _tab_orientation(tab_orientations::top)
       {        
-        _button_bar_slider.orientation(scroll_bar::orientations::horizontal);
-        _button_bar_slider.hide();
       }
 
       enum class tab_orientations{
@@ -27,7 +20,7 @@ namespace wtf{
 
       template <typename _Ty>
       panel& add_custom_page(const tstring& title){
-        _pages.push_back(page_info::make<_Ty>(*this, title, _pages.size()));
+        _pages.push_back(page_info::make<_Ty>(this, title, _pages.size()));
         ResizedEvent(window::wm_size_flags::restored, rect::client_coord::get(*this).dimensions());
         auto & oPanelInfo = _pages.back();
         oPanelInfo->_panel->border_style(panel::border_styles::raised);
@@ -60,6 +53,11 @@ namespace wtf{
       callback<void(const size&)> OnPageResize;
 
     protected:
+
+      virtual void CreateEvent() override{
+        _button_bar_slider.orientation(scroll_bar::orientations::horizontal);
+        _button_bar_slider.hide();
+      }
 
       virtual void ResizedEvent(wm_size_flags, const point::client_coords& newsize) override{
         point::client_coords p = newsize;
@@ -99,9 +97,9 @@ namespace wtf{
         using vector = std::vector<ptr>;
         
         template <typename _Ty>
-        static ptr make(tab_container& parent, const tstring& sTitle, size_t PageIndex){
-          ptr oRet(new page_info(parent, sTitle, PageIndex));
-          oRet->_panel.reset(new _Ty(parent));
+        static ptr make(tab_container * pParent, const tstring& sTitle, size_t PageIndex){
+          ptr oRet(new page_info(pParent, sTitle, PageIndex));
+          oRet->_panel.reset(new _Ty(pParent));
           return oRet;
         }
 
@@ -113,7 +111,7 @@ namespace wtf{
         page_info &operator=(page_info&&) = delete;
 
         size_t _PageIndex;
-        tab_container& _parent;
+        tab_container * _parent;
         std::unique_ptr<panel> _panel;
 
         void deactivate(){
@@ -132,7 +130,7 @@ namespace wtf{
 
         struct tab_button : label{
 
-          tab_button(page_info& parent, const tstring& sTitle) : label(parent._parent), _parent(parent){
+          tab_button(page_info * pParent, const tstring& sTitle) : label(pParent->_parent), _parent(pParent){
             text(sTitle);
             enable_border_elements(true, true, false, true);
             deactivate();
@@ -155,18 +153,18 @@ namespace wtf{
 
           virtual void ClickEvent(const policy::mouse_event& m) override{
             if (policy::mouse_event::buttons::left != m.button) return;
-            _parent._parent.active_page(_parent._PageIndex);
+            _parent->_parent->active_page(_parent->_PageIndex);
           }
 
-          page_info& _parent;
+          page_info * _parent;
 
         }_button;
 
 
 
       private:
-        page_info(tab_container& parent, const tstring& sTitle, size_t PageIndex)
-          : _parent(parent), _PageIndex(PageIndex), _button(*this, sTitle){}
+        page_info(tab_container * pParent, const tstring& sTitle, size_t PageIndex)
+          : _parent(pParent), _PageIndex(PageIndex), _button(this, sTitle){}
 
       };
 

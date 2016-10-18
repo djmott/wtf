@@ -1,7 +1,7 @@
 #pragma once
 namespace wtf{
   struct checkbox : window<checkbox, policy::has_paint, policy::has_click, policy::has_dblclick, policy::has_size, policy::has_text>{
-    checkbox(HWND parent) : window(parent), _check(*this){
+    explicit checkbox(iwindow * pParent) : window(pParent), _check(this){
       _check.border_style(panel::border_styles::raised);
       auto_draw_text(false);
       check_location(check_locations::left);
@@ -51,9 +51,9 @@ namespace wtf{
     }
 
     struct _check : panel{
-      _check(checkbox& parent) 
-        : panel(parent), 
-        _parent(parent)
+      _check(checkbox * pParent) 
+        : panel(pParent),
+        _parent(pParent)
       {}
 
       virtual void ClickEvent(const policy::mouse_event& m) override{
@@ -84,11 +84,11 @@ namespace wtf{
         _value = newval;
         border_style(newval ? border_styles::lowered : border_styles::raised);
         refresh();
-        _parent.ValueChanged(newval);
+        _parent->ValueChanged(newval);
       }
 
       bool _value = false;
-      checkbox& _parent;
+      checkbox * _parent;
     }_check;
     check_locations _check_location = check_locations::left;
   };

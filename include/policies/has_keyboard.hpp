@@ -33,6 +33,7 @@ namespace wtf{
       callback<void()> OnLostKeyboardFocus;
 
     protected:
+      has_keyboard(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void CharEvent(TCHAR c, key_data d){ OnCharPress(c, d); }
       virtual void KeyDownEvent(TCHAR c, key_data d){ OnKeyDown(c, d); }
@@ -40,7 +41,7 @@ namespace wtf{
       virtual void GotKeyboardFocusEvent(){ OnGotKeyboardFocus(); }
       virtual void LoosingKeyboardFocusEvent(){ OnLostKeyboardFocus(); }
 
-      virtual LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool&){
+      LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool&){
         switch (umsg){
           case WM_CHAR:{
             CharEvent(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;

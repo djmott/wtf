@@ -11,10 +11,10 @@ namespace wtf {
       callback<void()> OnClick;
 
     protected:
-
+      has_click(iwindow * pParent) : _SuperT(pParent){}
       virtual void ClickEvent(const mouse_event&){ OnClick(); }
 
-      virtual LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override {
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
 
         if (WM_MOUSEMOVE == umsg){
           auto oRect = rect::client_coord::get(hwnd);

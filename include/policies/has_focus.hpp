@@ -16,10 +16,12 @@ namespace wtf {
 
     protected:
 
+      has_focus(iwindow * pParent) : _SuperT(pParent){}
+
       virtual void GotFocusEvent(){}
       virtual void LostFocusEvent(){}
 
-      virtual LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) override {
+      LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) {
         if (WM_SETFOCUS == umsg) GotFocusEvent();
         else if (WM_KILLFOCUS == umsg) LostFocusEvent();
         return 0;

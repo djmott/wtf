@@ -12,10 +12,11 @@ namespace wtf{
       callback<void(const mouse_event&)> OnMouseUp;
 
     protected:
+      has_mouse_up(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void MouseUpEvent(const mouse_event& m){ OnMouseUp(m); }
 
-      virtual LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) override{
+      LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_LBUTTONUP == umsg){
           mouse_event oEvent(mouse_event::buttons::left, static_cast<mouse_event::key_states>(wparam),
                               static_cast<int16_t>(LOWORD(lparam)), static_cast<int16_t>(HIWORD(lparam)));

@@ -19,10 +19,14 @@ namespace wtf {
       using requirements = type_list<>;
     };
     
-    template<> struct traits<has_close> {
+    template<> struct traits<has_close>{
       using requirements = type_list<>;
     };
-    
+
+    template<> struct traits<has_create>{
+      using requirements = type_list<>;
+    };
+
     template<> struct traits<has_cursor>{
       using requirements = type_list<>;
     };
