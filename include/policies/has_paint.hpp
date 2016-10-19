@@ -27,7 +27,7 @@ namespace wtf {
 
 
       callback<void(const device_context&, const paint_struct&)> OnPaint;
-      callback<void(const device_context& ctx, const rect::client_coord& client, bool& handled)> OnEraseBackground;
+      callback<void(const device_context& ctx, const rect::client_coord& client)> OnEraseBackground;
 
     protected:
       has_paint(iwindow * pParent) : _SuperT(pParent){}
