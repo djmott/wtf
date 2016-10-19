@@ -1,7 +1,7 @@
 #include <strstream>
 #include <iostream>
 #include <random>
-#include "wtf.hpp"
+#include "wtf/wtf.hpp"
 
 using namespace wtf;
 
