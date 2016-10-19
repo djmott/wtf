@@ -11,7 +11,7 @@ namespace wtf{
 
 
     protected:
-      virtual void OnMouseLeave(){}
+      virtual void wm_mouse_leave(){}
 
       has_mouse_leave(window<void> * pParent) : _SuperT(pParent){}
 
@@ -31,7 +31,7 @@ namespace wtf{
           oEvent.hwndTrack = hwnd;
           ::TrackMouseEvent(&oEvent);
         } else if (WM_MOUSELEAVE == umsg){
-          OnMouseLeave();
+          wm_mouse_leave();
         }
         return 0;
       }

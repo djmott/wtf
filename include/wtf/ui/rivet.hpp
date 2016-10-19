@@ -1,6 +1,6 @@
 #pragma once
 namespace wtf{
-  struct rivet : window<rivet, policy::has_paint, policy::has_size, policy::has_create>{
+  struct rivet : window<rivet, policy::has_paint, policy::has_move, policy::has_create>{
     rivet() = delete;
     rivet(const rivet&) = delete;
     rivet(rivet&&) = delete;
@@ -11,9 +11,9 @@ namespace wtf{
       _region(region::create_round_rect(0,0,10,10, 9, 9)), _x(x), _y(y)
     {}
 
-    virtual void OnCreate() override{ move(_x, _y, 10, 10); }
+    virtual void wm_create() override{ move(_x, _y, 10, 10); }
     
-    virtual void OnPaint(const device_context& dc, const paint_struct&) override{
+    virtual void wm_paint(const device_context& dc, const paint_struct&) override{
       _region.clip(dc);
       dc.fill(_region, brush::system_brush(system_colors::button_shadow));
       dc.arch(pen::create(pen::style::solid, 1, rgb(255, 255, 255)), false, 0, 0, 10, 10, 5, 0, 0, 5);

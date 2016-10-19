@@ -2,6 +2,13 @@
 
 namespace wtf {
 
+  template <coord_frame _frame> struct point : POINT{
+    using vector = std::vector<point>;
+    point(){ x = y = 0; }
+    point(LONG X, LONG Y){ x = X; y = Y; }    
+  };
+
+#if 0
     struct point {
 
       template <typename _Ty>
@@ -43,11 +50,11 @@ namespace wtf {
     };
 
 
-    inline point::client_coords point::screen_coords::to_client(HWND hwnd) const{
+    inline point<coord_frame::client> point<coord_frame::screen>::to_client(HWND hwnd) const{
       client_coords oRet;
       wtf::exception::throw_lasterr_if(::ScreenToClient(hwnd, &oRet), [](BOOL b){ return !b; });
       return oRet;
     }
-
+  #endif
   }
 

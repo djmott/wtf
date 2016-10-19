@@ -1,18 +1,19 @@
 #pragma once
 namespace wtf{
-  struct split_container : window<split_container, policy::has_size, policy::has_border, policy::has_paint, policy::has_orientation, policy::has_create>{
+  struct split_container : window<split_container, policy::has_size, policy::has_border, 
+    policy::has_paint, policy::has_orientation, policy::has_create, policy::has_move>{
 
     explicit split_container(window<void> * pParent) : window(pParent), _first(this), _second(this), _splitter(this)
     { }
 
-    virtual void OnCreate() override{
+    virtual void wm_create() override{
       border_style(border_styles::none);
       set_split_position(25);
       _first.border_style(panel::border_styles::raised);
       _second.border_style(panel::border_styles::raised);
     };
 
-    virtual void OnResized(const point::client_coords& p) override{
+    virtual void wm_size(const point<coord_frame::client>& p) override{
       if (orientations::horizontal == _orientation){
         auto NewTop = _splitter.top();
         if (NewTop < 10) NewTop = 10;
@@ -37,7 +38,7 @@ namespace wtf{
       } else{
         _splitter.move(newPos, 0, SplitterWidth, height());
       }
-      OnResized(point::client_coords(width(), height()));
+      wm_size(point<coord_frame::client>(width(), height()));
     }
     
     panel * first(){ return &_first; }
@@ -53,13 +54,13 @@ namespace wtf{
     panel _first, _second;
 
 
-    void size_bar_moved(const point::client_coords& p){
+    void size_bar_moved(const point<coord_frame::client>& p){
       if (orientations::horizontal == _orientation){
         _splitter.move(0, _splitter.top() + p.y, width(), SplitterWidth);
       } else{
         _splitter.move(_splitter.left() + p.x, 0, SplitterWidth, height());
       }
-      OnResized(rect::client_coord::get(*this).dimensions());
+      wm_size(rect<coord_frame::client>::get(*this).dimensions());
       refresh();
     }
 
@@ -68,19 +69,19 @@ namespace wtf{
 
       size_bar(split_container * pParent) : label(pParent), _parent(pParent){}
 
-      virtual void OnCreate() override{ border_style(border_styles::none); };
+      virtual void wm_create() override{ border_style(border_styles::none); };
       
-      virtual void OnMouseMove(const policy::mouse_event& m) override{
+      virtual void wm_mouse_move(const policy::mouse_event& m) override{
         if (!(m.key_state & policy::mouse_event::key_states::left)) return;
         _parent->size_bar_moved(m.position);
       };
       
-      virtual void OnMouseDown(const policy::mouse_event& m) override{
+      virtual void wm_mouse_down(const policy::mouse_event& m) override{
         if (policy::mouse_event::buttons::left != m.button) return;
         SetCapture(*this);
       };
       
-      virtual void OnMouseUp(const policy::mouse_event& m) override{
+      virtual void wm_mouse_up(const policy::mouse_event& m) override{
         ReleaseCapture();
       };
 

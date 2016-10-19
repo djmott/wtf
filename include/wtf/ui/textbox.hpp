@@ -9,7 +9,7 @@ namespace wtf{
 
       explicit textbox(window<void> * pParent) : window(pParent){}
 
-      virtual void OnCreate() override{
+      virtual void wm_create() override{
         background_brush(brush::system_brush(system_colors::window));
         border_style(border_styles::lowered);
         text_vertical_alignment(text_vertical_alignments::top);
@@ -18,10 +18,10 @@ namespace wtf{
         auto_draw_text(false);
       };
 
-      virtual void OnPaint(const device_context& dc, const paint_struct& ps) override{
+      virtual void wm_paint(const device_context& dc, const paint_struct& ps) override{
         if (!_text.size()) return;
 
-        rect::client_coord client = ps.client();
+        rect<coord_frame::client> client = ps.client();
         auto ClientWidth = client.right - client.left;
 
         //sanity checks
@@ -32,7 +32,7 @@ namespace wtf{
 
 
         int EndPrintPos = _edit_pos;
-        point::client_coords CaretPos;
+        point<coord_frame::client> CaretPos;
 
         for (;;){
           auto tmpExt = dc.get_text_extent(_text.c_str() + _print_pos, EndPrintPos - _print_pos);
@@ -66,11 +66,11 @@ namespace wtf{
         }
       };
 
-      virtual void OnMouseDown(const policy::mouse_event& p) override{
+      virtual void wm_mouse_down(const policy::mouse_event& p) override{
         set_focus();
       };
 
-      virtual void OnCharPress(TCHAR character, key_data) override{
+      virtual void wm_char(TCHAR character, key_data) override{
         switch (character){
           case VK_BACK:
           {
@@ -84,7 +84,7 @@ namespace wtf{
         //         refresh();
       };
 
-      virtual void OnKeyDown(TCHAR key, key_data) override{
+      virtual void wm_keydown(TCHAR key, key_data) override{
 
         switch (key){
           case VK_LEFT:

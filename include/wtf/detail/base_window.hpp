@@ -19,7 +19,7 @@ namespace wtf{
     window& operator=(const window&) = delete;
     window operator=(window&&) = delete;
 
-    explicit window(window * Parent) : _parent(Parent){
+    explicit window(window * Parent) : _parent(Parent), _handle(nullptr){
       if (Parent) Parent->_children.push_back(this);
     }
 
@@ -57,7 +57,7 @@ namespace wtf{
     template <template <typename, typename> class _Policy1> struct is_same_policy<_Policy1, _Policy1> : std::true_type{};
 
 
-    // has_policy compile time meta-function returns true if a concrete implementation inherits from a policy
+    // has_policy meta-function returns true if a concrete implementation inherits from a policy
     template <template <typename, typename> class _DeclT, template <typename, typename> class ... _TailT> struct has_policy;
 
     template <template <typename, typename> class _DeclT>
@@ -70,7 +70,7 @@ namespace wtf{
     };
 
 
-    // concrete_impl compile time meta-function returns the fully defined concrete implementation of an inherited policy
+    // concrete_impl meta-function returns the fully defined concrete implementation of an inherited policy
     template <template <typename, typename> class _TargetPolicyT, typename _ImplT, template <typename, typename> class ... _PolicyListT>
     struct concrete_impl;
 
@@ -93,7 +93,7 @@ namespace wtf{
     };
 
 
-    //removes all occurances of Target in policy type list
+    //removes all occurrences of _TargetT in _PolicyListT type list
     template <template <typename, typename> class _TargetT, typename _PolicyListT>
     struct remove_policy_from;
 

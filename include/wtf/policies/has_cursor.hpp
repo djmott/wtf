@@ -53,7 +53,7 @@ namespace wtf {
     protected:
       has_cursor(window<void> * pParent) : _SuperT(pParent){}
 
-      virtual void SetCursorEvent(wm_nchittest_flags flags) {
+      virtual void wm_setcursor(wm_nchittest_flags flags) {
         switch (flags) {
           case wm_nchittest_flags::top:
           case wm_nchittest_flags::bottom:
@@ -79,7 +79,7 @@ namespace wtf {
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool &bhandled) {
         if (WM_SETCURSOR == umsg) {
-          SetCursorEvent(static_cast<wm_nchittest_flags>(LOWORD(lparam)));
+          wm_setcursor(static_cast<wm_nchittest_flags>(LOWORD(lparam)));
           bhandled = true;
           return TRUE;
         }

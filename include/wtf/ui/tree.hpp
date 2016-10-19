@@ -1,8 +1,10 @@
 #pragma once
 
 namespace wtf{
-  struct tree : window<tree, policy::has_border, policy::has_click, policy::has_text, policy::has_create,
-    policy::has_paint, policy::has_size, policy::has_dblclick, policy::has_mouse_wheel, policy::has_font>{
+  struct tree : window<tree, policy::has_border, policy::has_click, policy::has_text,
+    policy::has_create, policy::has_paint, policy::has_size, policy::has_dblclick, 
+    policy::has_mouse_wheel, policy::has_font, policy::has_move>
+  {
 
     explicit tree(window<void> * pParent)
       : window(pParent),
@@ -19,7 +21,7 @@ namespace wtf{
     {}
 
 
-    virtual void OnCreate() override{
+    virtual void wm_create() override{
       _vscroll.orientation(scroll_bar::orientations::vertical);
       _hscroll.orientation(scroll_bar::orientations::horizontal);
       auto_draw_text(false);
@@ -28,7 +30,7 @@ namespace wtf{
       full_row_select(false);
     };
 
-    virtual void OnClick(const policy::mouse_event& m) override{
+    virtual void wm_click(const policy::mouse_event& m) override{
       if (policy::mouse_event::buttons::left != m.button) return;
       node::pointer oClickedNode;
       for (size_t i = 0; i < _row_rects.size(); ++i){
@@ -62,7 +64,7 @@ namespace wtf{
       refresh();
     };
 
-    virtual void OnDoubleClick(const policy::mouse_event& m) override{
+    virtual void wm_dblclick(const policy::mouse_event& m) override{
       if (policy::mouse_event::buttons::left != m.button) return;
       for (size_t i = 0; i < _row_rects.size(); ++i){
         if (_item_rects[i].is_in(m.position)){
@@ -75,7 +77,7 @@ namespace wtf{
       }
     };
 
-    virtual void OnPaint(const device_context& dc, const paint_struct& ps) override{
+    virtual void wm_paint(const device_context& dc, const paint_struct& ps) override{
       if (!_root->children().size()) return;
       ApplyFontEvent(dc);
       auto client = ps.client();
@@ -89,7 +91,7 @@ namespace wtf{
       }
     };
 
-    virtual void OnMouseWheel(int16_t delta, const policy::mouse_event& m) override{
+    virtual void wm_mouse_wheel(int16_t delta, const policy::mouse_event& m) override{
       bool bUp = (delta > 0);
       for (int i = 0; i <= (delta % WHEEL_DELTA); ++i){
         if (bUp){
@@ -100,14 +102,14 @@ namespace wtf{
       }
     };
 
-    virtual void OnResized(const point::client_coords& p) override{
+    virtual void wm_size(const point<coord_frame::client>& p) override{
       _vscroll.move(p.x - scroll_width - border_width(), border_width(), scroll_width, p.y - (border_width() * 2) - scroll_width);
       _hscroll.move(border_width(), p.y - border_width() - scroll_width, p.x - scroll_width - (border_width() * 2), scroll_width);
     };
 
-    virtual void OnEraseBackground(const device_context& ctx, const rect::client_coord& client, bool& handled) override{
+    virtual void wm_erase_background(const device_context& ctx, const rect<coord_frame::client>& client, bool& handled) override{
       ctx.fill(client, background_brush());
-      rect::client_coord oTmp(client.right - scroll_width - (border_width() * 2),
+      rect<coord_frame::client> oTmp(client.right - scroll_width - (border_width() * 2),
                               client.bottom - scroll_width - (border_width() * 2),
                               client.right, client.bottom);
       ctx.fill(oTmp, _button_face_brush);
@@ -273,9 +275,9 @@ namespace wtf{
     node::pointer _root;
     node::pointer _top; //node at the top of the display window
     node::pointer _bottom; //node at the bottom of the display window
-    rect::client_coord::vector _item_rects; //rect around item text
-    rect::client_coord::vector _expander_rects; //rect around expander
-    rect::client_coord::vector _row_rects; //rect around entire row
+    rect<coord_frame::client>::vector _item_rects; //rect around item text
+    rect<coord_frame::client>::vector _expander_rects; //rect around expander
+    rect<coord_frame::client>::vector _row_rects; //rect around entire row
     node::vector _displayed_nodes; //the displayed items
     node::vector _selected_nodes;
     pen _black_pen;
@@ -299,7 +301,7 @@ namespace wtf{
     virtual const brush &background_brush() const{ return _background_brush; }
 
 
-    bool print_node(const node::pointer& oNode, const device_context& dc, const text_metrics& oTextMetrics, rect::client_coord& oClient){
+    bool print_node(const node::pointer& oNode, const device_context& dc, const text_metrics& oTextMetrics, rect<coord_frame::client>& oClient){
       if (oClient.top > oClient.bottom) return false;
       _bottom = oNode;
       bool PrintExpander = false;
@@ -334,7 +336,7 @@ namespace wtf{
       draw_text(dc, _item_rects.back());
       if (PrintExpander){
         const auto & oExpander = _expander_rects.back();
-        point::client_coords::vector oArrow(3);
+        point<coord_frame::client>::vector oArrow(3);
         if (oNode->expanded()){
           oArrow[0].x = oExpander.left; oArrow[0].y = oExpander.top;
           oArrow[1].x = oExpander.right; oArrow[1].y = oExpander.top;

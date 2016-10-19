@@ -13,14 +13,14 @@ namespace wtf {
 
     protected:
 
-      virtual void OnClose(bool& cancel_close){}
+      virtual void wm_close(bool& cancel_close){}
 
       has_close(window<void> * pParent) : _SuperT(pParent){}
 
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool & bHandled) {
         if (WM_CLOSE == umsg){
-          OnClose(bHandled);
+          wm_close(bHandled);
         }
         return 0;
       }

@@ -28,22 +28,22 @@ namespace wtf {
 
 
     protected:
-      virtual void OnPaint(const device_context&, const paint_struct&) {}
-      virtual void OnEraseBackground(const device_context& ctx, const rect::client_coord& client, bool&) {}
+      virtual void wm_paint(const device_context&, const paint_struct&) {}
+      virtual void wm_erase_background(const device_context& ctx, const rect<coord_frame::client>& client, bool&) {}
 
       has_paint(window<void> * pParent) : _SuperT(pParent){}
 
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) {
         if (WM_PAINT == umsg) {
-          OnPaint(*reinterpret_cast<const device_context *>(wparam),
+          wm_paint(*reinterpret_cast<const device_context *>(wparam),
                      *reinterpret_cast<const paint_struct *>(lparam));
         } else if (WM_ERASEBKGND == umsg) {
           auto &oDC = *reinterpret_cast<const device_context *>(lparam);
-          OnEraseBackground(oDC, rect::client_coord::get(*this), bhandled);
+          wm_erase_background(oDC, rect<coord_frame::client>::get(*this), bhandled);
           if (!bhandled){
             bhandled = true;
-            oDC.fill(rect::client_coord::get(*this), _background_brush);
+            oDC.fill(rect<coord_frame::client>::get(*this), _background_brush);
           }
           return 1;
         }

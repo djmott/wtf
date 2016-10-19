@@ -8,13 +8,13 @@ namespace wtf{
 
 
     protected:
-      virtual void OnCreate() {}
+      virtual void wm_create() {}
 
       has_create(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM, LPARAM, bool &){
         if (WM_CREATE == umsg){
-          OnCreate();
+          wm_create();
         }
         return 0;
       }

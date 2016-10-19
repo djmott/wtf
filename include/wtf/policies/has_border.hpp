@@ -1,5 +1,12 @@
 #pragma once
 
+#if !defined(DCX_NODELETERGN ) 
+#define DCX_NODELETERGN 0x00040000
+#endif
+#if !defined(DCX_USESTYLE)
+#define DCX_USESTYLE 0x00010000
+#endif
+
 namespace wtf {
 
   namespace policy {
@@ -54,24 +61,44 @@ namespace wtf {
       has_border(window<void> * pParent) : _SuperT(pParent){}
 
       void refresh_border(){
+        if (!_handle) return;
         wtf::exception::throw_lasterr_if(
           ::RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_NOCHILDREN),
           [](BOOL b){ return !b; }
         );
       }
 
-      virtual void draw_border(const device_context& dc, const rect::client_coord & oClient){
+      virtual void wm_ncpaint(const device_context& dc, rect<coord_frame::client>& oClient){
+/*
+
+        auto redBrush = brush::solid_brush(rgb(255, 0, 0));
+
+        dc.fill(oClient, redBrush);
+        return;
+
+
+*/
+
+
         auto highlight = pen::create(pen::style::solid, 1, border_highlight());
         auto shadow = pen::create(pen::style::solid, 1, border_shadow());
-        rect::client_coord client = oClient;
-        client.bottom += border_width() * 2 - 1;
-        client.right += border_width() * 2 - 1;
+
+        rect<coord_frame::client> client = oClient;
+/*
+        client.bottom += border_width()-1;
+        client.right += border_width()-1;
+        */
+        client.bottom--;
+        client.right--;
+
+
+
         //draw outer border
         switch (border_style()){
           case border_styles::none:
             return;
           case border_styles::flat:
-            if (_draw_right) dc.line(shadow, client.right, client.top, client.right, client.bottom);
+            if (_draw_right) dc.line(shadow, client.right, client.top, client.right, 1 + client.bottom);
             if (_draw_bottom) dc.line(shadow, client.left, client.bottom, client.right, client.bottom);
             if (_draw_top) dc.line(shadow, client.left, client.top, client.right, client.top);
             if (_draw_left) dc.line(shadow, client.left, client.top, client.left, client.bottom);
@@ -108,26 +135,95 @@ namespace wtf {
             if (_draw_left) dc.line(highlight, client.left, client.top, client.left, client.bottom);
         }
 
-      }
+/*
+        auto red = pen::create(pen::style::solid, 1, rgb(255, 0, 0));
+        auto black = pen::create(pen::style::solid, 1, rgb(0, 0, 0));
+        dc.line(black, 0, 0, oClient.right, oClient.bottom);
+        dc.line(black, oClient.left, oClient.bottom, oClient.right, oClient.top);
+        dc.line(red, client.left, client.top, client.right, client.bottom);
+        dc.line(red, client.left, client.bottom, client.right, client.top);
+*/
 
-      virtual void DrawBorderEvent(const device_context& dc, rect::client_coord& oClient){
-        draw_border(dc, oClient);
       }
 
       LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &handled) {
         if (WM_NCCALCSIZE == umsg && wparam){
           auto pSizeParam = reinterpret_cast<NCCALCSIZE_PARAMS*>(lparam);
-          handled = true;
           pSizeParam->rgrc[0].top += border_width();
           pSizeParam->rgrc[0].left += border_width();
           pSizeParam->rgrc[0].bottom -= border_width();
           pSizeParam->rgrc[0].right -= border_width();
           handled = true;
-          return TRUE;
+          return WVR_VALIDRECTS| WVR_REDRAW;
+        }else if (WM_NCCALCSIZE == umsg){
+          auto oClient = reinterpret_cast<RECT*>(lparam);
+          oClient->bottom = oClient->bottom;
         } else if (WM_NCPAINT == umsg){
           handled = true;
-          DrawBorderEvent(device_context::get_window(*this), rect::client_coord::get(*this));
+          if (1 == wparam){
+            std::cout << "1==WPARAM" << std::endl;
+            auto oDC = device_context::get_dcex(*this, DCX_WINDOW | DCX_USESTYLE| DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
+            auto oWindow = rect<coord_frame::screen>::get(*this);
+
+
+            oWindow.offset(oWindow.position());
+            rect<coord_frame::client> oClient(oWindow);
+            wm_ncpaint(oDC, oClient);
+
+          } else{
+            std::cout << "WPARAM : " << std::ios::hex << (int)wparam << std::endl;
+
+            auto oWindow = rect<coord_frame::screen>::get(*this);
+
+            auto oRegion = region::attach((HRGN)wparam);
+            oRegion.offset(oWindow.position());
+
+            auto oDC = device_context::get_dcex(*this, oRegion, DCX_EXCLUDERGN | DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
+
+            oWindow.offset(oWindow.position());
+            rect<coord_frame::client> oClient(oWindow);
+            wm_ncpaint(oDC, oClient);
+          }
         }
+
+/* WORKS
+        } else if (WM_NCPAINT == umsg){
+          handled = true;
+          auto oDC = device_context::get_dcex(*this, DCX_WINDOW | DCX_CACHE | DCX_USESTYLE);
+          auto oWindow = rect<coord_frame::screen>::get(*this);
+          if (1 == wparam){
+            oWindow.offset(oWindow.position());
+            oDC.intersect_clip_rect(oWindow);
+          } else{
+            auto oRegion = region::attach((HRGN)wparam);
+            oRegion.offset(oWindow.position());
+            oDC.select_clip_rgn(oRegion);
+            oWindow.offset(oWindow.position());
+          }
+          rect<coord_frame::client> oClient(oWindow);
+          wm_ncpaint(oDC, oClient);
+        }
+*/
+
+/*
+this somewhat works
+        } else if (WM_NCPAINT == umsg){
+          handled = true;
+          auto oDC = device_context::get_dcex(*this, DCX_WINDOW | DCX_CACHE | DCX_USESTYLE);
+          auto oWindow = rect<coord_frame::screen>::get(*this);
+          if (1==wparam ){
+            oWindow.offset(oWindow.position());
+            oDC.intersect_clip_rect(oWindow);
+          }else{
+            auto oRegion = region::attach((HRGN)wparam);
+            oRegion.offset(oWindow.position());
+            oDC.select_clip_rgn(oRegion);
+            oWindow.offset(oWindow.position());
+          }
+          rect<coord_frame::client> oClient(oWindow);
+          wm_ncpaint(oDC, oClient);
+        }
+*/
         return 0;
       }
 

@@ -10,8 +10,8 @@ namespace wtf {
 
     paint_struct(const paint_struct &) = delete;
 
-    rect::client_coord& client(){ return *static_cast<rect::client_coord*>(&rcPaint); }
-    const rect::client_coord& client() const { return *static_cast<const rect::client_coord*>(&rcPaint); }
+    rect<coord_frame::client>& client(){ return *static_cast<rect<coord_frame::client>*>(&rcPaint); }
+    const rect<coord_frame::client>& client() const { return *static_cast<const rect<coord_frame::client>*>(&rcPaint); }
 
   protected:
     HWND _hwnd;

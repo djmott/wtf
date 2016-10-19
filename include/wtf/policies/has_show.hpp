@@ -23,10 +23,10 @@ namespace wtf {
     protected:
 
       has_show(window<void> * pParent) : _SuperT(pParent){}
-      virtual void VisibilityChangedEvent(visibility_change_flag){}
+      virtual void wm_show_window(visibility_change_flag){}
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool &) {
-        if (WM_SHOWWINDOW == umsg) VisibilityChangedEvent(static_cast<visibility_change_flag>(lparam));
+        if (WM_SHOWWINDOW == umsg) wm_show_window(static_cast<visibility_change_flag>(lparam));
         return 0;
       }
     };

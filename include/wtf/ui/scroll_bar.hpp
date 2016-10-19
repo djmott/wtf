@@ -4,7 +4,7 @@ namespace wtf{
 
   //overweight scrollbar can be much thinner
   struct scroll_bar : window<scroll_bar, policy::has_size, policy::has_show, policy::has_orientation, 
-    policy::has_create, policy::has_mouse_wheel>{
+    policy::has_create, policy::has_mouse_wheel, policy::has_move>{
 
     explicit scroll_bar(window<void> * pParent)
       : window(pParent),
@@ -20,7 +20,7 @@ namespace wtf{
     orientations orientation() const{ return _orientation; }
     void orientation(orientations newval){
       _orientation = newval;
-      OnResized(rect::client_coord::get(*this).dimensions());
+      wm_size(rect<coord_frame::client>::get(*this).dimensions());
     }
 
     int min() const{ return _min; }
@@ -34,7 +34,7 @@ namespace wtf{
       if (newval < _min) newval = _min;
       if (newval > _max) newval = _max;
       _value = newval;
-      OnResized(point::client_coords::get_size(*this));
+      wm_size(rect<coord_frame::client>::get(*this).dimensions());
     }
 
     int small_step() const{ return _small_step; }
@@ -47,7 +47,7 @@ namespace wtf{
 
     friend struct value_step_button;
 
-    virtual void OnResized(const point::client_coords& p) override{
+    virtual void wm_size(const point<coord_frame::client>& p) override{
       auto iExtent = _max - _min;
 
       if (orientations::horizontal == _orientation){
@@ -68,7 +68,6 @@ namespace wtf{
       auto iOriginal = _value;
       value(_value + _small_step);
       if (_value == iOriginal) return;
-      poke();
     }
 
     virtual void StepDecEvent(){
@@ -90,8 +89,10 @@ namespace wtf{
     }
 
     struct value_step_button
-      : window<value_step_button, policy::has_button_border, policy::has_repeat_click,
-      policy::has_size, policy::has_paint, policy::has_click, policy::has_border, policy::has_timer>{
+      : window<value_step_button, policy::has_button_border, policy::has_repeat_click, policy::has_create,
+      policy::has_size, policy::has_paint, policy::has_click, policy::has_border, policy::has_timer,
+      policy::has_move>
+    {
       bool _is_increment;
       scroll_bar * _parent;
 
@@ -99,14 +100,14 @@ namespace wtf{
         window(pParent), _parent(pParent), _is_increment(IsIncrementer){
 
       }
-      virtual void OnClick(const policy::mouse_event& m) override{
+      virtual void wm_click(const policy::mouse_event& m) override{
         if (policy::mouse_event::buttons::left != m.button) return;
         if (_is_increment) _parent->StepIncEvent();
         else _parent->StepDecEvent();
       };
-      virtual void OnPaint(const device_context& dc, const paint_struct&ps) override{
+      virtual void wm_paint(const device_context& dc, const paint_struct&ps) override{
         auto client = ps.client();
-        point::client_coords::vector arrow(3);
+        point<coord_frame::client>::vector arrow(3);
         if (orientations::horizontal == _parent->_orientation){
           if (_is_increment){ // >
             arrow[0].x = 5; arrow[0].y = 5;
@@ -136,12 +137,13 @@ namespace wtf{
     struct value_page_button 
       : window<value_page_button, policy::has_repeat_click, policy::has_size, policy::has_paint,
       policy::has_click, policy::has_mouse_up, policy::has_mouse_move, policy::has_mouse_down, 
-      policy::has_timer>{
+      policy::has_timer, policy::has_move>{
+
       explicit value_page_button(scroll_bar * pParent, bool IsIncrement) : window(pParent), _parent(pParent), _is_increment(IsIncrement)
       {
 
       }
-      virtual void OnClick(const policy::mouse_event& m) override{
+      virtual void wm_click(const policy::mouse_event& m) override{
         if (policy::mouse_event::buttons::left != m.button) return;
         if (_is_increment) _parent->PageUpEvent();
         else _parent->PageDownEvent();
@@ -151,7 +153,7 @@ namespace wtf{
       bool _is_increment;
     };
 
-    struct slider : window<slider, policy::has_size>{
+    struct slider : window<slider, policy::has_size, policy::has_move>{
       explicit slider(scroll_bar * pParent) : window(pParent){}
     }_slider;
 

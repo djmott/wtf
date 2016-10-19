@@ -43,17 +43,17 @@ namespace wtf {
 
       static int hide() { return ::ShowCursor(FALSE); }
 
-      static void position(const point::screen_coords &p) {
+      static void position(const point<coord_frame::screen> &p) {
         wtf::exception::throw_lasterr_if(::SetCursorPos(p.x, p.y), [](BOOL b) { return !b; });
       }
 
-      static point::screen_coords position() {
-        point::screen_coords oRet;
+      static point<coord_frame::screen> position() {
+        point<coord_frame::screen> oRet;
         wtf::exception::throw_lasterr_if(::GetCursorPos(&oRet), [](BOOL b) { return !b; });
         return oRet;
       }
 
-      static void clip(const rect::screen_coords &area) {
+      static void clip(const rect<coord_frame::screen> &area) {
         wtf::exception::throw_lasterr_if(::ClipCursor(&area), [](BOOL b) { return !b; });
       }
 

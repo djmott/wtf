@@ -8,8 +8,8 @@ namespace wtf{
 
     protected:
 
-      virtual void OnActivate(){}
-      virtual void OnDeactivate(){}
+      virtual void wm_activate(){}
+      virtual void wm_deactivate(){}
 
       has_activate(window<void> * pParent) : _SuperT(pParent){}
 
@@ -17,9 +17,9 @@ namespace wtf{
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM, bool &) {
         if (WM_ACTIVATE == umsg){
           if (WA_INACTIVE == wparam){
-            OnDeactivate();
+            wm_deactivate();
           } else{
-            OnActivate();
+            wm_activate();
           }
         }
         return 0;

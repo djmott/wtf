@@ -27,10 +27,15 @@ namespace wtf {
       }
 
       operator HRGN() const { return get(); }
+      HRGN operator*() const{ return get(); }
 
       template <typename _device_contextT>
       void clip(const _device_contextT& dc){
         wtf::exception::throw_lasterr_if(::SelectClipRgn(dc, *this), [](int i){return ERROR == i; });
+      }
+
+      void offset(const point<coord_frame::screen>& p){
+        wtf::exception::throw_lasterr_if(::OffsetRgn(*this, -p.x, -p.y), [](int i){return ERROR == i; });
       }
 
     protected:

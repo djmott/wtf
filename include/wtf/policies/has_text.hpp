@@ -30,7 +30,7 @@ namespace wtf{
       virtual const tstring &text() const{ return _text; }
       virtual void text(const tstring &newval){
         _text = newval; 
-        auto client = rect::client_coord::get(*this);
+        auto client = rect<coord_frame::client>::get(*this);
         if (_auto_draw_text) ::InvalidateRect(*this, &client,TRUE);
       }
 
@@ -53,7 +53,7 @@ namespace wtf{
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
 
-      virtual void draw_text(const device_context& dc, const rect::client_coord& client){
+      virtual void draw_text(const device_context& dc, const rect<coord_frame::client>& client){
         ApplyFontEvent(dc);
         wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
                                          [](UINT i){ return GDI_ERROR == i; });
@@ -76,7 +76,7 @@ namespace wtf{
             format |= DT_RIGHT; break;
         }
 
-        rect::client_coord oTextArea = client;
+        rect<coord_frame::client> oTextArea = client;
 
         wtf::exception::throw_lasterr_if(::DrawText(dc, _text.c_str(), -1, &oTextArea, format),
                                          [](BOOL b){ return !b; });
@@ -85,7 +85,7 @@ namespace wtf{
 
       LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_PAINT == umsg && _auto_draw_text){
-          rect::client_coord oClient = reinterpret_cast<const paint_struct *>(lparam)->client();
+          rect<coord_frame::client> oClient = reinterpret_cast<const paint_struct *>(lparam)->client();
           using _impl_window_t = typename _ImplT::window_type;
           using has_border_t = typename _impl_window_t::has_policy_t<policy::has_border>;
           draw_text(*reinterpret_cast<const device_context *>(wparam), oClient);

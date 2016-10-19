@@ -27,11 +27,11 @@ namespace wtf{
       }
 
     protected:
-      virtual void OnCharPress(TCHAR, key_data){}
-      virtual void OnKeyDown(TCHAR, key_data){}
-      virtual void OnKeyUp(TCHAR, key_data){}
-      virtual void OnGotKeyboardFocus(){}
-      virtual void OnLostKeyboardFocus(){}
+      virtual void wm_char(TCHAR, key_data){}
+      virtual void wm_keydown(TCHAR, key_data){}
+      virtual void wm_keyup(TCHAR, key_data){}
+      virtual void wm_setfocus(){}
+      virtual void wm_killfocus(){}
 
 
       has_keyboard(window<void> * pParent) : _SuperT(pParent){}
@@ -40,19 +40,19 @@ namespace wtf{
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool&){
         switch (umsg){
           case WM_CHAR:{
-            OnCharPress(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
+            wm_char(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
           }
           case WM_KEYDOWN:{
-            OnKeyDown(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
+            wm_keydown(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
           }
           case WM_KEYUP:{
-            OnKeyUp(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
+            wm_keyup(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
           }
           case WM_SETFOCUS:{
-            OnGotKeyboardFocus(); break;
+            wm_setfocus(); break;
           }
           case WM_KILLFOCUS:{
-            OnLostKeyboardFocus(); break;
+            wm_killfocus(); break;
           }
         }
         return 0; 

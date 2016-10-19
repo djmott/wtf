@@ -25,6 +25,11 @@ namespace wtf{
   using tstring = std::basic_string<TCHAR>;
   using tstringstream = std::basic_stringstream<TCHAR>;
 
+  enum class coord_frame{
+    screen,
+    client,
+  };
+
   extern "C" HINSTANCE__ __ImageBase;
   inline static HINSTANCE instance_handle(){ return &__ImageBase; }
 
@@ -90,11 +95,14 @@ namespace wtf{
 #include "policies/has_mouse_up.hpp"
 #include "policies/has_mouse_move.hpp"
 #include "policies/has_mouse_wheel.hpp"
+#include "policies/has_move.hpp"
+#include "policies/has_moving.hpp"
 #include "policies/has_orientation.hpp"
 #include "policies/has_paint.hpp"
 #include "policies/has_repeat_click.hpp"
 #include "policies/has_show.hpp"
 #include "policies/has_size.hpp"
+#include "policies/has_sizing.hpp"
 #include "policies/has_text.hpp"
 #include "policies/has_timer.hpp"
 #include "policies/has_titlebar.hpp"

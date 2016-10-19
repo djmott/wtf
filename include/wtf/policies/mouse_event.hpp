@@ -24,7 +24,7 @@ namespace wtf{
       buttons button; //the button that caused the event
       weak_enum<key_states> key_state; //state of all buttons
 
-      point::client_coords position;
+      point<coord_frame::client> position;
 
       mouse_event(WPARAM wparam, LPARAM lparam, buttons oButton = buttons::unspecified)
         : button(oButton), key_state(static_cast<mouse_event::key_states>(LOWORD(wparam))),

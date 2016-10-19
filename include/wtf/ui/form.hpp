@@ -3,12 +3,14 @@
 namespace wtf{
 
   template <typename _Ty, DWORD _ExStyle, DWORD _Style>
-  struct form_base : window<form_base<_Ty, _ExStyle, _Style>, policy::has_icon, policy::has_show, policy::has_cursor,
-    policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint, policy::has_click, policy::has_create>
+  struct form_base : window<form_base<_Ty, _ExStyle, _Style>, policy::has_icon, policy::has_show, 
+    policy::has_cursor, policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint, 
+    policy::has_click, policy::has_create, policy::has_move>
   {
 
-    using _super_t = window<form_base<_Ty, _ExStyle, _Style>, policy::has_icon, policy::has_show, policy::has_cursor,
-      policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint, policy::has_click, policy::has_create>;
+    using _super_t = window<form_base<_Ty, _ExStyle, _Style>, policy::has_icon, policy::has_show,
+      policy::has_cursor, policy::has_titlebar, policy::has_size, policy::has_close, policy::has_paint,
+      policy::has_click, policy::has_create, policy::has_move>;
 
     static const DWORD ExStyle = _ExStyle;
     static const DWORD Style = _Style;
@@ -27,24 +29,25 @@ namespace wtf{
       return iRet;
     }
 
+    
     virtual int top() const override{
-      return rect::screen_coords::get(*this).top;
+      return rect<coord_frame::screen>::get(*this).top;
     }
 
     virtual int left() const  override{
-      return rect::screen_coords::get(*this).left;
+      return rect<coord_frame::screen>::get(*this).left;
     }
 
     virtual int width() const  override{
-      auto r = rect::client_coord::get(*this);
+      auto r = rect<coord_frame::client>::get(*this);
       return r.right - r.left;
     }
 
     virtual int height() const  override{
-      auto r = rect::client_coord::get(*this);
+      auto r = rect<coord_frame::client>::get(*this);
       return r.bottom - r.top;
     }
-
+    
 
   protected:
 

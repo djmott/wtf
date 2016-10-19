@@ -2,20 +2,21 @@
 namespace wtf{
 
 
-    struct tab_container : wtf::window<tab_container, policy::has_size, policy::has_paint, policy::has_show, policy::has_create>
+    struct tab_container : wtf::window<tab_container, policy::has_size, policy::has_paint, 
+      policy::has_show, policy::has_create, policy::has_move>
     {
 
       explicit tab_container(window<void> * pParent)
         : window(pParent), _active_page(0), _button_bar_slider(this), _tab_orientation(tab_orientations::top)
       { }
 
-      virtual void OnCreate() override{
+      virtual void wm_create() override{
         _button_bar_slider.orientation(scroll_bar::orientations::horizontal);
         _button_bar_slider.hide();
       };
 
-      virtual void OnResized(const point::client_coords& newsize) override{
-        point::client_coords p = newsize;
+      virtual void wm_size(const point<coord_frame::client>& newsize) override{
+        point<coord_frame::client> p = newsize;
         p.x--; p.y--;
         int iBtnPos = _button_left;
         _button_bar_slider.move(p.x - (_tab_height * 2), 0, _tab_height * 2, _tab_height);
@@ -133,13 +134,13 @@ namespace wtf{
             make_window();
           }
 
-          virtual void OnCreate() override{
+          virtual void wm_create() override{
             text(_title);
             enable_border_elements(true, true, false, true);
             deactivate();
           };
 
-          virtual void OnClick(const policy::mouse_event& m){
+          virtual void wm_click(const policy::mouse_event& m){
             if (policy::mouse_event::buttons::left != m.button) return;
             _parent->active_page(_PageIndex);
           };

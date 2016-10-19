@@ -43,12 +43,12 @@ namespace wtf {
         wtf::exception::throw_lasterr_if(::SetCaretBlinkTime(newval), [](BOOL b) { return !b; });
       }
 
-      virtual void caret_position(const point::client_coords &pos) {
+      virtual void caret_position(const point<coord_frame::client> &pos) {
         _pos = pos;
         wtf::exception::throw_lasterr_if(::SetCaretPos(_pos.x, _pos.y), [](BOOL b) { return !b; });
       }
 
-      virtual point::client_coords caret_position() const{ return _pos; }
+      virtual point<coord_frame::client> caret_position() const{ return _pos; }
 
     protected:
       has_caret(window<void> * pParent) : _SuperT(pParent){}
@@ -65,7 +65,7 @@ namespace wtf {
       }
     private:
       UINT _blink_rate = 250;
-      point::client_coords _pos = point::client_coords(0,0);
+      point<coord_frame::client> _pos = point<coord_frame::client>(0,0);
       bool _caret_visible = false;
       int _width = 1;
       int _height = 1;

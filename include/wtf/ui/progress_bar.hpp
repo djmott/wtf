@@ -2,13 +2,13 @@
 
 namespace wtf{
 
-  struct progress_bar : wtf::window < progress_bar, policy::has_border, policy::has_size, 
+  struct progress_bar : wtf::window < progress_bar, policy::has_border, policy::has_size, policy::has_move,
     policy::has_text, policy::has_font, policy::has_paint, policy::has_orientation, policy::has_create>{
 
     explicit progress_bar(window<void> * hParent) : window(hParent){
     }
 
-    virtual void OnCreate() override{
+    virtual void wm_create() override{
       border_style(border_styles::lowered);
       auto_draw_text(false);
     };
@@ -41,9 +41,9 @@ namespace wtf{
     rgb _fill_color = system_rgb<system_colors::highlight>();
     text_modes _text_mode = text_modes::percentage;
 
-    virtual void OnPaint(const device_context& dc, const paint_struct& ps) override {
+    virtual void wm_paint(const device_context& dc, const paint_struct& ps) override {
       auto oBrush = brush::solid_brush(_fill_color);
-      rect::client_coord oFillArea = ps.client();
+      rect<coord_frame::client> oFillArea = ps.client();
       auto iExtent = _max - _min;
       if (orientations::horizontal == orientation()){
         oFillArea.right = (oFillArea.right * _value) / iExtent;

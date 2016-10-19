@@ -1,7 +1,7 @@
 #pragma once
 namespace wtf{
 
-  struct listbox : wtf::window<listbox, policy::has_border, policy::has_click, policy::has_text,
+  struct listbox : wtf::window<listbox, policy::has_border, policy::has_click, policy::has_text, policy::has_move,
     policy::has_paint, policy::has_size, policy::has_mouse_wheel, policy::has_font, policy::has_create>{
 
     explicit listbox(window<void> * pParent) :
@@ -13,14 +13,14 @@ namespace wtf{
       _background_brush(brush::system_brush(system_colors::window))
     {}
 
-    virtual void OnCreate() override{
+    virtual void wm_create() override{
       border_style(border_styles::raised);
       auto_draw_text(false);
     };
-    virtual void OnResized(const point::client_coords& p) override{
+    virtual void wm_size(const point<coord_frame::client>& p) override{
       _vscroll.move(p.x - scroll_width - right_margin, top_margin, scroll_width, p.y - top_margin - bottom_margin);
     };
-    virtual void OnPaint(const device_context& dc, const paint_struct& ps) override{
+    virtual void wm_paint(const device_context& dc, const paint_struct& ps) override{
       if (!_Items.size()) return;
       ApplyFontEvent(dc);
       auto client = ps.client();
@@ -28,7 +28,7 @@ namespace wtf{
       _ItemRects.clear();
       int listWidth = client.right - right_margin - scroll_width - left_margin;
       for (int i = top_margin; i < client.bottom; i += oTextSize.cy){
-        _ItemRects.push_back(rect::client_coord(left_margin, i, listWidth, std::min(i + oTextSize.cy, client.bottom - bottom_margin)));
+        _ItemRects.push_back(rect<coord_frame::client>(left_margin, i, listWidth, std::min(i + oTextSize.cy, client.bottom - bottom_margin)));
       }
 
       for (size_t i = 0; i < _ItemRects.size() && (_TopIndex + i) < _Items.size(); ++i){
@@ -42,11 +42,11 @@ namespace wtf{
         draw_text(dc, _ItemRects[i]);
       }
     };
-    virtual void OnMouseWheel(int16_t delta, const policy::mouse_event&) override{
+    virtual void wm_mouse_wheel(int16_t delta, const policy::mouse_event&) override{
       if (delta > 0) _vscroll.StepDecEvent();
       else _vscroll.StepIncEvent();
     };
-    virtual void OnClick(const policy::mouse_event& m) override{
+    virtual void wm_click(const policy::mouse_event& m) override{
       if (policy::mouse_event::buttons::left != m.button) return;
       if (selection_modes::single == _selection_mode){
         _SelectedItems.clear();
@@ -83,7 +83,7 @@ namespace wtf{
     struct vscroll : scroll_bar{
       vscroll(listbox * pParent) : scroll_bar(pParent), _Parent(pParent){}
 
-      virtual void OnCreate() override{ orientation(scroll_bar::orientations::vertical); };
+      virtual void wm_create() override{ orientation(scroll_bar::orientations::vertical); };
 
       virtual void StepIncEvent(){
         if ((_Parent->_TopIndex + _Parent->_ItemRects.size()) < _Parent->_Items.size()) _Parent->_TopIndex++;
@@ -105,10 +105,10 @@ namespace wtf{
 
     UINT_PTR _MouseDownTimer;
     bool _IncrementHeldDown;
-    point _MouseDownAt;
+    point<coord_frame::client> _MouseDownAt;
     int _TopIndex;
     std::vector<tstring> _Items;
-    rect::client_coord::vector _ItemRects;
+    rect<coord_frame::client>::vector _ItemRects;
     std::vector<int> _SelectedItems;
     vscroll _vscroll;
     selection_modes _selection_mode;

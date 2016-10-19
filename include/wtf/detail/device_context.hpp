@@ -33,8 +33,13 @@ namespace wtf{
       return device_context(wtf::exception::throw_lasterr_if(::GetWindowDC(hwnd), [](HDC dc){ return !dc; }),
                             [hwnd](HDC dc){ ::ReleaseDC(hwnd, dc); });
     }
-    static device_context get_dcex(HWND hwnd, region& rgn, DWORD flags){
-      return device_context(wtf::exception::throw_lasterr_if(::GetDCEx(hwnd, rgn, flags), [](HDC dc){ return !dc; }),
+    static device_context get_dcex(HWND hwnd, const region& rgn, DWORD flags){
+      auto hRegion = (HRGN)rgn;
+      return device_context(wtf::exception::throw_lasterr_if(::GetDCEx(hwnd, hRegion, flags), [](HDC dc){ return !dc; }),
+                            [hwnd](HDC dc){ ::ReleaseDC(hwnd, dc); });
+    }
+    static device_context get_dcex(HWND hwnd, DWORD flags){
+      return device_context(wtf::exception::throw_lasterr_if(::GetDCEx(hwnd, nullptr, flags), [](HDC dc){ return !dc; }),
                             [hwnd](HDC dc){ ::ReleaseDC(hwnd, dc); });
     }
 
@@ -44,7 +49,7 @@ namespace wtf{
     }
 
 
-    void draw_focus_rect(const rect::client_coord& area) const{
+    void draw_focus_rect(const rect<coord_frame::client>& area) const{
       wtf::exception::throw_lasterr_if(::DrawFocusRect(*this, &area), [](BOOL b){ return !b; });
     }
 
@@ -53,11 +58,11 @@ namespace wtf{
       wtf::exception::throw_lasterr_if(::FillRgn(*this, oRegion, oBrush), [](BOOL b){ return !b; });
     }
 
-    void fill(const rect::client_coord &oRect, const brush &oBrush) const{
+    void fill(const rect<coord_frame::client> &oRect, const brush &oBrush) const{
       wtf::exception::throw_lasterr_if(::FillRect(*this, &oRect, oBrush), [](int i){ return !i; });
     }
 
-    void fill(const point::client_coords::vector &oPoints, const pen &oPen, const brush &oBrush) const{
+    void fill(const point<coord_frame::client>::vector &oPoints, const pen &oPen, const brush &oBrush) const{
       select_object(oPen);
       select_object(oBrush);
       wtf::exception::throw_lasterr_if(::Polygon(*this, &oPoints[0], static_cast<int>(oPoints.size())),
@@ -71,6 +76,18 @@ namespace wtf{
       wtf::exception::throw_lasterr_if(::Arc(*this, x1, y1, x2, y2, x3, y3, x4, y4),
                                        [](BOOL b){ return !b; });
       
+    }
+
+    void intersect_clip_rect(const rect<coord_frame::client>& oClient) const {
+      wtf::exception::throw_lasterr_if(
+        ::IntersectClipRect(*this, oClient.left, oClient.top, oClient.right, oClient.bottom),
+        [](int i){ return ERROR == i; });
+    }
+
+    void select_clip_rgn(const region& rgn) const{
+      wtf::exception::throw_lasterr_if(
+        ::SelectClipRgn(*this, *rgn),
+        [](int i){ return ERROR == i; });      
     }
 
     size get_text_extent(const tstring &str) const{
@@ -95,7 +112,7 @@ namespace wtf{
       wtf::exception::throw_lasterr_if(::SetTextColor(*this, newval), [](COLORREF c){ return CLR_INVALID == c; });
     }
 
-    void invert(const rect::client_coord &area) const{
+    void invert(const rect<coord_frame::client> &area) const{
       wtf::exception::throw_lasterr_if(::InvertRect(*this, &area), [](BOOL b){ return !b; });
     }
 
@@ -105,7 +122,7 @@ namespace wtf{
       wtf::exception::throw_lasterr_if(::LineTo(*this, x2, y2), [](BOOL b){ return !b; });
     }
 
-    void line(const pen &oPen, const point::client_coords::vector& oPoints) const{
+    void line(const pen &oPen, const point<coord_frame::client>::vector& oPoints) const{
       select_object(oPen);
       wtf::exception::throw_lasterr_if(::Polyline(*this, &oPoints[0], static_cast<int>(oPoints.size())), [](BOOL b){ return !b; });
     }

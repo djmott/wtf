@@ -11,13 +11,13 @@ namespace wtf{
 
 
     protected:
-      virtual void OnMouseWheel(int16_t /*delta*/, const mouse_event&){}
+      virtual void wm_mouse_wheel(int16_t /*delta*/, const mouse_event&){}
 
       has_mouse_wheel(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_MOUSEWHEEL == umsg){
-          OnMouseWheel(static_cast<int16_t>(HIWORD(wparam)), mouse_event(wparam, lparam, mouse_event::buttons::unspecified));
+          wm_mouse_wheel(static_cast<int16_t>(HIWORD(wparam)), mouse_event(wparam, lparam, mouse_event::buttons::unspecified));
         }
         return 0;
       }

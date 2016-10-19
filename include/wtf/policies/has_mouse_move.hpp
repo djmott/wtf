@@ -12,13 +12,13 @@ namespace wtf{
 
 
     protected:
-      virtual void OnMouseMove(const mouse_event&){}
+      virtual void wm_mouse_move(const mouse_event&){}
 
       has_mouse_move(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_MOUSEMOVE == umsg){
-          OnMouseMove(mouse_event(wparam, lparam, mouse_event::buttons::unspecified));
+          wm_mouse_move(mouse_event(wparam, lparam, mouse_event::buttons::unspecified));
         }
         return 0;
       }

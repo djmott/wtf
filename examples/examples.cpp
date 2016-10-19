@@ -1,3 +1,5 @@
+#define __WTF_DEBUG_MESSAGES__ 1
+
 #include <strstream>
 #include <iostream>
 #include <random>
@@ -11,8 +13,8 @@ struct main_form : form{
 
   }
 
-  virtual void OnCreate () override{
-    _label.border_style(label::border_styles::bumped);
+  virtual void wm_create () override{
+    _label.border_style(label::border_styles::double_lowered);
     _label.move(5, 5, 50, 30);
     _label.text(_T("FNORD"));
   };
@@ -25,8 +27,8 @@ struct main_form : form{
 struct main_form : form{
   main_form() : form(), _tabs(this){
   }
-  virtual void OnCreate() override{ _tabs.add_page("FNORD"); };
-  virtual void OnResized(const point::client_coords& p) override{ _tabs.move(2, 2, p.x - 4, p.y - 4); };
+  virtual void wm_create() override{ _tabs.add_page("FNORD"); };
+  virtual void wm_size(const point<coord_frame::client>& p) override{ _tabs.move(2, 2, p.x - 4, p.y - 4); };
   tab_container _tabs;
 };
 
@@ -35,7 +37,7 @@ struct main_form : form{
   main_form() : form(), _text(this){}
 
   virtual void CreateEvent() override{
-    virtual void OnResized(const point::client_coords& p) override {
+    virtual void wm_size(const point<coord_frame::client>& p) override {
       _text.move(0, 0, p.x-2, p.y-2);
     };
   }
@@ -55,7 +57,7 @@ struct main_form : form{
 #elif 0
 struct main_form : form{
   main_form() : form(), _scroll(this){
-    virtual void OnCreate() override {
+    virtual void wm_create() override {
       _scroll.orientation(scroll_bar::orientations::horizontal);
       _scroll.move(10, 10, 100, 20);
       _scroll.min(0);
@@ -76,8 +78,16 @@ struct label_page : panel{
     _raised(this), _lowered(this), _flat(this), 
     _etched(this), _bumped(this), _double_raised(this), _double_lowered(this)
   {
+    _raised.border_style(label::border_styles::raised);
+    _lowered.border_style(label::border_styles::lowered);
+    _flat.border_style(label::border_styles::flat);
+    _etched.border_style(label::border_styles::etched);
+    _bumped.border_style(label::border_styles::bumped);
+    _double_raised.border_style(label::border_styles::double_raised);
+    _double_lowered.border_style(label::border_styles::double_lowered);
+
   }
-  virtual void OnCreate() override {
+  virtual void wm_create() override {
     _left.move(5, 5, 150, 25);
     _left.text("Left aligned");
     _left.text_horizontal_alignment(label::text_horizontal_alignments::left);
@@ -121,7 +131,16 @@ struct label_page : panel{
 
   label _left, _center, _right;
   label _raised, _lowered, _flat;
-  label _etched, _bumped, _double_raised, _double_lowered;
+  label _etched, _bumped, _double_raised;
+
+  struct _double_lowered : label{
+    _double_lowered(window<void>* pParent) : label(pParent){}
+
+    virtual void wm_ncpaint(const device_context& dc, rect<coord_frame::client>& oClient) override{
+      label::wm_ncpaint(dc, oClient);
+    }
+
+  }_double_lowered;
 };
 
 
@@ -129,7 +148,7 @@ struct checkbox_page : panel{
   checkbox_page(tab_container * parent) : panel(parent), _left(this), _right(this){
   }
 
-  virtual void OnCreate() override {
+  virtual void wm_create() override {
     _left.move(5, 5, 150, 25);
     _left.text("Left aligned");
     _left.check_location(checkbox::check_locations::left);
@@ -149,7 +168,7 @@ struct listbox_page : panel{
   {
 
   }
-  virtual void OnCreate() override {
+  virtual void wm_create() override {
     for (int i = 0; i < 100; i++){
       tstringstream ss;
       ss << i;
@@ -161,7 +180,7 @@ struct listbox_page : panel{
     _center.text_horizontal_alignment(listbox::text_horizontal_alignments::center);
     _right.text_horizontal_alignment(listbox::text_horizontal_alignments::right);
   };
-  virtual void OnResized(const point::client_coords& p) override {
+  virtual void wm_size(const point<coord_frame::client>& p) override {
     _left.move(0, 0, p.x / 3, p.y);
     _center.move(p.x / 3, 0, p.x / 3, p.y);
     _right.move((p.x / 3) * 2, 0, p.x / 3, p.y);
@@ -174,7 +193,7 @@ struct button_page : panel{
   button_page(tab_container * parent) : panel(parent), 
     _label1(this), _label2(this), _button1(this, _label1), _button2(this, _label2){}
 
-  virtual void OnCreate() override {
+  virtual void wm_create() override {
     _button1.move(5, 5, 100, 35);
     _button1.text("Push button");
     _label1.move(105, 5, 100, 35);
@@ -188,7 +207,7 @@ struct button_page : panel{
 
   struct _button1 : button{
     _button1(window<void> * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
-    virtual void OnClick(const policy::mouse_event&){
+    virtual void wm_click(const policy::mouse_event&){
       tstringstream ss;
       ss << GetTickCount();
       _label1.text(ss.str());
@@ -198,7 +217,7 @@ struct button_page : panel{
 
   struct _button2 : toggle_button{
     _button2(window<void> * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
-    virtual void OnClick(const policy::mouse_event&) override{
+    virtual void wm_click(const policy::mouse_event&) override{
       tstringstream ss;
       ss << GetTickCount();
       _label2.text(ss.str());
@@ -214,7 +233,7 @@ struct scroll_page : panel{
     : panel(parent), _hor_scroll(this), _vert_scroll(this), _hor_progress(this), _vert_progress(this)  
   {
   }
-  virtual void OnCreate() override {
+  virtual void wm_create() override {
     _hor_scroll.move(5, 5, 100, 20);
     _hor_scroll.orientation(scroll_bar::orientations::horizontal);
 
@@ -237,8 +256,8 @@ struct scroll_page : panel{
 struct split_page : panel{
   split_page(tab_container * parent) : panel(parent), _splitter(this){
   }
-  virtual void OnCreate() override { _splitter.set_split_position(50); };
-  virtual void OnResized(const point::client_coords& p) override{ _splitter.move(0, 0, p.x, p.y); };
+  virtual void wm_create() override { _splitter.set_split_position(50); };
+  virtual void wm_size(const point<coord_frame::client>& p) override{ _splitter.move(0, 0, p.x, p.y); };
 
   struct splitter : split_container{
     splitter(panel * parent) : split_container(parent), _inner_splitter(first()), _text1(second())
@@ -246,25 +265,25 @@ struct split_page : panel{
       
     }
 
-    virtual void OnCreate() override{
+    virtual void wm_create() override{
       _inner_splitter.set_split_position(25); 
     };
 
-//     first()->virtual void OnResized(const point::client_coords& p) override{ _inner_splitter.move(0, 0, p.x, p.y); };
-//     second()->virtual void OnResized(const point::client_coords& p) override{ _text1.move(0, 0, p.x, p.y); };
+//     first()->virtual void wm_size(const point<coord_frame::client>& p) override{ _inner_splitter.move(0, 0, p.x, p.y); };
+//     second()->virtual void wm_size(const point<coord_frame::client>& p) override{ _text1.move(0, 0, p.x, p.y); };
 
     struct inner_splitter : split_container{
 
       inner_splitter(panel * parent) : split_container(parent), _texta(first()), _textb(second()){
       }
 
-      virtual void OnCreate() override{ 
+      virtual void wm_create() override{ 
         orientation(inner_splitter::orientations::vertical); 
         _texta.multiline(true);
       };
 
-//       first()->virtual void OnResized(const point::client_coords& p) override{ _texta.move(0, 0, p.x, p.y); };
-//       second()->virtual void OnResized(const point::client_coords& p) override{ _textb.move(0, 0, p.x, p.y); };
+//       first()->virtual void wm_size(const point<coord_frame::client>& p) override{ _texta.move(0, 0, p.x, p.y); };
+//       second()->virtual void wm_size(const point<coord_frame::client>& p) override{ _textb.move(0, 0, p.x, p.y); };
       
 
       textbox _texta, _textb;
@@ -280,8 +299,8 @@ struct tree_page : panel{
 
   }
 
-  virtual void OnResized(const point::client_coords& p) override{ _tree.move(0, 0, p.x, p.y); };
-  virtual void OnCreate() override{
+  virtual void wm_size(const point<coord_frame::client>& p) override{ _tree.move(0, 0, p.x, p.y); };
+  virtual void wm_create() override{
     for (int i = 0; i < 20; i++){
       auto oChild1 = _tree.add_node(RandomString());
       for (int x = 0; x < 20; x++){
@@ -311,7 +330,7 @@ struct tree_page : panel{
 struct main_form : form{
   main_form() : _tabs(this){}
 
-  virtual void OnCreate() override{
+  virtual void wm_create() override{
     titlebar("WTF example");
     _tabs.add_custom_page<label_page>("label");
     _tabs.add_custom_page<checkbox_page>("checkbox");
@@ -322,7 +341,7 @@ struct main_form : form{
     _tabs.add_custom_page<tree_page>("tree");
   };
 
-  virtual void OnResized(const point::client_coords& p) override{
+  virtual void wm_size(const point<coord_frame::client>& p) override{
     _tabs.move(5, 5, p.x - 10, p.y - 10);
   };
 
