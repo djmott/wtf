@@ -9,10 +9,10 @@ namespace wtf{
     template<typename _SuperT, typename>
     struct has_mouse_leave : _SuperT{
 
+      callback<void()> OnMouseLeave;
+
     protected:
       has_mouse_leave(iwindow * pParent) : _SuperT(pParent){}
-
-      virtual void MouseLeaveEvent(){}
 
 
       LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM, LPARAM, bool &) {
@@ -31,7 +31,7 @@ namespace wtf{
           oEvent.hwndTrack = hwnd;
           ::TrackMouseEvent(&oEvent);
         } else if (WM_MOUSELEAVE == umsg){
-          MouseLeaveEvent();
+          OnMouseLeave();
         }
         return 0;
       }

@@ -25,22 +25,26 @@ namespace wtf {
 
       void background_brush(brush &&newval) { _background_brush.swap(newval); }
 
+
+      callback<void(const device_context&, const paint_struct&)> OnPaint;
+      callback<void(const device_context& ctx, const rect::client_coord& client, bool& handled)> OnEraseBackground;
+
     protected:
       has_paint(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void PaintEvent(const device_context&, const paint_struct&){}
-      virtual void EraseBackgroundEvent(const device_context& ctx, const rect::client_coord& client, bool& handled ){
-        ctx.fill(client, background_brush());
-      }
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) {
         if (WM_PAINT == umsg) {
-          PaintEvent(*reinterpret_cast<const device_context *>(wparam),
+          OnPaint(*reinterpret_cast<const device_context *>(wparam),
                      *reinterpret_cast<const paint_struct *>(lparam));
         } else if (WM_ERASEBKGND == umsg) {
           auto &oDC = *reinterpret_cast<const device_context *>(lparam);
-          EraseBackgroundEvent(oDC, rect::client_coord::get(*this), bhandled);
-          if (bhandled) return 1;
+          OnEraseBackground(oDC, rect::client_coord::get(*this), bhandled);
+          if (!bhandled){
+            bhandled = true;
+            oDC.fill(rect::client_coord::get(*this), _background_brush);
+          }
+          return 1;
         }
         return 0;
       }

@@ -26,9 +26,10 @@ namespace wtf{
 
       point::client_coords position;
 
-      mouse_event(buttons oButtons, key_states oKeystate, int16_t X, int16_t Y) 
-        : button(oButtons), key_state(oKeystate), position(X,Y){}
-
+      mouse_event(WPARAM wparam, LPARAM lparam, buttons oButton = buttons::unspecified)
+        : button(oButton), key_state(static_cast<mouse_event::key_states>(LOWORD(wparam))),
+        position(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)){}
+      
       mouse_event(const mouse_event& src)
         : button(src.button), key_state(src.key_state), position(src.position){}
 

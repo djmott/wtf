@@ -63,27 +63,20 @@ namespace wtf {
     protected:
 
       has_size(iwindow * pParent) : _SuperT(pParent){}
-      virtual void MovingEvent(rect::screen_coords& r){ OnMoving(r); }
-      virtual void MovedEvent(const point::client_coords& r){ OnMoved(r); }
-      virtual void ResizingEvent(rect::screen_coords& r){ OnResizing(r); }
-      virtual void ResizedEvent(wm_size_flags, const point::client_coords& r){ OnResized(r); }
-
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
-        static int iHitCount = 0;
-        iHitCount++;
         LRESULT lret = 0;
         bHandled = true;
         if (WM_MOVING == umsg){
-          MovingEvent(*reinterpret_cast<rect::screen_coords*>(lparam));
+          OnMoving(*reinterpret_cast<rect::screen_coords*>(lparam));
           lret = TRUE;
         } else if (WM_MOVE == umsg){
-          MovedEvent(point::client_coords(LOWORD(lparam), HIWORD(lparam)));
+          OnMoved(point::client_coords(LOWORD(lparam), HIWORD(lparam)));
         } else if (WM_SIZING == umsg){
-          ResizingEvent(*reinterpret_cast<rect::screen_coords*>(lparam));
+          OnResizing(*reinterpret_cast<rect::screen_coords*>(lparam));
           lret = TRUE;
         } else if (WM_SIZE == umsg){
-          ResizedEvent(static_cast<wm_size_flags>(wparam), point::client_coords(LOWORD(lparam), HIWORD(lparam)));
+          OnResized( point::client_coords(LOWORD(lparam), HIWORD(lparam)));
         } else{
           bHandled = false;
         }

@@ -47,10 +47,6 @@ namespace wtf{
       } else{
         oFillArea.top = (oFillArea.top * _value) / iExtent;
       }
-      oFillArea.left += border_width();
-      oFillArea.top += border_width();
-      oFillArea.bottom -= border_width();
-      oFillArea.right -= border_width();
       dc.fill(oFillArea, oBrush);
       if (text_modes::none == _text_mode) return;
       //poor mans utf8 conversion...get with the program mingw

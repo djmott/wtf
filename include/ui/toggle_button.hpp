@@ -2,7 +2,7 @@
 
 namespace wtf{
 
-    struct toggle_button : wtf::window<toggle_button, policy::has_size, policy::has_border,
+    struct toggle_button : wtf::window<toggle_button, policy::has_size, policy::has_border, policy::has_create,
       policy::has_click, policy::has_text, policy::has_font, policy::has_paint, policy::has_mouse_up>
     {
       toggle_button() = delete;
@@ -12,7 +12,11 @@ namespace wtf{
       toggle_button &operator=(toggle_button&&) = delete;
       virtual ~toggle_button() = default;
       explicit toggle_button(iwindow * pParent) : window(pParent), _button_state(button_states::up){
-        border_style(border_styles::raised);
+        OnCreate += [this](){ border_style(border_styles::raised); };
+        OnMouseUp += [this](const policy::mouse_event& m){
+          if (policy::mouse_event::buttons::left != m.button) return;
+          button_state(button_states::down == _button_state ? button_states::up : button_states::down);
+        };
       }
 
       enum class button_states{
@@ -30,10 +34,6 @@ namespace wtf{
 
     private:
 
-      virtual void MouseUpEvent(const policy::mouse_event& m) override{
-        if (policy::mouse_event::buttons::left != m.button) return;
-        button_state(button_states::down == _button_state  ? button_states::up : button_states::down);
-      }
 
       button_states _button_state;
     };

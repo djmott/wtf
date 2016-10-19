@@ -3,7 +3,8 @@ namespace wtf{
 
 
   //overweight scrollbar can be much thinner
-  struct scroll_bar : window<scroll_bar, policy::has_size, policy::has_show, policy::has_orientation>{
+  struct scroll_bar : window<scroll_bar, policy::has_size, policy::has_show, policy::has_orientation, 
+    policy::has_create, policy::has_mouse_wheel>{
 
     explicit scroll_bar(iwindow * pParent)
       : window(pParent),
@@ -11,13 +12,31 @@ namespace wtf{
       _dec(this, false),
       _page_inc(this, true),
       _page_dec(this, false),
-      _slider(this){}
+      _slider(this)
+    {
+      OnResized += [this](const point::client_coords& p){
+        auto iExtent = _max - _min;
+
+        if (orientations::horizontal == _orientation){
+          auto iStepWidth = p.y;
+          _dec.move(0, 0, iStepWidth, iStepWidth);
+          _inc.move(p.x - iStepWidth, 0, iStepWidth, iStepWidth);
+          auto iPosRange = p.x - iStepWidth - (iStepWidth * 2);
+          auto iSliderPos = iStepWidth + ((_value * iPosRange) / iExtent);
+          _slider.move(iSliderPos, 0, iStepWidth, iStepWidth);
+          _page_dec.move(iStepWidth, 0, iSliderPos, iStepWidth);
+          _page_inc.move(iSliderPos + iStepWidth, 0, p.x - iSliderPos - (iStepWidth * 2), iStepWidth);
+        } else{
+
+        }
+      };
+    }
 
 
     orientations orientation() const{ return _orientation; }
     void orientation(orientations newval){
       _orientation = newval;
-      ResizedEvent(wm_size_flags::restored, rect::client_coord::get(*this).dimensions());
+      OnResized(rect::client_coord::get(*this).dimensions());
     }
 
     callback<void()> OnChanged;
@@ -33,7 +52,7 @@ namespace wtf{
       if (newval < _min) newval = _min;
       if (newval > _max) newval = _max;
       _value = newval;
-      ResizedEvent(wm_size_flags::restored, point::client_coords::get_size(*this));
+      OnResized(point::client_coords::get_size(*this));
     }
 
     int small_step() const{ return _small_step; }
@@ -75,55 +94,62 @@ namespace wtf{
       OnChanged();
     }
 
-    struct value_step_button : window<value_step_button, policy::has_button_border, policy::has_repeat_click, policy::has_size, policy::has_paint, policy::has_click>{
+    struct value_step_button
+      : window<value_step_button, policy::has_button_border, policy::has_repeat_click,
+      policy::has_size, policy::has_paint, policy::has_click, policy::has_mouse_move,
+      policy::has_mouse_down, policy::has_mouse_up, policy::has_timer, policy::has_border>{
       bool _is_increment;
       scroll_bar * _parent;
 
       value_step_button(scroll_bar * pParent, bool IsIncrementer) :
-        window(pParent), _parent(pParent), _is_increment(IsIncrementer){}
-
-      virtual void ClickEvent(const policy::mouse_event& m) override{
-        if (policy::mouse_event::buttons::left != m.button) return;
-        if (_is_increment) _parent->StepIncEvent();
-        else _parent->StepDecEvent();
-      }
-
-      virtual void PaintEvent(const device_context& dc, const paint_struct&ps) override{
-        window::PaintEvent(dc, ps);
-        auto client = ps.client();
-        point::client_coords::vector arrow(3);
-        if (orientations::horizontal == _parent->_orientation){
-          if (_is_increment){ // >
-            arrow[0].x = 5; arrow[0].y = 5;
-            arrow[1].x = client.right - 5; arrow[1].y = client.bottom / 2;
-            arrow[2].x = 5; arrow[2].y = client.bottom - 5;
-          } else{ // <
-            arrow[0].x = 5; arrow[0].y = client.bottom / 2;
-            arrow[1].x = client.right - 5; arrow[1].y = 5;
-            arrow[2].x = arrow[1].x; arrow[2].y = client.bottom - 5;
+        window(pParent), _parent(pParent), _is_increment(IsIncrementer){
+        OnClick += [this](const policy::mouse_event& m){
+          if (policy::mouse_event::buttons::left != m.button) return;
+          if (_is_increment) _parent->StepIncEvent();
+          else _parent->StepDecEvent();
+        };
+        OnPaint += [this](const device_context& dc, const paint_struct&ps){
+          auto client = ps.client();
+          point::client_coords::vector arrow(3);
+          if (orientations::horizontal == _parent->_orientation){
+            if (_is_increment){ // >
+              arrow[0].x = 5; arrow[0].y = 5;
+              arrow[1].x = client.right - 5; arrow[1].y = client.bottom / 2;
+              arrow[2].x = 5; arrow[2].y = client.bottom - 5;
+            } else{ // <
+              arrow[0].x = 5; arrow[0].y = client.bottom / 2;
+              arrow[1].x = client.right - 5; arrow[1].y = 5;
+              arrow[2].x = arrow[1].x; arrow[2].y = client.bottom - 5;
+            }
+          } else{
+            if (_is_increment){ // v
+              arrow[0].x = 5; arrow[0].y = 5;
+              arrow[1].x = client.right - 5; arrow[1].y = 5;
+              arrow[2].x = client.right / 2; arrow[2].y = client.bottom - 5;
+            } else{ // ^
+              arrow[0].x = client.right / 2; arrow[0].y = 5;
+              arrow[1].x = client.right - 5; arrow[1].y = client.bottom - 5;
+              arrow[2].x = 5; arrow[2].y = client.bottom - 5;
+            }
           }
-        } else{
-          if (_is_increment){ // v
-            arrow[0].x = 5; arrow[0].y = 5;
-            arrow[1].x = client.right - 5; arrow[1].y = 5;
-            arrow[2].x = client.right / 2; arrow[2].y = client.bottom - 5;
-          } else{ // ^
-            arrow[0].x = client.right / 2; arrow[0].y = 5;
-            arrow[1].x = client.right - 5; arrow[1].y = client.bottom - 5;
-            arrow[2].x = 5; arrow[2].y = client.bottom - 5;
-          }
-        }
-        dc.fill(arrow, _parent->_outline, _parent->_fill);
+          dc.fill(arrow, _parent->_outline, _parent->_fill);
+        };
+
       }
     };
 
-    struct value_page_button : window<value_step_button, policy::has_repeat_click, policy::has_size, policy::has_paint, policy::has_click>{
-      explicit value_page_button(scroll_bar * pParent, bool IsIncrement) : window(pParent), _parent(pParent), _is_increment(IsIncrement){}
+    struct value_page_button 
+      : window<value_page_button, policy::has_repeat_click, policy::has_size, policy::has_paint,
+      policy::has_click, policy::has_mouse_up, policy::has_mouse_move, policy::has_mouse_down, 
+      policy::has_timer>{
+      explicit value_page_button(scroll_bar * pParent, bool IsIncrement) : window(pParent), _parent(pParent), _is_increment(IsIncrement)
+      {
+        OnClick += [this](const policy::mouse_event& m){
+          if (policy::mouse_event::buttons::left != m.button) return;
+          if (_is_increment) _parent->PageUpEvent();
+          else _parent->PageDownEvent();
+        };
 
-      virtual void ClickEvent(const policy::mouse_event& m) override{
-        if (policy::mouse_event::buttons::left != m.button) return;
-        if (_is_increment) _parent->PageUpEvent();
-        else _parent->PageDownEvent();
       }
 
       scroll_bar * _parent;
@@ -135,22 +161,6 @@ namespace wtf{
     }_slider;
 
 
-    virtual void ResizedEvent(wm_size_flags, const point::client_coords& p) override{
-      auto iExtent = _max - _min;
-
-      if (orientations::horizontal == _orientation){
-        auto iStepWidth = p.y;
-        _dec.move(0, 0, iStepWidth, iStepWidth);
-        _inc.move(p.x - iStepWidth, 0, iStepWidth, iStepWidth);
-        auto iPosRange = p.x - iStepWidth - (iStepWidth * 2);
-        auto iSliderPos = iStepWidth + ((_value * iPosRange) / iExtent);
-        _slider.move(iSliderPos, 0, iStepWidth, iStepWidth);
-        _page_dec.move(iStepWidth, 0, iSliderPos, iStepWidth);
-        _page_inc.move(iSliderPos + iStepWidth, 0, p.x - iSliderPos - (iStepWidth * 2), iStepWidth);
-      } else{
-
-      }
-    }
 
     value_step_button _inc;
     value_step_button _dec;

@@ -14,13 +14,9 @@ namespace wtf{
     protected:
       has_mouse_wheel(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void MouseWheelEvent(int16_t delta, const mouse_event& m){ OnMouseWheel(delta, m); }
-
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_MOUSEWHEEL == umsg){
-          mouse_event oEvent(mouse_event::buttons::unspecified, static_cast<mouse_event::key_states>(LOWORD(wparam)),
-                              static_cast<int16_t>(LOWORD(lparam)), static_cast<int16_t>(HIWORD(lparam)));
-          MouseWheelEvent(static_cast<int16_t>(HIWORD(wparam)), oEvent);
+          OnMouseWheel(static_cast<int16_t>(HIWORD(wparam)), mouse_event(wparam, lparam, mouse_event::buttons::unspecified));
         }
         return 0;
       }

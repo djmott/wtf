@@ -1,10 +1,34 @@
 #pragma once
 namespace wtf{
-  struct checkbox : window<checkbox, policy::has_paint, policy::has_click, policy::has_dblclick, policy::has_size, policy::has_text>{
+  struct checkbox 
+    : window<checkbox, policy::has_paint, policy::has_click, policy::has_dblclick, policy::has_size, 
+    policy::has_text, policy::has_font, policy::has_create>
+  {
     explicit checkbox(iwindow * pParent) : window(pParent), _check(this){
-      _check.border_style(panel::border_styles::raised);
-      auto_draw_text(false);
-      check_location(check_locations::left);
+      OnCreate += [this](){
+        (panel::border_styles::raised);
+        auto_draw_text(false);
+        check_location(check_locations::left);
+      };
+      OnClick += [this](const policy::mouse_event& m){
+        if (policy::mouse_event::buttons::left == m.button){
+          _check.value(!_check.value());
+        }
+      };
+      OnDoubleClick += [this](const policy::mouse_event& m){
+        if (policy::mouse_event::buttons::left == m.button) _check.value(!_check.value());
+      };
+      OnPaint += [this](const device_context& dc, const paint_struct& ps){
+        auto client = ps.client();
+        auto TextSize = prefered_text_size();
+        if (check_locations::left == _check_location){
+          _check.move(0, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
+          draw_text(dc, rect::client_coord(checkbox_size, 0, client.right - checkbox_size, client.bottom));
+        } else{
+          _check.move(client.right - checkbox_size, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
+          draw_text(dc, rect::client_coord(0, 0, client.right - checkbox_size, client.bottom));
+        }
+      };
     }
 
     enum class check_locations{
@@ -28,56 +52,33 @@ namespace wtf{
 
     static const int checkbox_size = 15;
 
-    virtual void ClickEvent(const policy::mouse_event& m) override{
-      if (policy::mouse_event::buttons::left == m.button){
-        _check.value(!_check.value());
-      }
-    }
-
-    virtual void DblClickEvent(const policy::mouse_event& m) override{
-      if (policy::mouse_event::buttons::left == m.button) _check.value(!_check.value());
-    }
-
-    virtual void PaintEvent(const device_context& dc, const paint_struct& ps) override{
-      auto client = ps.client();
-      auto TextSize = prefered_text_size();
-      if (check_locations::left == _check_location){
-        _check.move(0, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
-        draw_text(dc, rect::client_coord(checkbox_size + 3, 0, client.right - checkbox_size - 3, client.bottom));
-      } else{
-        _check.move(client.right- checkbox_size, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
-        draw_text(dc, rect::client_coord(0, 0, client.right - checkbox_size - 3, client.bottom));
-      }
-    }
 
     struct _check : panel{
-      _check(checkbox * pParent) 
+      _check(checkbox * pParent)
         : panel(pParent),
         _parent(pParent)
-      {}
-
-      virtual void ClickEvent(const policy::mouse_event& m) override{
-        if (policy::mouse_event::buttons::left == m.button) value(!_value);
+      {
+        OnClick += [this](const policy::mouse_event& m){
+          if (policy::mouse_event::buttons::left == m.button) value(!_value);
+        };
+        OnPaint += [this](const device_context& dc, const paint_struct& ps){
+          auto client = ps.client();
+          client.top++;
+          client.left++;
+          client.bottom--;
+          client.right--;
+          dc.fill(client, brush::solid_brush(rgb(255, 255, 255)));
+          if (_value){
+            client.top += 2;
+            client.left += 2;
+            client.bottom -= 2;
+            client.right -= 2;
+            auto black = pen::create(pen::style::solid, 2, rgb(0, 0, 0));
+            dc.line(black, client.left, client.top, client.right, client.bottom);
+            dc.line(black, client.right, client.top, client.left, client.bottom);
+          }
+        };
       }
-
-      virtual void PaintEvent(const device_context& dc, const paint_struct& ps) override{
-        auto client = ps.client();
-        client.top++;
-        client.left++;
-        client.bottom--;
-        client.right--;
-        dc.fill(client, brush::solid_brush(rgb(255, 255, 255)));
-        if (_value){
-          client.top+=2;
-          client.left+=2;
-          client.bottom-=2;
-          client.right-=2;
-          auto black = pen::create(pen::style::solid, 2, rgb(0, 0, 0));
-          dc.line(black, client.left, client.top, client.right, client.bottom);
-          dc.line(black, client.right, client.top, client.left, client.bottom);
-        }
-      }
-
 
       bool value() const{ return _value; }
       void value(bool newval){

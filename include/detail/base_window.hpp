@@ -6,6 +6,9 @@
 
 namespace wtf{
   namespace _{
+
+
+
     //everything in the hidden _ namespace is for internal use by the library
 
     template <typename, template <typename, typename> class ...> struct base_window;
@@ -80,7 +83,7 @@ namespace wtf{
       using type = typename policy_list_concat<policy::type_list<_HeadT>, unique_tails>::type;
     };
 
-
+  #if 0
     //recursively traverses the policy requirements and appends them to the the list
     template <typename> struct requirement_collector;
 
@@ -111,7 +114,7 @@ namespace wtf{
       using window_type = typename policy_list_to_base_win<_ImplT, policies_with_deps>::window_type;
     };
 
-
+  #endif
     /* base_window
      * constructs the inheritance chain of policies and arbitrates the propagation of messages through 
      * the policy inheritance chain
@@ -202,7 +205,7 @@ namespace wtf{
           this
         ),[](HWND h){ return nullptr == h; });
       }
-      
+            
       LRESULT handle_message(HWND, UINT, WPARAM, LPARAM, bool&){ return 0; }
 
       LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM , LPARAM , bool& handled){
@@ -250,9 +253,7 @@ namespace wtf{
           if (WM_ERASEBKGND == umsg){
             auto oDC = wtf::device_context::get_client(hwnd);
 
-            //try implementation before propagating
-            handler_ret = pThis->try_impl_handle_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oDC), handled);
-            if (!handled) handler_ret = pThis->propagate_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oDC), handled);
+            handler_ret = pThis->propagate_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oDC), handled);
 
           } else if (WM_PAINT == umsg){
             RECT r;
@@ -262,12 +263,10 @@ namespace wtf{
             paint_struct oPaint(*pThis);
             auto oDC = wtf::device_context::get_client(hwnd);
 
-            handler_ret = pThis->try_impl_handle_message(hwnd, umsg, reinterpret_cast<WPARAM>(&oDC), reinterpret_cast<LPARAM>(&oPaint), handled);
-            if (!handled) handler_ret = pThis->propagate_message(hwnd, umsg, reinterpret_cast<WPARAM>(&oDC), reinterpret_cast<LPARAM>(&oPaint), handled);
+            handler_ret = pThis->propagate_message(hwnd, umsg, reinterpret_cast<WPARAM>(&oDC), reinterpret_cast<LPARAM>(&oPaint), handled);
 
           } else{
-            handler_ret = pThis->try_impl_handle_message(hwnd, umsg, wparam, lparam, handled);
-            if (!handled) handler_ret = pThis->propagate_message(hwnd, umsg, wparam, lparam, handled);
+            handler_ret = pThis->propagate_message(hwnd, umsg, wparam, lparam, handled);
           }
 
           if (handled) return handler_ret;

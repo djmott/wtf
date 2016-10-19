@@ -7,7 +7,27 @@ namespace wtf{
 
       explicit tab_container(iwindow * pParent)
         : window(pParent), _active_page(0), _button_bar_slider(this), _tab_orientation(tab_orientations::top)
-      {        
+      {
+        OnCreate += [this]() {
+          _button_bar_slider.orientation(scroll_bar::orientations::horizontal);
+          _button_bar_slider.hide();
+        };
+        OnResized += [this](const point::client_coords& newsize) {
+          point::client_coords p = newsize;
+          p.x--; p.y--;
+          int iBtnPos = _button_left;
+          _button_bar_slider.move(p.x - (_tab_height * 2), 0, _tab_height * 2, _tab_height);
+          for (auto & oPageInfo : _pages){
+            auto PreferedSize = oPageInfo->button()->prefered_text_size();
+            PreferedSize.cx += 6;
+            if (PreferedSize.cx < _tab_min_width) PreferedSize.cx = _tab_min_width;
+            if (PreferedSize.cx > _tab_max_width) PreferedSize.cx = _tab_max_width;
+            oPageInfo->button()->move(iBtnPos, 0, PreferedSize.cx, _tab_height);
+            iBtnPos += PreferedSize.cx;
+            iBtnPos--;
+            oPageInfo->panel()->move(0, _tab_height - 1, p.x, p.y - _tab_height);
+          }
+        };
       }
 
       enum class tab_orientations{
@@ -20,62 +40,38 @@ namespace wtf{
 
       template <typename _Ty>
       panel& add_custom_page(const tstring& title){
-        _pages.push_back(page_info::make<_Ty>(this, title, _pages.size()));
-        ResizedEvent(window::wm_size_flags::restored, rect::client_coord::get(*this).dimensions());
+        _pages.push_back(ipage_info::ptr(new page_info<_Ty>(this, title, _pages.size())));
+//      ResizedEvent(window::wm_size_flags::restored, rect::client_coord::get(*this).dimensions());
         auto & oPanelInfo = _pages.back();
-        oPanelInfo->_panel->border_style(panel::border_styles::raised);
-        oPanelInfo->_button.border_style(label::border_styles::flat);
+        oPanelInfo->panel()->border_style(panel::border_styles::raised);
+        oPanelInfo->button()->border_style(label::border_styles::flat);
         active_page(_active_page);
-        return *oPanelInfo->_panel;
+        return *oPanelInfo->panel();
       }
 
       panel& add_page(const tstring& title){
-        return add_custom_page<panel>(title);
+        return add_custom_page<wtf::panel>(title);
       }
 
       size_t page_count(){ return _pages.size(); }
 
       panel& operator[](size_t index){
         assert(index && index < _pages.size());
-        return *(_pages[index]->_panel);
+        return *(_pages[index]->panel());
       }
 
       const panel& operator[](size_t index) const{
         assert(index && index < _pages.size());
-        return *(_pages[index]->_panel);
+        return *(_pages[index]->panel());
       }
 
       uint16_t tab_min_width() const{ return _tab_min_width; }
       void tab_min_width(uint16_t newval){ _tab_min_width = newval; }
+
       uint16_t tab_max_width() const{ return _tab_max_width; }
       void tab_max_width(uint16_t newval){ _tab_max_width = newval; }
 
-      callback<void(const size&)> OnPageResize;
-
     protected:
-
-      virtual void CreateEvent() override{
-        _button_bar_slider.orientation(scroll_bar::orientations::horizontal);
-        _button_bar_slider.hide();
-      }
-
-      virtual void ResizedEvent(wm_size_flags, const point::client_coords& newsize) override{
-        point::client_coords p = newsize;
-        p.x--; p.y--;
-        int iBtnPos = _button_left;
-        _button_bar_slider.move(p.x - (_tab_height * 2), 0, _tab_height * 2, _tab_height);
-        for (auto & oPageInfo : _pages){
-          auto PreferedSize = oPageInfo->_button.prefered_text_size();
-          PreferedSize.cx += 6;
-          if (PreferedSize.cx < _tab_min_width) PreferedSize.cx = _tab_min_width;
-          if (PreferedSize.cx > _tab_max_width) PreferedSize.cx = _tab_max_width;
-          oPageInfo->_button.move(iBtnPos, 0, PreferedSize.cx, _tab_height); 
-          iBtnPos += PreferedSize.cx;
-          iBtnPos--;
-          oPageInfo->_panel->move(0, _tab_height-1, p.x, p.y - _tab_height);
-        }
-        OnPageResize(size(p.x, p.y - _tab_height));
-      }
 
       size_t active_page() const{ return _active_page; }
       void active_page(size_t newval) { 
@@ -87,53 +83,64 @@ namespace wtf{
         _pages[newval]->activate();
         for (size_t i = 0; i < _pages.size(); ++i){
           if (i == _active_page) continue;
-          _pages[i]->_button.zorder(*(_pages[_active_page]->_panel));
+          _pages[i]->button()->zorder(*(_pages[_active_page]->panel()));
         }
-        _pages[_active_page]->_panel->zorder(_pages[_active_page]->_button);
+        _pages[_active_page]->panel()->zorder(*_pages[_active_page]->button());
       }
 
-      struct page_info{
-        using ptr = std::unique_ptr<page_info>;
+      struct ipage_info{
+        using ptr = std::unique_ptr<ipage_info>;
         using vector = std::vector<ptr>;
+
+        virtual void activate() = 0;
+        virtual void deactivate() = 0;
+        virtual wtf::panel * panel() = 0;
+        virtual wtf::label * button() = 0;
+
+      };
+
+      template <typename _PanelT=panel>
+      struct page_info : ipage_info{
         
-        template <typename _Ty>
-        static ptr make(tab_container * pParent, const tstring& sTitle, size_t PageIndex){
-          ptr oRet(new page_info(pParent, sTitle, PageIndex));
-          oRet->_panel.reset(new _Ty(pParent));
-          return oRet;
-        }
+        virtual wtf::panel * panel() override{ return &_panel; }
+        virtual wtf::label * button() override{ return &_button; }
 
 
-
-        page_info(const page_info&) = delete;
-        page_info(page_info&&) = delete;
-        page_info &operator=(const page_info &) = delete;
-        page_info &operator=(page_info&&) = delete;
-
-        size_t _PageIndex;
         tab_container * _parent;
-        std::unique_ptr<panel> _panel;
+        size_t _PageIndex;
 
-        void deactivate(){
-          _panel->hide();
-          _panel->zorder(panel::zorders::bottom);
+        struct inner_panel : _PanelT{
+          inner_panel(tab_container * pParent) : _PanelT(pParent){
+            make_window();
+          }
+        }_panel;
+
+        virtual void activate() override{
+          _panel.hide();
+          _panel.zorder(panel::zorders::bottom);
           _button.deactivate();
         }
 
-        void activate(){
-          _panel->show();
+        virtual void deactivate() override{
+          _panel.show();
           _button.activate();
-          _panel->refresh();
+          _panel.refresh();
         }
-
-
 
         struct tab_button : label{
 
-          tab_button(page_info * pParent, const tstring& sTitle) : label(pParent->_parent), _parent(pParent){
-            text(sTitle);
-            enable_border_elements(true, true, false, true);
-            deactivate();
+          tab_button(tab_container * pParent, size_t PageIndex, const tstring& stitle) : label(pParent), _parent(pParent), _PageIndex(PageIndex), _title(stitle){
+            OnCreate += [this](){ 
+              text(_title);
+              enable_border_elements(true, true, false, true);
+              deactivate();
+            };
+            make_window();
+            OnClick += [this](const policy::mouse_event& m) {
+              if (policy::mouse_event::buttons::left != m.button) return;
+              _parent->active_page(_PageIndex);
+            };
+
           }
 
           void deactivate(){
@@ -151,28 +158,25 @@ namespace wtf{
             refresh();
           }
 
-          virtual void ClickEvent(const policy::mouse_event& m) override{
-            if (policy::mouse_event::buttons::left != m.button) return;
-            _parent->_parent->active_page(_parent->_PageIndex);
-          }
 
-          page_info * _parent;
+          size_t _PageIndex;
+          tab_container * _parent;
+          tstring _title;
 
         }_button;
 
 
-
-      private:
         page_info(tab_container * pParent, const tstring& sTitle, size_t PageIndex)
-          : _parent(pParent), _PageIndex(PageIndex), _button(this, sTitle){}
-
+          : _parent(pParent), _PageIndex(PageIndex), _panel(pParent), _button(pParent, PageIndex, sTitle)
+        {
+        }
       };
 
 
 
       size_t _active_page;
       tab_orientations _tab_orientation;
-      page_info::vector _pages;      
+      ipage_info::vector _pages;      
       scroll_bar _button_bar_slider;
       uint16_t _tab_height = 20;
       uint16_t _tab_min_width = 50;

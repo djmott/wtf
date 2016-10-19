@@ -14,21 +14,13 @@ namespace wtf{
     protected:
       has_mouse_down(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void MouseDownEvent(const mouse_event& m){ OnMouseDown(m); }
-
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_LBUTTONDOWN == umsg){
-          mouse_event oEvent(mouse_event::buttons::left, static_cast<mouse_event::key_states>(wparam),
-                              static_cast<int16_t>(LOWORD(lparam)), static_cast<int16_t>(HIWORD(lparam)));
-          MouseDownEvent(oEvent);
-        } else if (WM_RBUTTONDOWN == umsg){
-            mouse_event oEvent(mouse_event::buttons::right, static_cast<mouse_event::key_states>(wparam),
-                                static_cast<int16_t>(LOWORD(lparam)), static_cast<int16_t>(HIWORD(lparam)));
-            MouseDownEvent(oEvent);
+          OnMouseDown(mouse_event(wparam, lparam, mouse_event::buttons::left));
         } else if (WM_MBUTTONDOWN == umsg){
-          mouse_event oEvent(mouse_event::buttons::middle, static_cast<mouse_event::key_states>(wparam),
-                              static_cast<int16_t>(LOWORD(lparam)), static_cast<int16_t>(HIWORD(lparam)));
-          MouseDownEvent(oEvent);
+          OnMouseDown(mouse_event(wparam, lparam, mouse_event::buttons::middle));
+        } else if (WM_RBUTTONDOWN == umsg){
+            OnMouseDown(mouse_event(wparam, lparam, mouse_event::buttons::right));
         }
         return 0;
       }

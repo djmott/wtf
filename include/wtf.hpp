@@ -100,7 +100,6 @@ namespace wtf{
 #include "policies/has_titlebar.hpp"
 #include "policies/has_zorder.hpp"
 #include "policies/has_button_border.hpp"
-#include "policies/policy_traits.hpp"
 
 
 #include "ui/window.hpp"
@@ -119,4 +118,3 @@ namespace wtf{
 #include "ui/tab_container.hpp"
 #include "ui/split_container.hpp"
 #include "ui/tree.hpp"
-#include "ui/timer.hpp"

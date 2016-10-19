@@ -8,11 +8,10 @@ namespace wtf {
     template<typename _SuperT, typename _ImplT>
     struct has_click : _SuperT {
 
-      callback<void()> OnClick;
+      callback<void(const mouse_event&)> OnClick;
 
     protected:
       has_click(iwindow * pParent) : _SuperT(pParent){}
-      virtual void ClickEvent(const mouse_event&){ OnClick(); }
 
       LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
 
@@ -30,18 +29,12 @@ namespace wtf {
         }else if (WM_MBUTTONDOWN==umsg && mouse_event::buttons::unspecified == _Down){
           _Down = mouse_event::buttons::middle;
         }else if (WM_LBUTTONUP == umsg && mouse_event::buttons::left == _Down) {
-          mouse_event oEvent(mouse_event::buttons::left, static_cast<mouse_event::key_states>(wparam),
-                             static_cast<int16_t>(LOWORD(lparam)), static_cast<int16_t>(HIWORD(lparam)));
-          ClickEvent(oEvent);
-        } else if (WM_RBUTTONUP == umsg && mouse_event::buttons::right == _Down){
-          mouse_event oEvent(mouse_event::buttons::right, static_cast<mouse_event::key_states>(wparam),
-                             static_cast<int16_t>(LOWORD(lparam)), static_cast<int16_t>(HIWORD(lparam)));
-          ClickEvent(oEvent);
+          OnClick(mouse_event(wparam, lparam, mouse_event::buttons::left));
         } else if (WM_MBUTTONUP == umsg && mouse_event::buttons::middle == _Down){
-          mouse_event oEvent(mouse_event::buttons::middle, static_cast<mouse_event::key_states>(wparam),
-                             static_cast<int16_t>(LOWORD(lparam)), static_cast<int16_t>(HIWORD(lparam)));
-          ClickEvent(oEvent);
-        } 
+          OnClick(mouse_event(wparam, lparam, mouse_event::buttons::middle));
+        } else if (WM_RBUTTONUP == umsg && mouse_event::buttons::right == _Down){
+          OnClick(mouse_event(wparam, lparam, mouse_event::buttons::right));
+        }
         
         if (WM_LBUTTONUP == umsg || WM_RBUTTONUP == umsg || WM_MBUTTONUP == umsg){
           _Down = mouse_event::buttons::unspecified;
