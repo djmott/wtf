@@ -7,116 +7,115 @@ namespace wtf{
       policy::has_font, policy::has_create>
     {
 
-      explicit textbox(iwindow * pParent) : window(pParent){
-        OnCreate += [this](){
-          background_brush(brush::system_brush(system_colors::window));
-          border_style(border_styles::lowered);
-          text_vertical_alignment(text_vertical_alignments::top);
-          text_horizontal_alignment(text_horizontal_alignments::left);
-          caret_width(2);
-          auto_draw_text(false);
-        };
+      explicit textbox(window<void> * pParent) : window(pParent){}
 
-        OnPaint += [this](const device_context& dc, const paint_struct& ps){
-          if (!_text.size()) return;
+      virtual void OnCreate() override{
+        background_brush(brush::system_brush(system_colors::window));
+        border_style(border_styles::lowered);
+        text_vertical_alignment(text_vertical_alignments::top);
+        text_horizontal_alignment(text_horizontal_alignments::left);
+        caret_width(2);
+        auto_draw_text(false);
+      };
 
-          rect::client_coord client = ps.client();
-          auto ClientWidth = client.right - client.left;
+      virtual void OnPaint(const device_context& dc, const paint_struct& ps) override{
+        if (!_text.size()) return;
 
-          //sanity checks
-          if (_print_pos < 0) _print_pos = 0;
-          if (_edit_pos < 0) _edit_pos = 0;
-          if (_edit_pos > static_cast<int>(_text.size())) _edit_pos = static_cast<int>(_text.size());
-          if (_print_pos >= _edit_pos && _edit_pos) _print_pos = _edit_pos - 1;
+        rect::client_coord client = ps.client();
+        auto ClientWidth = client.right - client.left;
 
-
-          int EndPrintPos = _edit_pos;
-          point::client_coords CaretPos;
-
-          for (;;){
-            auto tmpExt = dc.get_text_extent(_text.c_str() + _print_pos, EndPrintPos - _print_pos);
-            CaretPos.x = tmpExt.cx;
-            CaretPos.y = _text_metrics.tmHeight;
-            if (tmpExt.cx <= ClientWidth) break;
-            _print_pos++;
-          }
+        //sanity checks
+        if (_print_pos < 0) _print_pos = 0;
+        if (_edit_pos < 0) _edit_pos = 0;
+        if (_edit_pos > static_cast<int>(_text.size())) _edit_pos = static_cast<int>(_text.size());
+        if (_print_pos >= _edit_pos && _edit_pos) _print_pos = _edit_pos - 1;
 
 
-          for (;;){
-            auto tmpEndPos = 1 + EndPrintPos;
-            if (tmpEndPos >= _text.size()) break;
-            auto tmpExt = dc.get_text_extent(_text.c_str() + _print_pos, tmpEndPos - _print_pos);
-            if (tmpExt.cx > ClientWidth) break;
-            EndPrintPos = tmpEndPos;
-          }
+        int EndPrintPos = _edit_pos;
+        point::client_coords CaretPos;
 
-          concrete_policy_type<policy::has_text>::text(_text.substr(_print_pos, EndPrintPos - _print_pos));
-
-          bool bCaretVisible = caret_visible();
-          if (bCaretVisible) caret_visible(false);
-
-          CaretPos.y = border_width();
-
-          draw_text(dc, client);
-
-          if (bCaretVisible){
-            caret_visible(true);
-            caret_position(CaretPos);
-          }
-        };
-
-        OnMouseDown += [this](const policy::mouse_event& p){
-          set_focus();
-        };
-
-        OnCharPress += [this](TCHAR character, key_data){
-          switch (character){
-            case VK_BACK:
-            {
-              if (_edit_pos) _text.erase(--_edit_pos, 1); break;
-            }
-            default:
-            {
-              _text.insert(_edit_pos++, 1, character); break;
-            }
-          }
-          //         refresh();
-        };
-
-        OnKeyDown += [this](TCHAR key, key_data){
-
-          switch (key){
-            case VK_LEFT:
-            {
-              _edit_pos--; break;
-            }
-            case VK_RIGHT:
-            {
-              _edit_pos++; break;
-            }
-            case VK_HOME:
-            {
-              _edit_pos = _print_pos = 0; break;
-            }
-            case VK_END:
-            {
-              _edit_pos = static_cast<int>(_text.size()); break;
-            }
-          }
-          if (_edit_pos < 0) _edit_pos = 0;
-          if (_edit_pos > static_cast<int>(_text.size())) _edit_pos = static_cast<int>(_text.size());
-          refresh();
-        };
-        /*
-        virtual void ApplyFontEvent(const device_context& dc) override{
-          concrete_policy_type<policy::has_font>::ApplyFontEvent(dc);
-          _text_metrics = text_metrics::get(dc);
-          caret_height(_text_metrics.tmHeight);
+        for (;;){
+          auto tmpExt = dc.get_text_extent(_text.c_str() + _print_pos, EndPrintPos - _print_pos);
+          CaretPos.x = tmpExt.cx;
+          CaretPos.y = _text_metrics.tmHeight;
+          if (tmpExt.cx <= ClientWidth) break;
+          _print_pos++;
         }
-        */
 
+
+        for (;;){
+          auto tmpEndPos = 1 + EndPrintPos;
+          if (tmpEndPos >= _text.size()) break;
+          auto tmpExt = dc.get_text_extent(_text.c_str() + _print_pos, tmpEndPos - _print_pos);
+          if (tmpExt.cx > ClientWidth) break;
+          EndPrintPos = tmpEndPos;
+        }
+
+        concrete_policy_type<policy::has_text>::text(_text.substr(_print_pos, EndPrintPos - _print_pos));
+
+        bool bCaretVisible = caret_visible();
+        if (bCaretVisible) caret_visible(false);
+
+        CaretPos.y = border_width();
+
+        draw_text(dc, client);
+
+        if (bCaretVisible){
+          caret_visible(true);
+          caret_position(CaretPos);
+        }
+      };
+
+      virtual void OnMouseDown(const policy::mouse_event& p) override{
+        set_focus();
+      };
+
+      virtual void OnCharPress(TCHAR character, key_data) override{
+        switch (character){
+          case VK_BACK:
+          {
+            if (_edit_pos) _text.erase(--_edit_pos, 1); break;
+          }
+          default:
+          {
+            _text.insert(_edit_pos++, 1, character); break;
+          }
+        }
+        //         refresh();
+      };
+
+      virtual void OnKeyDown(TCHAR key, key_data) override{
+
+        switch (key){
+          case VK_LEFT:
+          {
+            _edit_pos--; break;
+          }
+          case VK_RIGHT:
+          {
+            _edit_pos++; break;
+          }
+          case VK_HOME:
+          {
+            _edit_pos = _print_pos = 0; break;
+          }
+          case VK_END:
+          {
+            _edit_pos = static_cast<int>(_text.size()); break;
+          }
+        }
+        if (_edit_pos < 0) _edit_pos = 0;
+        if (_edit_pos > static_cast<int>(_text.size())) _edit_pos = static_cast<int>(_text.size());
+        refresh();
+      };
+      /*
+      virtual void ApplyFontEvent(const device_context& dc) override{
+      concrete_policy_type<policy::has_font>::ApplyFontEvent(dc);
+      _text_metrics = text_metrics::get(dc);
+      caret_height(_text_metrics.tmHeight);
       }
-    
+      */
+
       virtual const wtf::cursor& cursor_pointer() const override{ return cursor::global(cursor::style::ibeam); }
 
       virtual const tstring &text() const{ return _text; }

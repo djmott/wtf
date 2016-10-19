@@ -17,6 +17,7 @@
 #include <functional>
 #include <iterator>
 #include <sstream>
+#include <mutex>
 
 
 namespace wtf{
@@ -47,7 +48,6 @@ namespace wtf{
 
 
 #include "exception.hpp"
-#include "iwindow.hpp"
 #include "message_box.hpp"
 #include "callback.hpp"
 #include "point.hpp"

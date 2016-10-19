@@ -5,11 +5,13 @@ namespace wtf{
     template <typename _SuperT, typename>
     struct has_activate : _SuperT{
 
-      callback<void()> OnActivate;
-      callback<void()> OnDeactivate;
 
     protected:
-      has_activate(iwindow * pParent) : _SuperT(pParent){}
+
+      virtual void OnActivate(){}
+      virtual void OnDeactivate(){}
+
+      has_activate(window<void> * pParent) : _SuperT(pParent){}
 
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM, bool &) {

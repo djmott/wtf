@@ -13,11 +13,11 @@ namespace wtf {
 
       bool got_focus() const { return _SuperT::_handle == ::GetFocus(); }
 
-      callback<void()> OnGotFocus;
-      callback<void()> OnLostFocus;
     protected:
+      virtual void OnGotFocus(){}
+      virtual void OnLostFocus(){}
 
-      has_focus(iwindow * pParent) : _SuperT(pParent){}
+      has_focus(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) {
         if (WM_SETFOCUS == umsg) OnGotFocus();

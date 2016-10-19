@@ -49,7 +49,7 @@ namespace wtf{
       }
     protected:
 
-      has_text(iwindow * pParent) : _SuperT(pParent){}
+      has_text(window<void> * pParent) : _SuperT(pParent){}
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
 
@@ -88,23 +88,12 @@ namespace wtf{
           rect::client_coord oClient = reinterpret_cast<const paint_struct *>(lparam)->client();
           using _impl_window_t = typename _ImplT::window_type;
           using has_border_t = typename _impl_window_t::has_policy_t<policy::has_border>;
-          adjust_area_for_borders<has_border_t::value>(oClient);
           draw_text(*reinterpret_cast<const device_context *>(wparam), oClient);
         }
         return 0;
       }
 
     private:
-
-      template <bool> void adjust_area_for_borders(rect::client_coord&){}
-
-      template <> void adjust_area_for_borders<true>(rect::client_coord& oClient){
-        auto & oBorder = static_cast<_ImplT*>(this)->get_policy<policy::has_border>();
-        oClient.top += oBorder.border_width();
-        oClient.left += oBorder.border_width();
-        oClient.right -= oBorder.border_width();
-        oClient.bottom -= oBorder.border_width();
-      }
 
       tstring _text = _T("");
       bool _multiline = false;

@@ -22,7 +22,7 @@ namespace wtf {
 
     protected:
 
-      has_show(iwindow * pParent) : _SuperT(pParent){}
+      has_show(window<void> * pParent) : _SuperT(pParent){}
       virtual void VisibilityChangedEvent(visibility_change_flag){}
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool &) {

@@ -4,32 +4,7 @@ namespace wtf{
     : window<checkbox, policy::has_paint, policy::has_click, policy::has_dblclick, policy::has_size, 
     policy::has_text, policy::has_font, policy::has_create>
   {
-    explicit checkbox(iwindow * pParent) : window(pParent), _check(this){
-      OnCreate += [this](){
-        (panel::border_styles::raised);
-        auto_draw_text(false);
-        check_location(check_locations::left);
-      };
-      OnClick += [this](const policy::mouse_event& m){
-        if (policy::mouse_event::buttons::left == m.button){
-          _check.value(!_check.value());
-        }
-      };
-      OnDoubleClick += [this](const policy::mouse_event& m){
-        if (policy::mouse_event::buttons::left == m.button) _check.value(!_check.value());
-      };
-      OnPaint += [this](const device_context& dc, const paint_struct& ps){
-        auto client = ps.client();
-        auto TextSize = prefered_text_size();
-        if (check_locations::left == _check_location){
-          _check.move(0, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
-          draw_text(dc, rect::client_coord(checkbox_size, 0, client.right - checkbox_size, client.bottom));
-        } else{
-          _check.move(client.right - checkbox_size, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
-          draw_text(dc, rect::client_coord(0, 0, client.right - checkbox_size, client.bottom));
-        }
-      };
-    }
+    explicit checkbox(window<void> * pParent) : window(pParent), _check(this){}
 
     enum class check_locations{
       left,
@@ -46,9 +21,31 @@ namespace wtf{
       }
     }
 
-    callback<void(bool)> ValueChanged;
-
   private:
+    virtual void OnCreate() override {
+      (panel::border_styles::raised);
+      auto_draw_text(false);
+      check_location(check_locations::left);
+    };
+    virtual void OnClick(const policy::mouse_event& m) override{
+      if (policy::mouse_event::buttons::left == m.button){
+        _check.value(!_check.value());
+      }
+    };
+    virtual void OnDoubleClick(const policy::mouse_event& m){
+      if (policy::mouse_event::buttons::left == m.button) _check.value(!_check.value());
+    };
+    virtual void OnPaint(const device_context& dc, const paint_struct& ps){
+      auto client = ps.client();
+      auto TextSize = prefered_text_size();
+      if (check_locations::left == _check_location){
+        _check.move(0, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
+        draw_text(dc, rect::client_coord(checkbox_size, 0, client.right - checkbox_size, client.bottom));
+      } else{
+        _check.move(client.right - checkbox_size, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
+        draw_text(dc, rect::client_coord(0, 0, client.right - checkbox_size, client.bottom));
+      }
+    };
 
     static const int checkbox_size = 15;
 
@@ -58,34 +55,34 @@ namespace wtf{
         : panel(pParent),
         _parent(pParent)
       {
-        OnClick += [this](const policy::mouse_event& m){
-          if (policy::mouse_event::buttons::left == m.button) value(!_value);
-        };
-        OnPaint += [this](const device_context& dc, const paint_struct& ps){
-          auto client = ps.client();
-          client.top++;
-          client.left++;
-          client.bottom--;
-          client.right--;
-          dc.fill(client, brush::solid_brush(rgb(255, 255, 255)));
-          if (_value){
-            client.top += 2;
-            client.left += 2;
-            client.bottom -= 2;
-            client.right -= 2;
-            auto black = pen::create(pen::style::solid, 2, rgb(0, 0, 0));
-            dc.line(black, client.left, client.top, client.right, client.bottom);
-            dc.line(black, client.right, client.top, client.left, client.bottom);
-          }
-        };
       }
+      virtual void OnClick(const policy::mouse_event& m) override{
+        if (policy::mouse_event::buttons::left == m.button) value(!_value);
+      };
+      virtual void OnPaint(const device_context& dc, const paint_struct& ps){
+        auto client = ps.client();
+        client.top++;
+        client.left++;
+        client.bottom--;
+        client.right--;
+        dc.fill(client, brush::solid_brush(rgb(255, 255, 255)));
+        if (_value){
+          client.top += 2;
+          client.left += 2;
+          client.bottom -= 2;
+          client.right -= 2;
+          auto black = pen::create(pen::style::solid, 2, rgb(0, 0, 0));
+          dc.line(black, client.left, client.top, client.right, client.bottom);
+          dc.line(black, client.right, client.top, client.left, client.bottom);
+        }
+      };
 
       bool value() const{ return _value; }
       void value(bool newval){
         _value = newval;
         border_style(newval ? border_styles::lowered : border_styles::raised);
         refresh();
-        _parent->ValueChanged(newval);
+        /* ??? _parent->ValueChanged(newval);*/
       }
 
       bool _value = false;

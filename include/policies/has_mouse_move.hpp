@@ -9,12 +9,12 @@ namespace wtf{
     template<typename _SuperT, typename _ImplT>
     struct has_mouse_move : _SuperT{
 
-      callback<void(const mouse_event&)> OnMouseMove;
 
 
     protected:
-      has_mouse_move(iwindow * pParent) : _SuperT(pParent){}
+      virtual void OnMouseMove(const mouse_event&){}
 
+      has_mouse_move(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_MOUSEMOVE == umsg){

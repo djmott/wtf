@@ -8,10 +8,12 @@ namespace wtf {
     template<typename _SuperT, typename _ImplT>
     struct has_click : _SuperT {
 
-      callback<void(const mouse_event&)> OnClick;
 
     protected:
-      has_click(iwindow * pParent) : _SuperT(pParent){}
+
+      virtual void OnClick(const mouse_event&){}
+      
+      has_click(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
 

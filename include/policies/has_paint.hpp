@@ -26,11 +26,12 @@ namespace wtf {
       void background_brush(brush &&newval) { _background_brush.swap(newval); }
 
 
-      callback<void(const device_context&, const paint_struct&)> OnPaint;
-      callback<void(const device_context& ctx, const rect::client_coord& client)> OnEraseBackground;
 
     protected:
-      has_paint(iwindow * pParent) : _SuperT(pParent){}
+      virtual void OnPaint(const device_context&, const paint_struct&) {}
+      virtual void OnEraseBackground(const device_context& ctx, const rect::client_coord& client, bool&) {}
+
+      has_paint(window<void> * pParent) : _SuperT(pParent){}
 
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) {

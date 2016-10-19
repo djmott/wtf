@@ -4,7 +4,7 @@ namespace wtf{
   struct tree : window<tree, policy::has_border, policy::has_click, policy::has_text, policy::has_create,
     policy::has_paint, policy::has_size, policy::has_dblclick, policy::has_mouse_wheel, policy::has_font>{
 
-    explicit tree(iwindow * pParent)
+    explicit tree(window<void> * pParent)
       : window(pParent),
       _root(new node(this)),
       _black_pen(pen::create(pen::style::solid, 1, rgb(0, 0, 0))),
@@ -16,98 +16,102 @@ namespace wtf{
       _highlight_text_brush(brush::system_brush(system_colors::highlight_text)),
       _vscroll(this),
       _hscroll(this)
-    {
-      OnCreate += [this](){
-        _vscroll.orientation(scroll_bar::orientations::vertical);
-        _hscroll.orientation(scroll_bar::orientations::horizontal);
-        auto_draw_text(false);
-        text_vertical_alignment(text_vertical_alignments::center);
-        text_horizontal_alignment(text_horizontal_alignments::left);
-        full_row_select(false);
-      };
+    {}
 
-      OnClick += [this](const policy::mouse_event& m){
-        if (policy::mouse_event::buttons::left != m.button) return;
-        node::pointer oClickedNode;
-        for (size_t i = 0; i < _row_rects.size(); ++i){
-          if (_expander_rects[i].is_in(m.position)){
-            _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
-            refresh();
-            return;
-          } else if (_item_rects[i].is_in(m.position) || (_full_row_select && _row_rects[i].is_in(m.position))){
-            oClickedNode = _displayed_nodes[i];
-            break;
-          }
-        }
-        if (!oClickedNode) return;
-        if (select_modes::single == _select_mode){
-          bool bExists = _selected_nodes.end() != std::find_if(_selected_nodes.begin(), _selected_nodes.end(), [oClickedNode](node::pointer oNode){ return oClickedNode.get() != oNode.get(); });
-          _selected_nodes.clear();
-          _selected_nodes.push_back(oClickedNode);
-          if (!bExists) OnNodeSelected(oClickedNode);
-        } else if (select_modes::multi == _select_mode){
-          bool bSelected = !oClickedNode->selected();
-          oClickedNode->selected(bSelected);
-          if (!bSelected) OnNodeSelected(oClickedNode);
-        } else{ //extended
-          if (!(m.key_state & policy::mouse_event::key_states::control)){
-            _selected_nodes.clear();
-          }
-          bool bSelected = !oClickedNode->selected();
-          oClickedNode->selected(bSelected);
-          if (!bSelected) OnNodeSelected(oClickedNode);
-        }
-        refresh();
-      };
 
-      OnDoubleClick += [this](const policy::mouse_event& m){
-        if (policy::mouse_event::buttons::left != m.button) return;
-        for (size_t i = 0; i < _row_rects.size(); ++i){
-          if (_item_rects[i].is_in(m.position)){
-            _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
-          } else{
-            continue;
-          }
+    virtual void OnCreate() override{
+      _vscroll.orientation(scroll_bar::orientations::vertical);
+      _hscroll.orientation(scroll_bar::orientations::horizontal);
+      auto_draw_text(false);
+      text_vertical_alignment(text_vertical_alignments::center);
+      text_horizontal_alignment(text_horizontal_alignments::left);
+      full_row_select(false);
+    };
+
+    virtual void OnClick(const policy::mouse_event& m) override{
+      if (policy::mouse_event::buttons::left != m.button) return;
+      node::pointer oClickedNode;
+      for (size_t i = 0; i < _row_rects.size(); ++i){
+        if (_expander_rects[i].is_in(m.position)){
+          _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
           refresh();
+          return;
+        } else if (_item_rects[i].is_in(m.position) || (_full_row_select && _row_rects[i].is_in(m.position))){
+          oClickedNode = _displayed_nodes[i];
           break;
         }
-      };
-      OnPaint += [this](const device_context& dc, const paint_struct& ps){
-        if (!_root->children().size()) return;
-        ApplyFontEvent(dc);
-        auto client = ps.client();
-        _item_rects.clear();
-        _expander_rects.clear();
-        _displayed_nodes.clear();
-        _row_rects.clear();
-        auto oTextMetrics = text_metrics::get(dc);
-        for (auto oNode = _top; oNode; oNode = oNode->get_next(false)){
-          if (!print_node(oNode, dc, oTextMetrics, client)) break;
+      }
+      if (!oClickedNode) return;
+      if (select_modes::single == _select_mode){
+        bool bExists = _selected_nodes.end() != std::find_if(_selected_nodes.begin(), _selected_nodes.end(), [oClickedNode](node::pointer oNode){ return oClickedNode.get() != oNode.get(); });
+        _selected_nodes.clear();
+        _selected_nodes.push_back(oClickedNode);
+        if (!bExists) OnNodeSelected(oClickedNode);
+      } else if (select_modes::multi == _select_mode){
+        bool bSelected = !oClickedNode->selected();
+        oClickedNode->selected(bSelected);
+        if (!bSelected) OnNodeSelected(oClickedNode);
+      } else{ //extended
+        if (!(m.key_state & policy::mouse_event::key_states::control)){
+          _selected_nodes.clear();
         }
-      };
-      OnMouseWheel += [this](int16_t delta, const policy::mouse_event& m) {
-        bool bUp = (delta > 0);
-        for (int i = 0; i <= (delta % WHEEL_DELTA); ++i){
-          if (bUp){
-            ScrollPrev();
-          } else{
-            ScrollNext();
-          }
-        }
-      };
-      OnResized += [this](const point::client_coords& p){
-        _vscroll.move(p.x - scroll_width - border_width(), border_width(), scroll_width, p.y - (border_width() * 2) - scroll_width);
-        _hscroll.move(border_width(), p.y - border_width() - scroll_width, p.x - scroll_width - (border_width() * 2), scroll_width);
-      };
-      OnEraseBackground += [this](const device_context& ctx, const rect::client_coord& client, bool& handled){
-        ctx.fill(client, background_brush());
-        rect::client_coord oTmp(client.right - scroll_width - (border_width() * 2),
-                                client.bottom - scroll_width - (border_width() * 2),
-                                client.right, client.bottom);
-        ctx.fill(oTmp, _button_face_brush);
-      };
+        bool bSelected = !oClickedNode->selected();
+        oClickedNode->selected(bSelected);
+        if (!bSelected) OnNodeSelected(oClickedNode);
+      }
+      refresh();
+    };
 
-    }
+    virtual void OnDoubleClick(const policy::mouse_event& m) override{
+      if (policy::mouse_event::buttons::left != m.button) return;
+      for (size_t i = 0; i < _row_rects.size(); ++i){
+        if (_item_rects[i].is_in(m.position)){
+          _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
+        } else{
+          continue;
+        }
+        refresh();
+        break;
+      }
+    };
+
+    virtual void OnPaint(const device_context& dc, const paint_struct& ps) override{
+      if (!_root->children().size()) return;
+      ApplyFontEvent(dc);
+      auto client = ps.client();
+      _item_rects.clear();
+      _expander_rects.clear();
+      _displayed_nodes.clear();
+      _row_rects.clear();
+      auto oTextMetrics = text_metrics::get(dc);
+      for (auto oNode = _top; oNode; oNode = oNode->get_next(false)){
+        if (!print_node(oNode, dc, oTextMetrics, client)) break;
+      }
+    };
+
+    virtual void OnMouseWheel(int16_t delta, const policy::mouse_event& m) override{
+      bool bUp = (delta > 0);
+      for (int i = 0; i <= (delta % WHEEL_DELTA); ++i){
+        if (bUp){
+          ScrollPrev();
+        } else{
+          ScrollNext();
+        }
+      }
+    };
+
+    virtual void OnResized(const point::client_coords& p) override{
+      _vscroll.move(p.x - scroll_width - border_width(), border_width(), scroll_width, p.y - (border_width() * 2) - scroll_width);
+      _hscroll.move(border_width(), p.y - border_width() - scroll_width, p.x - scroll_width - (border_width() * 2), scroll_width);
+    };
+
+    virtual void OnEraseBackground(const device_context& ctx, const rect::client_coord& client, bool& handled) override{
+      ctx.fill(client, background_brush());
+      rect::client_coord oTmp(client.right - scroll_width - (border_width() * 2),
+                              client.bottom - scroll_width - (border_width() * 2),
+                              client.right, client.bottom);
+      ctx.fill(oTmp, _button_face_brush);
+    };
 
     bool full_row_select() const{ return _full_row_select; }
     void full_row_select(bool newval){ _full_row_select = newval; }
@@ -244,6 +248,8 @@ namespace wtf{
       expander_display_policies _expander_display_policy = expander_display_policies::with_children;
     };
 
+    callback <void(node::pointer)> OnNodeSelected;
+
     node::pointer add_node(const tstring& Text){
       auto oNode = _root->add_node(Text);
       if (!_top) _top = oNode;
@@ -258,9 +264,6 @@ namespace wtf{
       if (!_bottom) _bottom = oNode;
       refresh();
     }
-
-    callback<void(node::pointer)> OnNodeSelected;
-    callback<void(node::pointer)> OnNodeDblClicked;
 
     const node::vector& selected_items() const{ return _selected_nodes; }
 

@@ -9,10 +9,11 @@ namespace wtf{
     template<typename _SuperT, typename _ImplT>
     struct has_mouse_wheel : _SuperT{
 
-      callback<void(int16_t /*delta*/, const mouse_event&)> OnMouseWheel;
 
     protected:
-      has_mouse_wheel(iwindow * pParent) : _SuperT(pParent){}
+      virtual void OnMouseWheel(int16_t /*delta*/, const mouse_event&){}
+
+      has_mouse_wheel(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_MOUSEWHEEL == umsg){

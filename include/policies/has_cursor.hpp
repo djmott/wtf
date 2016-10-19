@@ -51,7 +51,7 @@ namespace wtf {
         help = HTHELP,
       };
     protected:
-      has_cursor(iwindow * pParent) : _SuperT(pParent){}
+      has_cursor(window<void> * pParent) : _SuperT(pParent){}
 
       virtual void SetCursorEvent(wm_nchittest_flags flags) {
         switch (flags) {

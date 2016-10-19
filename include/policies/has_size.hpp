@@ -55,14 +55,14 @@ namespace wtf {
         return r.bottom - r.top;
       }
 
-      callback<void(rect::screen_coords&)> OnMoving;
-      callback<void(const point::client_coords&)> OnMoved;
-      callback<void(rect::screen_coords&)> OnResizing;
-      callback<void(const point::client_coords&)> OnResized;
-
     protected:
+      virtual void OnMoving(rect::screen_coords&) {}
+      virtual void OnMoved(const point::client_coords&) {}
+      virtual void OnResizing(rect::screen_coords&) {}
+      virtual void OnResized(const point::client_coords&) {}
 
-      has_size(iwindow * pParent) : _SuperT(pParent){}
+
+      has_size(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
         LRESULT lret = 0;

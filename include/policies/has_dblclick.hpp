@@ -8,10 +8,11 @@ namespace wtf{
     template<typename _SuperT, typename _ImplT>
     struct has_dblclick : _SuperT{
 
-      callback<void(const mouse_event&)> OnDoubleClick;
 
     protected:
-      has_dblclick(iwindow * pParent) : _SuperT(pParent){}
+      virtual void OnDoubleClick(const mouse_event&){}
+
+      has_dblclick(window<void> * pParent) : _SuperT(pParent){}
 
 
       LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {

@@ -23,11 +23,11 @@ namespace wtf {
         wtf::exception::throw_lasterr_if(::KillTimer(*this, timer_id), [](BOOL x) { return !x; });
       }
 
-      callback<void(UINT_PTR)> OnTimer;
 
     protected:
+      virtual void OnTimer(UINT_PTR){}
 
-      has_timer(iwindow * pParent) : _SuperT(pParent){}
+      has_timer(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM , bool &) {
         if (WM_TIMER == umsg) OnTimer(static_cast<UINT_PTR>(wparam));

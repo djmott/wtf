@@ -31,7 +31,7 @@ namespace wtf {
       virtual void back_color(rgb newval) { _back_color = newval; }
 
     protected:
-      has_font(iwindow * pParent) : _SuperT(pParent){}
+      has_font(window<void> * pParent) : _SuperT(pParent){}
 
       virtual void ApplyFontEvent(const device_context& dc){
         const auto & oFont = font();

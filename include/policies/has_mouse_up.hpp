@@ -9,10 +9,10 @@ namespace wtf{
     template<typename _SuperT, typename _ImplT>
     struct has_mouse_up : _SuperT{
 
-      callback<void(const mouse_event&)> OnMouseUp;
-
     protected:
-      has_mouse_up(iwindow * pParent) : _SuperT(pParent){}
+      virtual void OnMouseUp(const mouse_event&){}
+
+      has_mouse_up(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_LBUTTONUP == umsg){

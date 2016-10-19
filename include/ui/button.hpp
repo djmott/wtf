@@ -7,7 +7,7 @@ namespace wtf{
     policy::has_mouse_up, policy::has_mouse_down, policy::has_border, policy::has_zorder>
   {
 
-    explicit button(iwindow * hParent) : window(hParent){}
+    explicit button(window<void> * hParent) : window(hParent){}
     
   };
 

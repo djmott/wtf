@@ -7,10 +7,26 @@ using namespace wtf;
 
 #if 0
 struct main_form : form{
-  main_form() : form(), _tabs(this){
-    OnCreate += [this](){ _tabs.add_page("FNORD"); };
-    OnResized += [this](const point::client_coords& p){ _tabs.move(2, 2, p.x - 4, p.y - 4); };
+  main_form() : form(), _label(this){
+
   }
+
+  virtual void OnCreate () override{
+    _label.border_style(label::border_styles::bumped);
+    _label.move(5, 5, 50, 30);
+    _label.text(_T("FNORD"));
+  };
+
+
+  label _label;
+};
+
+#elif 0
+struct main_form : form{
+  main_form() : form(), _tabs(this){
+  }
+  virtual void OnCreate() override{ _tabs.add_page("FNORD"); };
+  virtual void OnResized(const point::client_coords& p) override{ _tabs.move(2, 2, p.x - 4, p.y - 4); };
   tab_container _tabs;
 };
 
@@ -19,7 +35,7 @@ struct main_form : form{
   main_form() : form(), _text(this){}
 
   virtual void CreateEvent() override{
-    OnResized += [this](const point::client_coords& p){
+    virtual void OnResized(const point::client_coords& p) override {
       _text.move(0, 0, p.x-2, p.y-2);
     };
   }
@@ -39,7 +55,7 @@ struct main_form : form{
 #elif 0
 struct main_form : form{
   main_form() : form(), _scroll(this){
-    OnCreate += [this](){
+    virtual void OnCreate() override {
       _scroll.orientation(scroll_bar::orientations::horizontal);
       _scroll.move(10, 10, 100, 20);
       _scroll.min(0);
@@ -60,48 +76,48 @@ struct label_page : panel{
     _raised(this), _lowered(this), _flat(this), 
     _etched(this), _bumped(this), _double_raised(this), _double_lowered(this)
   {
-    OnCreate += [this](){
-      _left.move(5, 5, 150, 25);
-      _left.text("Left aligned");
-      _left.text_horizontal_alignment(label::text_horizontal_alignments::left);
-
-      _center.move(5, _left.top() + _left.height() + 5, 150, 25);
-      _center.text("Center aligned");
-      _center.text_horizontal_alignment(label::text_horizontal_alignments::center);
-
-      _right.move(5, _center.top() + _center.height() + 5, 150, 25);
-      _right.text("Right aligned");
-      _right.text_horizontal_alignment(label::text_horizontal_alignments::right);
-
-      _raised.move(5, _right.top() + _right.height() + 5, 150, 25);
-      _raised.text("Raised");
-      _raised.border_style(label::border_styles::raised);
-
-      _lowered.move(5, _raised.top() + _raised.height() + 5, 150, 25);
-      _lowered.text("Lowered");
-      _lowered.border_style(label::border_styles::lowered);
-
-      _flat.move(5, _lowered.top() + _lowered.height() + 5, 150, 25);
-      _flat.text("Flat");
-      _flat.border_style(label::border_styles::flat);
-
-      _etched.move(5, _flat.top() + _flat.height() + 5, 150, 25);
-      _etched.text("Etched");
-      _etched.border_style(label::border_styles::etched);
-
-      _bumped.move(5, _etched.top() + _etched.height() + 5, 150, 25);
-      _bumped.text("Bumped");
-      _bumped.border_style(label::border_styles::bumped);
-
-      _double_raised.move(5, _bumped.top() + _bumped.height() + 5, 150, 25);
-      _double_raised.text("Double raised");
-      _double_raised.border_style(label::border_styles::double_raised);
-
-      _double_lowered.move(5, _double_raised.top() + _double_raised.height() + 5, 150, 25);
-      _double_lowered.text("Double lowered");
-      _double_lowered.border_style(label::border_styles::double_lowered);
-    };
   }
+  virtual void OnCreate() override {
+    _left.move(5, 5, 150, 25);
+    _left.text("Left aligned");
+    _left.text_horizontal_alignment(label::text_horizontal_alignments::left);
+
+    _center.move(5, _left.top() + _left.height() + 5, 150, 25);
+    _center.text("Center aligned");
+    _center.text_horizontal_alignment(label::text_horizontal_alignments::center);
+
+    _right.move(5, _center.top() + _center.height() + 5, 150, 25);
+    _right.text("Right aligned");
+    _right.text_horizontal_alignment(label::text_horizontal_alignments::right);
+
+    _raised.move(5, _right.top() + _right.height() + 5, 150, 25);
+    _raised.text("Raised");
+    _raised.border_style(label::border_styles::raised);
+
+    _lowered.move(5, _raised.top() + _raised.height() + 5, 150, 25);
+    _lowered.text("Lowered");
+    _lowered.border_style(label::border_styles::lowered);
+
+    _flat.move(5, _lowered.top() + _lowered.height() + 5, 150, 25);
+    _flat.text("Flat");
+    _flat.border_style(label::border_styles::flat);
+
+    _etched.move(5, _flat.top() + _flat.height() + 5, 150, 25);
+    _etched.text("Etched");
+    _etched.border_style(label::border_styles::etched);
+
+    _bumped.move(5, _etched.top() + _etched.height() + 5, 150, 25);
+    _bumped.text("Bumped");
+    _bumped.border_style(label::border_styles::bumped);
+
+    _double_raised.move(5, _bumped.top() + _bumped.height() + 5, 150, 25);
+    _double_raised.text("Double raised");
+    _double_raised.border_style(label::border_styles::double_raised);
+
+    _double_lowered.move(5, _double_raised.top() + _double_raised.height() + 5, 150, 25);
+    _double_lowered.text("Double lowered");
+    _double_lowered.border_style(label::border_styles::double_lowered);
+  };
 
   label _left, _center, _right;
   label _raised, _lowered, _flat;
@@ -111,17 +127,17 @@ struct label_page : panel{
 
 struct checkbox_page : panel{
   checkbox_page(tab_container * parent) : panel(parent), _left(this), _right(this){
-    OnCreate += [this](){
-      _left.move(5, 5, 150, 25);
-      _left.text("Left aligned");
-      _left.check_location(checkbox::check_locations::left);
-
-      _right.move(5, 30, 150, 25);
-      _right.text("Right aligned");
-      _right.check_location(checkbox::check_locations::right);
-    };
   }
 
+  virtual void OnCreate() override {
+    _left.move(5, 5, 150, 25);
+    _left.text("Left aligned");
+    _left.check_location(checkbox::check_locations::left);
+
+    _right.move(5, 30, 150, 25);
+    _right.text("Right aligned");
+    _right.check_location(checkbox::check_locations::right);
+  };
 
   checkbox _left, _right;
 };
@@ -131,58 +147,65 @@ struct listbox_page : panel{
   listbox_page(tab_container * parent) : panel(parent),
     _left(this), _center(this), _right(this)
   {
-    OnCreate += [this](){
-      for (int i = 0; i < 100; i++){
-        tstringstream ss;
-        ss << i;
-        _left.add_item(ss.str());
-        _center.add_item(ss.str());
-        _right.add_item(ss.str());
-      }
-      _left.text_horizontal_alignment(listbox::text_horizontal_alignments::left);
-      _center.text_horizontal_alignment(listbox::text_horizontal_alignments::center);
-      _right.text_horizontal_alignment(listbox::text_horizontal_alignments::right);
-    };
-    OnResized += [this](const point::client_coords& p){ 
-      _left.move(0, 0, p.x/3, p.y);
-      _center.move(p.x / 3, 0, p.x / 3, p.y);
-      _right.move((p.x / 3) * 2, 0, p.x / 3, p.y);
-    };
 
   }
+  virtual void OnCreate() override {
+    for (int i = 0; i < 100; i++){
+      tstringstream ss;
+      ss << i;
+      _left.add_item(ss.str());
+      _center.add_item(ss.str());
+      _right.add_item(ss.str());
+    }
+    _left.text_horizontal_alignment(listbox::text_horizontal_alignments::left);
+    _center.text_horizontal_alignment(listbox::text_horizontal_alignments::center);
+    _right.text_horizontal_alignment(listbox::text_horizontal_alignments::right);
+  };
+  virtual void OnResized(const point::client_coords& p) override {
+    _left.move(0, 0, p.x / 3, p.y);
+    _center.move(p.x / 3, 0, p.x / 3, p.y);
+    _right.move((p.x / 3) * 2, 0, p.x / 3, p.y);
+  };
 
   listbox _left, _center, _right;
 };
 
 struct button_page : panel{
   button_page(tab_container * parent) : panel(parent), 
-    _button1(this), _button2(this), _label1(this), _label2(this)
-  {
-    OnCreate += [this](){
-      _button1.move(5, 5, 100, 35);
-      _button1.text("Push button");
-      _label1.move(105, 5, 100, 35);
-      _button2.move(5, 50, 100, 35);
-      _button2.text("Toggle button");
-      _label2.move(105, 50, 100, 35);
-    };
-    _button1.OnClick += [this](const policy::mouse_event&){
+    _label1(this), _label2(this), _button1(this, _label1), _button2(this, _label2){}
+
+  virtual void OnCreate() override {
+    _button1.move(5, 5, 100, 35);
+    _button1.text("Push button");
+    _label1.move(105, 5, 100, 35);
+    _button2.move(5, 50, 100, 35);
+    _button2.text("Toggle button");
+    _label2.move(105, 50, 100, 35);
+  };
+
+  label _label1;
+  label _label2;
+
+  struct _button1 : button{
+    _button1(window<void> * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
+    virtual void OnClick(const policy::mouse_event&){
       tstringstream ss;
       ss << GetTickCount();
       _label1.text(ss.str());
     };
+    label& _label1;
+  }_button1;
 
-    _button2.OnClick += [this](const policy::mouse_event&){
+  struct _button2 : toggle_button{
+    _button2(window<void> * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
+    virtual void OnClick(const policy::mouse_event&) override{
       tstringstream ss;
       ss << GetTickCount();
       _label2.text(ss.str());
     };
-  }
+    label& _label2;
+  }_button2;
 
-  button _button1;
-  toggle_button _button2;
-  label _label1;
-  label _label2;
 };
 
 
@@ -190,20 +213,20 @@ struct scroll_page : panel{
   scroll_page(tab_container * parent) 
     : panel(parent), _hor_scroll(this), _vert_scroll(this), _hor_progress(this), _vert_progress(this)  
   {
-    OnCreate += [this](){
-      _hor_scroll.move(5, 5, 100, 20);
-      _hor_scroll.orientation(scroll_bar::orientations::horizontal);
-
-      _hor_progress.move(5, 30, 100, 20);
-      _hor_progress.orientation(progress_bar::orientations::horizontal);
-
-      _vert_scroll.move(120, 30, 20, 100);
-      _vert_scroll.orientation(scroll_bar::orientations::vertical);
-
-      _vert_progress.move(150, 30, 20, 100);
-      _vert_progress.orientation(progress_bar::orientations::vertical);
-    };
   }
+  virtual void OnCreate() override {
+    _hor_scroll.move(5, 5, 100, 20);
+    _hor_scroll.orientation(scroll_bar::orientations::horizontal);
+
+    _hor_progress.move(5, 30, 100, 20);
+    _hor_progress.orientation(progress_bar::orientations::horizontal);
+
+    _vert_scroll.move(120, 30, 20, 100);
+    _vert_scroll.orientation(scroll_bar::orientations::vertical);
+
+    _vert_progress.move(150, 30, 20, 100);
+    _vert_progress.orientation(progress_bar::orientations::vertical);
+  };
 
   scroll_bar _hor_scroll, _vert_scroll;
   progress_bar _hor_progress, _vert_progress;
@@ -213,26 +236,37 @@ struct scroll_page : panel{
 
 struct split_page : panel{
   split_page(tab_container * parent) : panel(parent), _splitter(this){
-    OnCreate += [this](){ _splitter.set_split_position(50); };
-    OnResized += [this](const point::client_coords& p){ _splitter.move(0, 0, p.x, p.y); };    
   }
+  virtual void OnCreate() override { _splitter.set_split_position(50); };
+  virtual void OnResized(const point::client_coords& p) override{ _splitter.move(0, 0, p.x, p.y); };
 
   struct splitter : split_container{
     splitter(panel * parent) : split_container(parent), _inner_splitter(first()), _text1(second())
     {
-      OnCreate += [this](){_inner_splitter.set_split_position(25); };
-      first()->OnResized += [this](const point::client_coords& p){ _inner_splitter.move(0, 0, p.x, p.y); };
-      second()->OnResized += [this](const point::client_coords& p){ _text1.move(0, 0, p.x, p.y); };
       
     }
 
+    virtual void OnCreate() override{
+      _inner_splitter.set_split_position(25); 
+    };
+
+//     first()->virtual void OnResized(const point::client_coords& p) override{ _inner_splitter.move(0, 0, p.x, p.y); };
+//     second()->virtual void OnResized(const point::client_coords& p) override{ _text1.move(0, 0, p.x, p.y); };
+
     struct inner_splitter : split_container{
+
       inner_splitter(panel * parent) : split_container(parent), _texta(first()), _textb(second()){
-        OnCreate += [this](){orientation(inner_splitter::orientations::vertical); };        
-        first()->OnResized += [this](const point::client_coords& p){ _texta.move(0, 0, p.x, p.y); };
-        second()->OnResized += [this](const point::client_coords& p){ _textb.move(0, 0, p.x, p.y); };
-        _texta.multiline(true);
       }
+
+      virtual void OnCreate() override{ 
+        orientation(inner_splitter::orientations::vertical); 
+        _texta.multiline(true);
+      };
+
+//       first()->virtual void OnResized(const point::client_coords& p) override{ _texta.move(0, 0, p.x, p.y); };
+//       second()->virtual void OnResized(const point::client_coords& p) override{ _textb.move(0, 0, p.x, p.y); };
+      
+
       textbox _texta, _textb;
     }_inner_splitter;
 
@@ -243,20 +277,21 @@ struct split_page : panel{
 
 struct tree_page : panel{
   tree_page(tab_container * parent) : panel(parent), _tree(this), rd(), gen(rd()), dist(1, 999999) {
-    OnResized += [this](const point::client_coords& p){ _tree.move(0, 0, p.x, p.y); };
-    OnCreate += [this](){
-      for (int i = 0; i < 20; i++){
-        auto oChild1 = _tree.add_node(RandomString());
-        for (int x = 0; x < 20; x++){
-          auto oChild2 = oChild1->add_node(RandomString());
-          for (int j = 0; j < 20; j++){
-            oChild2->add_node(RandomString());
-          }
-        }
-      }
-    };
 
   }
+
+  virtual void OnResized(const point::client_coords& p) override{ _tree.move(0, 0, p.x, p.y); };
+  virtual void OnCreate() override{
+    for (int i = 0; i < 20; i++){
+      auto oChild1 = _tree.add_node(RandomString());
+      for (int x = 0; x < 20; x++){
+        auto oChild2 = oChild1->add_node(RandomString());
+        for (int j = 0; j < 20; j++){
+          oChild2->add_node(RandomString());
+        }
+      }
+    }
+  };
 
   tstring RandomString(){
     tstring sTemp;
@@ -274,21 +309,22 @@ struct tree_page : panel{
 };
 
 struct main_form : form{
-  main_form() : _tabs(this){
-    OnCreate += [this](){
-      titlebar("WTF example");
-      _tabs.add_custom_page<label_page>("label");
-      _tabs.add_custom_page<checkbox_page>("checkbox");
-      _tabs.add_custom_page<listbox_page>("listbox");
-      _tabs.add_custom_page<button_page>("buttons");
-      _tabs.add_custom_page<scroll_page>("scroll_bar");
-      _tabs.add_custom_page<split_page>("splitter");
-      _tabs.add_custom_page<tree_page>("tree");
-    };
-    OnResized += [this](const point::client_coords& p){ 
-      _tabs.move(5, 5, p.x - 10, p.y - 10); 
-    };
-  }
+  main_form() : _tabs(this){}
+
+  virtual void OnCreate() override{
+    titlebar("WTF example");
+    _tabs.add_custom_page<label_page>("label");
+    _tabs.add_custom_page<checkbox_page>("checkbox");
+    _tabs.add_custom_page<listbox_page>("listbox");
+    _tabs.add_custom_page<button_page>("buttons");
+    _tabs.add_custom_page<scroll_page>("scroll_bar");
+    _tabs.add_custom_page<split_page>("splitter");
+    _tabs.add_custom_page<tree_page>("tree");
+  };
+
+  virtual void OnResized(const point::client_coords& p) override{
+    _tabs.move(5, 5, p.x - 10, p.y - 10);
+  };
 
   tab_container _tabs;
 };

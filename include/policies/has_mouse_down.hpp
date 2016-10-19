@@ -9,10 +9,11 @@ namespace wtf{
     template<typename _SuperT, typename _ImplT>
     struct has_mouse_down : _SuperT{
 
-      callback<void(const mouse_event&)> OnMouseDown;
 
     protected:
-      has_mouse_down(iwindow * pParent) : _SuperT(pParent){}
+      virtual void OnMouseDown(const mouse_event&){}
+
+      has_mouse_down(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_LBUTTONDOWN == umsg){

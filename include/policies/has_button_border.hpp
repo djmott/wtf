@@ -7,8 +7,8 @@ namespace wtf{
     template <typename _SuperT, typename _ImplT> struct has_button_border :  _SuperT{
 
       has_button_border() : _SuperT(){
-        OnCreate += [this](){ border_style(border_styles::raised); };
-        OnMouseMove += [this](const policy::mouse_event& m){
+        virtual void OnCreate() override { border_style(border_styles::raised); };
+        virtual void OnMouseMove(const policy::mouse_event& m) override {
           if (!_Down || policy::mouse_event::buttons::left != m.button) return;
           if (!rect::client_coord::get(*this).is_in(m.position)){
             ::ReleaseCapture();
@@ -17,14 +17,14 @@ namespace wtf{
             refresh();
           }
         };
-        OnMouseDown += [this](const policy::mouse_event& m){
+        virtual void OnMouseDown(const policy::mouse_event& m) override {
           if (policy::mouse_event::buttons::left != m.button) return;
           _Down = true;
           border_style(border_styles::lowered);
           ::SetCapture(*this);
           refresh();
         };
-        OnMouseUp += [this](const policy::mouse_event& m){
+        virtual void OnMouseUp(const policy::mouse_event& m) override {
           if (!_Down || policy::mouse_event::buttons::left != m.button) return;
           _Down = false;
           border_style(border_styles::raised);
@@ -33,7 +33,7 @@ namespace wtf{
         };
       }
     protected:
-      has_button_border(iwindow * pParent) : _SuperT(pParent){}
+      has_button_border(window<void> * pParent) : _SuperT(pParent){}
     private:
       bool _Down = false;
     };

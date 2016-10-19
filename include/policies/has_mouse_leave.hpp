@@ -9,11 +9,11 @@ namespace wtf{
     template<typename _SuperT, typename>
     struct has_mouse_leave : _SuperT{
 
-      callback<void()> OnMouseLeave;
 
     protected:
-      has_mouse_leave(iwindow * pParent) : _SuperT(pParent){}
+      virtual void OnMouseLeave(){}
 
+      has_mouse_leave(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM, LPARAM, bool &) {
         if (WM_CREATE == umsg){

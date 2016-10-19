@@ -6,10 +6,7 @@ namespace wtf{
       policy::has_mouse_down, policy::has_mouse_move, policy::has_mouse_up, policy::has_font, policy::has_create>
     {
 
-      explicit label(iwindow * hParent) : window(hParent)
-      {
-        OnCreate += [this](){ this->border_style(border_styles::none); };
-      }
+      explicit label(window<void> * hParent) : window(hParent){}
 
 
     };

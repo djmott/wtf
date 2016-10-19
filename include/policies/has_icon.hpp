@@ -21,7 +21,7 @@ namespace wtf {
       void small_icon(icon &&src) { _small_icon = std::move(src); }
 
     protected:
-      has_icon(iwindow * pParent) : _SuperT(pParent){}
+      has_icon(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM , bool &bhandled) {
         if (WM_GETICON != umsg) return 0;

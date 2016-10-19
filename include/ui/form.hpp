@@ -13,16 +13,17 @@ namespace wtf{
     static const DWORD ExStyle = _ExStyle;
     static const DWORD Style = _Style;
 
-    form_base(iwindow * pParent) : _super_t(pParent){}
+    form_base(window<void> * pParent) : _super_t(pParent){
+      std::unique_lock<std::mutex> oLock(forms_lock());
+      forms().push_back(this);
+    }
     form_base() : form_base(nullptr){}
 
     int exec(bool show_window = true){
-      _QuitOnDestroy = true;
       make_window();
       if (show_window) this->show();
       message oMsg;
       auto iRet = oMsg.pump();
-      _QuitOnDestroy = true;
       return iRet;
     }
 
@@ -48,7 +49,15 @@ namespace wtf{
   protected:
 
 
-    bool _QuitOnDestroy = false;
+    static std::mutex& forms_lock(){
+      static std::mutex _forms_lock;
+      return _forms_lock;
+    }
+
+    static std::vector<form_base*>& forms(){
+      static std::vector<form_base*> _forms;
+      return _forms;
+    }
 
     LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool& bhandled) {
       if (WM_DESTROY == umsg && _QuitOnDestroy){
@@ -63,7 +72,7 @@ namespace wtf{
 
   struct form : form_base<form, WS_EX_OVERLAPPEDWINDOW, WS_OVERLAPPEDWINDOW>{
 
-    form(iwindow * pParent=nullptr) : form_base(pParent){}
+    form(window<void> * pParent=nullptr) : form_base(pParent){}
   };
 
 

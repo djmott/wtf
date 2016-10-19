@@ -11,13 +11,14 @@ namespace wtf{
       toggle_button &operator=(const toggle_button &) = delete;
       toggle_button &operator=(toggle_button&&) = delete;
       virtual ~toggle_button() = default;
-      explicit toggle_button(iwindow * pParent) : window(pParent), _button_state(button_states::up){
-        OnCreate += [this](){ border_style(border_styles::raised); };
-        OnMouseUp += [this](const policy::mouse_event& m){
-          if (policy::mouse_event::buttons::left != m.button) return;
-          button_state(button_states::down == _button_state ? button_states::up : button_states::down);
-        };
-      }
+      explicit toggle_button(window<void> * pParent) : window(pParent), _button_state(button_states::up){ }
+
+      virtual void OnCreate() override{ border_style(border_styles::raised); };
+
+      virtual void OnMouseUp(const policy::mouse_event& m) override{
+        if (policy::mouse_event::buttons::left != m.button) return;
+        button_state(button_states::down == _button_state ? button_states::up : button_states::down);
+      };
 
       enum class button_states{
         up,

@@ -51,7 +51,7 @@ namespace wtf {
       virtual point::client_coords caret_position() const{ return _pos; }
 
     protected:
-      has_caret(iwindow * pParent) : _SuperT(pParent){}
+      has_caret(window<void> * pParent) : _SuperT(pParent){}
       LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) {
         if (WM_SETFOCUS == umsg) {
           create_caret();

@@ -5,6 +5,44 @@
 #endif
 
 namespace wtf{
+
+
+
+  /** Specialization that terminates the inheritance hierarchy
+  * super most base class of all windows
+  */
+  template <> struct window<void>{
+
+    window() = delete;
+    window(const window&) = delete;
+    window(window&&) = delete;
+    window& operator=(const window&) = delete;
+    window operator=(window&&) = delete;
+
+    explicit window(window * Parent) : _parent(Parent){
+      if (Parent) Parent->_children.push_back(this);
+    }
+
+    const window * const parent() const{ return _parent; }
+
+    const std::vector<window*>& children() const{ return _children; }
+
+    virtual const type_info& type() const = 0;
+
+    HWND operator*() const{ return _handle; }
+    operator HWND() const{ return _handle; }
+
+  protected:
+    template <typename, template <typename, typename> class ... > friend struct _::base_window;
+
+    virtual void make_window() = 0;
+
+    window * _parent;
+    std::vector<window*> _children;
+    HWND _handle;
+  };
+
+
   namespace _{
 
 
@@ -130,7 +168,7 @@ namespace wtf{
 
       virtual ~base_window() = default;
 
-      explicit base_window(iwindow * pParent) : _super_t(pParent){}
+      explicit base_window(window<void> * pParent) : _super_t(pParent){}
       base_window() = delete;
       base_window(const base_window&) = delete;
       base_window &operator=(const base_window &) = delete;
@@ -162,23 +200,22 @@ namespace wtf{
       }
     };
 
+    template <typename _ImplT> struct base_window<_ImplT> : window<void>{
 
-    /** Specialization that terminates the inheritance hierarchy
-      * super most base class of all windows
-     */
-    template <typename _ImplT> struct base_window<_ImplT> : iwindow{
+      using window_type = base_window<_ImplT>;
+
       /// an implementation may want to use different window styles so add their definitions as class wide static constants
       static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
       static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
       virtual ~base_window(){ if (_handle) ::DestroyWindow(_handle); }
 
-      explicit base_window(iwindow * parent) :  iwindow(parent){}
+      explicit base_window(window<void> * parent) :  window<void>(parent){}
 
       base_window(const base_window&) = delete;
       base_window& operator=(const base_window&) = delete;
       
-      base_window(base_window&& src) : iwindow(std::move(src)){}
+      base_window(base_window&& src) : window<void>(std::move(src)){}
 
 
       virtual const type_info& type() const override{ return typeid(_ImplT); }

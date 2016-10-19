@@ -26,37 +26,33 @@ namespace wtf{
         ::SetFocus(*this);
       }
 
-      callback<void(TCHAR, key_data)> OnCharPress;
-      callback<void(TCHAR, key_data)> OnKeyDown;
-      callback<void(TCHAR, key_data)> OnKeyUp;
-      callback<void()> OnGotKeyboardFocus;
-      callback<void()> OnLostKeyboardFocus;
-
     protected:
-      has_keyboard(iwindow * pParent) : _SuperT(pParent){}
+      virtual void OnCharPress(TCHAR, key_data){}
+      virtual void OnKeyDown(TCHAR, key_data){}
+      virtual void OnKeyUp(TCHAR, key_data){}
+      virtual void OnGotKeyboardFocus(){}
+      virtual void OnLostKeyboardFocus(){}
 
-      virtual void CharEvent(TCHAR c, key_data d){ OnCharPress(c, d); }
-      virtual void KeyDownEvent(TCHAR c, key_data d){ OnKeyDown(c, d); }
-      virtual void KeyUpEvent(TCHAR c, key_data d){ OnKeyUp(c, d); }
-      virtual void GotKeyboardFocusEvent(){ OnGotKeyboardFocus(); }
-      virtual void LoosingKeyboardFocusEvent(){ OnLostKeyboardFocus(); }
+
+      has_keyboard(window<void> * pParent) : _SuperT(pParent){}
+
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool&){
         switch (umsg){
           case WM_CHAR:{
-            CharEvent(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
+            OnCharPress(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
           }
           case WM_KEYDOWN:{
-            KeyDownEvent(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
+            OnKeyDown(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
           }
           case WM_KEYUP:{
-            KeyUpEvent(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
+            OnKeyUp(static_cast<TCHAR>(wparam), *reinterpret_cast<key_data*>(&lparam)); break;
           }
           case WM_SETFOCUS:{
-            GotKeyboardFocusEvent(); break;
+            OnGotKeyboardFocus(); break;
           }
           case WM_KILLFOCUS:{
-            LoosingKeyboardFocusEvent(); break;
+            OnLostKeyboardFocus(); break;
           }
         }
         return 0; 

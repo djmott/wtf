@@ -30,26 +30,42 @@ namespace wtf {
         }
       }
       virtual const rgb& border_highlight() const{ return _border_highlight; }
-      virtual void border_highlight(const rgb& newval){ _border_highlight = newval;  }
+      virtual void border_highlight(const rgb& newval){ 
+        _border_highlight = newval; 
+        refresh_border();
+      }
 
       virtual const rgb& border_shadow() const{ return _border_shadow; }
-      virtual void border_shadow(const rgb& newval){ _border_shadow = newval; }
+      virtual void border_shadow(const rgb& newval){ 
+        _border_shadow = newval;
+        refresh_border();
+      }
 
       virtual border_styles border_style() const{ return _border_style; }
-      virtual void border_style(border_styles newval){ _border_style = newval; }
+      virtual void border_style(border_styles newval){ 
+        _border_style = newval; 
+        refresh_border();
+      }
 
       virtual void enable_border_elements(bool top, bool right, bool bottom, bool left){
         _draw_top = top; _draw_left = left; _draw_right = right; _draw_bottom = bottom;
       }
     protected:
-      has_border(iwindow * pParent) : _SuperT(pParent){}
+      has_border(window<void> * pParent) : _SuperT(pParent){}
+
+      void refresh_border(){
+        wtf::exception::throw_lasterr_if(
+          ::RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_NOCHILDREN),
+          [](BOOL b){ return !b; }
+        );
+      }
 
       virtual void draw_border(const device_context& dc, const rect::client_coord & oClient){
         auto highlight = pen::create(pen::style::solid, 1, border_highlight());
         auto shadow = pen::create(pen::style::solid, 1, border_shadow());
         rect::client_coord client = oClient;
-        client.bottom--;
-        client.right--;
+        client.bottom += border_width() * 2 - 1;
+        client.right += border_width() * 2 - 1;
         //draw outer border
         switch (border_style()){
           case border_styles::none:
@@ -106,13 +122,11 @@ namespace wtf {
           pSizeParam->rgrc[0].left += border_width();
           pSizeParam->rgrc[0].bottom -= border_width();
           pSizeParam->rgrc[0].right -= border_width();
-
+          handled = true;
+          return TRUE;
         } else if (WM_NCPAINT == umsg){
           handled = true;
-          auto oClient = rect::client_coord::get(*this);
-          oClient.bottom += border_width() * 2;
-          oClient.right += border_width() * 2;
-          DrawBorderEvent(device_context::get_window(*this), oClient);
+          DrawBorderEvent(device_context::get_window(*this), rect::client_coord::get(*this));
         }
         return 0;
       }
