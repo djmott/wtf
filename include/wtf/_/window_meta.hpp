@@ -1,5 +1,18 @@
-#if 0
 #pragma once
+
+namespace wtf{
+  namespace _{
+
+    template <typename, template <typename, typename> class ...> struct add_inherit;
+
+//     template <typename _ImplT> struct add_inherit;
+//     template <typename, template <typename, typename> class ...> struct add_inherit;
+
+
+  }
+}
+
+#if 0
 
 #if !defined(__WTF_DEBUG_MESSAGES__)
 #define __WTF_DEBUG_MESSAGES__ 0

@@ -30,24 +30,31 @@ namespace wtf{
     client,
   };
 
-  extern "C" HINSTANCE__ __ImageBase;
-  inline static HINSTANCE instance_handle(){ return &__ImageBase; }
+  template <typename, template <typename, typename> class ...> struct window;
 
 
-  template <typename, template <typename,typename> class ...> struct window;
+  //this is the internal 'hidden' namespace not for external consumption
+  namespace _{
+    static std::mutex& _active_forms_lock(){
+      static std::mutex _forms_lock;
+      return _forms_lock;
+    }
+
+    static std::vector<const window<void>*>& _active_forms(){
+      static std::vector<const window<void>*> _forms;
+      return _forms;
+    }
+
+    extern "C" HINSTANCE__ __ImageBase;
+    inline static HINSTANCE instance_handle(){ return &__ImageBase; }
+  }
+
 
   namespace policy{
-    template <template <typename, typename> class> struct traits;
 
-    template <template <typename, typename> class ...> struct type_list;
 
-    template <template <typename, typename> class _HeadT, template <typename, typename> class ..._TailT>
-    struct type_list<_HeadT, _TailT...> : type_list<_TailT...>{};
+    static const std::vector<const window<void>*>& active_forms(){ return _::_active_forms(); }
 
-    template <> struct type_list<>{};
-  }
-  namespace _{
-    template <typename, template <typename, typename> class ... > struct base_window;
   }
 }
 
@@ -66,17 +73,19 @@ namespace wtf{
 #include "region.hpp"
 #include "font.hpp"
 
-#include "detail/window_class_ex.hpp"
-#include "detail/msg_names.hpp"
-#include "detail/weak_enum.hpp"
-#include "detail/device_context.hpp"
-#include "detail/text_metrics.hpp"
-#include "detail/paint_struct.hpp"
-#include "detail/base_window.hpp"
-#include "detail/SystemParameters.hpp"
-#include "detail/message.hpp"
+
+#include "_/window_class_ex.hpp"
+#include "_/msg_names.hpp"
+#include "_/weak_enum.hpp"
+#include "_/device_context.hpp"
+#include "_/text_metrics.hpp"
+#include "_/paint_struct.hpp"
+#include "_/window_meta.hpp"
+#include "_/SystemParameters.hpp"
+#include "_/message.hpp"
 
 
+#include "window.hpp"
 
 
 #include "messages/messages.hpp"
@@ -127,7 +136,6 @@ namespace wtf{
 #include "policies/has_repeat_click.hpp"
 #include "policies/has_show.hpp"
 #include "policies/has_size.hpp"
-#include "policies/has_sizing.hpp"
 #include "policies/has_text.hpp"
 #include "policies/has_timer.hpp"
 #include "policies/has_titlebar.hpp"
@@ -136,7 +144,6 @@ namespace wtf{
 
 
 
-#include "ui/window.hpp"
 #include "ui/menu.hpp"
 #include "ui/form.hpp"
 #include "ui/label.hpp"

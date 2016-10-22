@@ -8,27 +8,14 @@ namespace wtf {
     template<typename _SuperT, typename _ImplT>
     struct has_show : _SuperT {
 
-      void show() { ::ShowWindow(*this, SW_SHOW); }
+      virtual void show() { ::ShowWindow(*this, SW_SHOW); }
 
-      void hide() { ::ShowWindow(*this, SW_HIDE); }
-
-      enum class visibility_change_flag {
-        show_window = 0,
-        other_unzoom = SW_OTHERUNZOOM,
-        other_zoom = SW_OTHERZOOM,
-        parent_closing = SW_PARENTCLOSING,
-        parent_opening = SW_PARENTOPENING,
-      };
+      virtual void hide() { ::ShowWindow(*this, SW_HIDE); }
 
     protected:
 
       has_show(window<void> * pParent) : _SuperT(pParent){}
-      virtual void wm_show_window(visibility_change_flag){}
 
-      LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool &) {
-        if (WM_SHOWWINDOW == umsg) wm_show_window(static_cast<visibility_change_flag>(lparam));
-        return 0;
-      }
     };
 
   }

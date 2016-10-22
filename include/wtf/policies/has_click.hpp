@@ -1,50 +1,38 @@
 #pragma once
 
+
 namespace wtf {
   namespace policy {
     /** has_click
     * produces click events
     */
     template<typename _SuperT, typename _ImplT>
-    struct has_click : _SuperT {
+    struct has_click : _SuperT::window_type::template add_policy<messages::wm_mouse_down, messages::wm_mouse_up> {
+
       using mouse_msg_param = messages::mouse_msg_param;
 
     protected:
 
-      virtual void wm_click(const mouse_msg_param&){}
-      
-      has_click(window<void> * pParent) : _SuperT(pParent){}
+      using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_mouse_down, messages::wm_mouse_up>;
 
-      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
+      virtual void wm_click(const mouse_msg_param& m) {}
 
-        if (WM_MOUSEMOVE == umsg){
-          auto oRect = rect<coord_frame::client>::get(hwnd);
-          auto x = LOWORD(lparam);
-          auto y = HIWORD(lparam);
-          if (x < 0 || y < 0 || x > oRect.right || y > oRect.bottom){
-            _Down = mouse_msg_param::buttons::unspecified;
-          }
-        }else if (WM_LBUTTONDOWN == umsg && mouse_msg_param::buttons::unspecified == _Down){
-          _Down =  mouse_msg_param::buttons::left;
-        } else if (WM_RBUTTONDOWN == umsg && mouse_msg_param::buttons::unspecified == _Down){
-          _Down = mouse_msg_param::buttons::right;
-        }else if (WM_MBUTTONDOWN==umsg && mouse_msg_param::buttons::unspecified == _Down){
-          _Down = mouse_msg_param::buttons::middle;
-        }else if (WM_LBUTTONUP == umsg && mouse_msg_param::buttons::left == _Down) {
-          wm_click(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::left));
-        } else if (WM_MBUTTONUP == umsg && mouse_msg_param::buttons::middle == _Down){
-          wm_click(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::middle));
-        } else if (WM_RBUTTONUP == umsg && mouse_msg_param::buttons::right == _Down){
-          wm_click(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::right));
-        }
-        
-        if (WM_LBUTTONUP == umsg || WM_RBUTTONUP == umsg || WM_MBUTTONUP == umsg){
+      virtual LRESULT on_wm_mouse_down(const messages::mouse_msg_param& oParam, bool &) override{
+        _Down = oParam.button;
+        return 0; 
+      }
+
+      virtual LRESULT on_wm_mouse_up(const mouse_msg_param& oParam, bool&) override{
+        if (rect<coord_frame::client>::get(*this).is_in(oParam.position) && _Down == oParam.button){
+          wm_click(oParam);
           _Down = mouse_msg_param::buttons::unspecified;
         }
-
-
         return 0;
       }
+
+
+      has_click(window<void> * pParent) : _super_t(pParent){}
+
     private:
        mouse_msg_param::buttons _Down = mouse_msg_param::buttons::unspecified;
     };

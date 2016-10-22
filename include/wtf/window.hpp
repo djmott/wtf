@@ -61,25 +61,27 @@ namespace wtf{
     using _super_t = _HeadT<window<_ImplT, _TailT...>, _ImplT>;
     using window_type = window<_ImplT, _HeadT, _TailT...>;
 
+    window(const window&) = delete;
+    window& operator=(const window&) = delete;
+
     virtual ~window() = default;
 
-    window() = default;
-    window(const window&) = delete;
+    window(){}
     window(window&& src) : _super_t(std::move(src)){}
     explicit window(window<void> * pParent) : _super_t(pParent){}
-
-    window& operator=(const window&) = delete;
     window& operator=(window&& src){ return _super_t::operator=(std::move(src)); }
 
   private:
     template <typename, template <typename, typename> class ... > friend struct window;
+
+    template <template <typename, typename> class ... _NewPolicyTs> using add_policy = window<_ImplT, _HeadT, _TailT..., _NewPolicyTs...>;
 
     LRESULT handle_message(HWND, UINT, WPARAM, LPARAM, bool&){ return 0; }
 
     LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled){
       auto handler_ret = _super_t::handle_message(hwnd, umsg, wparam, lparam, handled);
       if (handled) return handler_ret;
-      return window<_ImplT, _TailT...>::propagate_message(hwnd, umsg, wparam, lparam, handled);
+      return _super_t::propagate_message(hwnd, umsg, wparam, lparam, handled);
     }
   };
 
@@ -112,6 +114,8 @@ namespace wtf{
 
   protected:
 
+    template <template <typename, typename> class ... _NewPolicyTs> using add_policy = window<_ImplT, _NewPolicyTs...>;
+
     template <typename, template <typename, typename> class ... > friend struct window;
     template <typename, DWORD, DWORD> friend struct form_base;
 
@@ -127,7 +131,7 @@ namespace wtf{
         CW_USEDEFAULT,
         (_parent ? _parent->_handle : nullptr),
         nullptr,
-        instance_handle(),
+        _::instance_handle(),
         this
       ), [](HWND h){ return nullptr == h; });
       return 0;
@@ -136,11 +140,19 @@ namespace wtf{
     LRESULT handle_message(HWND, UINT, WPARAM, LPARAM, bool&){ return 0; }
 
     LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled){
+/*
+    #if __WTF_DEBUG_MESSAGES__
+      std::string sTemp = typeid(_ImplT).name();
+      sTemp += " ";
+      sTemp += _::msg_name(umsg);
+      sTemp += " default handler";
+      std::cout << sTemp << std::endl;
+    #endif
+*/
+
       switch (umsg){
         case WM_CLOSE:
           DestroyWindow(hwnd); _handle = nullptr; break;
-        case WM_DESTROY:
-          PostQuitMessage(0); break;
         default:
           return DefWindowProc(hwnd, umsg, wparam, lparam);
       }
@@ -152,13 +164,14 @@ namespace wtf{
     * bottom most inherited (_ImplT::handle_message) to top most parent (this class::handle_message)
     */
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
+/*
     #if __WTF_DEBUG_MESSAGES__
       std::string sTemp = typeid(_ImplT).name();
       sTemp += " ";
       sTemp += _::msg_name(umsg);
-      sTemp += "\n";
-      OutputDebugStringA(sTemp.c_str());
+      std::cout << sTemp << std::endl;
     #endif
+*/
       try{
         _ImplT * pThis = nullptr;
         bool handled = false;

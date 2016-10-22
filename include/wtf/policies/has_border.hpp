@@ -14,7 +14,7 @@ namespace wtf {
     * Creates borders
     */
     template<typename _SuperT, typename _ImplT>
-    struct has_border : _SuperT {
+    struct has_border : _SuperT::window_type::template add_policy<messages::wm_ncpaint, messages::wm_nccalcsize> {
 
       enum class border_styles{
         none = 0,
@@ -67,6 +67,8 @@ namespace wtf {
           [](BOOL b){ return !b; }
         );
       }
+
+
 
       virtual void wm_ncpaint(const device_context& dc, rect<coord_frame::client>& oClient){
 /*
@@ -145,23 +147,38 @@ namespace wtf {
 */
 
       }
+      virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS * pSizes, bool& bHandled) override{
+        bHandled = true;
+        pSizes->rgrc[0].top += border_width();
+        pSizes->rgrc[0].left += border_width();
+        pSizes->rgrc[0].bottom -= border_width();
+        pSizes->rgrc[0].right -= border_width();
+        return WVR_VALIDRECTS | WVR_REDRAW; */
+      }
+      virtual LRESULT on_wm_nccalcsize(RECT * pClient, bool& bHandled) override{
+        bHandled = true;
+      }
 
       LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &handled) {
+        return 0;
         if (WM_NCCALCSIZE == umsg && wparam){
+/*
           auto pSizeParam = reinterpret_cast<NCCALCSIZE_PARAMS*>(lparam);
           pSizeParam->rgrc[0].top += border_width();
           pSizeParam->rgrc[0].left += border_width();
           pSizeParam->rgrc[0].bottom -= border_width();
           pSizeParam->rgrc[0].right -= border_width();
           handled = true;
-          return WVR_VALIDRECTS| WVR_REDRAW;
+          return WVR_VALIDRECTS| WVR_REDRAW;*/
         }else if (WM_NCCALCSIZE == umsg){
+/*
           auto oClient = reinterpret_cast<RECT*>(lparam);
           oClient->bottom = oClient->bottom;
+*/
         } else if (WM_NCPAINT == umsg){
+/*
           handled = true;
           if (1 == wparam){
-            std::cout << "1==WPARAM" << std::endl;
             auto oDC = device_context::get_dcex(*this, DCX_WINDOW | DCX_USESTYLE| DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
             auto oWindow = rect<coord_frame::screen>::get(*this);
 
@@ -171,7 +188,6 @@ namespace wtf {
             wm_ncpaint(oDC, oClient);
 
           } else{
-            std::cout << "WPARAM : " << std::ios::hex << (int)wparam << std::endl;
 
             auto oWindow = rect<coord_frame::screen>::get(*this);
 
@@ -184,6 +200,8 @@ namespace wtf {
             rect<coord_frame::client> oClient(oWindow);
             wm_ncpaint(oDC, oClient);
           }
+          */
+
         }
 
 /* WORKS

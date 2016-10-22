@@ -21,7 +21,9 @@ namespace wtf {
     point<_frame> position() const{ return point<_frame>(left, top); }
     point<_frame> dimensions() const{ return point<_frame>(right, bottom); }
 
-    inline bool is_in(const point<_frame>& oPoint) const { return ::PtInRect(this, oPoint) ? true : false; }
+    inline bool is_in(const point<_frame>& oPoint) const { 
+      return (oPoint.x >= left && oPoint.y >= top && oPoint.x <= right && oPoint.y <= bottom);
+    }
 
     rect& offset(const point<_frame>& oPoint){
       wtf::exception::throw_lasterr_if(::OffsetRect(this, -oPoint.x, -oPoint.y), [](BOOL b){ return !b; });

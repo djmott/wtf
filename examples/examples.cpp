@@ -11,6 +11,16 @@ using namespace wtf::ui;
 #if 0
 
 struct main_form : form{
+
+  main_form(){
+    _frm.show();
+  }
+
+  form _frm;
+};
+
+#elif 0
+struct main_form : form{
   main_form() : form(), _label(this){
 
   }
@@ -332,7 +342,7 @@ struct tree_page : panel{
 struct main_form : form{
   main_form() : _tabs(this){}
 
-  virtual void wm_create() override{
+  virtual void OnCreate() override{
     titlebar("WTF example");
     _tabs.add_custom_page<label_page>("label");
     _tabs.add_custom_page<checkbox_page>("checkbox");

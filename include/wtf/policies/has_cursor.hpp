@@ -6,7 +6,7 @@ namespace wtf {
     * Provides mouse pointer customization
     */
     template<typename _SuperT, typename _ImplT>
-    struct has_cursor : _SuperT {
+    struct has_cursor : _SuperT::window_type::template add_policy<messages::wm_setcursor> {
 
       virtual const wtf::cursor &cursor_pointer() const { return cursor::global(cursor::style::arrow); }
 
@@ -18,42 +18,15 @@ namespace wtf {
 
       virtual const wtf::cursor &cursor_size_nesw() const { return cursor::global(cursor::style::size_nesw); }
 
-
-      enum class wm_nchittest_flags {
-        error = HTERROR,
-        transparent = HTTRANSPARENT,
-        nowhere = HTNOWHERE,
-        client = HTCLIENT,
-        caption = HTCAPTION,
-        sysmenu = HTSYSMENU,
-        growbox = HTGROWBOX,
-        size = HTSIZE,
-        menu = HTMENU,
-        hscroll = HTHSCROLL,
-        vscroll = HTVSCROLL,
-        minbutton = HTMINBUTTON,
-        maxbutton = HTMAXBUTTON,
-        left = HTLEFT,
-        right = HTRIGHT,
-        top = HTTOP,
-        topleft = HTTOPLEFT,
-        topright = HTTOPRIGHT,
-        bottom = HTBOTTOM,
-        bottomleft = HTBOTTOMLEFT,
-        bottomright = HTBOTTOMRIGHT,
-        border = HTBORDER,
-        reduce = HTREDUCE,
-        zoom = HTZOOM,
-        sizefirst = HTSIZEFIRST,
-        sizelast = HTSIZELAST,
-        object = HTOBJECT,
-        close = HTCLOSE,
-        help = HTHELP,
-      };
     protected:
-      has_cursor(window<void> * pParent) : _SuperT(pParent){}
 
-      virtual void wm_setcursor(wm_nchittest_flags flags) {
+      using wm_nchittest_flags = messages::wm_nchittest_flags;
+      using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_setcursor>;
+
+      has_cursor(window<void> * pParent) : _super_t(pParent){}
+
+      virtual LRESULT on_wm_setcursor(wm_nchittest_flags flags, bool& bHandled) override{
+        bHandled = true;
         switch (flags) {
           case wm_nchittest_flags::top:
           case wm_nchittest_flags::bottom:
@@ -75,16 +48,9 @@ namespace wtf {
             SetCursor(cursor_pointer());
             break;
         }
-      }
-
-      LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool &bhandled) {
-        if (WM_SETCURSOR == umsg) {
-          wm_setcursor(static_cast<wm_nchittest_flags>(LOWORD(lparam)));
-          bhandled = true;
-          return TRUE;
-        }
         return 0;
       }
+
     };
   }
 }

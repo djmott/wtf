@@ -3,6 +3,10 @@
 #define WTF_SIMPLE_WM_HANDLER( _name, _wm, _member) \
   template <typename _SuperT, typename> struct _name : _SuperT{ \
   protected: \
+    _name() = default; \
+    _name(_name&& src) : _SuperT(std::move(src)){} \
+    explicit _name(window<void> * pParent) : _SuperT(pParent){} \
+    _name& operator=(_name&& src){ return _super_t::operator=(std::move(src)); } \
     virtual LRESULT _member(bool&) = 0; \
     LRESULT handle_message(HWND, UINT umsg, WPARAM, LPARAM, bool & bhandled) { \
       if (_wm == umsg) return _member(bhandled); \
@@ -13,6 +17,11 @@
 
 namespace wtf{
   namespace messages{
+
+    WTF_SIMPLE_WM_HANDLER(wm_close, WM_CLOSE, on_wm_close);
+    WTF_SIMPLE_WM_HANDLER(wm_create, WM_CREATE, on_wm_create);
+    WTF_SIMPLE_WM_HANDLER(wm_destroy, WM_DESTROY, on_wm_destroy);
+
 
     struct mouse_msg_param{
 
@@ -65,8 +74,37 @@ namespace wtf{
       uint32_t transition_context : 1;
     };
 
+    enum class wm_nchittest_flags{
+      error = HTERROR,
+      transparent = HTTRANSPARENT,
+      nowhere = HTNOWHERE,
+      client = HTCLIENT,
+      caption = HTCAPTION,
+      sysmenu = HTSYSMENU,
+      growbox = HTGROWBOX,
+      size = HTSIZE,
+      menu = HTMENU,
+      hscroll = HTHSCROLL,
+      vscroll = HTVSCROLL,
+      minbutton = HTMINBUTTON,
+      maxbutton = HTMAXBUTTON,
+      left = HTLEFT,
+      right = HTRIGHT,
+      top = HTTOP,
+      topleft = HTTOPLEFT,
+      topright = HTTOPRIGHT,
+      bottom = HTBOTTOM,
+      bottomleft = HTBOTTOMLEFT,
+      bottomright = HTBOTTOMRIGHT,
+      border = HTBORDER,
+      reduce = HTREDUCE,
+      zoom = HTZOOM,
+      sizefirst = HTSIZEFIRST,
+      sizelast = HTSIZELAST,
+      object = HTOBJECT,
+      close = HTCLOSE,
+      help = HTHELP,
+    };
 
-    WTF_SIMPLE_WM_HANDLER(wm_close, WM_CLOSE, on_close);
-    WTF_SIMPLE_WM_HANDLER(wm_create, WM_CREATE, on_create);
   }
 }
