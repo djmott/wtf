@@ -6,6 +6,8 @@ namespace wtf{
   struct scroll_bar : window<scroll_bar, policy::has_size, policy::has_show, policy::has_orientation, 
     policy::has_create, policy::has_mouse_wheel, policy::has_move>{
 
+    using mouse_msg_param = messages::mouse_msg_param;
+
     explicit scroll_bar(window<void> * pParent)
       : window(pParent),
       _inc(this, true),
@@ -100,8 +102,8 @@ namespace wtf{
         window(pParent), _parent(pParent), _is_increment(IsIncrementer){
 
       }
-      virtual void wm_click(const policy::mouse_event& m) override{
-        if (policy::mouse_event::buttons::left != m.button) return;
+      virtual void wm_click(const mouse_msg_param& m) override{
+        if (mouse_msg_param::buttons::left != m.button) return;
         if (_is_increment) _parent->StepIncEvent();
         else _parent->StepDecEvent();
       };
@@ -143,8 +145,8 @@ namespace wtf{
       {
 
       }
-      virtual void wm_click(const policy::mouse_event& m) override{
-        if (policy::mouse_event::buttons::left != m.button) return;
+      virtual void wm_click(const mouse_msg_param& m) override{
+        if (mouse_msg_param::buttons::left != m.button) return;
         if (_is_increment) _parent->PageUpEvent();
         else _parent->PageDownEvent();
       };

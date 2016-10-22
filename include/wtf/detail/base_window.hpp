@@ -35,7 +35,7 @@ namespace wtf{
   protected:
     template <typename, template <typename, typename> class ... > friend struct _::base_window;
 
-    virtual void make_window() = 0;
+    virtual int exec() = 0;
 
     window * _parent;
     std::vector<window*> _children;
@@ -225,7 +225,7 @@ namespace wtf{
       template <typename, template <typename, typename> class ... > friend struct window;
       template <typename, DWORD, DWORD> friend struct form_base;
 
-      virtual void make_window() override{
+      virtual int exec() override{
         HWND hParent = (_parent ? (HWND)*_parent : nullptr);
         _handle = wtf::exception::throw_lasterr_if(::CreateWindowEx(
           _ImplT::ExStyle, 
@@ -241,6 +241,7 @@ namespace wtf{
           instance_handle(), 
           this
         ),[](HWND h){ return nullptr == h; });
+        return 0;
       }
             
       LRESULT handle_message(HWND, UINT, WPARAM, LPARAM, bool&){ return 0; }
@@ -280,7 +281,7 @@ namespace wtf{
             pThis->_handle = hwnd;
             SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
             for (auto pChild : pThis->children()){
-              pChild->make_window();
+              pChild->exec();
             }
           }else{
             pThis = reinterpret_cast<_ImplT*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));

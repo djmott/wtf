@@ -6,6 +6,9 @@ namespace wtf{
       policy::has_create, policy::has_click, policy::has_text, policy::has_font, 
       policy::has_paint, policy::has_mouse_up, policy::has_move>
     {
+
+      using mouse_msg_param = messages::mouse_msg_param;
+
       toggle_button() = delete;
       toggle_button(const toggle_button&) = delete;
       toggle_button(toggle_button&&) = delete;
@@ -16,8 +19,8 @@ namespace wtf{
 
       virtual void wm_create() override{ border_style(border_styles::raised); };
 
-      virtual void wm_mouse_up(const policy::mouse_event& m) override{
-        if (policy::mouse_event::buttons::left != m.button) return;
+      virtual void wm_mouse_up(const mouse_msg_param& m) override{
+        if (mouse_msg_param::buttons::left != m.button) return;
         button_state(button_states::down == _button_state ? button_states::up : button_states::down);
       };
 

@@ -6,6 +6,8 @@ namespace wtf{
     policy::has_mouse_wheel, policy::has_font, policy::has_move>
   {
 
+    using mouse_msg_param = messages::mouse_msg_param;
+
     explicit tree(window<void> * pParent)
       : window(pParent),
       _root(new node(this)),
@@ -30,8 +32,8 @@ namespace wtf{
       full_row_select(false);
     };
 
-    virtual void wm_click(const policy::mouse_event& m) override{
-      if (policy::mouse_event::buttons::left != m.button) return;
+    virtual void wm_click(const mouse_msg_param& m) override{
+      if (mouse_msg_param::buttons::left != m.button) return;
       node::pointer oClickedNode;
       for (size_t i = 0; i < _row_rects.size(); ++i){
         if (_expander_rects[i].is_in(m.position)){
@@ -54,7 +56,7 @@ namespace wtf{
         oClickedNode->selected(bSelected);
         if (!bSelected) OnNodeSelected(oClickedNode);
       } else{ //extended
-        if (!(m.key_state & policy::mouse_event::key_states::control)){
+        if (!(m.key_state & mouse_msg_param::key_states::control)){
           _selected_nodes.clear();
         }
         bool bSelected = !oClickedNode->selected();
@@ -64,8 +66,8 @@ namespace wtf{
       refresh();
     };
 
-    virtual void wm_dblclick(const policy::mouse_event& m) override{
-      if (policy::mouse_event::buttons::left != m.button) return;
+    virtual void wm_dblclick(const mouse_msg_param& m) override{
+      if (mouse_msg_param::buttons::left != m.button) return;
       for (size_t i = 0; i < _row_rects.size(); ++i){
         if (_item_rects[i].is_in(m.position)){
           _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
@@ -91,7 +93,7 @@ namespace wtf{
       }
     };
 
-    virtual void wm_mouse_wheel(int16_t delta, const policy::mouse_event& m) override{
+    virtual void wm_mouse_wheel(int16_t delta, const mouse_msg_param& m) override{
       bool bUp = (delta > 0);
       for (int i = 0; i <= (delta % WHEEL_DELTA); ++i){
         if (bUp){

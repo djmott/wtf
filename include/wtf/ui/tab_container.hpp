@@ -6,6 +6,8 @@ namespace wtf{
       policy::has_show, policy::has_create, policy::has_move>
     {
 
+      using mouse_msg_param = messages::mouse_msg_param;
+
       explicit tab_container(window<void> * pParent)
         : window(pParent), _active_page(0), _button_bar_slider(this), _tab_orientation(tab_orientations::top)
       { }
@@ -112,7 +114,7 @@ namespace wtf{
 
         struct inner_panel : _PanelT{
           inner_panel(tab_container * pParent) : _PanelT(pParent){
-            make_window();
+            exec();
           }
         }_panel;
 
@@ -131,7 +133,7 @@ namespace wtf{
         struct tab_button : label{
 
           tab_button(tab_container * pParent, size_t PageIndex, const tstring& stitle) : label(pParent), _parent(pParent), _PageIndex(PageIndex), _title(stitle){
-            make_window();
+            exec();
           }
 
           virtual void wm_create() override{
@@ -140,8 +142,8 @@ namespace wtf{
             deactivate();
           };
 
-          virtual void wm_click(const policy::mouse_event& m){
-            if (policy::mouse_event::buttons::left != m.button) return;
+          virtual void wm_click(const mouse_msg_param& m){
+            if (mouse_msg_param::buttons::left != m.button) return;
             _parent->active_page(_PageIndex);
           };
 

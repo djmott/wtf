@@ -21,9 +21,8 @@ namespace wtf{
     }
     form_base() : form_base(nullptr){}
 
-    int exec(bool show_window = true){
-      make_window();
-      if (show_window) this->show();
+    virtual int exec() override{
+      _super_t::exec();
       message oMsg;
       auto iRet = oMsg.pump();
       return iRet;
@@ -73,7 +72,7 @@ namespace wtf{
   };
 
 
-  struct form : form_base<form, WS_EX_OVERLAPPEDWINDOW, WS_OVERLAPPEDWINDOW>{
+  struct form : form_base<form, WS_EX_OVERLAPPEDWINDOW, WS_OVERLAPPEDWINDOW|WS_VISIBLE>{
 
     form(window<void> * pParent=nullptr) : form_base(pParent){}
   };

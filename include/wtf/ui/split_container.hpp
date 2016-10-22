@@ -3,8 +3,29 @@ namespace wtf{
   struct split_container : window<split_container, policy::has_size, policy::has_border, 
     policy::has_paint, policy::has_orientation, policy::has_create, policy::has_move>{
 
+    using mouse_msg_param = messages::mouse_msg_param;
+
     explicit split_container(window<void> * pParent) : window(pParent), _first(this), _second(this), _splitter(this)
     { }
+
+
+    void set_split_position(int percentage){
+      int newPos = percentage * width() / 100;
+      if (orientations::horizontal == _orientation){
+        _splitter.move(0, newPos, width(), SplitterWidth);
+      } else{
+        _splitter.move(newPos, 0, SplitterWidth, height());
+      }
+      wm_size(point<coord_frame::client>(width(), height()));
+    }
+    
+    panel * first(){ return &_first; }
+    const panel * first() const{ return &_first; }
+
+    panel * second(){ return &_second; }
+    const panel * second() const{ return &_second; }
+
+  private:
 
     virtual void wm_create() override{
       border_style(border_styles::none);
@@ -31,28 +52,9 @@ namespace wtf{
       }
     };
 
-    void set_split_position(int percentage){
-      int newPos = percentage * width() / 100;
-      if (orientations::horizontal == _orientation){
-        _splitter.move(0, newPos, width(), SplitterWidth);
-      } else{
-        _splitter.move(newPos, 0, SplitterWidth, height());
-      }
-      wm_size(point<coord_frame::client>(width(), height()));
-    }
-    
-    panel * first(){ return &_first; }
-    const panel * first() const{ return &_first; }
-
-    panel * second(){ return &_second; }
-    const panel * second() const{ return &_second; }
-
-  private:
-
     static const int SplitterWidth = 5;
 
     panel _first, _second;
-
 
     void size_bar_moved(const point<coord_frame::client>& p){
       if (orientations::horizontal == _orientation){
@@ -71,17 +73,17 @@ namespace wtf{
 
       virtual void wm_create() override{ border_style(border_styles::none); };
       
-      virtual void wm_mouse_move(const policy::mouse_event& m) override{
-        if (!(m.key_state & policy::mouse_event::key_states::left)) return;
+      virtual void wm_mouse_move(const mouse_msg_param& m) override{
+        if (!(m.key_state & mouse_msg_param::key_states::left)) return;
         _parent->size_bar_moved(m.position);
       };
       
-      virtual void wm_mouse_down(const policy::mouse_event& m) override{
-        if (policy::mouse_event::buttons::left != m.button) return;
+      virtual void wm_mouse_down(const mouse_msg_param& m) override{
+        if (mouse_msg_param::buttons::left != m.button) return;
         SetCapture(*this);
       };
       
-      virtual void wm_mouse_up(const policy::mouse_event& m) override{
+      virtual void wm_mouse_up(const mouse_msg_param& m) override{
         ReleaseCapture();
       };
 

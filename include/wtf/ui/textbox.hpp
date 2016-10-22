@@ -7,6 +7,8 @@ namespace wtf{
       policy::has_font, policy::has_create>
     {
 
+      using mouse_msg_param = messages::mouse_msg_param;
+
       explicit textbox(window<void> * pParent) : window(pParent){}
 
       virtual void wm_create() override{
@@ -66,7 +68,7 @@ namespace wtf{
         }
       };
 
-      virtual void wm_mouse_down(const policy::mouse_event& p) override{
+      virtual void wm_mouse_down(const mouse_msg_param& p) override{
         set_focus();
       };
 

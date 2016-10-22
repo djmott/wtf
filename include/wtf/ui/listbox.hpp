@@ -4,6 +4,9 @@ namespace wtf{
   struct listbox : wtf::window<listbox, policy::has_border, policy::has_click, policy::has_text, policy::has_move,
     policy::has_paint, policy::has_size, policy::has_mouse_wheel, policy::has_font, policy::has_create>{
 
+    using mouse_msg_param = messages::mouse_msg_param;
+
+
     explicit listbox(window<void> * pParent) :
       window(pParent),
       _TopIndex(0),
@@ -42,12 +45,12 @@ namespace wtf{
         draw_text(dc, _ItemRects[i]);
       }
     };
-    virtual void wm_mouse_wheel(int16_t delta, const policy::mouse_event&) override{
+    virtual void wm_mouse_wheel(int16_t delta, const mouse_msg_param&) override{
       if (delta > 0) _vscroll.StepDecEvent();
       else _vscroll.StepIncEvent();
     };
-    virtual void wm_click(const policy::mouse_event& m) override{
-      if (policy::mouse_event::buttons::left != m.button) return;
+    virtual void wm_click(const mouse_msg_param& m) override{
+      if (mouse_msg_param::buttons::left != m.button) return;
       if (selection_modes::single == _selection_mode){
         _SelectedItems.clear();
       }

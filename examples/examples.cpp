@@ -6,8 +6,8 @@
 #include "wtf/wtf.hpp"
 
 using namespace wtf;
-
-#if 0
+using namespace wtf::ui;
+#if 1
 struct main_form : form{
   main_form() : form(), _label(this){
 
@@ -207,7 +207,7 @@ struct button_page : panel{
 
   struct _button1 : button{
     _button1(window<void> * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
-    virtual void wm_click(const policy::mouse_event&){
+    virtual void wm_click(const mouse_msg_param&){
       tstringstream ss;
       ss << GetTickCount();
       _label1.text(ss.str());
@@ -217,7 +217,7 @@ struct button_page : panel{
 
   struct _button2 : toggle_button{
     _button2(window<void> * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
-    virtual void wm_click(const policy::mouse_event&) override{
+    virtual void wm_click(const mouse_msg_param&) override{
       tstringstream ss;
       ss << GetTickCount();
       _label2.text(ss.str());

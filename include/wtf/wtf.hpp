@@ -77,8 +77,33 @@ namespace wtf{
 #include "detail/message.hpp"
 
 
-#include "policies/mouse_event.hpp"
-#include "policies/has_activate.hpp"
+
+
+#include "messages/messages.hpp"
+#include "messages/wm_activate.hpp"
+#include "messages/wm_char.hpp"
+#include "messages/wm_dblclick.hpp"
+#include "messages/wm_geticon.hpp"
+#include "messages/wm_keydown.hpp"
+#include "messages/wm_keyup.hpp"
+#include "messages/wm_killfocus.hpp"
+#include "messages/wm_mouse_down.hpp"
+#include "messages/wm_mouse_leave.hpp"
+#include "messages/wm_mouse_move.hpp"
+#include "messages/wm_mouse_up.hpp"
+#include "messages/wm_mouse_wheel.hpp"
+#include "messages/wm_move.hpp"
+#include "messages/wm_moving.hpp"
+#include "messages/wm_paint.hpp"
+#include "messages/wm_setcursor.hpp"
+#include "messages/wm_setfocus.hpp"
+#include "messages/wm_showwindow.hpp"
+#include "messages/wm_size.hpp"
+#include "messages/wm_sizing.hpp"
+#include "messages/wm_timer.hpp"
+
+
+
 #include "policies/has_border.hpp"
 #include "policies/has_caret.hpp"
 #include "policies/has_click.hpp"
@@ -108,6 +133,7 @@ namespace wtf{
 #include "policies/has_titlebar.hpp"
 #include "policies/has_zorder.hpp"
 #include "policies/has_button_border.hpp"
+
 
 
 #include "ui/window.hpp"

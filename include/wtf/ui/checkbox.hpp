@@ -4,6 +4,10 @@ namespace wtf{
     : window<checkbox, policy::has_paint, policy::has_click, policy::has_dblclick, policy::has_size, 
     policy::has_text, policy::has_font, policy::has_create, policy::has_move>
   {
+
+    using mouse_msg_param = messages::mouse_msg_param;
+
+
     explicit checkbox(window<void> * pParent) : window(pParent), _check(this){}
 
     enum class check_locations{
@@ -27,13 +31,13 @@ namespace wtf{
       auto_draw_text(false);
       check_location(check_locations::left);
     };
-    virtual void wm_click(const policy::mouse_event& m) override{
-      if (policy::mouse_event::buttons::left == m.button){
+    virtual void wm_click(const mouse_msg_param& m) override{
+      if (mouse_msg_param::buttons::left == m.button){
         _check.value(!_check.value());
       }
     };
-    virtual void wm_dblclick(const policy::mouse_event& m){
-      if (policy::mouse_event::buttons::left == m.button) _check.value(!_check.value());
+    virtual void wm_dblclick(const mouse_msg_param& m){
+      if (mouse_msg_param::buttons::left == m.button) _check.value(!_check.value());
     };
     virtual void wm_paint(const device_context& dc, const paint_struct& ps){
       auto client = ps.client();
@@ -56,8 +60,8 @@ namespace wtf{
         _parent(pParent)
       {
       }
-      virtual void wm_click(const policy::mouse_event& m) override{
-        if (policy::mouse_event::buttons::left == m.button) value(!_value);
+      virtual void wm_click(const mouse_msg_param& m) override{
+        if (mouse_msg_param::buttons::left == m.button) value(!_value);
       };
       virtual void wm_paint(const device_context& dc, const paint_struct& ps){
         auto client = ps.client();

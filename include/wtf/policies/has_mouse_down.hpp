@@ -8,20 +8,20 @@ namespace wtf{
     */
     template<typename _SuperT, typename _ImplT>
     struct has_mouse_down : _SuperT{
-
+      using mouse_msg_param = messages::mouse_msg_param;
 
     protected:
-      virtual void wm_mouse_down(const mouse_event&){}
+      virtual void wm_mouse_down(const mouse_msg_param&){}
 
       has_mouse_down(window<void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_LBUTTONDOWN == umsg){
-          wm_mouse_down(mouse_event(wparam, lparam, mouse_event::buttons::left));
+          wm_mouse_down(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::left));
         } else if (WM_MBUTTONDOWN == umsg){
-          wm_mouse_down(mouse_event(wparam, lparam, mouse_event::buttons::middle));
+          wm_mouse_down(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::middle));
         } else if (WM_RBUTTONDOWN == umsg){
-            wm_mouse_down(mouse_event(wparam, lparam, mouse_event::buttons::right));
+            wm_mouse_down(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::right));
         }
         return 0;
       }
