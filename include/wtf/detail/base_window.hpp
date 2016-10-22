@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 #if !defined(__WTF_DEBUG_MESSAGES__)
@@ -200,6 +201,8 @@ namespace wtf{
       }
     };
 
+
+
     template <typename _ImplT> struct base_window<_ImplT> : window<void>{
 
       using window_type = base_window<_ImplT>;
@@ -328,3 +331,4 @@ namespace wtf{
   };
   }
 }
+#endif

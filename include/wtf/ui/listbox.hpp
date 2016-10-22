@@ -102,8 +102,11 @@ namespace wtf{
     };
 
   private:
+
+/*
     virtual const tstring &text() const{ return concrete_policy_type<policy::has_text>::text(); }
     virtual void text(const tstring &newval){ concrete_policy_type<policy::has_text>::text(newval); }
+*/
 
 
     UINT_PTR _MouseDownTimer;

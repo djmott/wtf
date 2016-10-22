@@ -86,8 +86,6 @@ namespace wtf{
       LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
         if (WM_PAINT == umsg && _auto_draw_text){
           rect<coord_frame::client> oClient = reinterpret_cast<const paint_struct *>(lparam)->client();
-          using _impl_window_t = typename _ImplT::window_type;
-          using has_border_t = typename _impl_window_t::has_policy_t<policy::has_border>;
           draw_text(*reinterpret_cast<const device_context *>(wparam), oClient);
         }
         return 0;

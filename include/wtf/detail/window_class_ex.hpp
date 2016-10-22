@@ -10,7 +10,7 @@ namespace wtf{
         return _window_class_ex;
       }
 
-      LPCTSTR name(){ return _class_name.c_str(); }
+      LPCTSTR name() const { return _class_name.c_str(); }
 
       ~window_class_ex(){ UnregisterClass(_class_name.c_str(), instance_handle()); }
     private:

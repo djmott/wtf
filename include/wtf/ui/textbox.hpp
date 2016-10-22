@@ -53,7 +53,9 @@ namespace wtf{
           EndPrintPos = tmpEndPos;
         }
 
-        concrete_policy_type<policy::has_text>::text(_text.substr(_print_pos, EndPrintPos - _print_pos));
+//        concrete_policy_type<policy::has_text>::text(_text.substr(_print_pos, EndPrintPos - _print_pos));
+
+        text(_text.substr(_print_pos, EndPrintPos - _print_pos));
 
         bool bCaretVisible = caret_visible();
         if (bCaretVisible) caret_visible(false);
