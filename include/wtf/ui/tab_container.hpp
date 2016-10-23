@@ -46,8 +46,8 @@ namespace wtf{
       panel& add_custom_page(const tstring& title){
         ipage_info::ptr oRet(new page_info<_Ty>(this, title, _pages.size()));
         _pages.push_back(oRet);
-        oRet->panel()->border_style(panel::border_styles::raised);
-        oRet->button()->border_style(label::border_styles::flat);
+        oRet->panel()->border_style(border_styles::raised);
+        oRet->button()->border_style(border_styles::flat);
         active_page(_active_page);
         return *oRet->panel();
       }
@@ -142,13 +142,13 @@ namespace wtf{
             deactivate();
           };
 
-          virtual void wm_click(const mouse_msg_param& m){
+          virtual void on_wm_click(const mouse_msg_param& m) override{
             if (mouse_msg_param::buttons::left != m.button) return;
             _parent->active_page(_PageIndex);
           };
 
           void deactivate(){
-            border_style(label::border_styles::flat);
+            border_style(border_styles::flat);
             fore_color(wtf::system_rgb<system_colors::gray_text>());
             font().weight(font::weights::normal);
             zorder(zorders::bottom);

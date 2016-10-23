@@ -49,7 +49,7 @@ namespace wtf{
       if (delta > 0) _vscroll.StepDecEvent();
       else _vscroll.StepIncEvent();
     };
-    virtual void wm_click(const mouse_msg_param& m) override{
+    virtual void on_wm_click(const mouse_msg_param& m) override{
       if (mouse_msg_param::buttons::left != m.button) return;
       if (selection_modes::single == _selection_mode){
         _SelectedItems.clear();

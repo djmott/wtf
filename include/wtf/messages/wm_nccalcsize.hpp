@@ -18,9 +18,8 @@ namespace wtf{
       virtual LRESULT on_wm_nccalcsize(RECT *, bool&) = 0;
 
       wm_nccalcsize(window<void> * pParent) : _SuperT(pParent){}
-
-
-      LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM, bool &){
+      
+      LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool & handled){
         if (WM_NCCALCSIZE == umsg){
           if (wparam){
             return on_wm_nccalcsize(reinterpret_cast<NCCALCSIZE_PARAMS*>(lparam), handled);

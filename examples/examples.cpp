@@ -26,7 +26,7 @@ struct main_form : form{
   }
 
   virtual void wm_create () override{
-    _label.border_style(label::border_styles::double_lowered);
+    _label.border_style(border_styles::double_lowered);
     _label.move(5, 5, 50, 30);
     _label.text(_T("FNORD"));
   };
@@ -90,69 +90,61 @@ struct label_page : panel{
     _raised(this), _lowered(this), _flat(this), 
     _etched(this), _bumped(this), _double_raised(this), _double_lowered(this)
   {
-    _raised.border_style(label::border_styles::raised);
-    _lowered.border_style(label::border_styles::lowered);
-    _flat.border_style(label::border_styles::flat);
-    _etched.border_style(label::border_styles::etched);
-    _bumped.border_style(label::border_styles::bumped);
-    _double_raised.border_style(label::border_styles::double_raised);
-    _double_lowered.border_style(label::border_styles::double_lowered);
+    _raised.border_style(border_styles::raised);
+    _lowered.border_style(border_styles::lowered);
+    _flat.border_style(border_styles::flat);
+    _etched.border_style(border_styles::etched);
+    _bumped.border_style(border_styles::bumped);
+    _double_raised.border_style(border_styles::double_raised);
+    _double_lowered.border_style(border_styles::double_lowered);
 
   }
   virtual void wm_create() override {
     _left.move(5, 5, 150, 25);
     _left.text("Left aligned");
-    _left.text_horizontal_alignment(label::text_horizontal_alignments::left);
+    _left.text_horizontal_alignment(text_horizontal_alignments::left);
 
     _center.move(5, _left.top() + _left.height() + 5, 150, 25);
     _center.text("Center aligned");
-    _center.text_horizontal_alignment(label::text_horizontal_alignments::center);
+    _center.text_horizontal_alignment(text_horizontal_alignments::center);
 
     _right.move(5, _center.top() + _center.height() + 5, 150, 25);
     _right.text("Right aligned");
-    _right.text_horizontal_alignment(label::text_horizontal_alignments::right);
+    _right.text_horizontal_alignment(text_horizontal_alignments::right);
 
     _raised.move(5, _right.top() + _right.height() + 5, 150, 25);
     _raised.text("Raised");
-    _raised.border_style(label::border_styles::raised);
+    _raised.border_style(border_styles::raised);
 
     _lowered.move(5, _raised.top() + _raised.height() + 5, 150, 25);
     _lowered.text("Lowered");
-    _lowered.border_style(label::border_styles::lowered);
+    _lowered.border_style(border_styles::lowered);
 
     _flat.move(5, _lowered.top() + _lowered.height() + 5, 150, 25);
     _flat.text("Flat");
-    _flat.border_style(label::border_styles::flat);
+    _flat.border_style(border_styles::flat);
 
     _etched.move(5, _flat.top() + _flat.height() + 5, 150, 25);
     _etched.text("Etched");
-    _etched.border_style(label::border_styles::etched);
+    _etched.border_style(border_styles::etched);
 
     _bumped.move(5, _etched.top() + _etched.height() + 5, 150, 25);
     _bumped.text("Bumped");
-    _bumped.border_style(label::border_styles::bumped);
+    _bumped.border_style(border_styles::bumped);
 
     _double_raised.move(5, _bumped.top() + _bumped.height() + 5, 150, 25);
     _double_raised.text("Double raised");
-    _double_raised.border_style(label::border_styles::double_raised);
+    _double_raised.border_style(border_styles::double_raised);
 
     _double_lowered.move(5, _double_raised.top() + _double_raised.height() + 5, 150, 25);
     _double_lowered.text("Double lowered");
-    _double_lowered.border_style(label::border_styles::double_lowered);
+    _double_lowered.border_style(border_styles::double_lowered);
   };
 
   label _left, _center, _right;
   label _raised, _lowered, _flat;
-  label _etched, _bumped, _double_raised;
+  label _etched, _bumped, _double_raised, _double_lowered;
 
-  struct _double_lowered : label{
-    _double_lowered(window<void>* pParent) : label(pParent){}
-
-    virtual void wm_ncpaint(const device_context& dc, rect<coord_frame::client>& oClient) override{
-      label::wm_ncpaint(dc, oClient);
-    }
-
-  }_double_lowered;
 };
 
 
@@ -188,9 +180,9 @@ struct listbox_page : panel{
       _center.add_item(ss.str());
       _right.add_item(ss.str());
     }
-    _left.text_horizontal_alignment(listbox::text_horizontal_alignments::left);
-    _center.text_horizontal_alignment(listbox::text_horizontal_alignments::center);
-    _right.text_horizontal_alignment(listbox::text_horizontal_alignments::right);
+    _left.text_horizontal_alignment(text_horizontal_alignments::left);
+    _center.text_horizontal_alignment(text_horizontal_alignments::center);
+    _right.text_horizontal_alignment(text_horizontal_alignments::right);
   };
   virtual void wm_size(const point<coord_frame::client>& p) override {
     _left.move(0, 0, p.x / 3, p.y);
@@ -219,7 +211,7 @@ struct button_page : panel{
 
   struct _button1 : button{
     _button1(window<void> * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
-    virtual void wm_click(const mouse_msg_param&){
+    virtual void on_wm_click(const mouse_msg_param&) override{
       tstringstream ss;
       ss << GetTickCount();
       _label1.text(ss.str());
@@ -229,7 +221,7 @@ struct button_page : panel{
 
   struct _button2 : toggle_button{
     _button2(window<void> * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
-    virtual void wm_click(const mouse_msg_param&) override{
+    virtual void on_wm_click(const mouse_msg_param&) override{
       tstringstream ss;
       ss << GetTickCount();
       _label2.text(ss.str());

@@ -27,11 +27,11 @@ namespace wtf{
 
   private:
     virtual void wm_create() override {
-      (panel::border_styles::raised);
+      (border_styles::raised);
       auto_draw_text(false);
       check_location(check_locations::left);
     };
-    virtual void wm_click(const mouse_msg_param& m) override{
+    virtual void on_wm_click(const mouse_msg_param& m) override{
       if (mouse_msg_param::buttons::left == m.button){
         _check.value(!_check.value());
       }
@@ -39,7 +39,8 @@ namespace wtf{
     virtual void wm_dblclick(const mouse_msg_param& m){
       if (mouse_msg_param::buttons::left == m.button) _check.value(!_check.value());
     };
-    virtual void wm_paint(const device_context& dc, const paint_struct& ps){
+
+    virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
       auto client = ps.client();
       auto TextSize = prefered_text_size();
       if (check_locations::left == _check_location){
@@ -49,6 +50,7 @@ namespace wtf{
         _check.move(client.right - checkbox_size, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
         draw_text(dc, rect<coord_frame::client>(0, 0, client.right - checkbox_size, client.bottom));
       }
+      return window::on_wm_paint(dc, ps, bHandled);
     };
 
     static const int checkbox_size = 15;
@@ -60,7 +62,7 @@ namespace wtf{
         _parent(pParent)
       {
       }
-      virtual void wm_click(const mouse_msg_param& m) override{
+      virtual void on_wm_click(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left == m.button) value(!_value);
       };
       virtual void wm_paint(const device_context& dc, const paint_struct& ps){

@@ -15,7 +15,7 @@ namespace wtf {
 
       using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_mouse_down, messages::wm_mouse_up>;
 
-      virtual void wm_click(const mouse_msg_param& m) {}
+      virtual void on_wm_click(const mouse_msg_param& ){}
 
       virtual LRESULT on_wm_mouse_down(const messages::mouse_msg_param& oParam, bool &) override{
         _Down = oParam.button;
@@ -24,7 +24,7 @@ namespace wtf {
 
       virtual LRESULT on_wm_mouse_up(const mouse_msg_param& oParam, bool&) override{
         if (rect<coord_frame::client>::get(*this).is_in(oParam.position) && _Down == oParam.button){
-          wm_click(oParam);
+          on_wm_click(oParam);
           _Down = mouse_msg_param::buttons::unspecified;
         }
         return 0;

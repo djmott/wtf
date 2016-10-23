@@ -1,13 +1,13 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
+  namespace messages {
 
     template<typename _SuperT, typename _ImplT>
     struct wm_paint : _SuperT {
 
     protected:
-      virtual LRESULT on_wm_paint(const device_context&, const paint_struct&, bool&) = 0;
+      virtual LRESULT on_wm_paint(const device_context&, const paint_struct&, bool&) = 0{ return 0; }
 
       wm_paint(window<void> * pParent) : _SuperT(pParent){}
 
@@ -16,6 +16,7 @@ namespace wtf {
           return on_wm_paint(*reinterpret_cast<const device_context *>(wparam),
                              *reinterpret_cast<const paint_struct *>(lparam), bhandled);
         }
+        return 0;
       }
 
     };

@@ -8,7 +8,7 @@ namespace wtf {
 
     protected:
 
-      virtual LRESULT on_wm_setfocus(HWND, bool&) = 0;
+      virtual LRESULT on_wm_setfocus(HWND, bool&) = 0{ return 0; }
 
       wm_setfocus(window<void> * pParent) : _SuperT(pParent){}
 

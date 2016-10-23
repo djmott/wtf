@@ -30,8 +30,8 @@ namespace wtf{
     virtual void wm_create() override{
       border_style(border_styles::none);
       set_split_position(25);
-      _first.border_style(panel::border_styles::raised);
-      _second.border_style(panel::border_styles::raised);
+      _first.border_style(border_styles::raised);
+      _second.border_style(border_styles::raised);
     };
 
     virtual void wm_size(const point<coord_frame::client>& p) override{
@@ -70,6 +70,7 @@ namespace wtf{
     struct size_bar : label{
 
       size_bar(split_container * pParent) : label(pParent), _parent(pParent){}
+
 
       virtual void wm_create() override{ border_style(border_styles::none); };
       

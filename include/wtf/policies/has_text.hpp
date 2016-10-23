@@ -1,24 +1,25 @@
 #pragma once
 
 namespace wtf{
+
+  enum class text_vertical_alignments{
+    top,
+    center,
+    bottom,
+  };
+
+  enum class text_horizontal_alignments{
+    left,
+    center,
+    right,
+  };
+
   namespace policy{
     /** has_text
     * provides members to draw text on UI elements
     */
     template<typename _SuperT, typename _ImplT>
-    struct has_text : _SuperT{
-
-      enum class text_vertical_alignments{
-        top,
-        center,
-        bottom,
-      };
-
-      enum class text_horizontal_alignments{
-        left,
-        center,
-        right,
-      };
+    struct has_text : _SuperT::window_type::template add_policy<messages::wm_paint, policy::has_font> {
 
 
       virtual bool multiline() const{ return _multiline; }
@@ -48,13 +49,13 @@ namespace wtf{
         return dc.get_text_extent(_text);
       }
     protected:
+      using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_paint, policy::has_font>;
+      has_text(window<void> * pParent) : _super_t(pParent){}
 
-      has_text(window<void> * pParent) : _SuperT(pParent){}
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
 
       virtual void draw_text(const device_context& dc, const rect<coord_frame::client>& client){
-        ApplyFontEvent(dc);
         wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
                                          [](UINT i){ return GDI_ERROR == i; });
 
@@ -76,20 +77,18 @@ namespace wtf{
             format |= DT_RIGHT; break;
         }
 
-        rect<coord_frame::client> oTextArea = client;
+        rect<coord_frame::client> oClient = client;
 
-        wtf::exception::throw_lasterr_if(::DrawText(dc, _text.c_str(), -1, &oTextArea, format),
+        wtf::exception::throw_lasterr_if(::DrawText(dc, _text.c_str(), -1, &oClient, format),
                                          [](BOOL b){ return !b; });
 
       }
 
-      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &) {
-        if (WM_PAINT == umsg && _auto_draw_text){
-          rect<coord_frame::client> oClient = reinterpret_cast<const paint_struct *>(lparam)->client();
-          draw_text(*reinterpret_cast<const device_context *>(wparam), oClient);
-        }
-        return 0;
+      virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
+        if (_auto_draw_text) draw_text(dc, ps.client());
+        return _super_t::on_wm_paint(dc, ps, bHandled);
       }
+
 
     private:
 

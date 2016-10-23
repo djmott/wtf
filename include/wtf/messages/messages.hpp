@@ -7,7 +7,7 @@
     _name(_name&& src) : _SuperT(std::move(src)){} \
     explicit _name(window<void> * pParent) : _SuperT(pParent){} \
     _name& operator=(_name&& src){ return _super_t::operator=(std::move(src)); } \
-    virtual LRESULT _member(bool&) = 0; \
+    virtual LRESULT _member(bool&) = 0  { return 0; } \
     LRESULT handle_message(HWND, UINT umsg, WPARAM, LPARAM, bool & bhandled) { \
       if (_wm == umsg) return _member(bhandled); \
       return 0; \

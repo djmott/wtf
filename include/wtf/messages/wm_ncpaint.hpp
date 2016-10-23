@@ -1,5 +1,13 @@
 #pragma once
 
+
+#if !defined(DCX_NODELETERGN ) 
+#define DCX_NODELETERGN 0x00040000
+#endif
+#if !defined(DCX_USESTYLE)
+#define DCX_USESTYLE 0x00010000
+#endif
+
 namespace wtf{
   namespace messages{
 
@@ -8,7 +16,7 @@ namespace wtf{
 
     protected:
 
-      virtual LRESULT on_wm_ncpaint(const device_context&, const rect<coord_frame::client>& , bool&) = 0;
+      virtual LRESULT on_wm_ncpaint(const device_context&, const rect<coord_frame::client>&, bool&) = 0{ return 0; }
 
       wm_ncpaint(window<void> * pParent) : _SuperT(pParent){}
 

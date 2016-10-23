@@ -12,7 +12,7 @@ namespace wtf{
 
     protected:
 
-      virtual LRESULT on_wm_mouse_leave(bool& bHandled) = 0;
+      virtual LRESULT on_wm_mouse_leave(bool& bHandled) = 0{ return 0; }
 
       wm_mouse_leave(window<void> * pParent) : _SuperT(pParent){}
 

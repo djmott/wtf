@@ -15,7 +15,7 @@ namespace wtf{
       }
       virtual void wm_timer(UINT_PTR iTimer){
         if (iTimer == _timerid){
-          _SuperT::wm_click(mouse_msg_param((WPARAM)0, (LPARAM)0, mouse_msg_param::buttons::left));
+          _SuperT::on_wm_click(mouse_msg_param((WPARAM)0, (LPARAM)0, mouse_msg_param::buttons::left));
           set_timer(_repeat_rate, iTimer);
         }
       };

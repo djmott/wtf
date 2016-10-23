@@ -32,7 +32,7 @@ namespace wtf{
       full_row_select(false);
     };
 
-    virtual void wm_click(const mouse_msg_param& m) override{
+    virtual void on_wm_click(const mouse_msg_param& m) override{
       if (mouse_msg_param::buttons::left != m.button) return;
       node::pointer oClickedNode;
       for (size_t i = 0; i < _row_rects.size(); ++i){

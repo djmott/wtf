@@ -1,6 +1,12 @@
 #pragma once
 
 namespace wtf {
+
+  enum class font_background_modes{
+    opaque = OPAQUE,
+    transparent = TRANSPARENT,
+  };
+
   namespace policy {
     template<typename _SuperT, typename _ImplT>
     struct has_font : _SuperT {
@@ -12,13 +18,9 @@ namespace wtf {
       has_font(has_font&&) = delete;
       has_font &operator=(has_font&&) = delete;
 
-      enum class background_modes{
-        opaque = OPAQUE,
-        transparent = TRANSPARENT,
-      };
 
-      virtual background_modes background_mode() const { return _background_mode; }
-      virtual void background_mode(background_modes newval) { _background_mode = newval; }
+      virtual font_background_modes background_mode() const { return _background_mode; }
+      virtual void background_mode(font_background_modes newval) { _background_mode = newval; }
 
       virtual const wtf::font& font() const { return _font; }
       virtual wtf::font &font() { return _font; }
@@ -55,7 +57,7 @@ namespace wtf {
       wtf::font _font = _::non_client_metrics::get().lfMessageFont;
       rgb _fore_color = system_rgb<system_colors::window_text>();
       rgb _back_color = system_rgb<system_colors::window>();
-      background_modes _background_mode = background_modes::transparent;
+      font_background_modes _background_mode = font_background_modes::transparent;
 
 
     };

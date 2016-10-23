@@ -6,7 +6,7 @@ namespace wtf {
     * Controls the caret of text/input elements
     */
     template<typename _SuperT, typename>
-    struct has_caret : _SuperT {
+    struct has_caret : _SuperT::window_type::template add_policy<messages::wm_setfocus, messages::wm_killfocus> {
 
       virtual int caret_width() const{ return _width; }
       virtual void caret_width(int newval){ _width = newval; }
@@ -51,18 +51,24 @@ namespace wtf {
       virtual point<coord_frame::client> caret_position() const{ return _pos; }
 
     protected:
-      has_caret(window<void> * pParent) : _SuperT(pParent){}
-      LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM , bool &) {
-        if (WM_SETFOCUS == umsg) {
-          create_caret();
-          caret_position(_pos);
-          caret_visible(true);
-          caret_blink_rate(_blink_rate);
-        } else if (WM_KILLFOCUS == umsg) {
-          destroy_caret();
-        }
-        return 0;
+
+      using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_setfocus, messages::wm_killfocus>;
+
+      has_caret(window<void> * pParent) : _super_t(pParent){}
+
+      virtual LRESULT on_wm_setfocus(HWND hwnd, bool& bHandled) override{
+        create_caret();
+        caret_position(_pos);
+        caret_visible(true);
+        caret_blink_rate(_blink_rate);
+        return _super_t::on_wm_setfocus(hwnd, bHandled);
       }
+
+      virtual LRESULT on_wm_killfocus(HWND hwnd, bool& bHandled) override{
+        destroy_caret();
+        return _super_t::on_wm_killfocus(hwnd, bHandled);
+      }
+
     private:
       UINT _blink_rate = 250;
       point<coord_frame::client> _pos = point<coord_frame::client>(0,0);

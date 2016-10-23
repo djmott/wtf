@@ -102,7 +102,7 @@ namespace wtf{
         window(pParent), _parent(pParent), _is_increment(IsIncrementer){
 
       }
-      virtual void wm_click(const mouse_msg_param& m) override{
+      virtual void on_wm_click(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left != m.button) return;
         if (_is_increment) _parent->StepIncEvent();
         else _parent->StepDecEvent();
@@ -145,7 +145,7 @@ namespace wtf{
       {
 
       }
-      virtual void wm_click(const mouse_msg_param& m) override{
+      virtual void on_wm_click(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left != m.button) return;
         if (_is_increment) _parent->PageUpEvent();
         else _parent->PageDownEvent();

@@ -140,7 +140,7 @@ namespace wtf{
     LRESULT handle_message(HWND, UINT, WPARAM, LPARAM, bool&){ return 0; }
 
     LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled){
-/*
+
     #if __WTF_DEBUG_MESSAGES__
       std::string sTemp = typeid(_ImplT).name();
       sTemp += " ";
@@ -148,7 +148,7 @@ namespace wtf{
       sTemp += " default handler";
       std::cout << sTemp << std::endl;
     #endif
-*/
+
 
       switch (umsg){
         case WM_CLOSE:
@@ -164,14 +164,14 @@ namespace wtf{
     * bottom most inherited (_ImplT::handle_message) to top most parent (this class::handle_message)
     */
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
-/*
+
     #if __WTF_DEBUG_MESSAGES__
       std::string sTemp = typeid(_ImplT).name();
       sTemp += " ";
       sTemp += _::msg_name(umsg);
       std::cout << sTemp << std::endl;
     #endif
-*/
+
       try{
         _ImplT * pThis = nullptr;
         bool handled = false;

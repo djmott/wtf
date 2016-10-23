@@ -41,7 +41,7 @@ namespace wtf{
     rgb _fill_color = system_rgb<system_colors::highlight>();
     text_modes _text_mode = text_modes::percentage;
 
-    virtual void wm_paint(const device_context& dc, const paint_struct& ps) override {
+    virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override {
       auto oBrush = brush::solid_brush(_fill_color);
       rect<coord_frame::client> oFillArea = ps.client();
       auto iExtent = _max - _min;
@@ -51,7 +51,7 @@ namespace wtf{
         oFillArea.top = (oFillArea.top * _value) / iExtent;
       }
       dc.fill(oFillArea, oBrush);
-      if (text_modes::none == _text_mode) return;
+      if (text_modes::none == _text_mode) return window::on_wm_paint(dc, ps, bHandled);
       //poor mans utf8 conversion...get with the program mingw
       tstring sDisplayText;
       std::string sTemp;
@@ -68,7 +68,7 @@ namespace wtf{
       oFillArea.right = std::max(oTextSize.cx, oFillArea.right);
       text_vertical_alignment(text_vertical_alignments::center);
       text_horizontal_alignment(text_horizontal_alignments::center);
-      draw_text(dc, oFillArea);
+      return _super_t::on_wm_paint(dc, ps, bHandled);
     }
 
 
