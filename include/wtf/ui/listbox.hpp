@@ -1,13 +1,16 @@
 #pragma once
 namespace wtf{
 
-  struct listbox : wtf::window<listbox, policy::has_border, policy::has_click, policy::has_text, policy::has_move,
-    policy::has_paint, policy::has_size, policy::has_mouse_wheel, policy::has_font, policy::has_create>{
+  struct listbox : wtf::window<listbox, policy::has_border, policy::has_click, policy::has_text, 
+    policy::has_move, policy::has_background, policy::has_size, policy::has_font, messages::wm_paint, 
+    messages::wm_mouse_wheel, messages::wm_create, messages::wm_size, messages::wm_erasebkgnd,
+    messages::wm_mouse_down, messages::wm_mouse_up, messages::wm_nccalcsize, messages::wm_ncpaint>
+  {
 
     using mouse_msg_param = messages::mouse_msg_param;
 
 
-    explicit listbox(window<void> * pParent) :
+    explicit listbox(window<void,void> * pParent) :
       window(pParent),
       _TopIndex(0),
       _SelectedItems(1, 0),
@@ -16,16 +19,19 @@ namespace wtf{
       _background_brush(brush::system_brush(system_colors::window))
     {}
 
-    virtual void wm_create() override{
+    virtual LRESULT on_wm_create(bool& bHandled) override{
       border_style(border_styles::raised);
       auto_draw_text(false);
+      return window::on_wm_create(bHandled);
     };
-    virtual void wm_size(const point<coord_frame::client>& p) override{
+
+    virtual LRESULT on_wm_size(const point<coord_frame::client>& p, bool& bHandled) override{
       _vscroll.move(p.x - scroll_width - right_margin, top_margin, scroll_width, p.y - top_margin - bottom_margin);
+      return window::on_wm_size(p, bHandled);
     };
-    virtual void wm_paint(const device_context& dc, const paint_struct& ps) override{
-      if (!_Items.size()) return;
-      ApplyFontEvent(dc);
+    
+    virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
+      if (!_Items.size()) return window::on_wm_paint(dc, ps, bHandled);
       auto client = ps.client();
       auto oTextSize = dc.get_text_extent(_Items[0]);
       _ItemRects.clear();
@@ -44,11 +50,15 @@ namespace wtf{
         text(_Items[i + _TopIndex]);
         draw_text(dc, _ItemRects[i]);
       }
+      return window::on_wm_paint(dc, ps, bHandled);
     };
-    virtual void wm_mouse_wheel(int16_t delta, const mouse_msg_param&) override{
+
+    virtual LRESULT on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& param, bool& bHandled) override{
       if (delta > 0) _vscroll.StepDecEvent();
       else _vscroll.StepIncEvent();
+      return window::on_wm_mouse_wheel(delta, param, bHandled);
     };
+
     virtual void on_wm_click(const mouse_msg_param& m) override{
       if (mouse_msg_param::buttons::left != m.button) return;
       if (selection_modes::single == _selection_mode){
@@ -58,7 +68,8 @@ namespace wtf{
         if (!_ItemRects[i].is_in(m.position)) continue;
         _SelectedItems.push_back(_TopIndex + static_cast<int>(i));
       }
-      refresh(true);
+      invalidate();
+      window::on_wm_click(m);
     };
 
     static const int scroll_width = 15;
@@ -80,34 +91,31 @@ namespace wtf{
     }
   protected:
     friend struct vscroll;
-
-    virtual const brush &background_brush() const{ return _background_brush; }
-
+    void invalidate(){ window::invalidate(); }
     struct vscroll : scroll_bar{
+
+
       vscroll(listbox * pParent) : scroll_bar(pParent), _Parent(pParent){}
 
-      virtual void wm_create() override{ orientation(scroll_bar::orientations::vertical); };
+      virtual LRESULT on_wm_create(bool& bHandled) override{ 
+        orientation(orientations::vertical); 
+        return scroll_bar::on_wm_create(bHandled);
+      };
 
       virtual void StepIncEvent(){
         if ((_Parent->_TopIndex + _Parent->_ItemRects.size()) < _Parent->_Items.size()) _Parent->_TopIndex++;
-        _Parent->refresh(true);
+        _Parent->invalidate();
       }
 
       virtual void StepDecEvent(){
         if (!_Parent->_TopIndex) return;
         --_Parent->_TopIndex;
-        _Parent->refresh(true);
+        _Parent->invalidate();
       }
       listbox * _Parent;
     };
 
   private:
-
-/*
-    virtual const tstring &text() const{ return concrete_policy_type<policy::has_text>::text(); }
-    virtual void text(const tstring &newval){ concrete_policy_type<policy::has_text>::text(newval); }
-*/
-
 
     UINT_PTR _MouseDownTimer;
     bool _IncrementHeldDown;

@@ -6,7 +6,7 @@ namespace wtf {
     * Provides an icon associated with the window
     */
     template<typename _SuperT, typename _ImplT>
-    struct has_icon : _SuperT::window_type::template add_policy<messages::wm_geticon> {
+    struct has_icon : _SuperT {
 
       virtual icon &big_icon() { return _big_icon; }
 
@@ -21,8 +21,7 @@ namespace wtf {
       virtual void small_icon(icon &&src) { _small_icon = std::move(src); }
 
     protected:
-      using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_geticon>;
-      has_icon(window<void> * pParent) : _super_t(pParent){}
+      explicit has_icon(window<void,void> * pParent) : _SuperT(pParent){}
 
       virtual HICON on_wm_geticon(messages::icon_type ico, bool& bHandled) override{
         bHandled = true;

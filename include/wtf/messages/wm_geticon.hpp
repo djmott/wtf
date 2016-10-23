@@ -15,9 +15,9 @@ namespace wtf {
 
     protected:
 
-      virtual HICON on_wm_geticon(icon_type,bool&) = 0;
+      virtual HICON on_wm_geticon(icon_type,bool&) = 0{ return nullptr; }
 
-      wm_geticon(window<void> * pParent) : _SuperT(pParent){}
+      explicit wm_geticon(window<void,void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM, bool &bhandled) {
         if (WM_GETICON == umsg){

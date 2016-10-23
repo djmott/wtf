@@ -18,7 +18,7 @@ namespace wtf{
 
       virtual LRESULT on_wm_ncpaint(const device_context&, const rect<coord_frame::client>&, bool&) = 0{ return 0; }
 
-      wm_ncpaint(window<void> * pParent) : _SuperT(pParent){}
+      wm_ncpaint(window<void,void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM, bool & bHandled){
         if (WM_NCPAINT == umsg){

@@ -19,7 +19,8 @@ namespace wtf {
       }
 
     protected:
-      has_titlebar(window<void> * pParent) : _SuperT(pParent){}
+      explicit has_titlebar(window<void,void> * pParent) : _SuperT(pParent){}
+    private:
       tstring _titlebar = _T("");
     };
 

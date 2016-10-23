@@ -7,9 +7,9 @@ namespace wtf {
     struct wm_moving : _SuperT {
 
     protected:
-      virtual LRESULT on_wm_moving(rect<coord_frame::screen>&, bool & ) = 0;
+      virtual LRESULT on_wm_moving(rect<coord_frame::screen>&, bool & ) = 0{ return 0; }
 
-      wm_moving(window<void> * pParent) : _SuperT(pParent){}
+      wm_moving(window<void,void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
         if (WM_MOVING == umsg){

@@ -10,7 +10,7 @@ namespace wtf{
 
       virtual LRESULT on_wm_killfocus(HWND, bool&) = 0{ return 0; }
 
-      wm_killfocus(window<void> * pParent) : _SuperT(pParent){}
+      wm_killfocus(window<void,void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM, bool& bhandled){
         if (WM_KILLFOCUS == umsg){

@@ -16,9 +16,9 @@ namespace wtf {
 
     protected:
 
-      wm_showwindow(window<void> * pParent) : _SuperT(pParent){}
+      wm_showwindow(window<void,void> * pParent) : _SuperT(pParent){}
 
-      virtual LRESULT on_wm_showwindow(visibility_change_flag, bool&) = 0;
+      virtual LRESULT on_wm_showwindow(visibility_change_flag, bool&) = 0{ return 0; }
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool & bHandled) {
         if (WM_SHOWWINDOW == umsg) return on_wm_showwindow(static_cast<visibility_change_flag>(lparam), bHandled);

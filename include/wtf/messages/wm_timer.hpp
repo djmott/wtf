@@ -9,7 +9,7 @@ namespace wtf {
 
     protected:
 
-      virtual LRESULT on_wm_timer(UINT_PTR, bool&) = 0;
+      virtual LRESULT on_wm_timer(UINT_PTR, bool&) = 0{ return 0; }
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM , bool & bHandled) {
         if (WM_TIMER == umsg) return on_wm_timer(static_cast<UINT_PTR>(wparam), bHandled);

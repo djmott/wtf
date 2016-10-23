@@ -15,7 +15,7 @@ namespace wtf {
 
     protected:
 
-      has_focus(window<void> * pParent) : _SuperT(pParent){}
+      has_focus(window<void,void> * pParent) : _SuperT(pParent){}
 
     };
   }

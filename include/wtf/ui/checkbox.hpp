@@ -1,49 +1,44 @@
 #pragma once
 namespace wtf{
   struct checkbox 
-    : window<checkbox, policy::has_paint, policy::has_click, policy::has_dblclick, policy::has_size, 
-    policy::has_text, policy::has_font, policy::has_create, policy::has_move>
+    : window<checkbox,  policy::has_click, policy::has_size, 
+    policy::has_text, policy::has_move, policy::has_background,
+    messages::wm_nccalcsize, messages::wm_ncpaint, messages::wm_move, policy::has_font,
+    messages::wm_erasebkgnd, messages::wm_mouse_down, messages::wm_mouse_up, 
+    messages::wm_mouse_leave, messages::wm_create, messages::wm_paint>
   {
 
     using mouse_msg_param = messages::mouse_msg_param;
 
 
-    explicit checkbox(window<void> * pParent) : window(pParent), _check(this){}
+    explicit checkbox(window<void,void> * pParent) : window(pParent), _check(this){
+      auto_draw_text(false);
+    }
 
     enum class check_locations{
       left,
       right,
     };
 
-    check_locations check_location() const{ return _check_location; }
-    void check_location(check_locations newval){ 
-      _check_location = newval; 
-      if (check_locations::left == _check_location){
-        text_horizontal_alignment(text_horizontal_alignments::left);
-      } else{
-        text_horizontal_alignment(text_horizontal_alignments::right);
-      }
+    text_horizontal_alignments text_horizontal_alignment() const{ return _text_horizontal_alignment; }
+    void text_horizontal_alignment(text_horizontal_alignments newval){
+      _text_horizontal_alignment = newval;
     }
 
   private:
-    virtual void wm_create() override {
-      (border_styles::raised);
-      auto_draw_text(false);
-      check_location(check_locations::left);
-    };
+
+    virtual LRESULT on_wm_create(bool& bHandled) override{ return window::on_wm_create(bHandled); }
+
     virtual void on_wm_click(const mouse_msg_param& m) override{
       if (mouse_msg_param::buttons::left == m.button){
         _check.value(!_check.value());
       }
     };
-    virtual void wm_dblclick(const mouse_msg_param& m){
-      if (mouse_msg_param::buttons::left == m.button) _check.value(!_check.value());
-    };
 
     virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
       auto client = ps.client();
       auto TextSize = prefered_text_size();
-      if (check_locations::left == _check_location){
+      if (text_horizontal_alignments::left == _text_horizontal_alignment){
         _check.move(0, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
         draw_text(dc, rect<coord_frame::client>(checkbox_size, 0, client.right - checkbox_size, client.bottom));
       } else{
@@ -64,15 +59,10 @@ namespace wtf{
       }
       virtual void on_wm_click(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left == m.button) value(!_value);
-      };
-      virtual void wm_paint(const device_context& dc, const paint_struct& ps){
+      }
+
+      virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
         auto client = ps.client();
-/*
-        client.top++;
-        client.left++;
-        client.bottom--;
-        client.right--;
-*/
         dc.fill(client, brush::solid_brush(rgb(255, 255, 255)));
         if (_value){
           client.top += 2;
@@ -83,19 +73,22 @@ namespace wtf{
           dc.line(black, client.left, client.top, client.right, client.bottom);
           dc.line(black, client.right, client.top, client.left, client.bottom);
         }
-      };
+        return panel::on_wm_paint(dc, ps, bHandled);
+      }
 
       bool value() const{ return _value; }
       void value(bool newval){
         _value = newval;
         border_style(newval ? border_styles::lowered : border_styles::raised);
-        refresh();
-        /* ??? _parent->ValueChanged(newval);*/
+        invalidate();
       }
 
+    private:
       bool _value = false;
       checkbox * _parent;
     }_check;
-    check_locations _check_location = check_locations::left;
+
+  private:
+    text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::left;
   };
 }

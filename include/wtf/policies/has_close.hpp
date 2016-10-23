@@ -13,7 +13,7 @@ namespace wtf {
 
     protected:
 
-      has_close(window<void> * pParent) : _SuperT(pParent){}
+      explicit has_close(window<void,void> * pParent) : _SuperT(pParent){}
 
     };
   }

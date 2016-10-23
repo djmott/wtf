@@ -45,16 +45,8 @@ namespace wtf {
 
     protected:
 
-      virtual void wm_move(const point<coord_frame::client>&){}
+      explicit has_move(window<void,void> * pParent) : _SuperT(pParent){}
 
-      has_move(window<void> * pParent) : _SuperT(pParent){}
-
-      LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled){
-        if (WM_MOVE == umsg){
-          wm_move(point<coord_frame::client>(LOWORD(lparam), HIWORD(lparam)));
-        }
-        return 0;
-      }
 
     };
 

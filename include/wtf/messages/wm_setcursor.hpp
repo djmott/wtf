@@ -9,9 +9,9 @@ namespace wtf {
 
     protected:
 
-      virtual LRESULT on_wm_setcursor(wm_nchittest_flags, bool&) = 0;
+      virtual LRESULT on_wm_setcursor(wm_nchittest_flags, bool&) = 0{ return 0; }
 
-      wm_setcursor(window<void> * pParent) : _SuperT(pParent){}
+      explicit wm_setcursor(window<void,void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool &bhandled) {
         if (WM_SETCURSOR == umsg) {

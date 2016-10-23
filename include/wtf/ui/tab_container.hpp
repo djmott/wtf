@@ -2,22 +2,25 @@
 namespace wtf{
 
 
-    struct tab_container : wtf::window<tab_container, policy::has_size, policy::has_paint, 
-      policy::has_show, policy::has_create, policy::has_move>
+    struct tab_container : wtf::window<tab_container, policy::has_size, policy::has_show, policy::has_move, 
+      policy::has_background,
+      messages::wm_create,  messages::wm_size, messages::wm_mouse_down, messages::wm_mouse_up, 
+      messages::wm_erasebkgnd>
     {
 
       using mouse_msg_param = messages::mouse_msg_param;
 
-      explicit tab_container(window<void> * pParent)
+      explicit tab_container(window<void,void> * pParent)
         : window(pParent), _active_page(0), _button_bar_slider(this), _tab_orientation(tab_orientations::top)
       { }
 
-      virtual void wm_create() override{
-        _button_bar_slider.orientation(scroll_bar::orientations::horizontal);
+      virtual LRESULT on_wm_create(bool& bHandled) override{
+        _button_bar_slider.orientation(orientations::horizontal);
         _button_bar_slider.hide();
+        return window::on_wm_create(bHandled);
       };
 
-      virtual void wm_size(const point<coord_frame::client>& newsize) override{
+      virtual LRESULT on_wm_size(const point<coord_frame::client>& newsize, bool& bHandled) override{
         point<coord_frame::client> p = newsize;
         p.x--; p.y--;
         int iBtnPos = _button_left;
@@ -32,6 +35,7 @@ namespace wtf{
           iBtnPos--;
           oPageInfo->panel()->move(0, _tab_height - 1, p.x, p.y - _tab_height);
         }
+        return window::on_wm_size(newsize, bHandled);
       };
       
       enum class tab_orientations{
@@ -116,6 +120,7 @@ namespace wtf{
           inner_panel(tab_container * pParent) : _PanelT(pParent){
             exec();
           }
+          void invalidate(){ _PanelT::invalidate(true); }
         }_panel;
 
         virtual void deactivate() override{
@@ -127,7 +132,7 @@ namespace wtf{
         virtual void activate() override{
           _panel.show();
           _button.activate();
-          _panel.refresh();
+          _panel.invalidate();
         }
 
         struct tab_button : label{
@@ -136,15 +141,16 @@ namespace wtf{
             exec();
           }
 
-          virtual void wm_create() override{
+          virtual LRESULT on_wm_create(bool& bCreate) override{
             text(_title);
             enable_border_elements(true, true, false, true);
             deactivate();
+            return label::on_wm_create(bCreate);
           };
 
           virtual void on_wm_click(const mouse_msg_param& m) override{
-            if (mouse_msg_param::buttons::left != m.button) return;
-            _parent->active_page(_PageIndex);
+            if (mouse_msg_param::buttons::left == m.button) _parent->active_page(_PageIndex);
+            label::on_wm_click(m);
           };
 
           void deactivate(){
@@ -152,14 +158,14 @@ namespace wtf{
             fore_color(wtf::system_rgb<system_colors::gray_text>());
             font().weight(font::weights::normal);
             zorder(zorders::bottom);
-            refresh();
+            invalidate();
           }
 
           void activate(){
             border_style(border_styles::raised);
             fore_color(wtf::system_rgb<system_colors::button_text>());
             font().weight(font::weights::bold);
-            refresh();
+            invalidate();
           }
 
 

@@ -8,16 +8,9 @@ namespace wtf {
   };
 
   namespace policy {
+
     template<typename _SuperT, typename _ImplT>
     struct has_font : _SuperT {
-
-      has_font() : _SuperT(), _font(_::non_client_metrics::get().lfMessageFont){}
-
-      has_font(const has_font&) = delete;
-      has_font &operator=(const has_font &) = delete;
-      has_font(has_font&&) = delete;
-      has_font &operator=(has_font&&) = delete;
-
 
       virtual font_background_modes background_mode() const { return _background_mode; }
       virtual void background_mode(font_background_modes newval) { _background_mode = newval; }
@@ -33,33 +26,37 @@ namespace wtf {
       virtual void back_color(rgb newval) { _back_color = newval; }
 
     protected:
-      has_font(window<void> * pParent) : _SuperT(pParent){}
+      
+      explicit has_font(window<void,void> * pParent) : _SuperT(pParent){}
 
-      virtual void ApplyFontEvent(const device_context& dc){
-        const auto & oFont = font();
-        auto oFontHandle = oFont.open();
-        dc.select_object(oFontHandle);
+      virtual LRESULT on_wm_create(bool& bHandled) override{
+        apply_font(device_context::get_client(*this));
+        return _SuperT::on_wm_create(bHandled);
+      }
+
+      virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
+        apply_font(dc);
+        return _SuperT::on_wm_paint(dc, ps, bHandled);
+      }
+
+      virtual LRESULT on_wm_erasebkgnd(const device_context& dc, const rect<coord_frame::client>& client, bool& bHandled) override{ 
+        apply_font(dc);
+        return _SuperT::on_wm_erasebkgnd(dc, client, bHandled);
+      }
+
+      void apply_font(const device_context& dc){
+        dc.select_object(font().open());
         wtf::exception::throw_lasterr_if(::SetBkMode(dc, static_cast<int>(background_mode())), [](int i){ return !i; });
         wtf::exception::throw_lasterr_if(::SetTextColor(dc, fore_color()), [](COLORREF c){ return CLR_INVALID == c; });
         wtf::exception::throw_lasterr_if(::SetBkColor(dc, back_color()), [](COLORREF c){ return CLR_INVALID == c; });
       }
-
-      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool &bProcessed) {
-        if (WM_PAINT == umsg){
-          ApplyFontEvent(*reinterpret_cast<const device_context *>(wparam));
-        }
-        return 0;
-      }
     
     private:
 
-
       wtf::font _font = _::non_client_metrics::get().lfMessageFont;
       rgb _fore_color = system_rgb<system_colors::window_text>();
-      rgb _back_color = system_rgb<system_colors::window>();
+      rgb _back_color = system_rgb<system_colors::button_face>();
       font_background_modes _background_mode = font_background_modes::transparent;
-
-
     };
   }
 }

@@ -7,15 +7,13 @@ namespace wtf {
     * produces click events
     */
     template<typename _SuperT, typename _ImplT>
-    struct has_click : _SuperT::window_type::template add_policy<messages::wm_mouse_down, messages::wm_mouse_up> {
+    struct has_click : _SuperT {
 
       using mouse_msg_param = messages::mouse_msg_param;
 
     protected:
 
-      using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_mouse_down, messages::wm_mouse_up>;
-
-      virtual void on_wm_click(const mouse_msg_param& ){}
+      virtual void on_wm_click(const mouse_msg_param& )=0{}
 
       virtual LRESULT on_wm_mouse_down(const messages::mouse_msg_param& oParam, bool &) override{
         _Down = oParam.button;
@@ -31,7 +29,7 @@ namespace wtf {
       }
 
 
-      has_click(window<void> * pParent) : _super_t(pParent){}
+      explicit has_click(window<void,void> * pParent) : _SuperT(pParent){}
 
     private:
        mouse_msg_param::buttons _Down = mouse_msg_param::buttons::unspecified;

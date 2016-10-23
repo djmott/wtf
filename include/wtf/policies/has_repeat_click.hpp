@@ -11,7 +11,7 @@ namespace wtf{
       void repeat_rate(int newval){ _repeat_rate = newval; }
 
     protected:
-      has_repeat_click(window<void> * pParent) : _SuperT(pParent){
+      has_repeat_click(window<void,void> * pParent) : _SuperT(pParent){
       }
       virtual void wm_timer(UINT_PTR iTimer){
         if (iTimer == _timerid){

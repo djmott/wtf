@@ -10,7 +10,7 @@ namespace wtf {
 
       virtual LRESULT on_wm_setfocus(HWND, bool&) = 0{ return 0; }
 
-      wm_setfocus(window<void> * pParent) : _SuperT(pParent){}
+      wm_setfocus(window<void,void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM, bool& bhandled) {
         if (WM_SETFOCUS == umsg) {

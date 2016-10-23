@@ -14,10 +14,10 @@ namespace wtf{
 
     protected:
 
-      virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *, bool&) = 0;
-      virtual LRESULT on_wm_nccalcsize(RECT *, bool&) = 0;
+      virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *, bool&) = 0{ return 0; }
+      virtual LRESULT on_wm_nccalcsize(RECT *, bool&) = 0{ return 0; }
 
-      wm_nccalcsize(window<void> * pParent) : _SuperT(pParent){}
+      wm_nccalcsize(window<void,void> * pParent) : _SuperT(pParent){}
       
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool & handled){
         if (WM_NCCALCSIZE == umsg){

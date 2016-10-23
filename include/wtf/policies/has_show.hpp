@@ -14,7 +14,7 @@ namespace wtf {
 
     protected:
 
-      has_show(window<void> * pParent) : _SuperT(pParent){}
+      explicit has_show(window<void,void> * pParent) : _SuperT(pParent){}
 
     };
 

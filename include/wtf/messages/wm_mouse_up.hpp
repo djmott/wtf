@@ -10,7 +10,7 @@ namespace wtf{
     protected:
       virtual LRESULT on_wm_mouse_up(const mouse_msg_param&, bool&) = 0 { return 0; }
 
-      wm_mouse_up(window<void> * pParent) : _SuperT(pParent){}
+      wm_mouse_up(window<void,void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
         if (WM_LBUTTONUP == umsg){

@@ -13,9 +13,9 @@ namespace wtf{
 
     protected:
 
-      virtual LRESULT on_wm_activate(activate_mode, bool minimized, HWND target, bool& handled) = 0;
+      virtual LRESULT on_wm_activate(activate_mode, bool minimized, HWND target, bool& handled) = 0{ return 0; }
 
-      wm_activate(window<void> * pParent) : _SuperT(pParent){}
+      wm_activate(window<void,void> * pParent) : _SuperT(pParent){}
 
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM, bool &) {

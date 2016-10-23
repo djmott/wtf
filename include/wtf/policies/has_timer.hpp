@@ -25,14 +25,9 @@ namespace wtf {
 
 
     protected:
-      virtual void wm_timer(UINT_PTR){}
 
-      has_timer(window<void> * pParent) : _SuperT(pParent){}
-
-      LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM , bool &) {
-        if (WM_TIMER == umsg) wm_timer(static_cast<UINT_PTR>(wparam));
-        return 0;
-      }
+      has_timer(window<void,void> * pParent) : _SuperT(pParent){}
+    private:
       UINT_PTR _next_timer_id = 1;
     };
 

@@ -19,7 +19,7 @@ namespace wtf{
     * provides members to draw text on UI elements
     */
     template<typename _SuperT, typename _ImplT>
-    struct has_text : _SuperT::window_type::template add_policy<messages::wm_paint, policy::has_font> {
+    struct has_text : _SuperT {
 
 
       virtual bool multiline() const{ return _multiline; }
@@ -49,8 +49,8 @@ namespace wtf{
         return dc.get_text_extent(_text);
       }
     protected:
-      using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_paint, policy::has_font>;
-      has_text(window<void> * pParent) : _super_t(pParent){}
+
+      has_text(window<void,void> * pParent) : _SuperT(pParent){}
 
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }

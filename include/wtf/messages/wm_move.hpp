@@ -16,9 +16,9 @@ namespace wtf {
 
     protected:
 
-      virtual LRESULT on_wm_move(const point<coord_frame::client>&, bool&) = 0;
+      virtual LRESULT on_wm_move(const point<coord_frame::client>&, bool&) = 0{ return 0; }
 
-      wm_move(window<void> * pParent) : _SuperT(pParent){}
+      wm_move(window<void,void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled){
         if (WM_MOVE == umsg){

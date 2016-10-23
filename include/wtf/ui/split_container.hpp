@@ -1,11 +1,12 @@
 #pragma once
 namespace wtf{
   struct split_container : window<split_container, policy::has_size, policy::has_border, 
-    policy::has_paint, policy::has_orientation, policy::has_create, policy::has_move>{
+    policy::has_orientation, policy::has_move, policy::has_background,
+    messages::wm_size, messages::wm_create, messages::wm_erasebkgnd, messages::wm_nccalcsize, messages::wm_ncpaint>{
 
     using mouse_msg_param = messages::mouse_msg_param;
 
-    explicit split_container(window<void> * pParent) : window(pParent), _first(this), _second(this), _splitter(this)
+    explicit split_container(window<void,void> * pParent) : window(pParent), _first(this), _second(this), _splitter(this)
     { }
 
 
@@ -16,7 +17,7 @@ namespace wtf{
       } else{
         _splitter.move(newPos, 0, SplitterWidth, height());
       }
-      wm_size(point<coord_frame::client>(width(), height()));
+      invalidate();
     }
     
     panel * first(){ return &_first; }
@@ -25,16 +26,17 @@ namespace wtf{
     panel * second(){ return &_second; }
     const panel * second() const{ return &_second; }
 
-  private:
+  protected:
 
-    virtual void wm_create() override{
+    virtual LRESULT on_wm_create(bool& bHandled) override{
       border_style(border_styles::none);
       set_split_position(25);
       _first.border_style(border_styles::raised);
       _second.border_style(border_styles::raised);
+      return window::on_wm_create(bHandled);
     };
 
-    virtual void wm_size(const point<coord_frame::client>& p) override{
+    virtual LRESULT on_wm_size(const point<coord_frame::client>& p, bool& bHandled) override{
       if (orientations::horizontal == _orientation){
         auto NewTop = _splitter.top();
         if (NewTop < 10) NewTop = 10;
@@ -50,6 +52,7 @@ namespace wtf{
         _splitter.move(NewLeft, 0, SplitterWidth, p.y);
         _second.move(NewLeft + SplitterWidth, 0, p.x - NewLeft - SplitterWidth, p.y);
       }
+      return window::on_wm_size(p, bHandled);
     };
 
     static const int SplitterWidth = 5;
@@ -62,8 +65,7 @@ namespace wtf{
       } else{
         _splitter.move(_splitter.left() + p.x, 0, SplitterWidth, height());
       }
-      wm_size(rect<coord_frame::client>::get(*this).dimensions());
-      refresh();
+      invalidate();
     }
 
 
@@ -72,20 +74,26 @@ namespace wtf{
       size_bar(split_container * pParent) : label(pParent), _parent(pParent){}
 
 
-      virtual void wm_create() override{ border_style(border_styles::none); };
+      virtual LRESULT on_wm_create(bool& bHandled) override{ 
+        border_style(border_styles::none);
+        return label::on_wm_create(bHandled);      
+      };
       
-      virtual void wm_mouse_move(const mouse_msg_param& m) override{
-        if (!(m.key_state & mouse_msg_param::key_states::left)) return;
+      virtual LRESULT on_wm_mouse_move(const mouse_msg_param& m, bool& bHandled) override{
+        if (!(m.key_state & mouse_msg_param::key_states::left)) return label::on_wm_mouse_move(m, bHandled);
         _parent->size_bar_moved(m.position);
+        return label::on_wm_mouse_move(m, bHandled);
       };
       
-      virtual void wm_mouse_down(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left != m.button) return;
+      virtual LRESULT on_wm_mouse_down(const mouse_msg_param& m, bool& bHandled) override{
+        if (mouse_msg_param::buttons::left != m.button) return label::on_wm_mouse_down(m, bHandled);
         SetCapture(*this);
+        return label::on_wm_mouse_down(m, bHandled);
       };
       
-      virtual void wm_mouse_up(const mouse_msg_param& m) override{
+      virtual LRESULT on_wm_mouse_up(const mouse_msg_param& m, bool& bHandled) override{
         ReleaseCapture();
+        return label::on_wm_mouse_up(m, bHandled);
       };
 
       split_container * _parent;

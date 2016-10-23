@@ -7,7 +7,7 @@ namespace wtf{
   /** Specialization that terminates the inheritance hierarchy
   * super most base class of all windows
   */
-  template <> struct window<void>{
+  template <> struct window<void, void>{
 
     window(const window&) = delete;
     window& operator=(const window&) = delete;
@@ -45,7 +45,14 @@ namespace wtf{
     }
 
   protected:
-    template <typename, template <typename, typename> class ... > friend struct window;
+    template <typename, typename, template <typename, typename> class ... > friend struct window;
+
+    void invalidate(bool bErase=true){
+      if (_handle)
+        wtf::exception::throw_lasterr_if(
+        ::InvalidateRect(_handle, nullptr, bErase ? TRUE : FALSE), 
+        [](BOOL b){ return !b; });
+    }
 
     virtual int exec() = 0;
 
@@ -56,10 +63,12 @@ namespace wtf{
 
 
 
-  template <typename _ImplT, template <typename, typename> class _HeadT, template <typename, typename> class ... _TailT>
-  struct window<_ImplT, _HeadT, _TailT...> : _HeadT<window<_ImplT, _TailT...>, _ImplT>{
-    using _super_t = _HeadT<window<_ImplT, _TailT...>, _ImplT>;
-    using window_type = window<_ImplT, _HeadT, _TailT...>;
+  template <typename _ImplT, typename _BaseT, template <typename, typename> class _HeadT, template <typename, typename> class ... _TailT>
+  struct window<_ImplT, _BaseT, _HeadT, _TailT...> : _HeadT<window<_ImplT, _BaseT, _TailT...>, _ImplT, _BaseT>{
+
+    using _super_t = _HeadT<window<_ImplT, _BaseT, _TailT...>, _ImplT, _BaseT>;
+
+    using window_type = window<_ImplT, _BaseT, _HeadT, _TailT...>;
 
     window(const window&) = delete;
     window& operator=(const window&) = delete;
@@ -68,13 +77,13 @@ namespace wtf{
 
     window(){}
     window(window&& src) : _super_t(std::move(src)){}
-    explicit window(window<void> * pParent) : _super_t(pParent){}
+
+    explicit window(window<void,void> * pParent) : _super_t(pParent){}
     window& operator=(window&& src){ return _super_t::operator=(std::move(src)); }
 
   private:
-    template <typename, template <typename, typename> class ... > friend struct window;
+    template <typename, typename, template <typename, typename> class ... > friend struct window;
 
-    template <template <typename, typename> class ... _NewPolicyTs> using add_policy = window<_ImplT, _HeadT, _TailT..., _NewPolicyTs...>;
 
     LRESULT handle_message(HWND, UINT, WPARAM, LPARAM, bool&){ return 0; }
 
@@ -88,10 +97,10 @@ namespace wtf{
 
 
 
-  template <typename _ImplT> struct window<_ImplT> : window<void>{
+  template <typename _ImplT, typename _BaseT> struct window<_ImplT, _BaseT> : _BaseT{
 
-    using _super_t = window<void>;
-    using window_type = window<_ImplT>;
+    using _super_t = _BaseT;
+    using window_type = window<_ImplT, _BaseT>;
 
 
     /// an implementation may want to use different window styles so add their definitions as class wide static constants
@@ -103,7 +112,7 @@ namespace wtf{
     window() = default;
     window(const window&) = delete;
     window(window&& src) : _super_t(std::move(src)){}
-    explicit window(window<void> * parent) : _super_t(parent){}
+    explicit window(window<void,void> * parent) : _super_t(parent){}
 
     window& operator=(const window&) = delete;
     window& operator=(window&& src){ return _super_t::operator=(std::move(src)); }
@@ -114,9 +123,7 @@ namespace wtf{
 
   protected:
 
-    template <template <typename, typename> class ... _NewPolicyTs> using add_policy = window<_ImplT, _NewPolicyTs...>;
-
-    template <typename, template <typename, typename> class ... > friend struct window;
+    template <typename, typename, template <typename, typename> class ... > friend struct window;
     template <typename, DWORD, DWORD> friend struct form_base;
 
     virtual int exec() override{

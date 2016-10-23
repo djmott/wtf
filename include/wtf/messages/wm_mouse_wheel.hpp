@@ -8,9 +8,10 @@ namespace wtf{
     struct wm_mouse_wheel : _SuperT{
 
     protected:
-      virtual LRESULT on_wm_mouse_wheel(int16_t /*delta*/, const mouse_msg_param&, bool &) = 0;
 
-      wm_mouse_wheel(window<void> * pParent) : _SuperT(pParent){}
+      virtual LRESULT on_wm_mouse_wheel(int16_t /*delta*/, const mouse_msg_param&, bool &) = 0{ return 0; }
+
+      wm_mouse_wheel(window<void,void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
         if (WM_MOUSEWHEEL == umsg){

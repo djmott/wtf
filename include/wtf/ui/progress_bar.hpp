@@ -3,27 +3,41 @@
 namespace wtf{
 
   struct progress_bar : wtf::window < progress_bar, policy::has_border, policy::has_size, policy::has_move,
-    policy::has_text, policy::has_font, policy::has_paint, policy::has_orientation, policy::has_create>{
+    policy::has_text, policy::has_font, messages::wm_paint, policy::has_orientation, messages::wm_create, 
+    policy::has_background, messages::wm_erasebkgnd, messages::wm_nccalcsize, messages::wm_ncpaint >
+  {
 
-    explicit progress_bar(window<void> * hParent) : window(hParent){
-    }
+    explicit progress_bar(window<void,void> * hParent) : window(hParent){}
 
-    virtual void wm_create() override{
+    virtual LRESULT on_wm_create(bool& bHandled) override{
       border_style(border_styles::lowered);
       auto_draw_text(false);
+      return window::on_wm_create(bHandled);
     };
 
     int min() const{ return _min; }
-    void min(int newval){ _min = newval; }
+    void min(int newval){ 
+      _min = newval; 
+      invalidate();
+    }
 
     int max() const{ return _max; }
-    void max(int newval){ _max = newval; }
+    void max(int newval){ 
+      _max = newval; 
+      invalidate();
+    }
 
     int value() const{ return _value; }
-    void value(int newval){ _value = newval; refresh(); }
+    void value(int newval){ 
+      _value = newval; 
+      invalidate();
+    }
 
     rgb fill_color() const{ return _fill_color; }
-    void fill_color(rgb newval){ _fill_color = newval; }
+    void fill_color(rgb newval){
+      _fill_color = newval; 
+      invalidate();
+    }
 
     enum class text_modes{
       none,
@@ -32,7 +46,10 @@ namespace wtf{
     };
 
     text_modes text_mode() const{ return _text_mode; }
-    void text_mode(text_modes newval){ _text_mode = newval; }
+    void text_mode(text_modes newval){ 
+      _text_mode = newval; 
+      invalidate();
+    }
   protected:
 
     int _min = 0;
@@ -68,7 +85,7 @@ namespace wtf{
       oFillArea.right = std::max(oTextSize.cx, oFillArea.right);
       text_vertical_alignment(text_vertical_alignments::center);
       text_horizontal_alignment(text_horizontal_alignments::center);
-      return _super_t::on_wm_paint(dc, ps, bHandled);
+      return window::on_wm_paint(dc, ps, bHandled);
     }
 
 

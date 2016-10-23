@@ -27,9 +27,14 @@ namespace wtf {
           [](HBRUSH) {});
       }
 
-      static brush solid_brush(COLORREF color) {
-        return brush(wtf::exception::throw_lasterr_if(CreateSolidBrush(color), [](HBRUSH b) { return !b; }),
-                     [](HBRUSH b) { ::DeleteObject(b); });
+      static brush solid_brush(COLORREF color){
+        return brush(wtf::exception::throw_lasterr_if(CreateSolidBrush(color), [](HBRUSH b){ return !b; }),
+                     [](HBRUSH b){ ::DeleteObject(b); });
+      }
+
+      static brush solid_brush(system_colors color){
+        return brush(wtf::exception::throw_lasterr_if(CreateSolidBrush(GetSysColor(static_cast<int>(color))), [](HBRUSH b){ return !b; }),
+                     [](HBRUSH b){ ::DeleteObject(b); });
       }
 
       static brush hatch_brush(hatch_style style, COLORREF color) {

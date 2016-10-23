@@ -18,7 +18,7 @@ namespace wtf {
     * Creates borders
     */
     template<typename _SuperT, typename _ImplT>
-    struct has_border : _SuperT::window_type::template add_policy<messages::wm_ncpaint, messages::wm_nccalcsize> {
+    struct has_border : _SuperT {
 
 
       virtual int border_width() const{
@@ -51,10 +51,10 @@ namespace wtf {
       virtual void enable_border_elements(bool top, bool right, bool bottom, bool left){
         _draw_top = top; _draw_left = left; _draw_right = right; _draw_bottom = bottom;
       }
-    protected:
-      using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_ncpaint, messages::wm_nccalcsize>;
 
-      has_border(window<void> * pParent) : _super_t(pParent){}
+    protected:
+
+      has_border(window<void,void> * pParent) : _SuperT(pParent){}
 
       void refresh_border(){
         if (!_handle) return;
@@ -64,9 +64,7 @@ namespace wtf {
         );
       }
 
-
-
-      virtual LRESULT on_wm_ncpaint(const device_context& dc,const rect<coord_frame::client>& oClient, bool & bhandled) override{
+      virtual LRESULT on_wm_ncpaint(const device_context& dc, const rect<coord_frame::client>& oClient, bool & bhandled) override{
 
         auto highlight = pen::create(pen::style::solid, 1, border_highlight());
         auto shadow = pen::create(pen::style::solid, 1, border_shadow());

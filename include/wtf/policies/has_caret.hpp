@@ -6,7 +6,7 @@ namespace wtf {
     * Controls the caret of text/input elements
     */
     template<typename _SuperT, typename>
-    struct has_caret : _SuperT::window_type::template add_policy<messages::wm_setfocus, messages::wm_killfocus> {
+    struct has_caret : _SuperT {
 
       virtual int caret_width() const{ return _width; }
       virtual void caret_width(int newval){ _width = newval; }
@@ -52,21 +52,20 @@ namespace wtf {
 
     protected:
 
-      using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_setfocus, messages::wm_killfocus>;
 
-      has_caret(window<void> * pParent) : _super_t(pParent){}
+      has_caret(window<void,void> * pParent) : _SuperT(pParent){}
 
       virtual LRESULT on_wm_setfocus(HWND hwnd, bool& bHandled) override{
         create_caret();
         caret_position(_pos);
         caret_visible(true);
         caret_blink_rate(_blink_rate);
-        return _super_t::on_wm_setfocus(hwnd, bHandled);
+        return _SuperT::on_wm_setfocus(hwnd, bHandled);
       }
 
       virtual LRESULT on_wm_killfocus(HWND hwnd, bool& bHandled) override{
         destroy_caret();
-        return _super_t::on_wm_killfocus(hwnd, bHandled);
+        return _SuperT::on_wm_killfocus(hwnd, bHandled);
       }
 
     private:

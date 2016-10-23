@@ -30,7 +30,7 @@ namespace wtf{
     client,
   };
 
-  template <typename, template <typename, typename> class ...> struct window;
+  template <typename, typename, template <typename, typename> class ...> struct window;
 
 
   //this is the internal 'hidden' namespace not for external consumption
@@ -40,8 +40,8 @@ namespace wtf{
       return _forms_lock;
     }
 
-    static std::vector<const window<void>*>& _active_forms(){
-      static std::vector<const window<void>*> _forms;
+    static std::vector<const window<void,void>*>& _active_forms(){
+      static std::vector<const window<void,void>*> _forms;
       return _forms;
     }
 
@@ -53,7 +53,7 @@ namespace wtf{
   namespace policy{
 
 
-    static const std::vector<const window<void>*>& active_forms(){ return _::_active_forms(); }
+    static const std::vector<const window<void,void>*>& active_forms(){ return _::_active_forms(); }
 
   }
 }
@@ -92,7 +92,10 @@ namespace wtf{
 #include "messages/wm_activate.hpp"
 #include "messages/wm_char.hpp"
 #include "messages/wm_dblclick.hpp"
+#include "messages/wm_erasebkgnd.hpp"
 #include "messages/wm_geticon.hpp"
+#include "messages/wm_keydown.hpp"
+#include "messages/wm_keyup.hpp"
 #include "messages/wm_killfocus.hpp"
 #include "messages/wm_mouse_down.hpp"
 #include "messages/wm_mouse_leave.hpp"
@@ -112,26 +115,18 @@ namespace wtf{
 
 
 
+#include "policies/has_background.hpp"
 #include "policies/has_border.hpp"
 #include "policies/has_caret.hpp"
 #include "policies/has_click.hpp"
 #include "policies/has_close.hpp"
-#include "policies/has_create.hpp"
 #include "policies/has_cursor.hpp"
-#include "policies/has_dblclick.hpp"
 #include "policies/has_focus.hpp"
 #include "policies/has_font.hpp"
 #include "policies/has_icon.hpp"
-#include "policies/has_keyboard.hpp"
-#include "policies/has_mouse_leave.hpp"
-#include "policies/has_mouse_down.hpp"
-#include "policies/has_mouse_up.hpp"
-#include "policies/has_mouse_move.hpp"
-#include "policies/has_mouse_wheel.hpp"
 #include "policies/has_move.hpp"
-#include "policies/has_moving.hpp"
 #include "policies/has_orientation.hpp"
-#include "policies/has_paint.hpp"
+#include "policies/has_refresh.hpp"
 #include "policies/has_repeat_click.hpp"
 #include "policies/has_show.hpp"
 #include "policies/has_size.hpp"

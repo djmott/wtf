@@ -17,7 +17,7 @@ namespace wtf{
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE| SWP_NOCOPYBITS), [](BOOL b){ return !b; });
       }
     protected:
-      has_zorder(window<void> * pParent) : _SuperT(pParent){}
+      has_zorder(window<void,void> * pParent) : _SuperT(pParent){}
 
     };
   }

@@ -5,7 +5,7 @@
   protected: \
     _name() = default; \
     _name(_name&& src) : _SuperT(std::move(src)){} \
-    explicit _name(window<void> * pParent) : _SuperT(pParent){} \
+    explicit _name(window<void,void> * pParent) : _SuperT(pParent){} \
     _name& operator=(_name&& src){ return _super_t::operator=(std::move(src)); } \
     virtual LRESULT _member(bool&) = 0  { return 0; } \
     LRESULT handle_message(HWND, UINT umsg, WPARAM, LPARAM, bool & bhandled) { \

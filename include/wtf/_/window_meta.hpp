@@ -25,7 +25,7 @@ namespace wtf{
   /** Specialization that terminates the inheritance hierarchy
   * super most base class of all windows
   */
-  template <> struct window<void>{
+  template <> struct window<void,void>{
 
     window() = delete;
     window(const window&) = delete;
@@ -182,7 +182,7 @@ namespace wtf{
 
       virtual ~base_window() = default;
 
-      explicit base_window(window<void> * pParent) : _super_t(pParent){}
+      explicit base_window(window<void,void> * pParent) : _super_t(pParent){}
       base_window() = delete;
       base_window(const base_window&) = delete;
       base_window &operator=(const base_window &) = delete;
@@ -216,7 +216,7 @@ namespace wtf{
 
 
 
-    template <typename _ImplT> struct base_window<_ImplT> : window<void>{
+    template <typename _ImplT> struct base_window<_ImplT> : window<void,void>{
 
       using window_type = base_window<_ImplT>;
 
@@ -226,12 +226,12 @@ namespace wtf{
 
       virtual ~base_window(){ if (_handle) ::DestroyWindow(_handle); }
 
-      explicit base_window(window<void> * parent) :  window<void>(parent){}
+      explicit base_window(window<void,void> * parent) :  window<void,void>(parent){}
 
       base_window(const base_window&) = delete;
       base_window& operator=(const base_window&) = delete;
       
-      base_window(base_window&& src) : window<void>(std::move(src)){}
+      base_window(base_window&& src) : window<void,void>(std::move(src)){}
 
 
       virtual const type_info& type() const override{ return typeid(_ImplT); }

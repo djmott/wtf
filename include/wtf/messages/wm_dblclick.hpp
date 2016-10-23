@@ -8,9 +8,9 @@ namespace wtf{
 
     protected:
 
-      virtual LRESULT on_wm_dblclick(const mouse_msg_param&, bool&) = 0;
+      virtual LRESULT on_wm_dblclick(const mouse_msg_param&, bool&) = 0{ return 0; }
 
-      wm_dblclick(window<void> * pParent) : _SuperT(pParent){}
+      wm_dblclick(window<void,void> * pParent) : _SuperT(pParent){}
 
       LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
         if (WM_LBUTTONDBLCLK == umsg){

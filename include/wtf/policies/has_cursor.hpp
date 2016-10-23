@@ -6,7 +6,7 @@ namespace wtf {
     * Provides mouse pointer customization
     */
     template<typename _SuperT, typename _ImplT>
-    struct has_cursor : _SuperT::window_type::template add_policy<messages::wm_setcursor> {
+    struct has_cursor : _SuperT {
 
       virtual const wtf::cursor &cursor_pointer() const { return cursor::global(cursor::style::arrow); }
 
@@ -21,9 +21,8 @@ namespace wtf {
     protected:
 
       using wm_nchittest_flags = messages::wm_nchittest_flags;
-      using _super_t = typename _SuperT::window_type::template add_policy<messages::wm_setcursor>;
 
-      has_cursor(window<void> * pParent) : _super_t(pParent){}
+      explicit has_cursor(window<void,void> * pParent) : _SuperT(pParent){}
 
       virtual LRESULT on_wm_setcursor(wm_nchittest_flags flags, bool& bHandled) override{
         bHandled = true;

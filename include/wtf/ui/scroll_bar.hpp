@@ -1,14 +1,15 @@
 #pragma once
 namespace wtf{
 
-
   //overweight scrollbar can be much thinner
   struct scroll_bar : window<scroll_bar, policy::has_size, policy::has_show, policy::has_orientation, 
-    policy::has_create, policy::has_mouse_wheel, policy::has_move>{
+    messages::wm_size, messages::wm_mouse_wheel, policy::has_move, messages::wm_create, policy::has_background,
+    messages::wm_erasebkgnd>
+  {
 
     using mouse_msg_param = messages::mouse_msg_param;
 
-    explicit scroll_bar(window<void> * pParent)
+    explicit scroll_bar(window<void,void> * pParent)
       : window(pParent),
       _inc(this, true),
       _dec(this, false),
@@ -16,13 +17,6 @@ namespace wtf{
       _page_dec(this, false),
       _slider(this)
     {
-    }
-
-
-    orientations orientation() const{ return _orientation; }
-    void orientation(orientations newval){
-      _orientation = newval;
-      wm_size(rect<coord_frame::client>::get(*this).dimensions());
     }
 
     int min() const{ return _min; }
@@ -36,7 +30,6 @@ namespace wtf{
       if (newval < _min) newval = _min;
       if (newval > _max) newval = _max;
       _value = newval;
-      wm_size(rect<coord_frame::client>::get(*this).dimensions());
     }
 
     int small_step() const{ return _small_step; }
@@ -49,7 +42,11 @@ namespace wtf{
 
     friend struct value_step_button;
 
-    virtual void wm_size(const point<coord_frame::client>& p) override{
+    virtual LRESULT on_wm_create(bool& bHandled) override{
+      return window::on_wm_create(bHandled);
+    }
+
+    virtual LRESULT on_wm_size(const point<coord_frame::client>& p, bool&bHandled) override{
       auto iExtent = _max - _min;
 
       if (orientations::horizontal == _orientation){
@@ -64,6 +61,7 @@ namespace wtf{
       } else{
 
       }
+      return window::on_wm_size(p, bHandled);
     };
 
     virtual void StepIncEvent(){
@@ -90,10 +88,21 @@ namespace wtf{
       if (_value == iOriginal) return;
     }
 
+    virtual LRESULT on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& m, bool & bHandled) override{
+      if (delta > 0){
+        StepIncEvent();
+      } else{
+        StepDecEvent();
+      }
+      return window::on_wm_mouse_wheel(delta, m, bHandled);
+    }
+
+
     struct value_step_button
-      : window<value_step_button, policy::has_button_border, policy::has_repeat_click, policy::has_create,
-      policy::has_size, policy::has_paint, policy::has_click, policy::has_border, policy::has_timer,
-      policy::has_move>
+      : window<value_step_button, policy::has_button_border, policy::has_repeat_click, messages::wm_create,
+      policy::has_size, messages::wm_paint, policy::has_click, policy::has_border, policy::has_timer,
+      policy::has_move, messages::wm_ncpaint, messages::wm_nccalcsize, messages::wm_mouse_down, 
+      messages::wm_mouse_up, messages::wm_mouse_move, messages::wm_mouse_leave >
     {
       bool _is_increment;
       scroll_bar * _parent;
@@ -103,11 +112,13 @@ namespace wtf{
 
       }
       virtual void on_wm_click(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left != m.button) return;
+        if (mouse_msg_param::buttons::left != m.button) return window::on_wm_click(m);
         if (_is_increment) _parent->StepIncEvent();
         else _parent->StepDecEvent();
+        window::on_wm_click(m);
       };
-      virtual void wm_paint(const device_context& dc, const paint_struct&ps) override{
+
+      virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct&ps, bool& bHandled) override{
         auto client = ps.client();
         point<coord_frame::client>::vector arrow(3);
         if (orientations::horizontal == _parent->_orientation){
@@ -132,16 +143,14 @@ namespace wtf{
           }
         }
         dc.fill(arrow, _parent->_outline, _parent->_fill);
+        return window::on_wm_paint(dc, ps, bHandled);
       };
 
     };
 
-    struct value_page_button 
-      : window<value_page_button, policy::has_repeat_click, policy::has_size, policy::has_paint,
-      policy::has_click, policy::has_mouse_up, policy::has_mouse_move, policy::has_mouse_down, 
-      policy::has_timer, policy::has_move>{
+    struct value_page_button : label{
 
-      explicit value_page_button(scroll_bar * pParent, bool IsIncrement) : window(pParent), _parent(pParent), _is_increment(IsIncrement)
+      explicit value_page_button(scroll_bar * pParent, bool IsIncrement) : label(pParent), _parent(pParent), _is_increment(IsIncrement)
       {
 
       }
@@ -149,6 +158,7 @@ namespace wtf{
         if (mouse_msg_param::buttons::left != m.button) return;
         if (_is_increment) _parent->PageUpEvent();
         else _parent->PageDownEvent();
+        label::on_wm_click(m);
       };
 
       scroll_bar * _parent;

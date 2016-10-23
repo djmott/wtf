@@ -32,17 +32,8 @@ namespace wtf {
 
     protected:
 
-      virtual void wm_size(const point<coord_frame::client>&) {}
+      explicit has_size(window<void,void> * pParent) : _SuperT(pParent){}
 
-      has_size(window<void> * pParent) : _SuperT(pParent){}
-
-      LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
-        if (WM_SIZE == umsg){
-          wm_size( point<coord_frame::client>(LOWORD(lparam), HIWORD(lparam)));
-        } 
-        return 0;
-      }
-    private:
 
     };
 
