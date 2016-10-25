@@ -1,23 +1,24 @@
 #pragma once
 
 namespace wtf {
-  namespace messages {
 
-    template<typename _SuperT, typename>
-    struct wm_setfocus : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::wm_setfocus, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
     protected:
 
-      virtual LRESULT on_wm_setfocus(HWND, bool&) = 0{ return 0; }
+      virtual void on_wm_setfocus(HWND) {}
 
-      wm_setfocus(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM, bool& bhandled) {
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
         if (WM_SETFOCUS == umsg) {
-          return on_wm_setfocus(reinterpret_cast<HWND>(wparam), bhandled);
+          on_wm_setfocus(reinterpret_cast<HWND>(wparam));
         }
-        return 0;
+        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
       }
     };
   }
-}

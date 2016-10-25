@@ -1,24 +1,25 @@
 #pragma once
 
 namespace wtf {
-  namespace messages {
 
-    template<typename _SuperT, typename _ImplT>
-    struct wm_size : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::wm_size, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
 
     protected:
 
-      explicit wm_size(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      virtual LRESULT on_wm_size(const point<coord_frame::client>&, bool&) = 0{ return 0; }
+      virtual void on_wm_size(const point<coord_frame::client>&){}
 
-      LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
-        if (WM_SIZE == umsg) return on_wm_size( point<coord_frame::client>(LOWORD(lparam), HIWORD(lparam)), bHandled);
-        return 0;
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
+        if (WM_SIZE == umsg) on_wm_size( point<coord_frame::client>(LOWORD(lparam), HIWORD(lparam)));
+        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
       }
 
     };
 
   }
-}

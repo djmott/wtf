@@ -6,9 +6,11 @@ namespace wtf{
     vertical
   };
 
-  namespace policy{
-    template<typename _SuperT, typename>
-    struct has_orientation: _SuperT{
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_orientation, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
 
       virtual orientations orientation() const{ return _orientation; }
@@ -17,8 +19,7 @@ namespace wtf{
       }
 
     protected:
-      has_orientation(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
       orientations _orientation = orientations::horizontal;
     };
   }
-}

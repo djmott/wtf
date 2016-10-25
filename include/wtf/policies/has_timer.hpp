@@ -1,12 +1,14 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
     /** has_timer
     * Adds timer creation and produces timer events
     */
-    template<typename _SuperT, typename _ImplT>
-    struct has_timer : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_timer, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
       UINT_PTR set_timer(UINT elapse){
         _next_timer_id++;
@@ -26,10 +28,9 @@ namespace wtf {
 
     protected:
 
-      has_timer(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
     private:
       UINT_PTR _next_timer_id = 1;
     };
 
   }
-}

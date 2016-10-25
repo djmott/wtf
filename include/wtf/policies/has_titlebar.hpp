@@ -1,13 +1,15 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
 
     /** has_titlebar
     * Adds titlebar text features to windows
     */
-    template<typename _SuperT, typename _ImplT>
-    struct has_titlebar : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_titlebar, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
       const tstring &titlebar() const {
         return _titlebar;
@@ -19,10 +21,9 @@ namespace wtf {
       }
 
     protected:
-      explicit has_titlebar(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
     private:
       tstring _titlebar = _T("");
     };
 
   }
-}

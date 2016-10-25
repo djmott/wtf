@@ -22,7 +22,7 @@ namespace wtf{
         cbSize = sizeof(WNDCLASSEX);
         style = CS_OWNDC | CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
         lpfnWndProc = window_proc;
-        cbClsExtra = sizeof(window<_ImplT>*);
+        cbClsExtra = sizeof(void*);
         hInstance = instance_handle();
         lpszClassName = name();
         exception::throw_lasterr_if(RegisterClassEx(this), [](ATOM x){ return 0 == x; });

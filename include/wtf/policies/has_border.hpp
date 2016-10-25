@@ -13,12 +13,14 @@ namespace wtf {
     double_lowered,
   };
 
-  namespace policy {
     /** has_border
     * Creates borders
     */
-    template<typename _SuperT, typename _ImplT>
-    struct has_border : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_border, _Policies...> : public window<_ImplT, policy::wm_nccalcsize, policy::wm_ncpaint, _Policies...>{
+      using __super_t = window<_ImplT, policy::wm_nccalcsize, policy::wm_ncpaint, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
 
       virtual int border_width() const{
@@ -54,7 +56,7 @@ namespace wtf {
 
     protected:
 
-      has_border(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
       void refresh_border(){
         if (!_handle) return;
@@ -64,7 +66,7 @@ namespace wtf {
         );
       }
 
-      virtual LRESULT on_wm_ncpaint(const device_context& dc, const rect<coord_frame::client>& oClient, bool & bhandled) override{
+      virtual void on_wm_ncpaint(const device_context& dc, const rect<coord_frame::client>& oClient) override{
 
         auto highlight = pen::create(pen::style::solid, 1, border_highlight());
         auto shadow = pen::create(pen::style::solid, 1, border_shadow());
@@ -76,13 +78,13 @@ namespace wtf {
         //draw outer border
         switch (border_style()){
           case border_styles::none:
-            return 0;
+            return;
           case border_styles::flat:
             if (_draw_right) dc.line(shadow, client.right, client.top, client.right, 1 + client.bottom);
             if (_draw_bottom) dc.line(shadow, client.left, client.bottom, client.right, client.bottom);
             if (_draw_top) dc.line(shadow, client.left, client.top, client.right, client.top);
             if (_draw_left) dc.line(shadow, client.left, client.top, client.left, client.bottom);
-            return 0;
+            return;
           case border_styles::etched:
           case border_styles::lowered:
           case border_styles::double_lowered:
@@ -103,7 +105,7 @@ namespace wtf {
         switch (border_style()){
           case border_styles::raised:
           case border_styles::lowered:
-            return 0;
+            return;
           case border_styles::etched:
           case border_styles::bumped:
             std::swap(highlight, shadow);
@@ -114,11 +116,10 @@ namespace wtf {
             if (_draw_top) dc.line(highlight, client.left, client.top, client.right, client.top);
             if (_draw_left) dc.line(highlight, client.left, client.top, client.left, client.bottom);
         }
-        return 0;
+        return;
       }
 
-      virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS * pSizes, bool& bHandled) override{
-        bHandled = true;
+      virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS * pSizes) override{
         pSizes->rgrc[0].top += border_width();
         pSizes->rgrc[0].left += border_width();
         pSizes->rgrc[0].bottom -= border_width();
@@ -126,8 +127,7 @@ namespace wtf {
         return WVR_VALIDRECTS | WVR_REDRAW; 
       }
 
-      virtual LRESULT on_wm_nccalcsize(RECT * pClient, bool& bHandled) override{
-        bHandled = true;
+      virtual LRESULT on_wm_nccalcsize(RECT * pClient) override{
         return 0;
       }
 
@@ -142,4 +142,3 @@ namespace wtf {
     };
 
   }
-}

@@ -1,12 +1,14 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
     /** has_icon
     * Provides an icon associated with the window
     */
-    template<typename _SuperT, typename _ImplT>
-    struct has_icon : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_icon, _Policies...> : public window<_ImplT, policy::wm_geticon, _Policies...>{
+      using __super_t = window<_ImplT, policy::wm_geticon, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
       virtual icon &big_icon() { return _big_icon; }
 
@@ -21,11 +23,10 @@ namespace wtf {
       virtual void small_icon(icon &&src) { _small_icon = std::move(src); }
 
     protected:
-      explicit has_icon(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      virtual HICON on_wm_geticon(messages::icon_type ico, bool& bHandled) override{
-        bHandled = true;
-        if (messages::icon_type::big_icon == ico) return big_icon();
+      virtual HICON on_wm_geticon(icon_type ico) override{
+        if (icon_type::big_icon == ico) return big_icon();
         else return small_icon();
       }
 
@@ -33,4 +34,3 @@ namespace wtf {
       icon _small_icon = icon::from_system(icon::system_icons::winlogo);
     };
   }
-}

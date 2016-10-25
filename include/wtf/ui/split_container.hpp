@@ -1,12 +1,14 @@
 #pragma once
+
+#if 0
 namespace wtf{
-  struct split_container : window<split_container, policy::has_size, policy::has_border, 
-    policy::has_orientation, policy::has_move, policy::has_background,
-    messages::wm_size, messages::wm_create, messages::wm_erasebkgnd, messages::wm_nccalcsize, messages::wm_ncpaint>{
+  struct split_container : window<split_container, iwindow, 
+    policy::has_size, policy::has_border, policy::has_orientation, policy::has_move, policy::has_background,
+    wm_size, wm_create, wm_erasebkgnd, wm_nccalcsize, wm_ncpaint>{
 
-    using mouse_msg_param = messages::mouse_msg_param;
+    using mouse_msg_param = mouse_msg_param;
 
-    explicit split_container(window<void,void> * pParent) : window(pParent), _first(this), _second(this), _splitter(this)
+    explicit split_container(iwindow * pParent) : window(pParent), _first(this), _second(this), _splitter(this)
     { }
 
 
@@ -110,3 +112,4 @@ namespace wtf{
 
   };
 }
+#endif

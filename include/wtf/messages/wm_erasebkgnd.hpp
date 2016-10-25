@@ -1,27 +1,29 @@
+#if 0
 #pragma once
 
 namespace wtf {
-  namespace messages {
 
-    template<typename _SuperT, typename _ImplT>
-    struct wm_erasebkgnd: _SuperT {
-
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::wm_erasebkgnd, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
     protected:
 
-      virtual LRESULT on_wm_erasebkgnd(const device_context& , const rect<coord_frame::client>& , bool&) = 0{ return 0; }
+      virtual void on_wm_erasebkgnd(const device_context&, const rect<coord_frame::client>&) = 0;
 
-      wm_erasebkgnd(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
         if (WM_ERASEBKGND == umsg){
           auto &oDC = *reinterpret_cast<const device_context *>(lparam);
-          return on_wm_erasebkgnd(oDC, rect<coord_frame::client>::get(*this), bHandled);
+          on_wm_erasebkgnd(oDC, rect<coord_frame::client>::get(*this));
         }
-        return 0;
+        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
       }
 
     };
 
-  }
 }
+#endif

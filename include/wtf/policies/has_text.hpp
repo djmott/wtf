@@ -14,12 +14,14 @@ namespace wtf{
     right,
   };
 
-  namespace policy{
     /** has_text
     * provides members to draw text on UI elements
     */
-    template<typename _SuperT, typename _ImplT>
-    struct has_text : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_text, _Policies...> : public window<_ImplT, policy::wm_paint, policy::has_font, policy::has_invalidate, _Policies...>{
+      using __super_t = window<_ImplT, policy::wm_paint, policy::has_font, policy::has_invalidate, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
 
       virtual bool multiline() const{ return _multiline; }
@@ -31,8 +33,7 @@ namespace wtf{
       virtual const tstring &text() const{ return _text; }
       virtual void text(const tstring &newval){
         _text = newval; 
-        auto client = rect<coord_frame::client>::get(*this);
-        if (_auto_draw_text) ::InvalidateRect(*this, &client,TRUE);
+        if (_auto_draw_text) invalidate();
       }
 
       virtual text_vertical_alignments text_vertical_alignment() const{ return _text_vertical_alignment; }
@@ -50,7 +51,7 @@ namespace wtf{
       }
     protected:
 
-      has_text(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
@@ -84,9 +85,9 @@ namespace wtf{
 
       }
 
-      virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
+      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         if (_auto_draw_text) draw_text(dc, ps.client());
-        return _super_t::on_wm_paint(dc, ps, bHandled);
+        return __super_t::on_wm_paint(dc, ps);
       }
 
 
@@ -101,4 +102,3 @@ namespace wtf{
       text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::center;
     };
   }
-}

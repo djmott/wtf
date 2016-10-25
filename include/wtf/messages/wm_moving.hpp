@@ -1,24 +1,23 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
 
-    template<typename _SuperT, typename _ImplT>
-    struct wm_moving : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::wm_moving, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
     protected:
-      virtual LRESULT on_wm_moving(rect<coord_frame::screen>&, bool & ) = 0{ return 0; }
+      virtual void on_wm_moving(rect<coord_frame::screen>&){}
 
-      wm_moving(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
-        if (WM_MOVING == umsg){
-          return on_wm_moving(*reinterpret_cast<rect<coord_frame::screen>*>(lparam), bHandled);
-        }
-        return 0;
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
+        if (WM_MOVING == umsg) on_wm_moving(*reinterpret_cast<rect<coord_frame::screen>*>(lparam));
+        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
       }
 
     };
 
   }
-}

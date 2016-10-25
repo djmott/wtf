@@ -1,19 +1,16 @@
 #pragma once
 
+
 namespace wtf{
 
-  struct progress_bar : wtf::window < progress_bar, policy::has_border, policy::has_size, policy::has_move,
-    policy::has_text, policy::has_font, messages::wm_paint, policy::has_orientation, messages::wm_create, 
-    policy::has_background, messages::wm_erasebkgnd, messages::wm_nccalcsize, messages::wm_ncpaint >
+  template <typename _ImplT, policy..._Policies>
+  class window<_ImplT, policy::isa_progressbar, _Policies...> :
+    public wtf::window < _ImplT, policy::isa_label, policy::has_orientation, _Policies...>
   {
+    using __super_t = wtf::window < _ImplT, policy::isa_label, policy::has_orientation, _Policies...>;
+  public:
 
-    explicit progress_bar(window<void,void> * hParent) : window(hParent){}
-
-    virtual LRESULT on_wm_create(bool& bHandled) override{
-      border_style(border_styles::lowered);
-      auto_draw_text(false);
-      return window::on_wm_create(bHandled);
-    };
+    explicit window(iwindow * hParent) : __super_t(hParent){}
 
     int min() const{ return _min; }
     void min(int newval){ 
@@ -52,13 +49,20 @@ namespace wtf{
     }
   protected:
 
+    virtual void on_wm_create() override{
+      border_style(border_styles::lowered);
+      auto_draw_text(false);
+      return __super_t::on_wm_create();
+    };
+
+
     int _min = 0;
     int _max = 100;
     int _value = 0;
     rgb _fill_color = system_rgb<system_colors::highlight>();
     text_modes _text_mode = text_modes::percentage;
 
-    virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override {
+    virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override {
       auto oBrush = brush::solid_brush(_fill_color);
       rect<coord_frame::client> oFillArea = ps.client();
       auto iExtent = _max - _min;
@@ -68,7 +72,7 @@ namespace wtf{
         oFillArea.top = (oFillArea.top * _value) / iExtent;
       }
       dc.fill(oFillArea, oBrush);
-      if (text_modes::none == _text_mode) return window::on_wm_paint(dc, ps, bHandled);
+      if (text_modes::none == _text_mode) return __super_t::on_wm_paint(dc, ps);
       //poor mans utf8 conversion...get with the program mingw
       tstring sDisplayText;
       std::string sTemp;
@@ -85,7 +89,7 @@ namespace wtf{
       oFillArea.right = std::max(oTextSize.cx, oFillArea.right);
       text_vertical_alignment(text_vertical_alignments::center);
       text_horizontal_alignment(text_horizontal_alignments::center);
-      return window::on_wm_paint(dc, ps, bHandled);
+      return __super_t::on_wm_paint(dc, ps);
     }
 
 

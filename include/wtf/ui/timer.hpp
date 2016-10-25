@@ -1,6 +1,8 @@
 #pragma once
+
+#if 0
 namespace wtf{
-  struct timer : window<timer, policy::has_timer>{
+  struct timer : window<timer, iwindow, policy::has_timer>{
     explicit timer(iwindow * pParent) : window(pParent){}
 
     callback<void()> wm_timer;
@@ -10,3 +12,4 @@ namespace wtf{
 
   };
 }
+#endif

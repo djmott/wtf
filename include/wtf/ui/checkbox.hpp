@@ -1,17 +1,19 @@
 #pragma once
+
+#if 0
 namespace wtf{
   struct checkbox 
-    : window<checkbox,  policy::has_click, policy::has_size, 
+    : window<checkbox, iwindow, policy::has_click, policy::has_size,
     policy::has_text, policy::has_move, policy::has_background,
-    messages::wm_nccalcsize, messages::wm_ncpaint, messages::wm_move, policy::has_font,
-    messages::wm_erasebkgnd, messages::wm_mouse_down, messages::wm_mouse_up, 
-    messages::wm_mouse_leave, messages::wm_create, messages::wm_paint>
+    wm_nccalcsize, wm_ncpaint, wm_move, policy::has_font,
+    wm_erasebkgnd, wm_mouse_down, wm_mouse_up, 
+    wm_mouse_leave, wm_create, wm_paint>
   {
 
-    using mouse_msg_param = messages::mouse_msg_param;
+    using mouse_msg_param = mouse_msg_param;
 
 
-    explicit checkbox(window<void,void> * pParent) : window(pParent), _check(this){
+    explicit checkbox(iwindow * pParent) : window(pParent), _check(this){
       auto_draw_text(false);
     }
 
@@ -92,3 +94,4 @@ namespace wtf{
     text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::left;
   };
 }
+#endif

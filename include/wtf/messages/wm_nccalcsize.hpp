@@ -1,10 +1,12 @@
 #pragma once
 
 namespace wtf{
-  namespace messages{
 
-    template <typename _SuperT, typename>
-    struct wm_nccalcsize : _SuperT{
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::wm_nccalcsize, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
       enum class activate_mode{
         active = WA_ACTIVE,
@@ -14,22 +16,18 @@ namespace wtf{
 
     protected:
 
-      virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *, bool&) = 0{ return 0; }
-      virtual LRESULT on_wm_nccalcsize(RECT *, bool&) = 0{ return 0; }
+      virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *) = 0;
+      virtual LRESULT on_wm_nccalcsize(RECT *) = 0;
 
-      wm_nccalcsize(window<void,void> * pParent) : _SuperT(pParent){}
-      
-      LRESULT handle_message(HWND, UINT umsg, WPARAM wparam, LPARAM lparam, bool & handled){
+      explicit window(iwindow * pParent) : __super_t(pParent){}
+
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
         if (WM_NCCALCSIZE == umsg){
-          if (wparam){
-            return on_wm_nccalcsize(reinterpret_cast<NCCALCSIZE_PARAMS*>(lparam), handled);
-          } else{
-            return on_wm_nccalcsize(reinterpret_cast<RECT*>(lparam), handled);
-          }
+          if (wparam) return on_wm_nccalcsize(reinterpret_cast<NCCALCSIZE_PARAMS*>(lparam));
+          else return on_wm_nccalcsize(reinterpret_cast<RECT*>(lparam));
         }
-        return 0;
+        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
       }
 
     };
   }
-}

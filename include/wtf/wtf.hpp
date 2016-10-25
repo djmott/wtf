@@ -30,7 +30,72 @@ namespace wtf{
     client,
   };
 
-  template <typename, typename, template <typename, typename> class ...> struct window;
+  enum class policy{
+    //messages
+    wm_activate,
+    wm_char,
+    wm_close,
+    wm_create,
+    wm_dblclick,
+    wm_destroy,
+    wm_erasebkgnd,
+    wm_geticon,
+    wm_keydown,
+    wm_keyup,
+    wm_killfocus,
+    wm_mouse_down,
+    wm_mouse_leave,
+    wm_mouse_move,
+    wm_mouse_up,
+    wm_mouse_wheel,
+    wm_move, 
+    wm_moving,
+    wm_nccalcsize,
+    wm_ncpaint,
+    wm_paint,
+    wm_setcursor,
+    wm_setfocus,
+    wm_showwindow,
+    wm_size,
+    wm_sizing,
+    wm_timer,
+    //behaviors
+    has_background,
+    has_border,
+    has_button_border,
+    has_caret,
+    has_click,
+    has_close,
+    has_cursor,
+    has_focus,
+    has_font,
+    has_icon,
+    has_image,
+    has_invalidate,
+    has_move,
+    has_orientation,
+    has_repeat_click,
+    has_show,
+    has_size,
+    has_text,
+    has_timer,
+    has_titlebar,
+    has_zorder,
+    //compositions
+    isa_button,
+    isa_form,
+    isa_label,
+    isa_panel,
+    isa_progressbar,
+    isa_scrollbar,
+    isa_tab_container,
+    isa_textbox,
+
+  };
+
+  template <typename, policy...> class window;
+
+  using iwindow = window<void>;
 
 
   //this is the internal 'hidden' namespace not for external consumption
@@ -40,8 +105,8 @@ namespace wtf{
       return _forms_lock;
     }
 
-    static std::vector<const window<void,void>*>& _active_forms(){
-      static std::vector<const window<void,void>*> _forms;
+    static std::vector<const iwindow*>& _active_forms(){
+      static std::vector<const iwindow*> _forms;
       return _forms;
     }
 
@@ -50,12 +115,9 @@ namespace wtf{
   }
 
 
-  namespace policy{
-
-
-    static const std::vector<const window<void,void>*>& active_forms(){ return _::_active_forms(); }
-
-  }
+    static const std::vector<const iwindow*>& active_forms(){ 
+      return _::_active_forms(); 
+    }
 }
 
 
@@ -80,7 +142,6 @@ namespace wtf{
 #include "_/device_context.hpp"
 #include "_/text_metrics.hpp"
 #include "_/paint_struct.hpp"
-#include "_/window_meta.hpp"
 #include "_/SystemParameters.hpp"
 #include "_/message.hpp"
 
@@ -91,7 +152,10 @@ namespace wtf{
 #include "messages/messages.hpp"
 #include "messages/wm_activate.hpp"
 #include "messages/wm_char.hpp"
+#include "messages/wm_close.hpp"
+#include "messages/wm_create.hpp"
 #include "messages/wm_dblclick.hpp"
+#include "messages/wm_destroy.hpp"
 #include "messages/wm_erasebkgnd.hpp"
 #include "messages/wm_geticon.hpp"
 #include "messages/wm_keydown.hpp"
@@ -124,9 +188,9 @@ namespace wtf{
 #include "policies/has_focus.hpp"
 #include "policies/has_font.hpp"
 #include "policies/has_icon.hpp"
+#include "policies/has_invalidate.hpp"
 #include "policies/has_move.hpp"
 #include "policies/has_orientation.hpp"
-#include "policies/has_refresh.hpp"
 #include "policies/has_repeat_click.hpp"
 #include "policies/has_show.hpp"
 #include "policies/has_size.hpp"
@@ -136,20 +200,72 @@ namespace wtf{
 #include "policies/has_zorder.hpp"
 #include "policies/has_button_border.hpp"
 
-
-
-#include "ui/menu.hpp"
+#include "ui/button.hpp"
 #include "ui/form.hpp"
 #include "ui/label.hpp"
+#include "ui/panel.hpp"
+#include "ui/progress_bar.hpp"
+#include "ui/scroll_bar.hpp"
+#include "ui/tab_container.hpp"
+#include "ui/textbox.hpp"
+
+
+namespace wtf{
+
+  struct button : window<button, policy::isa_button>{
+    explicit button(iwindow * pParent) : window(pParent){}
+  };
+
+  struct label : window<label, policy::isa_label>{
+    explicit label(iwindow * pParent) : window(pParent){}
+  };
+
+  struct panel : window<panel, policy::isa_panel>{
+    explicit panel(iwindow * pParent) : window(pParent){}
+  };
+
+  struct progress_bar : window<progress_bar, policy::isa_progressbar>{
+    explicit progress_bar(iwindow * pParent) : window(pParent){}
+  };
+
+  struct scrollbar : window<scrollbar, policy::isa_scrollbar>{
+    explicit scrollbar(iwindow * pParent) : window(pParent){}
+  };
+
+  struct tab_container : window<tab_container, policy::isa_tab_container>{
+    explicit tab_container(iwindow * pParent) : window(pParent){}
+  };
+
+  struct textbox : window<textbox, policy::isa_textbox>{
+    explicit textbox(iwindow * pParent) : window(pParent){}
+  };
+
+
+
+
+  struct form : window<form, policy::isa_form>{
+    static const DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW;
+    static const DWORD Style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+
+    explicit form(iwindow * pParent) : window(pParent){}
+    form() : form(nullptr){}
+
+  };
+
+}
+
+
+#if 0
+#include "ui/menu.hpp"
+#include "ui/form.hpp"
 #include "ui/button.hpp"
 #include "ui/scroll_bar.hpp"
-#include "ui/panel.hpp"
 #include "ui/progress_bar.hpp"
 #include "ui/checkbox.hpp"
 #include "ui/rivet.hpp"
 #include "ui/listbox.hpp"
-#include "ui/textbox.hpp"
 #include "ui/toggle_button.hpp"
 #include "ui/tab_container.hpp"
 #include "ui/split_container.hpp"
 #include "ui/tree.hpp"
+#endif

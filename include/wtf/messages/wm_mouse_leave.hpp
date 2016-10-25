@@ -2,21 +2,23 @@
 
 namespace wtf{
 
-  namespace messages{
     /** has_mouse_leave
     * produces mouse leave events
     */
-    template<typename _SuperT, typename>
-    struct wm_mouse_leave : _SuperT{
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::wm_mouse_leave, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
 
     protected:
 
-      virtual LRESULT on_wm_mouse_leave(bool& bHandled) = 0{ return 0; }
+      virtual void on_wm_mouse_leave(){}
 
-      wm_mouse_leave(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM, LPARAM, bool & bHandled) {
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
         if (WM_CREATE == umsg){
           TRACKMOUSEEVENT oEvent;
           memset(&oEvent, 0, sizeof(TRACKMOUSEEVENT));
@@ -25,12 +27,11 @@ namespace wtf{
           oEvent.hwndTrack = hwnd;
           wtf::exception::throw_lasterr_if(::TrackMouseEvent(&oEvent), [](BOOL b){return !b; });
         } else if (WM_MOUSELEAVE == umsg){
-          return on_wm_mouse_leave(bHandled);
+          on_wm_mouse_leave();
         }
-        return 0;
+        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
       }
 
     private:
     };
   }
-}

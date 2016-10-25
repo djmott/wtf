@@ -1,16 +1,18 @@
 #pragma once
+
+#if 0
 namespace wtf{
 
-  struct listbox : wtf::window<listbox, policy::has_border, policy::has_click, policy::has_text, 
-    policy::has_move, policy::has_background, policy::has_size, policy::has_font, messages::wm_paint, 
-    messages::wm_mouse_wheel, messages::wm_create, messages::wm_size, messages::wm_erasebkgnd,
-    messages::wm_mouse_down, messages::wm_mouse_up, messages::wm_nccalcsize, messages::wm_ncpaint>
+  struct listbox : wtf::window<listbox, iwindow, policy::has_border, policy::has_click, policy::has_text,
+    policy::has_move, policy::has_background, policy::has_size, policy::has_font, wm_paint, 
+    wm_mouse_wheel, wm_create, wm_size, wm_erasebkgnd,
+    wm_mouse_down, wm_mouse_up, wm_nccalcsize, wm_ncpaint>
   {
 
-    using mouse_msg_param = messages::mouse_msg_param;
+    using mouse_msg_param = mouse_msg_param;
 
 
-    explicit listbox(window<void,void> * pParent) :
+    explicit listbox(iwindow * pParent) :
       window(pParent),
       _TopIndex(0),
       _SelectedItems(1, 0),
@@ -130,3 +132,4 @@ namespace wtf{
   };
 
 }
+#endif

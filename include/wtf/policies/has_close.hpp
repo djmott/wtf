@@ -1,20 +1,21 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
     /** has_close
     * Add members to close a UI element and events to capture it
     */
-    template<typename _SuperT, typename _ImplT>
-    struct has_close : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_close, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
       void close() { CloseWindow(*this); }
 
 
     protected:
 
-      explicit has_close(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
     };
   }
-}

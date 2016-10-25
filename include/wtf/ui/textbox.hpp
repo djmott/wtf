@@ -2,31 +2,44 @@
 
 namespace wtf{
 
-    struct textbox : wtf::window<textbox, policy::has_focus, policy::has_cursor, policy::has_caret, 
-      policy::has_size, policy::has_border, policy::has_click, policy::has_text, policy::has_background,
-      messages::wm_paint,messages::wm_mouse_down, messages::wm_create, messages::wm_char, messages::wm_keydown, 
-      messages::wm_erasebkgnd, messages::wm_nccalcsize, messages::wm_ncpaint, messages::wm_mouse_up, 
-      messages::wm_mouse_down, messages::wm_setfocus, messages::wm_killfocus, messages::wm_setcursor>
-    {
+  template <typename _ImplT, policy..._Policies>
+  class window<_ImplT, policy::isa_textbox, _Policies...> :
+    public window<_ImplT, 
+    policy::isa_label, 
+    policy::wm_char, 
+    policy::wm_keydown, 
+    policy::has_cursor,
+    policy::has_caret,
+    policy::has_click,
+    policy::has_focus,
+    _Policies...>
 
-      using mouse_msg_param = messages::mouse_msg_param;
+  {
+    using __super_t = window<_ImplT, policy::isa_label, policy::wm_char, policy::wm_keydown, policy::has_cursor,
+      policy::has_caret, policy::has_click, policy::has_focus, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
-      explicit textbox(window<void,void> * pParent) : window(pParent){}
 
-      virtual LRESULT on_wm_create(bool& bHandled) override{
+
+    protected:
+      explicit window(iwindow * pParent) : __super_t(pParent){}
+
+      virtual void on_wm_create() override{
         background_brush(brush::system_brush(system_colors::window));
         border_style(border_styles::lowered);
         text_vertical_alignment(text_vertical_alignments::top);
         text_horizontal_alignment(text_horizontal_alignments::left);
         caret_width(2);
         auto_draw_text(false);
-        return window::on_wm_create(bHandled);
+        __super_t::on_wm_create();
       };
 
-      virtual void on_wm_click(const mouse_msg_param& m) override{ return window::on_wm_click(m); }
-
-      virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
-        if (!_text.size()) return window::on_wm_paint(dc, ps, bHandled);
+      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+        if (!_text.size()){
+          __super_t::on_wm_paint(dc, ps);
+          return;
+        }
 
         rect<coord_frame::client> client = ps.client();
         auto ClientWidth = client.right - client.left;
@@ -44,7 +57,7 @@ namespace wtf{
         for (;;){
           auto tmpExt = dc.get_text_extent(_text.c_str() + _print_pos, EndPrintPos - _print_pos);
           CaretPos.x = tmpExt.cx;
-          CaretPos.y = _text_metrics.tmHeight;
+          CaretPos.y = tmpExt.cy;
           if (tmpExt.cx <= ClientWidth) break;
           _print_pos++;
         }
@@ -71,15 +84,17 @@ namespace wtf{
           caret_visible(true);
           caret_position(CaretPos);
         }
-        return window::on_wm_paint(dc, ps, bHandled);
+        __super_t::on_wm_paint(dc, ps);
       };
 
-      virtual LRESULT on_wm_mouse_down(const mouse_msg_param& p, bool& bHandled) override{
+
+      virtual void on_wm_mouse_up(const mouse_msg_param& p) override{
         set_focus();
-        return window::on_wm_mouse_down(p, bHandled);
+        __super_t::on_wm_mouse_up(p);
       };
 
-      virtual LRESULT on_wm_char(UINT character, messages::keyboard_msg_param k, bool& bHandled) override{
+
+      virtual void on_wm_char(UINT character, keyboard_msg_param k) override{
         switch (character){
           case VK_BACK:
           {
@@ -90,11 +105,11 @@ namespace wtf{
             _text.insert(_edit_pos++, 1, static_cast<char>(character)); break;
           }
         }
-        //         refresh();
-        return window::on_wm_char(character, k, bHandled);
+        invalidate();
+        __super_t::on_wm_char(character, k);
       };
 
-      virtual LRESULT on_wm_keydown(UINT key, messages::keyboard_msg_param k, bool& bHandled) override{
+      virtual void on_wm_keydown(UINT key, keyboard_msg_param k) override{
 
         switch (key){
           case VK_LEFT:
@@ -117,20 +132,11 @@ namespace wtf{
         if (_edit_pos < 0) _edit_pos = 0;
         if (_edit_pos > static_cast<int>(_text.size())) _edit_pos = static_cast<int>(_text.size());
         invalidate();
-        return window::on_wm_keydown(key, k, bHandled);
+        __super_t::on_wm_keydown(key, k);
 
       };
 
       virtual const wtf::cursor& cursor_pointer() const override{ return cursor::global(cursor::style::ibeam); }
-
-      virtual const tstring &text() const{ return _text; }
-      virtual void text(const tstring &newval){ 
-        _edit_pos = 0; 
-        _text = newval; 
-        invalidate();
-      }
-
-
 
     private:
 
@@ -139,9 +145,6 @@ namespace wtf{
       int _edit_pos = 0;
       // _print_pos helps ensure the cursor is always visible e.g. text length > window length
       int _print_pos = 0;
-      tstring _text = _T("");
-      bool _word_wrap = false;
-      std::map<TCHAR, uint8_t> _CharWidths;
     };
 
 }

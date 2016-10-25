@@ -1,27 +1,28 @@
 #pragma once
 
 namespace wtf{
-  namespace messages{
 
-    template<typename _SuperT, typename _ImplT>
-    struct wm_dblclick : _SuperT{
+  template <typename _ImplT, policy..._Policies>
+  class window<_ImplT, policy::wm_dblclick, _Policies...> : public window<_ImplT, _Policies...>{
+    using __super_t = window<_ImplT, _Policies...>;
+    template <typename, policy ... > friend class window;
+  public:
 
-    protected:
 
-      virtual LRESULT on_wm_dblclick(const mouse_msg_param&, bool&) = 0{ return 0; }
+  protected:
+    virtual void on_wm_dblclick(const mouse_msg_param&){}
 
-      wm_dblclick(window<void,void> * pParent) : _SuperT(pParent){}
+    explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool & bHandled) {
-        if (WM_LBUTTONDBLCLK == umsg){
-          return on_wm_dblclick(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::left), bHandled);
-        } else if (WM_MBUTTONDBLCLK == umsg){
-          return on_wm_dblclick(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::middle), bHandled);
-        } else if (WM_RBUTTONDBLCLK == umsg){
-          return on_wm_dblclick(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::right), bHandled);
-        }
-        return 0;
+    LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
+      if (WM_LBUTTONDBLCLK == umsg){
+        on_wm_dblclick(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::left));
+      } else if (WM_MBUTTONDBLCLK == umsg){
+        on_wm_dblclick(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::middle));
+      } else if (WM_RBUTTONDBLCLK == umsg){
+        on_wm_dblclick(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::right));
       }
-    };
-  }
+      return __super_t::handle_message(hwnd, umsg, wparam, lparam);
+    }
+  };
 }

@@ -1,10 +1,13 @@
 #pragma once
 
 namespace wtf{
-  namespace policy{
-    template <typename _SuperT, typename _ImplT> struct has_image : _SuperT{
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_image, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
+
     protected:
-      has_image(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
     };
   }
-}

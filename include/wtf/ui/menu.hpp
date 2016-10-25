@@ -1,5 +1,6 @@
 #pragma once
 
+#if 0
 namespace wtf {
 
     struct menu : std::shared_ptr<HMENU__> {
@@ -10,3 +11,4 @@ namespace wtf {
 
 
   }
+#endif

@@ -1,22 +1,24 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
 
-    template<typename _SuperT, typename _ImplT>
-    struct wm_timer : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::wm_timer, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
 
     protected:
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      virtual LRESULT on_wm_timer(UINT_PTR, bool&) = 0{ return 0; }
+      virtual void on_wm_timer(UINT_PTR) = 0;
 
-      LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM , bool & bHandled) {
-        if (WM_TIMER == umsg) return on_wm_timer(static_cast<UINT_PTR>(wparam), bHandled);
-        return 0;
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
+        if (WM_TIMER == umsg) on_wm_timer(static_cast<UINT_PTR>(wparam));
+        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
       }
 
     };
 
   }
-}

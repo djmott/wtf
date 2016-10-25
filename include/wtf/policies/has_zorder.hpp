@@ -1,8 +1,12 @@
 #pragma once
 
 namespace wtf{
-  namespace policy{
-    template <typename _SuperT, typename _ImplT> struct has_zorder : _SuperT{
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_zorder, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
+
       enum class zorders{
         bottom = 1,
         no_top_most = -2,
@@ -17,8 +21,7 @@ namespace wtf{
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE| SWP_NOCOPYBITS), [](BOOL b){ return !b; });
       }
     protected:
-      has_zorder(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
     };
   }
-}

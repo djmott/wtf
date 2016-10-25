@@ -1,14 +1,15 @@
 #pragma once
 
+#if 0
 namespace wtf{
 
-    struct toggle_button : wtf::window<toggle_button, policy::has_size, policy::has_border, 
+    struct toggle_button : wtf::window<toggle_button, iwindow, policy::has_size, policy::has_border,
       policy::has_click, policy::has_text, policy::has_font, policy::has_move, policy::has_background,
-      messages::wm_paint, messages::wm_create, messages::wm_mouse_up, messages::wm_erasebkgnd, 
-      messages::wm_mouse_down, messages::wm_ncpaint, messages::wm_nccalcsize>
+      wm_paint, wm_create, wm_mouse_up, wm_erasebkgnd, 
+      wm_mouse_down, wm_ncpaint, wm_nccalcsize>
     {
 
-      using mouse_msg_param = messages::mouse_msg_param;
+      using mouse_msg_param = mouse_msg_param;
 
       toggle_button() = delete;
       toggle_button(const toggle_button&) = delete;
@@ -16,15 +17,15 @@ namespace wtf{
       toggle_button &operator=(const toggle_button &) = delete;
       toggle_button &operator=(toggle_button&&) = delete;
       virtual ~toggle_button() = default;
-      explicit toggle_button(window<void,void> * pParent) : window(pParent), _button_state(button_states::up){ }
+      explicit toggle_button(iwindow * pParent) : window(pParent), _button_state(button_states::up){ }
 
       virtual LRESULT on_wm_create(bool& bHandled) override{ 
         border_style(border_styles::raised); 
         return window::on_wm_create(bHandled);
       };
 
-      virtual LRESULT on_wm_mouse_up(const messages::mouse_msg_param& m, bool& bHandled) override{
-        if (messages::mouse_msg_param::buttons::left != m.button) return window::on_wm_mouse_up(m, bHandled);
+      virtual LRESULT on_wm_mouse_up(const mouse_msg_param& m, bool& bHandled) override{
+        if (mouse_msg_param::buttons::left != m.button) return window::on_wm_mouse_up(m, bHandled);
         button_state(button_states::down == _button_state ? button_states::up : button_states::down);
         return window::on_wm_mouse_up(m, bHandled);
       };
@@ -49,3 +50,4 @@ namespace wtf{
     };
 
 }
+#endif

@@ -7,16 +7,18 @@ namespace wtf {
     transparent = TRANSPARENT,
   };
 
-  namespace policy {
 
-    template<typename _SuperT, typename _ImplT>
-    struct has_font : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_font, _Policies...> : public window<_ImplT, policy::wm_create, _Policies...>{
+      using __super_t = window<_ImplT, policy::wm_create, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
       virtual font_background_modes background_mode() const { return _background_mode; }
       virtual void background_mode(font_background_modes newval) { _background_mode = newval; }
 
       virtual const wtf::font& font() const { return _font; }
-      virtual wtf::font &font() { return _font; }
+      virtual wtf::font& font() { return _font; }
       virtual void font(const wtf::font& newval) { _font = newval; }
 
       virtual rgb fore_color() const { return _fore_color; }
@@ -27,22 +29,17 @@ namespace wtf {
 
     protected:
       
-      explicit has_font(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      virtual LRESULT on_wm_create(bool& bHandled) override{
+      virtual void on_wm_create() override{
         apply_font(device_context::get_client(*this));
-        return _SuperT::on_wm_create(bHandled);
+        return __super_t::on_wm_create();
       }
-
-      virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
-        apply_font(dc);
-        return _SuperT::on_wm_paint(dc, ps, bHandled);
-      }
-
-      virtual LRESULT on_wm_erasebkgnd(const device_context& dc, const rect<coord_frame::client>& client, bool& bHandled) override{ 
-        apply_font(dc);
-        return _SuperT::on_wm_erasebkgnd(dc, client, bHandled);
-      }
+// 
+//       virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+//         apply_font(dc);
+//         return __super_t::on_wm_paint(dc, ps, bHandled);
+//       }
 
       void apply_font(const device_context& dc){
         dc.select_object(font().open());
@@ -59,4 +56,3 @@ namespace wtf {
       font_background_modes _background_mode = font_background_modes::transparent;
     };
   }
-}

@@ -5,7 +5,7 @@ namespace wtf{
   #define throw_lasterr_if(_test, _expression) _throw_lasterr_if( _test, __FILE__, __LINE__, #_test, _expression )
 
     struct exception : std::runtime_error{
-      using _super_t = std::runtime_error;
+      using __super_t = std::runtime_error;
 
       template<typename _TestT, typename _ExprT>
       static _TestT _throw_lasterr_if(_TestT test, const char *sfile, int line, const char *sTest, _ExprT expr){
@@ -15,7 +15,7 @@ namespace wtf{
 
       ~exception() = default;
 
-      exception(const char *sfile, int line, const char *code, DWORD last_error) : _super_t(""), _file(sfile),
+      exception(const char *sfile, int line, const char *code, DWORD last_error) : __super_t(""), _file(sfile),
         _code(code),
         _what(code),
         _line(line)

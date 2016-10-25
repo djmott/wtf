@@ -1,10 +1,12 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
 
-    template<typename _SuperT, typename _ImplT>
-    struct wm_showwindow : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::wm_showwindow, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
       enum class visibility_change_flag {
         show_window = 0,
@@ -16,15 +18,14 @@ namespace wtf {
 
     protected:
 
-      wm_showwindow(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      virtual LRESULT on_wm_showwindow(visibility_change_flag, bool&) = 0{ return 0; }
+      virtual void on_wm_showwindow(visibility_change_flag){}
 
-      LRESULT handle_message(HWND , UINT umsg, WPARAM , LPARAM lparam, bool & bHandled) {
-        if (WM_SHOWWINDOW == umsg) return on_wm_showwindow(static_cast<visibility_change_flag>(lparam), bHandled);
-        return 0;
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
+        if (WM_SHOWWINDOW == umsg) on_wm_showwindow(static_cast<visibility_change_flag>(lparam));
+        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
       }
     };
 
   }
-}

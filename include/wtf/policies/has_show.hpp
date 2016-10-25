@@ -1,12 +1,15 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
     /** has_show
     * Adds members to change the display state and capture display state changes
     */
-    template<typename _SuperT, typename _ImplT>
-    struct has_show : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_show, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
+
 
       virtual void show() { ::ShowWindow(*this, SW_SHOW); }
 
@@ -14,9 +17,8 @@ namespace wtf {
 
     protected:
 
-      explicit has_show(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
     };
 
   }
-}

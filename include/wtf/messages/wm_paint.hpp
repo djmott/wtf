@@ -1,26 +1,28 @@
 #pragma once
 
 namespace wtf {
-  namespace messages {
 
-    template<typename _SuperT, typename _ImplT>
-    struct wm_paint : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::wm_paint, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
     protected:
-      virtual LRESULT on_wm_paint(const device_context&, const paint_struct&, bool&) = 0{ return 0; }
 
-      explicit wm_paint(window<void,void> * pParent) : _SuperT(pParent){}
+      virtual void on_wm_paint(const device_context&, const paint_struct&){}
 
-      LRESULT handle_message(HWND , UINT umsg, WPARAM wparam, LPARAM lparam, bool &bhandled) {
+      explicit window(iwindow * pParent) : __super_t(pParent){}
+
+      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
         if (WM_PAINT == umsg){
           auto & dc = *reinterpret_cast<const device_context *>(wparam);
           auto & ps = *reinterpret_cast<const paint_struct *>(lparam);
-          return on_wm_paint(dc, ps, bhandled);
+          on_wm_paint(dc, ps);
         }
-        return 0;
+        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
       }
 
     };
 
   }
-}

@@ -1,12 +1,15 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
     /** has_caret
     * Controls the caret of text/input elements
     */
-    template<typename _SuperT, typename>
-    struct has_caret : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_caret, _Policies...> : 
+      public window<_ImplT, policy::wm_setfocus, policy::wm_killfocus,  _Policies...>{
+      using __super_t = window<_ImplT, policy::wm_setfocus, policy::wm_killfocus, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
       virtual int caret_width() const{ return _width; }
       virtual void caret_width(int newval){ _width = newval; }
@@ -53,19 +56,19 @@ namespace wtf {
     protected:
 
 
-      has_caret(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      virtual LRESULT on_wm_setfocus(HWND hwnd, bool& bHandled) override{
+      virtual void on_wm_setfocus(HWND hwnd) override{
         create_caret();
         caret_position(_pos);
         caret_visible(true);
         caret_blink_rate(_blink_rate);
-        return _SuperT::on_wm_setfocus(hwnd, bHandled);
+        __super_t::on_wm_setfocus(hwnd);
       }
 
-      virtual LRESULT on_wm_killfocus(HWND hwnd, bool& bHandled) override{
+      virtual void on_wm_killfocus(HWND hwnd) override{
         destroy_caret();
-        return _SuperT::on_wm_killfocus(hwnd, bHandled);
+        __super_t::on_wm_killfocus(hwnd);
       }
 
     private:
@@ -76,4 +79,3 @@ namespace wtf {
       int _height = 1;
     };
   }
-}

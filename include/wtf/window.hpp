@@ -5,14 +5,14 @@ namespace wtf{
 
 
   /** Specialization that terminates the inheritance hierarchy
-  * super most base class of all windows
+  * super-most base class of all windows
   */
-  template <> struct window<void, void>{
-
+  template <> class window<void>{
+  public:
     window(const window&) = delete;
     window& operator=(const window&) = delete;
 
-    virtual ~window(){}
+    virtual ~window(){ if (_handle) ::DestroyWindow(_handle); }
 
     window() : _parent(nullptr), _handle(nullptr){}
 
@@ -45,14 +45,7 @@ namespace wtf{
     }
 
   protected:
-    template <typename, typename, template <typename, typename> class ... > friend struct window;
-
-    void invalidate(bool bErase=true){
-      if (_handle)
-        wtf::exception::throw_lasterr_if(
-        ::InvalidateRect(_handle, nullptr, bErase ? TRUE : FALSE), 
-        [](BOOL b){ return !b; });
-    }
+    template <typename, policy ... > friend class window;
 
     virtual int exec() = 0;
 
@@ -63,68 +56,29 @@ namespace wtf{
 
 
 
-  template <typename _ImplT, typename _BaseT, template <typename, typename> class _HeadT, template <typename, typename> class ... _TailT>
-  struct window<_ImplT, _BaseT, _HeadT, _TailT...> : _HeadT<window<_ImplT, _BaseT, _TailT...>, _ImplT, _BaseT>{
+  template <typename _ImplT> class window<_ImplT> : public window<void>{
 
-    using _super_t = _HeadT<window<_ImplT, _BaseT, _TailT...>, _ImplT, _BaseT>;
-
-    using window_type = window<_ImplT, _BaseT, _HeadT, _TailT...>;
-
-    window(const window&) = delete;
-    window& operator=(const window&) = delete;
-
-    virtual ~window() = default;
-
-    window(){}
-    window(window&& src) : _super_t(std::move(src)){}
-
-    explicit window(window<void,void> * pParent) : _super_t(pParent){}
-    window& operator=(window&& src){ return _super_t::operator=(std::move(src)); }
-
-  private:
-    template <typename, typename, template <typename, typename> class ... > friend struct window;
-
-
-    LRESULT handle_message(HWND, UINT, WPARAM, LPARAM, bool&){ return 0; }
-
-    LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled){
-      auto handler_ret = _super_t::handle_message(hwnd, umsg, wparam, lparam, handled);
-      if (handled) return handler_ret;
-      return _super_t::propagate_message(hwnd, umsg, wparam, lparam, handled);
-    }
-  };
-
-
-
-
-  template <typename _ImplT, typename _BaseT> struct window<_ImplT, _BaseT> : _BaseT{
-
-    using _super_t = _BaseT;
-    using window_type = window<_ImplT, _BaseT>;
-
-
-    /// an implementation may want to use different window styles so add their definitions as class wide static constants
-    static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
-    static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
-
-    virtual ~window(){ if (_handle) ::DestroyWindow(_handle); }
+    using __super_t = window<void>;
+    using window_type = window<_ImplT>;
+  public:
 
     window() = default;
     window(const window&) = delete;
-    window(window&& src) : _super_t(std::move(src)){}
-    explicit window(window<void,void> * parent) : _super_t(parent){}
+    window(window&& src) : __super_t(std::move(src)){}
+    explicit window(iwindow * parent) : __super_t(parent){}
 
     window& operator=(const window&) = delete;
-    window& operator=(window&& src){ return _super_t::operator=(std::move(src)); }
-
-
+    window& operator=(window&& src){ return __super_t::operator=(std::move(src)); }
 
     virtual const type_info& type() const override{ return typeid(_ImplT); }
 
   protected:
 
-    template <typename, typename, template <typename, typename> class ... > friend struct window;
-    template <typename, DWORD, DWORD> friend struct form_base;
+    /// an implementation may want to use different window styles so add their definitions as class wide static constants
+    static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
+    static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
+
+    template <typename, policy ... > friend class window;
 
     virtual int exec() override{
       _handle = wtf::exception::throw_lasterr_if(::CreateWindowEx(
@@ -144,19 +98,14 @@ namespace wtf{
       return 0;
     }
 
-    LRESULT handle_message(HWND, UINT, WPARAM, LPARAM, bool&){ return 0; }
-
-    LRESULT propagate_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam, bool& handled){
-
-    #if __WTF_DEBUG_MESSAGES__
-      std::string sTemp = typeid(_ImplT).name();
-      sTemp += " ";
-      sTemp += _::msg_name(umsg);
-      sTemp += " default handler";
-      std::cout << sTemp << std::endl;
-    #endif
-
-
+    LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
+      #if __WTF_DEBUG_MESSAGES__
+        std::string sTemp = typeid(_ImplT).name();
+        sTemp += " ";
+        sTemp += _::msg_name(umsg);
+        sTemp += " default handler";
+        std::cout << sTemp << std::endl;
+      #endif
       switch (umsg){
         case WM_CLOSE:
           DestroyWindow(hwnd); _handle = nullptr; break;
@@ -181,7 +130,6 @@ namespace wtf{
 
       try{
         _ImplT * pThis = nullptr;
-        bool handled = false;
 
         if (WM_NCCREATE == umsg){
           auto pCreate = reinterpret_cast<CREATESTRUCT*>(lparam);
@@ -202,7 +150,7 @@ namespace wtf{
         if (WM_ERASEBKGND == umsg){
           auto oDC = wtf::device_context::get_client(hwnd);
 
-          return pThis->propagate_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oDC), handled);
+          return pThis->handle_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oDC));
 
         } else if (WM_PAINT == umsg){
           RECT r;
@@ -212,10 +160,10 @@ namespace wtf{
           paint_struct oPaint(*pThis);
           auto oDC = wtf::device_context::get_client(hwnd);
 
-          return pThis->propagate_message(hwnd, umsg, reinterpret_cast<WPARAM>(&oDC), reinterpret_cast<LPARAM>(&oPaint), handled);
+          return pThis->handle_message(hwnd, umsg, reinterpret_cast<WPARAM>(&oDC), reinterpret_cast<LPARAM>(&oPaint));
 
         } else{
-          return pThis->propagate_message(hwnd, umsg, wparam, lparam, handled);
+          return pThis->handle_message(hwnd, umsg, wparam, lparam);
         }
       }
       catch (const wtf::exception& ex){

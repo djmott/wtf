@@ -6,17 +6,29 @@
 #include "wtf/wtf.hpp"
 
 using namespace wtf;
-using namespace wtf::ui;
 
-#if 1
+#if 0
 
 struct main_form : form{
 
-  main_form(){
-    _frm.show();
+};
+
+
+#elif 0
+
+struct main_form : form{
+  main_form() : form(), _panel(this){
+
   }
 
-  form _frm;
+  virtual void on_wm_create() override{
+    _panel.border_style(border_styles::double_lowered);
+    _panel.move(5, 5, 50, 30);
+    return form::on_wm_create();
+  };
+
+
+  panel _panel;
 };
 
 #elif 0
@@ -25,61 +37,89 @@ struct main_form : form{
 
   }
 
-  virtual LRESULT on_wm_create (bool& bHandled) override{
+  virtual void on_wm_create () override{
     _label.border_style(border_styles::double_lowered);
     _label.move(5, 5, 50, 30);
     _label.text(_T("FNORD"));
-    return form::on_wm_create(bHandled);
+    return form::on_wm_create();
   };
 
 
   label _label;
 };
-
-#elif 0
-struct main_form : form{
-  main_form() : form(), _tabs(this){
-  }
-  virtual void wm_create() override{ _tabs.add_page("FNORD"); };
-  virtual void wm_size(const point<coord_frame::client>& p) override{ _tabs.move(2, 2, p.x - 4, p.y - 4); };
-  tab_container _tabs;
-};
-
 #elif 0
 struct main_form : form{
   main_form() : form(), _text(this){}
 
-  virtual void CreateEvent() override{
-    virtual void wm_size(const point<coord_frame::client>& p) override {
-      _text.move(0, 0, p.x-2, p.y-2);
-    };
+
+  virtual void on_wm_size(const point<coord_frame::client>& p) override{
+    _text.move(0, 0, p.x - 2, p.y - 2);
   }
+
   textbox _text;
 };
-
 #elif 0
 struct main_form : form{
   main_form() : form(), _pb(this){}
 
-  virtual void CreateEvent() override{
+  virtual void on_wm_create() override{
     _pb.move(10, 10, 100, 25);
     _pb.value(50);
+    form::on_wm_create();
   }
   progress_bar _pb;
 };
+
 #elif 0
+
+struct main_form : form{
+  main_form() : form(), _button(this){
+    _button.text(_T("Click me."));
+  }
+
+
+  virtual void on_wm_size(const point<coord_frame::client>& p) override{
+    _button.move(5, 5, 75, 30);
+  }
+
+  button _button;
+};
+
+#elif 0
+
 struct main_form : form{
   main_form() : form(), _scroll(this){
-    virtual void wm_create() override {
-      _scroll.orientation(orientations::horizontal);
-      _scroll.move(10, 10, 100, 20);
-      _scroll.min(0);
-      _scroll.max(10);
-      _scroll.value(5);
-    };
+    _scroll.orientation(orientations::horizontal);
+    _scroll.min(0);
+    _scroll.max(10);
+    _scroll.value(5);
   }
-  scroll_bar _scroll;
+
+  virtual void on_wm_size(const point<coord_frame::client>& p) override{
+    _scroll.move(10, 10, 100, 20);
+  }
+
+  scrollbar _scroll;
 };
+
+#elif 1
+
+
+struct main_form : form{
+  main_form() : form(), _tabs(this){
+    _tabs.add_page("FNORD"); 
+    form::on_wm_create();
+  };
+  
+  virtual void on_wm_size(const point<coord_frame::client>& p) override{ 
+    _tabs.move(2, 2, p.x - 4, p.y - 4); 
+  };
+  
+  tab_container _tabs;
+};
+
+
+
 #else
 
 
@@ -217,7 +257,7 @@ struct button_page : panel{
   label _label2;
 
   struct _button1 : button{
-    _button1(window<void,void> * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
+    _button1(iwindow * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
 
     virtual void on_wm_click(const mouse_msg_param& m) override{
       tstringstream ss;
@@ -229,7 +269,7 @@ struct button_page : panel{
   }_button1;
 
   struct _button2 : toggle_button{
-    _button2(window<void,void> * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
+    _button2(iwindow * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
 
     virtual void on_wm_click(const mouse_msg_param& m) override{
       tstringstream ss;

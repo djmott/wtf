@@ -1,13 +1,15 @@
 #pragma once
+
+#if 0
 namespace wtf{
-  struct rivet : window<rivet, messages::wm_paint, policy::has_move>{
+  struct rivet : window<rivet, iwindow, wm_paint, policy::has_move>{
     rivet() = delete;
     rivet(const rivet&) = delete;
     rivet(rivet&&) = delete;
     rivet &operator=(const rivet &) = delete;
     rivet &operator=(rivet&&) = delete;
     virtual ~rivet() = default;
-    explicit rivet(window<void,void> * pParent) : window(pParent),
+    explicit rivet(iwindow * pParent) : window(pParent),
       _region(region::create_round_rect(0,0,10,10, 9, 9)){}
 
     
@@ -25,3 +27,4 @@ namespace wtf{
   };
 }
 
+#endif

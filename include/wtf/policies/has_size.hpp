@@ -1,12 +1,14 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
     /** has_size
     * Adds members to reposition/resize and events to capture them
     */
-    template<typename _SuperT, typename _ImplT>
-    struct has_size : _SuperT {
+    template <typename _ImplT, policy..._Policies>
+    class window<_ImplT, policy::has_size, _Policies...> : public window<_ImplT, _Policies...>{
+      using __super_t = window<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window;
+    public:
 
       virtual int width() const{
         auto r = rect<coord_frame::client>::get(*this);
@@ -32,10 +34,9 @@ namespace wtf {
 
     protected:
 
-      explicit has_size(window<void,void> * pParent) : _SuperT(pParent){}
+      explicit window(iwindow * pParent) : __super_t(pParent){}
 
 
     };
 
   }
-}

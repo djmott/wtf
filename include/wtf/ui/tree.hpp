@@ -1,15 +1,16 @@
 #pragma once
 
+#if 0
 namespace wtf{
-  struct tree : window<tree, policy::has_border, policy::has_click, policy::has_text,
-    messages::wm_create, messages::wm_paint, policy::has_size, messages::wm_dblclick, 
-    messages::wm_mouse_wheel, policy::has_font, policy::has_move, messages::wm_size,
-    messages::wm_erasebkgnd, policy::has_background >
+  struct tree : window<tree, iwindow, policy::has_border, policy::has_click, policy::has_text,
+    wm_create, wm_paint, policy::has_size, wm_dblclick, 
+    wm_mouse_wheel, policy::has_font, policy::has_move, wm_size,
+    wm_erasebkgnd, policy::has_background >
   {
 
-    using mouse_msg_param = messages::mouse_msg_param;
+    using mouse_msg_param = mouse_msg_param;
 
-    explicit tree(window<void,void> * pParent)
+    explicit tree(iwindow * pParent)
       : window(pParent),
       _root(new node(this)),
       _black_pen(pen::create(pen::style::solid, 1, rgb(0, 0, 0))),
@@ -407,3 +408,4 @@ namespace wtf{
     }_hscroll;
   };
 }
+#endif

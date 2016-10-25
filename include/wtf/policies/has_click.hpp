@@ -1,38 +1,36 @@
 #pragma once
 
 
-namespace wtf {
-  namespace policy {
-    /** has_click
-    * produces click events
-    */
-    template<typename _SuperT, typename _ImplT>
-    struct has_click : _SuperT {
+namespace wtf{
+  /** has_click
+  * produces click events
+  */
+  template <typename _ImplT, policy..._Policies>
+  class window<_ImplT, policy::has_click, _Policies...> : public window<_ImplT, policy::wm_mouse_down, policy::wm_mouse_up, _Policies...>{
+    using __super_t = window<_ImplT, policy::wm_mouse_down, policy::wm_mouse_up, _Policies...>;
+    template <typename, policy ... > friend class window;
+  public:
 
-      using mouse_msg_param = messages::mouse_msg_param;
 
-    protected:
+  protected:
 
-      virtual void on_wm_click(const mouse_msg_param& )=0{}
+    explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      virtual LRESULT on_wm_mouse_down(const messages::mouse_msg_param& oParam, bool &) override{
-        _Down = oParam.button;
-        return 0; 
+    virtual void on_wm_click(const mouse_msg_param&){}
+
+    virtual void on_wm_mouse_down(const mouse_msg_param& oParam) override{
+      _Down = oParam.button;
+      __super_t::on_wm_mouse_down(oParam);
+    }
+
+    virtual void on_wm_mouse_up(const mouse_msg_param& oParam) override{
+      if (rect<coord_frame::client>::get(*this).is_in(oParam.position) && _Down == oParam.button){
+        on_wm_click(oParam);
+        __super_t::on_wm_mouse_up(oParam);
+        _Down = mouse_msg_param::buttons::unspecified;
       }
+    }
 
-      virtual LRESULT on_wm_mouse_up(const mouse_msg_param& oParam, bool&) override{
-        if (rect<coord_frame::client>::get(*this).is_in(oParam.position) && _Down == oParam.button){
-          on_wm_click(oParam);
-          _Down = mouse_msg_param::buttons::unspecified;
-        }
-        return 0;
-      }
-
-
-      explicit has_click(window<void,void> * pParent) : _SuperT(pParent){}
-
-    private:
-       mouse_msg_param::buttons _Down = mouse_msg_param::buttons::unspecified;
-    };
-  }
+    mouse_msg_param::buttons _Down = mouse_msg_param::buttons::unspecified;
+  };
 }
