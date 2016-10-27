@@ -5,10 +5,10 @@ namespace wtf {
     * Controls the caret of text/input elements
     */
     template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_caret, _Policies...> : 
-      public window<_ImplT, policy::wm_setfocus, policy::wm_killfocus,  _Policies...>{
-      using __super_t = window<_ImplT, policy::wm_setfocus, policy::wm_killfocus, _Policies...>;
-      template <typename, policy ... > friend class window;
+    class window<_ImplT, policy::has_caret, _Policies...> 
+      : public window_impl<_ImplT, _Policies..., policy::wm_setfocus, policy::wm_killfocus>{
+      using __super_t = window_impl<_ImplT, _Policies..., policy::wm_setfocus, policy::wm_killfocus>;
+      template <typename, policy ... > friend class window_impl;
     public:
 
       virtual int caret_width() const{ return _width; }

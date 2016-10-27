@@ -2,9 +2,11 @@
 
 namespace wtf{
     template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_invalidate, _Policies...> : public window<_ImplT, _Policies...>{
-      using __super_t = window<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window;
+    class window<_ImplT, policy::has_invalidate, _Policies...> 
+      : public window_impl<_ImplT, _Policies...>
+    {
+      using __super_t = window_impl<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window_impl;
     public:
 
       void invalidate(bool EraseBackground = true){

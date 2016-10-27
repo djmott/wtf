@@ -6,9 +6,11 @@ namespace wtf{
   * produces click events
   */
   template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::has_click, _Policies...> : public window<_ImplT, policy::wm_mouse_down, policy::wm_mouse_up, _Policies...>{
-    using __super_t = window<_ImplT, policy::wm_mouse_down, policy::wm_mouse_up, _Policies...>;
-    template <typename, policy ... > friend class window;
+  class window<_ImplT, policy::has_click, _Policies...> 
+    : public window_impl<_ImplT, _Policies..., policy::wm_mouse_down, policy::wm_mouse_up>
+  {
+    using __super_t = window_impl<_ImplT, _Policies..., policy::wm_mouse_down, policy::wm_mouse_up>;
+    template <typename, policy ... > friend class window_impl;
   public:
 
 

@@ -5,9 +5,11 @@ namespace wtf {
     * Provides an icon associated with the window
     */
     template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_icon, _Policies...> : public window<_ImplT, policy::wm_geticon, _Policies...>{
-      using __super_t = window<_ImplT, policy::wm_geticon, _Policies...>;
-      template <typename, policy ... > friend class window;
+    class window<_ImplT, policy::has_icon, _Policies...> 
+      : public window_impl<_ImplT, _Policies..., policy::wm_geticon>
+    {
+      using __super_t = window_impl<_ImplT, _Policies..., policy::wm_geticon>;
+      template <typename, policy ... > friend class window_impl;
     public:
 
       virtual icon &big_icon() { return _big_icon; }

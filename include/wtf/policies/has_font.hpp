@@ -9,9 +9,10 @@ namespace wtf {
 
 
     template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_font, _Policies...> : public window<_ImplT, policy::wm_create, _Policies...>{
-      using __super_t = window<_ImplT, policy::wm_create, _Policies...>;
-      template <typename, policy ... > friend class window;
+    class window<_ImplT, policy::has_font, _Policies...> 
+      : public window_impl<_ImplT, _Policies..., policy::wm_create, policy::wm_paint>{
+      using __super_t = window_impl<_ImplT, _Policies..., policy::wm_create, policy::wm_paint>;
+      template <typename, policy ... > friend class window_impl;
     public:
 
       virtual font_background_modes background_mode() const { return _background_mode; }
@@ -35,11 +36,11 @@ namespace wtf {
         apply_font(device_context::get_client(*this));
         return __super_t::on_wm_create();
       }
-// 
-//       virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
-//         apply_font(dc);
-//         return __super_t::on_wm_paint(dc, ps, bHandled);
-//       }
+
+      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+        apply_font(dc);
+        return __super_t::on_wm_paint(dc, ps);
+      }
 
       void apply_font(const device_context& dc){
         dc.select_object(font().open());

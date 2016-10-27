@@ -3,15 +3,14 @@
 namespace wtf{
 
   template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::isa_form, _Policies...> : public window<_ImplT,
-    policy::has_titlebar, policy::has_show, policy::has_size, policy::has_move,
-    policy::has_cursor, policy::has_icon,  policy::wm_destroy, policy::wm_create,
-    policy::has_background, policy::wm_size, _Policies...>
+  class window<_ImplT, policy::isa_form, _Policies...> 
+    : public window_impl<_ImplT, _Policies..., policy::has_titlebar, policy::has_show, policy::has_size, policy::has_move,
+    policy::has_cursor, policy::has_icon,  policy::wm_destroy, policy::wm_create, policy::wm_erasebkgnd, policy::wm_size>
   {
-    using __super_t = window<_ImplT, policy::has_titlebar, policy::has_show, policy::has_size, policy::has_move,
-      policy::has_cursor, policy::has_icon, policy::wm_destroy, policy::wm_create, policy::has_background,
-      policy::wm_size, _Policies...>;
-    template <typename, policy ... > friend class window;
+    using __super_t = window_impl<_ImplT, _Policies..., policy::has_titlebar, policy::has_show, policy::has_size, policy::has_move,
+      policy::has_cursor, policy::has_icon, policy::wm_destroy, policy::wm_create, policy::wm_erasebkgnd,
+      policy::wm_size>;
+    template <typename, policy ... > friend class window_impl;
   public:
 
     explicit window(iwindow * pParent) : __super_t(pParent){}
@@ -24,8 +23,8 @@ namespace wtf{
     }
 
     virtual int exec() override{
-      __super_t::exec();
       message oMsg;
+      __super_t::exec();
       auto iRet = oMsg.pump();
       return iRet;
     }
@@ -49,6 +48,7 @@ namespace wtf{
     }
 
   protected:
+    virtual void handle_msg(window_message& msg) override{}
 
     virtual void on_wm_destroy() override{
       bool bQuit = false;
@@ -70,6 +70,15 @@ namespace wtf{
       _::_active_forms().push_back(this);
       __super_t::on_wm_create();
     }
+
+  };
+
+  struct form : window<form, policy::isa_form>{
+    static const DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW;
+    static const DWORD Style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+
+    explicit form(iwindow * pParent) : window(pParent){}
+    form() : form(nullptr){}
 
   };
 

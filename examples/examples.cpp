@@ -7,7 +7,7 @@
 
 using namespace wtf;
 
-#if 0
+#if 1
 
 struct main_form : form{
 
@@ -102,13 +102,12 @@ struct main_form : form{
   scrollbar _scroll;
 };
 
-#elif 1
+#elif 0
 
 
 struct main_form : form{
   main_form() : form(), _tabs(this){
-    _tabs.add_page("FNORD"); 
-    form::on_wm_create();
+    _tabs.add("FNORD"); 
   };
   
   virtual void on_wm_size(const point<coord_frame::client>& p) override{ 
@@ -125,8 +124,8 @@ struct main_form : form{
 
 
 
-struct label_page : panel{
-  label_page(tab_container * parent) : panel(parent),
+struct label_page : tab_page{
+  label_page(iwindow * parent) : tab_page(parent),
     _left(this), _right(this), _center(this),
     _raised(this), _lowered(this), _flat(this), 
     _etched(this), _bumped(this), _double_raised(this), _double_lowered(this)
@@ -140,7 +139,7 @@ struct label_page : panel{
     _double_lowered.border_style(border_styles::double_lowered);
 
   }
-  virtual LRESULT on_wm_create(bool& bHandled) override {
+  virtual void on_wm_create() override {
     _left.move(5, 5, 150, 25);
     _left.text("Left aligned");
     _left.text_horizontal_alignment(text_horizontal_alignments::left);
@@ -180,7 +179,7 @@ struct label_page : panel{
     _double_lowered.move(5, _double_raised.top() + _double_raised.height() + 5, 150, 25);
     _double_lowered.text("Double lowered");
     _double_lowered.border_style(border_styles::double_lowered);
-    return panel::on_wm_create(bHandled);
+    return tab_page::on_wm_create();
   };
 
   label _left, _center, _right;
@@ -190,11 +189,10 @@ struct label_page : panel{
 };
 
 
-struct checkbox_page : panel{
-  checkbox_page(tab_container * parent) : panel(parent), _left(this), _right(this){
-  }
+struct checkbox_page : tab_page{
+  checkbox_page(iwindow * parent) : tab_page(parent), _left(this), _right(this){}
 
-  virtual LRESULT on_wm_create(bool&  bHandled) override {
+  virtual void on_wm_create() override {
     _left.move(5, 5, 150, 25);
     _left.text("Left aligned");
     _left.text_horizontal_alignment(text_horizontal_alignments::left);
@@ -202,20 +200,20 @@ struct checkbox_page : panel{
     _right.move(5, 30, 150, 25);
     _right.text("Right aligned");
     _right.text_horizontal_alignment(text_horizontal_alignments::right);
-      return panel::on_wm_create(bHandled);
+      return tab_page::on_wm_create();
   };
 
   checkbox _left, _right;
 };
 
 
-struct listbox_page : panel{
-  listbox_page(tab_container * parent) : panel(parent),
+struct listbox_page : tab_page{
+  listbox_page(iwindow * parent) : tab_page(parent),
     _left(this), _center(this), _right(this)
   {
 
   }
-  virtual LRESULT on_wm_create(bool& bHandled) override {
+  virtual void on_wm_create() override {
     for (int i = 0; i < 100; i++){
       tstringstream ss;
       ss << i;
@@ -226,31 +224,31 @@ struct listbox_page : panel{
     _left.text_horizontal_alignment(text_horizontal_alignments::left);
     _center.text_horizontal_alignment(text_horizontal_alignments::center);
     _right.text_horizontal_alignment(text_horizontal_alignments::right);
-    return panel::on_wm_create(bHandled);
+    return tab_page::on_wm_create();
 
   };
-  virtual LRESULT on_wm_size(const point<coord_frame::client>& p, bool& bHandled) override {
+  virtual void on_wm_size(const point<coord_frame::client>& p) override {
     _left.move(0, 0, p.x / 3, p.y);
     _center.move(p.x / 3, 0, p.x / 3, p.y);
     _right.move((p.x / 3) * 2, 0, p.x / 3, p.y);
-    return panel::on_wm_size(p, bHandled);
+    return tab_page::on_wm_size(p);
   };
 
   listbox _left, _center, _right;
 };
 
-struct button_page : panel{
-  button_page(tab_container * parent) : panel(parent), 
+struct button_page : tab_page{
+  button_page(iwindow * parent) : tab_page(parent),
     _label1(this), _label2(this), _button1(this, _label1), _button2(this, _label2){}
 
-  virtual LRESULT on_wm_create(bool& bHandled) override {
+  virtual void on_wm_create() override {
     _button1.move(5, 5, 100, 35);
     _button1.text("Push button");
     _label1.move(105, 5, 100, 35);
     _button2.move(5, 50, 100, 35);
     _button2.text("Toggle button");
     _label2.move(105, 50, 100, 35);
-    return panel::on_wm_create(bHandled);
+    return tab_page::on_wm_create();
   };
 
   label _label1;
@@ -284,12 +282,12 @@ struct button_page : panel{
 };
 
 
-struct scroll_page : panel{
-  scroll_page(tab_container * parent) 
-    : panel(parent), _hor_scroll(this), _vert_scroll(this), _hor_progress(this), _vert_progress(this)  
+struct scroll_page : tab_page{
+  scroll_page(iwindow * parent)
+    : tab_page(parent), _hor_scroll(this), _vert_scroll(this), _hor_progress(this), _vert_progress(this)
   {}
 
-  virtual LRESULT on_wm_create(bool& bHandled) override {
+  virtual void on_wm_create() override {
     _hor_scroll.move(5, 5, 100, 20);
     _hor_scroll.orientation(orientations::horizontal);
 
@@ -301,37 +299,36 @@ struct scroll_page : panel{
 
     _vert_progress.move(150, 30, 20, 100);
     _vert_progress.orientation(orientations::vertical);
-    return panel::on_wm_create(bHandled);
+    return tab_page::on_wm_create();
   };
 
-  scroll_bar _hor_scroll, _vert_scroll;
+  scrollbar _hor_scroll, _vert_scroll;
   progress_bar _hor_progress, _vert_progress;
 };
 
 
 
-struct split_page : panel{
-  split_page(tab_container * parent) : panel(parent), _splitter(this){
-  }
-  virtual LRESULT on_wm_create(bool& bHandled) override { 
+struct split_page : tab_page{
+  split_page(iwindow * parent) : tab_page(parent), _splitter(this){}
+  virtual void on_wm_create() override { 
     _splitter.set_split_position(50); 
-    return panel::on_wm_create(bHandled);
+    return tab_page::on_wm_create();
   };
 
-  virtual LRESULT on_wm_size(const point<coord_frame::client>& p, bool& bHandled) override{ 
+  virtual void on_wm_size(const point<coord_frame::client>& p) override{
     _splitter.move(0, 0, p.x, p.y); 
-    return panel::on_wm_size(p, bHandled);
+    return tab_page::on_wm_size(p);
   };
 
   struct splitter : split_container{
-    splitter(panel * parent) : split_container(parent), _inner_splitter(first()), _text1(second())
+    splitter(split_page * parent) : split_container(parent), _inner_splitter(first()), _text1(second())
     {
       
     }
 
-    virtual LRESULT on_wm_create(bool& bHandled) override{
+    virtual void on_wm_create() override{
       _inner_splitter.set_split_position(25);
-      return split_container::on_wm_create(bHandled);
+      return split_container::on_wm_create();
     };
 
 //     first()->virtual void wm_size(const point<coord_frame::client>& p) override{ _inner_splitter.move(0, 0, p.x, p.y); };
@@ -342,10 +339,10 @@ struct split_page : panel{
       inner_splitter(panel * parent) : split_container(parent), _texta(first()), _textb(second()){
       }
 
-      virtual LRESULT on_wm_create(bool& bHandled) override{ 
+      virtual void on_wm_create() override{
         orientation(orientations::vertical); 
         _texta.multiline(true);
-        return split_container::on_wm_create(bHandled);
+        return split_container::on_wm_create();
       };
 
 //       first()->virtual void wm_size(const point<coord_frame::client>& p) override{ _texta.move(0, 0, p.x, p.y); };
@@ -360,17 +357,18 @@ struct split_page : panel{
 
 };
 
-struct tree_page : panel{
-  tree_page(tab_container * parent) : panel(parent), _tree(this), rd(), gen(rd()), dist(1, 999999) {
+struct tree_page : tab_page{
+
+  tree_page(iwindow * parent) : tab_page(parent), _tree(this), rd(), gen(rd()), dist(1, 999999) {
 
   }
 
-  virtual LRESULT on_wm_size(const point<coord_frame::client>& p, bool& bHandled) override{ 
+  virtual void on_wm_size(const point<coord_frame::client>& p) override{
     _tree.move(0, 0, p.x, p.y); 
-    return panel::on_wm_size(p, bHandled);
+    return tab_page::on_wm_size(p);
   }
 
-  virtual LRESULT on_wm_create(bool& bHandled) override{
+  virtual void on_wm_create() override{
     for (int i = 0; i < 20; i++){
       auto oChild1 = _tree.add_node(RandomString());
       for (int x = 0; x < 20; x++){
@@ -380,7 +378,7 @@ struct tree_page : panel{
         }
       }
     }
-    return panel::on_wm_create(bHandled);
+    return tab_page::on_wm_create();
   };
 
   tstring RandomString(){
@@ -401,21 +399,21 @@ struct tree_page : panel{
 struct main_form : form{
   main_form() : _tabs(this){}
 
-  virtual LRESULT on_wm_create(bool& bHandled) override{
+  virtual void on_wm_create() override{
     titlebar("WTF example");
-    _tabs.add_custom_page<label_page>("label");
-    _tabs.add_custom_page<checkbox_page>("checkbox");
-    _tabs.add_custom_page<listbox_page>("listbox");
-    _tabs.add_custom_page<button_page>("buttons");
-    _tabs.add_custom_page<scroll_page>("scroll_bar");
-    _tabs.add_custom_page<split_page>("splitter");
-    _tabs.add_custom_page<tree_page>("tree");
-    return form::on_wm_create(bHandled);
+    _tabs.add_custom<label_page>("label");
+    _tabs.add_custom<checkbox_page>("checkbox");
+    _tabs.add_custom<listbox_page>("listbox");
+    _tabs.add_custom<button_page>("buttons");
+    _tabs.add_custom<scroll_page>("scroll_bar");
+    _tabs.add_custom<split_page>("splitter");
+    _tabs.add_custom<tree_page>("tree");
+    return form::on_wm_create();
   };
 
-  virtual LRESULT on_wm_size(const point<coord_frame::client>& p, bool& bHandled) override{
+  virtual void on_wm_size(const point<coord_frame::client>& p) override{
     _tabs.move(5, 5, p.x - 10, p.y - 10);
-    return form::on_wm_size(p, bHandled);
+    return form::on_wm_size(p);
   };
 
   tab_container _tabs;

@@ -60,7 +60,6 @@ namespace wtf{
     wm_sizing,
     wm_timer,
     //behaviors
-    has_background,
     has_border,
     has_button_border,
     has_caret,
@@ -83,14 +82,19 @@ namespace wtf{
     has_zorder,
     //compositions
     isa_button,
+    isa_checkbox,
     isa_form,
     isa_label,
+    isa_listbox,
     isa_panel,
     isa_progressbar,
     isa_scrollbar,
+    isa_split_container,
     isa_tab_container,
+    isa_tab_page,
     isa_textbox,
-
+    isa_toggle_button,
+    isa_tree,
   };
 
   template <typename, policy...> class window;
@@ -134,6 +138,8 @@ namespace wtf{
 #include "pen.hpp"
 #include "region.hpp"
 #include "font.hpp"
+#include "window_message.hpp"
+#include "window_impl.hpp"
 
 
 #include "_/window_class_ex.hpp"
@@ -179,7 +185,6 @@ namespace wtf{
 
 
 
-#include "policies/has_background.hpp"
 #include "policies/has_border.hpp"
 #include "policies/has_caret.hpp"
 #include "policies/has_click.hpp"
@@ -200,72 +205,17 @@ namespace wtf{
 #include "policies/has_zorder.hpp"
 #include "policies/has_button_border.hpp"
 
-#include "ui/button.hpp"
-#include "ui/form.hpp"
-#include "ui/label.hpp"
+
 #include "ui/panel.hpp"
-#include "ui/progress_bar.hpp"
+#include "ui/label.hpp"
+#include "ui/button.hpp"
 #include "ui/scroll_bar.hpp"
+#include "ui/checkbox.hpp"
+#include "ui/form.hpp"
+#include "ui/listbox.hpp"
+#include "ui/progress_bar.hpp"
+#include "ui/split_container.hpp"
 #include "ui/tab_container.hpp"
 #include "ui/textbox.hpp"
-
-
-namespace wtf{
-
-  struct button : window<button, policy::isa_button>{
-    explicit button(iwindow * pParent) : window(pParent){}
-  };
-
-  struct label : window<label, policy::isa_label>{
-    explicit label(iwindow * pParent) : window(pParent){}
-  };
-
-  struct panel : window<panel, policy::isa_panel>{
-    explicit panel(iwindow * pParent) : window(pParent){}
-  };
-
-  struct progress_bar : window<progress_bar, policy::isa_progressbar>{
-    explicit progress_bar(iwindow * pParent) : window(pParent){}
-  };
-
-  struct scrollbar : window<scrollbar, policy::isa_scrollbar>{
-    explicit scrollbar(iwindow * pParent) : window(pParent){}
-  };
-
-  struct tab_container : window<tab_container, policy::isa_tab_container>{
-    explicit tab_container(iwindow * pParent) : window(pParent){}
-  };
-
-  struct textbox : window<textbox, policy::isa_textbox>{
-    explicit textbox(iwindow * pParent) : window(pParent){}
-  };
-
-
-
-
-  struct form : window<form, policy::isa_form>{
-    static const DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW;
-    static const DWORD Style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-
-    explicit form(iwindow * pParent) : window(pParent){}
-    form() : form(nullptr){}
-
-  };
-
-}
-
-
-#if 0
-#include "ui/menu.hpp"
-#include "ui/form.hpp"
-#include "ui/button.hpp"
-#include "ui/scroll_bar.hpp"
-#include "ui/progress_bar.hpp"
-#include "ui/checkbox.hpp"
-#include "ui/rivet.hpp"
-#include "ui/listbox.hpp"
 #include "ui/toggle_button.hpp"
-#include "ui/tab_container.hpp"
-#include "ui/split_container.hpp"
 #include "ui/tree.hpp"
-#endif

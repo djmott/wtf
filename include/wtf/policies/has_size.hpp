@@ -5,9 +5,11 @@ namespace wtf {
     * Adds members to reposition/resize and events to capture them
     */
     template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_size, _Policies...> : public window<_ImplT, _Policies...>{
-      using __super_t = window<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window;
+    class window<_ImplT, policy::has_size, _Policies...> 
+      : public window_impl<_ImplT, _Policies...>
+    {
+      using __super_t = window_impl<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window_impl;
     public:
 
       virtual int width() const{

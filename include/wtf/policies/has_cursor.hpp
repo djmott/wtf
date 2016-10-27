@@ -5,9 +5,11 @@ namespace wtf{
   * Provides mouse pointer customization
   */
   template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::has_cursor, _Policies...> : public window<_ImplT, policy::wm_setcursor, _Policies...>{
-    using __super_t = window<_ImplT, policy::wm_setcursor, _Policies...>;
-    template <typename, policy ... > friend class window;
+  class window<_ImplT, policy::has_cursor, _Policies...> 
+    : public window_impl<_ImplT, _Policies..., policy::wm_setcursor>
+  {
+    using __super_t = window_impl<_ImplT, _Policies..., policy::wm_setcursor>;
+    template <typename, policy ... > friend class window_impl;
   public:
 
     virtual const wtf::cursor &cursor_pointer() const{ return cursor::global(cursor::style::arrow); }

@@ -1,54 +1,53 @@
 #pragma once
 
-#if 0
 namespace wtf{
-  struct tree : window<tree, iwindow, policy::has_border, policy::has_click, policy::has_text,
-    wm_create, wm_paint, policy::has_size, wm_dblclick, 
-    wm_mouse_wheel, policy::has_font, policy::has_move, wm_size,
-    wm_erasebkgnd, policy::has_background >
+
+  template <typename _ImplT, policy..._Policies>
+  class window<_ImplT, policy::isa_tree, _Policies...>
+    : public window_impl<_ImplT, _Policies..., policy::isa_label, policy::wm_dblclick, policy::wm_mouse_wheel>
+  
   {
+    using __tree_t = window<_ImplT, policy::isa_tree, _Policies...>;
+    using __super_t = window_impl<_ImplT, _Policies..., policy::isa_label, policy::wm_dblclick, policy::wm_mouse_wheel>;
+    template <typename _ImplT, policy...> friend class window_impl;
+  public:
 
-    using mouse_msg_param = mouse_msg_param;
-
-    explicit tree(iwindow * pParent)
-      : window(pParent),
+    explicit window(iwindow * pParent)
+      : __super_t(pParent),
       _root(new node(this)),
-      _black_pen(pen::create(pen::style::solid, 1, rgb(0, 0, 0))),
-      _background_brush(brush::system_brush(system_colors::window)),
-      _button_face_brush(brush::system_brush(system_colors::button_face)),
-      _black_brush(brush::solid_brush(rgb(0, 0, 0))),
-      _white_brush(brush::solid_brush(rgb(255, 255, 255))),
-      _highlight_background_brush(brush::system_brush(system_colors::highlight)),
-      _highlight_text_brush(brush::system_brush(system_colors::highlight_text)),
       _vscroll(this),
       _hscroll(this)
-    {}
+    {
+      background_brush(brush::system_brush(system_colors::window));
+    }
+  protected:
+    virtual void handle_msg(window_message& msg) override{}
 
 
-    virtual LRESULT on_wm_create(bool& bHandled) override{
+    virtual void on_wm_create() override{
       _vscroll.orientation(orientations::vertical);
       _hscroll.orientation(orientations::horizontal);
       auto_draw_text(false);
       text_vertical_alignment(text_vertical_alignments::center);
       text_horizontal_alignment(text_horizontal_alignments::left);
       full_row_select(false);
-      return window::on_wm_create(bHandled);
+      __super_t::on_wm_create();
     };
 
     virtual void on_wm_click(const mouse_msg_param& m) override{
-      if (mouse_msg_param::buttons::left != m.button) return window::on_wm_click(m);
+      if (mouse_msg_param::buttons::left != m.button) return __super_t::on_wm_click(m);
       node::pointer oClickedNode;
       for (size_t i = 0; i < _row_rects.size(); ++i){
         if (_expander_rects[i].is_in(m.position)){
           _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
           invalidate();
-          return window::on_wm_click(m);
+          return __super_t::on_wm_click(m);
         } else if (_item_rects[i].is_in(m.position) || (_full_row_select && _row_rects[i].is_in(m.position))){
           oClickedNode = _displayed_nodes[i];
           break;
         }
       }
-      if (!oClickedNode) return window::on_wm_click(m);
+      if (!oClickedNode) return __super_t::on_wm_click(m);
       if (select_modes::single == _select_mode){
         bool bExists = _selected_nodes.end() != std::find_if(_selected_nodes.begin(), _selected_nodes.end(), [oClickedNode](node::pointer oNode){ return oClickedNode.get() != oNode.get(); });
         _selected_nodes.clear();
@@ -67,11 +66,11 @@ namespace wtf{
         if (!bSelected) OnNodeSelected(oClickedNode);
       }
       invalidate();
-      return window::on_wm_click(m);
+      return __super_t::on_wm_click(m);
     };
 
-    virtual LRESULT on_wm_dblclick(const mouse_msg_param& m, bool& bHandled) override{
-      if (mouse_msg_param::buttons::left != m.button) return window::on_wm_dblclick(m, bHandled);
+    virtual void on_wm_dblclick(const mouse_msg_param& m) override{
+      if (mouse_msg_param::buttons::left != m.button) return __super_t::on_wm_dblclick(m);
       for (size_t i = 0; i < _row_rects.size(); ++i){
         if (_item_rects[i].is_in(m.position)){
           _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
@@ -81,11 +80,11 @@ namespace wtf{
         invalidate();
         break;
       }
-      return window::on_wm_dblclick(m, bHandled);
+      return __super_t::on_wm_dblclick(m);
     };
 
-    virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
-      if (!_root->children().size()) return window::on_wm_paint(dc, ps, bHandled);
+    virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+      if (!_root->children().size()) return __super_t::on_wm_paint(dc, ps);
       auto client = ps.client();
       _item_rects.clear();
       _expander_rects.clear();
@@ -95,10 +94,10 @@ namespace wtf{
       for (auto oNode = _top; oNode; oNode = oNode->get_next(false)){
         if (!print_node(oNode, dc, oTextMetrics, client)) break;
       }
-      return window::on_wm_paint(dc, ps, bHandled);
+      return __super_t::on_wm_paint(dc, ps);
     };
 
-    virtual LRESULT on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& m, bool& bHandled) override{
+    virtual void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& m) override{
       bool bUp = (delta > 0);
       for (int i = 0; i <= (delta % WHEEL_DELTA); ++i){
         if (bUp){
@@ -107,22 +106,13 @@ namespace wtf{
           ScrollNext();
         }
       }
-      return window::on_wm_mouse_wheel(delta, m, bHandled);
+      return __super_t::on_wm_mouse_wheel(delta, m);
     };
 
-    virtual LRESULT on_wm_size(const point<coord_frame::client>& p, bool& bHandled) override{
+    virtual void on_wm_size(const point<coord_frame::client>& p) override{
       _vscroll.move(p.x - scroll_width - border_width(), border_width(), scroll_width, p.y - (border_width() * 2) - scroll_width);
       _hscroll.move(border_width(), p.y - border_width() - scroll_width, p.x - scroll_width - (border_width() * 2), scroll_width);
-      return window::on_wm_size(p, bHandled);
-    };
-
-    virtual LRESULT on_wm_erasebkgnd(const device_context& dc, const rect<coord_frame::client>& client, bool& bHandled) override{
-      dc.fill(client, background_brush());
-      rect<coord_frame::client> oTmp(client.right - scroll_width - (border_width() * 2),
-                              client.bottom - scroll_width - (border_width() * 2),
-                              client.right, client.bottom);
-      dc.fill(oTmp, _button_face_brush);
-      return window::on_wm_erasebkgnd(dc, client, bHandled);
+      return __super_t::on_wm_size(p);
     };
 
     bool full_row_select() const{ return _full_row_select; }
@@ -205,15 +195,15 @@ namespace wtf{
       }
 
     private:
-      friend struct tree;
+      friend class __tree_t;
 
-      node(tree * pTree) : _tree(pTree){}
+      node(__tree_t * pTree) : _tree(pTree){}
 
-      tree& get_tree(){
+      __tree_t& get_tree(){
         if (_tree) return *_tree;
         return parent()->get_tree();
       }
-      const tree& get_tree() const{
+      const __tree_t& get_tree() const{
         if (_tree)  return *_tree;
         return parent()->get_tree();
       }
@@ -251,7 +241,7 @@ namespace wtf{
         return 1;
       }
 
-      tree * _tree = nullptr;
+      __tree_t * _tree = nullptr;
       bool _selected = false;
       tstring _text;
       bool _expanded = false;
@@ -260,9 +250,9 @@ namespace wtf{
       expander_display_policies _expander_display_policy = expander_display_policies::with_children;
     };
 
-    callback <void(node::pointer)> OnNodeSelected;
+    callback <void(typename node::pointer)> OnNodeSelected;
 
-    node::pointer add_node(const tstring& Text){
+    typename node::pointer add_node(const tstring& Text){
       auto oNode = _root->add_node(Text);
       if (!_top) _top = oNode;
       if (!_bottom) _bottom = oNode;
@@ -270,48 +260,44 @@ namespace wtf{
       return oNode;
     }
 
-    void add_node(node::pointer oNode){
+    void add_node(typename node::pointer oNode){
       _root->add_node(oNode);
       if (!_top) _top = oNode;
       if (!_bottom) _bottom = oNode;
       invalidate();
     }
 
-    const node::vector& selected_items() const{ return _selected_nodes; }
+    const typename node::vector& selected_items() const{ return _selected_nodes; }
 
   protected:
     static const int scroll_width = 15;
 
-    node::pointer _root;
-    node::pointer _top; //node at the top of the display window
-    node::pointer _bottom; //node at the bottom of the display window
+    typename node::pointer _root;
+    typename node::pointer _top; //node at the top of the display window
+    typename node::pointer _bottom; //node at the bottom of the display window
     rect<coord_frame::client>::vector _item_rects; //rect around item text
     rect<coord_frame::client>::vector _expander_rects; //rect around expander
     rect<coord_frame::client>::vector _row_rects; //rect around entire row
-    node::vector _displayed_nodes; //the displayed items
-    node::vector _selected_nodes;
-    pen _black_pen;
-    brush _background_brush;
-    brush _button_face_brush;
-    brush _black_brush;
-    brush _white_brush;
-    brush _highlight_background_brush;
-    brush _highlight_text_brush;
+    typename node::vector _displayed_nodes; //the displayed items
+    typename node::vector _selected_nodes;
+    pen _black_pen = pen::create(pen::style::solid, 1, rgb(0, 0, 0));
+    brush _button_face_brush = brush::system_brush(system_colors::button_face);
+    brush _black_brush = brush::solid_brush(rgb(0, 0, 0));
+    brush _white_brush = brush::solid_brush(rgb(255, 255, 255));
+    brush _highlight_background_brush = brush::system_brush(system_colors::highlight);
+    brush _highlight_text_brush = brush::system_brush(system_colors::highlight_text);
     select_modes _select_mode = select_modes::extended;
     edit_modes _edit_mode = edit_modes::disabled;
     bool _full_row_select = true;
     bool _disable_scroll_up = false;
 
 
-    static int get_item_depth(const node::pointer& oNode){
+    static int get_item_depth(const typename node::pointer& oNode){
       if (!oNode) return 0;
       return 1 + get_item_depth(oNode->parent());
     }
 
-    virtual const brush &background_brush() const{ return _background_brush; }
-
-
-    bool print_node(const node::pointer& oNode, const device_context& dc, const text_metrics& oTextMetrics, rect<coord_frame::client>& oClient){
+    bool print_node(const typename node::pointer& oNode, const device_context& dc, const text_metrics& oTextMetrics, rect<coord_frame::client>& oClient){
       if (oClient.top > oClient.bottom) return false;
       _bottom = oNode;
       bool PrintExpander = false;
@@ -393,19 +379,26 @@ namespace wtf{
     void ScrollRight(){}
 
 
-    struct vscroll : scroll_bar{
-      vscroll(tree * parent) : scroll_bar(parent), _parent(parent){}
+    struct vscroll : scrollbar{
+      vscroll(__tree_t * parent) : scrollbar(parent), _parent(parent){}
       virtual void StepIncEvent() override{ _parent->ScrollNext(); }
       virtual void StepDecEvent() override{ _parent->ScrollPrev(); }
-      tree * _parent;
+      __tree_t * _parent;
+      virtual void handle_msg(window_message& msg) override{}
     }_vscroll;
 
-    struct hscroll : scroll_bar{
-      hscroll(tree * parent) : scroll_bar(parent), _parent(parent){}
+    struct hscroll : scrollbar{
+      hscroll(__tree_t * parent) : scrollbar(parent), _parent(parent){}
       virtual void StepIncEvent() override{}
       virtual void StepDecEvent() override{}
-      tree * _parent;
+      __tree_t * _parent;
+      virtual void handle_msg(window_message& msg) override{}
     }_hscroll;
   };
+
+
+  struct tree : window<tree, policy::isa_tree>{
+    explicit tree(iwindow * pParent) : window(pParent){}
+  };
+
 }
-#endif

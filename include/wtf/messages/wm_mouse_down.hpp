@@ -5,23 +5,24 @@ namespace wtf{
 
 
     template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_mouse_down, _Policies...> : public window<_ImplT, _Policies...>{
-      using __super_t = window<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window;
+    class window<_ImplT, policy::wm_mouse_down, _Policies...> 
+      : public window_impl<_ImplT, _Policies...>
+    {
+      using __super_t = window_impl<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window_impl;
     public:
 
 
     protected:
 
-      virtual void on_wm_mouse_down(const mouse_msg_param&){}
+      virtual void on_wm_mouse_down(const mouse_msg_param&) = 0{}
 
       explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
-        if (WM_LBUTTONDOWN == umsg) on_wm_mouse_down(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::left));
-        else if (WM_MBUTTONDOWN == umsg) on_wm_mouse_down(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::middle));
-        else if (WM_RBUTTONDOWN == umsg) on_wm_mouse_down(mouse_msg_param(wparam, lparam, mouse_msg_param::buttons::right));
-        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
+      virtual void handle_msg(window_message& msg) override{
+        if (WM_LBUTTONDOWN == msg.umsg) on_wm_mouse_down(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::left));
+        else if (WM_MBUTTONDOWN == msg.umsg) on_wm_mouse_down(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::middle));
+        else if (WM_RBUTTONDOWN == msg.umsg) on_wm_mouse_down(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::right));
       }
     };
   }

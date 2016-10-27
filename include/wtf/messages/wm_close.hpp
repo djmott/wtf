@@ -2,23 +2,21 @@
 
 namespace wtf{
 
-  template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_close, _Policies...> : public window<_ImplT, _Policies...>{
-      using __super_t = window<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window;
-    public:
+  template <typename _ImplT, typename _SuperT>
+  class wm_close : public _SuperT
+    {
+      template <typename, policy ... > friend class window_impl;
 
+      virtual void handle_msg(window_message& msg) override{
+        if (WM_CLOSE == msg.umsg) on_wm_close();
+      }
 
     protected:
 
-      virtual void on_wm_close(){}
+      virtual void on_wm_close() = 0{}
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit wm_close(iwindow * pParent) : __super_t(pParent){}
 
-      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
-        if (WM_CLOSE == umsg) on_wm_close();
-        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
-      }
 
     };
   

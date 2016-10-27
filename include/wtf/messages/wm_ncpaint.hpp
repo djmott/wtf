@@ -11,20 +11,22 @@
 namespace wtf{
 
     template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_ncpaint, _Policies...> : public window<_ImplT, _Policies...>{
-      using __super_t = window<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window;
+    class window<_ImplT, policy::wm_ncpaint, _Policies...> 
+      : public window_impl<_ImplT, _Policies...>
+    {
+      using __super_t = window_impl<_ImplT, _Policies...>;
+      template <typename, policy ... > friend class window_impl;
     public:
 
     protected:
 
-      virtual void on_wm_ncpaint(const device_context&, const rect<coord_frame::client>&){}
+      virtual void on_wm_ncpaint(const device_context&, const rect<coord_frame::client>&) = 0{}
 
       explicit window(iwindow * pParent) : __super_t(pParent){}
 
-      LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
-        if (WM_NCPAINT == umsg){
-          if (1==wparam){
+      virtual void handle_msg(window_message& msg) override{
+        if (WM_NCPAINT == msg.umsg){
+          if (1== msg.wparam){
             auto oDC = device_context::get_dcex(*this, DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
             auto oWindow = rect<coord_frame::screen>::get(*this);
 
@@ -36,7 +38,7 @@ namespace wtf{
 
             auto oWindow = rect<coord_frame::screen>::get(*this);
 
-            auto oRegion = region::attach((HRGN)wparam);
+            auto oRegion = region::attach((HRGN)msg.wparam);
             oRegion.offset(oWindow.position());
 
             auto oDC = device_context::get_dcex(*this, oRegion, DCX_EXCLUDERGN | DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
@@ -46,7 +48,6 @@ namespace wtf{
             on_wm_ncpaint(oDC, oClient);
           }
         }
-        return __super_t::handle_message(hwnd, umsg, wparam, lparam);
       }
 
     };

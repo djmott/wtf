@@ -18,9 +18,11 @@ namespace wtf{
     * provides members to draw text on UI elements
     */
     template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_text, _Policies...> : public window<_ImplT, policy::wm_paint, policy::has_font, policy::has_invalidate, _Policies...>{
-      using __super_t = window<_ImplT, policy::wm_paint, policy::has_font, policy::has_invalidate, _Policies...>;
-      template <typename, policy ... > friend class window;
+    class window<_ImplT, policy::has_text, _Policies...> 
+      : public window_impl<_ImplT, _Policies..., policy::wm_paint, policy::has_font, policy::has_invalidate>
+    {
+      using __super_t = window_impl<_ImplT, _Policies..., policy::wm_paint, policy::has_font, policy::has_invalidate>;
+      template <typename, policy ... > friend class window_impl;
     public:
 
 
@@ -87,13 +89,14 @@ namespace wtf{
 
       virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         if (_auto_draw_text) draw_text(dc, ps.client());
-        return __super_t::on_wm_paint(dc, ps);
+        __super_t::on_wm_paint(dc, ps);
       }
 
 
+      tstring _text = _T("");
+
     private:
 
-      tstring _text = _T("");
       bool _multiline = false;
       bool _auto_draw_text = true;
       bool _word_wrap = false;

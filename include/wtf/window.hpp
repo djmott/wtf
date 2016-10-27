@@ -8,6 +8,8 @@ namespace wtf{
   * super-most base class of all windows
   */
   template <> class window<void>{
+    template <typename, policy ... > friend class window_impl;
+    template <typename, policy ... > friend class window;
   public:
     window(const window&) = delete;
     window& operator=(const window&) = delete;
@@ -45,7 +47,6 @@ namespace wtf{
     }
 
   protected:
-    template <typename, policy ... > friend class window;
 
     virtual int exec() = 0;
 
@@ -78,6 +79,7 @@ namespace wtf{
     static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
     static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
+    template <typename, policy ... > friend class window_impl;
     template <typename, policy ... > friend class window;
 
     virtual int exec() override{
@@ -98,22 +100,25 @@ namespace wtf{
       return 0;
     }
 
-    LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
-      #if __WTF_DEBUG_MESSAGES__
-        std::string sTemp = typeid(_ImplT).name();
-        sTemp += " ";
-        sTemp += _::msg_name(umsg);
-        sTemp += " default handler";
-        std::cout << sTemp << std::endl;
-      #endif
-      switch (umsg){
-        case WM_CLOSE:
-          DestroyWindow(hwnd); _handle = nullptr; break;
-        default:
-          return DefWindowProc(hwnd, umsg, wparam, lparam);
+    virtual void handle_msg(window_message& msg)=0{}
+
+    LRESULT propagate_msg(window_message& msg){
+      if (msg.bhandled) return msg.lresult;
+    #if __WTF_DEBUG_MESSAGES__
+      std::string sTemp = typeid(_ImplT).name();
+      sTemp += " ";
+      sTemp += _::msg_name(msg.umsg);
+      sTemp += " default handler";
+      std::cout << sTemp << std::endl;
+    #endif
+      if (msg.umsg == WM_CLOSE){
+        DestroyWindow(msg.hwnd);
+        _handle = nullptr;
       }
-      return 0;
+      return DefWindowProc(msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
     }
+
+    
 
     /* messages arrive here from windows then are propagated from the implementation, through the
     * inheritance chain and back through all the handle_message overrides in order from the
@@ -147,10 +152,12 @@ namespace wtf{
 
         if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
 
+        window_message msg{ hwnd, umsg, wparam, lparam, false, 0 };
+
         if (WM_ERASEBKGND == umsg){
           auto oDC = wtf::device_context::get_client(hwnd);
-
-          return pThis->handle_message(hwnd, umsg, wparam, reinterpret_cast<LPARAM>(&oDC));
+          msg.lparam = reinterpret_cast<LPARAM>(&oDC);
+          return pThis->propagate_msg(msg);
 
         } else if (WM_PAINT == umsg){
           RECT r;
@@ -159,11 +166,11 @@ namespace wtf{
           }
           paint_struct oPaint(*pThis);
           auto oDC = wtf::device_context::get_client(hwnd);
-
-          return pThis->handle_message(hwnd, umsg, reinterpret_cast<WPARAM>(&oDC), reinterpret_cast<LPARAM>(&oPaint));
-
+          msg.wparam = reinterpret_cast<WPARAM>(&oDC);
+          msg.lparam = reinterpret_cast<LPARAM>(&oPaint);
+          return pThis->propagate_msg(msg);
         } else{
-          return pThis->handle_message(hwnd, umsg, wparam, lparam);
+          return pThis->propagate_msg(msg);
         }
       }
       catch (const wtf::exception& ex){

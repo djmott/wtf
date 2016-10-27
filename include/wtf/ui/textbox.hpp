@@ -4,25 +4,26 @@ namespace wtf{
 
   template <typename _ImplT, policy..._Policies>
   class window<_ImplT, policy::isa_textbox, _Policies...> :
-    public window<_ImplT, 
+    public window_impl<_ImplT,
+    _Policies...,
     policy::isa_label, 
     policy::wm_char, 
     policy::wm_keydown, 
     policy::has_cursor,
     policy::has_caret,
     policy::has_click,
-    policy::has_focus,
-    _Policies...>
+    policy::has_focus>
 
   {
-    using __super_t = window<_ImplT, policy::isa_label, policy::wm_char, policy::wm_keydown, policy::has_cursor,
-      policy::has_caret, policy::has_click, policy::has_focus, _Policies...>;
-      template <typename, policy ... > friend class window;
+    using __super_t = window_impl<_ImplT, _Policies..., policy::isa_label, policy::wm_char, 
+      policy::wm_keydown, policy::has_cursor, policy::has_caret, policy::has_click, policy::has_focus>;
+      template <typename, policy ... > friend class window_impl;
     public:
 
 
 
     protected:
+      virtual void handle_msg(window_message& msg) override{}
       explicit window(iwindow * pParent) : __super_t(pParent){}
 
       virtual void on_wm_create() override{
@@ -36,10 +37,7 @@ namespace wtf{
       };
 
       virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
-        if (!_text.size()){
-          __super_t::on_wm_paint(dc, ps);
-          return;
-        }
+        if (!_text.size()) return __super_t::on_wm_paint(dc, ps);
 
         rect<coord_frame::client> client = ps.client();
         auto ClientWidth = client.right - client.left;
@@ -145,6 +143,10 @@ namespace wtf{
       int _edit_pos = 0;
       // _print_pos helps ensure the cursor is always visible e.g. text length > window length
       int _print_pos = 0;
+    };
+
+    struct textbox : window<textbox, policy::isa_textbox>{
+      explicit textbox(iwindow * pParent) : window(pParent){}
     };
 
 }

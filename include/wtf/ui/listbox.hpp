@@ -1,39 +1,37 @@
 #pragma once
 
-#if 0
+
 namespace wtf{
 
-  struct listbox : wtf::window<listbox, iwindow, policy::has_border, policy::has_click, policy::has_text,
-    policy::has_move, policy::has_background, policy::has_size, policy::has_font, wm_paint, 
-    wm_mouse_wheel, wm_create, wm_size, wm_erasebkgnd,
-    wm_mouse_down, wm_mouse_up, wm_nccalcsize, wm_ncpaint>
+  template <typename _ImplT, policy..._Policies>
+  class window<_ImplT, policy::isa_listbox, _Policies...> 
+    : public window_impl<_ImplT, _Policies..., policy::isa_label, policy::wm_mouse_wheel>
   {
+    using __listbox_t = window<_ImplT, policy::isa_listbox, _Policies...>;
+    using __super_t = window_impl<_ImplT, _Policies..., policy::isa_label, policy::wm_mouse_wheel>;
+    template <typename, policy ... > friend class window_impl;
+  public:
 
-    using mouse_msg_param = mouse_msg_param;
 
-
-    explicit listbox(iwindow * pParent) :
-      window(pParent),
-      _TopIndex(0),
+    explicit window(iwindow * pParent) :
+      __super_t(pParent),
       _SelectedItems(1, 0),
-      _vscroll(this),
-      _selection_mode(selection_modes::single),
-      _background_brush(brush::system_brush(system_colors::window))
+      _vscroll(this)
     {}
 
-    virtual LRESULT on_wm_create(bool& bHandled) override{
+    virtual void on_wm_create() override{
       border_style(border_styles::raised);
       auto_draw_text(false);
-      return window::on_wm_create(bHandled);
+      __super_t::on_wm_create();
     };
 
-    virtual LRESULT on_wm_size(const point<coord_frame::client>& p, bool& bHandled) override{
+    virtual void on_wm_size(const point<coord_frame::client>& p) override{
       _vscroll.move(p.x - scroll_width - right_margin, top_margin, scroll_width, p.y - top_margin - bottom_margin);
-      return window::on_wm_size(p, bHandled);
+      __super_t::on_wm_size(p);
     };
     
-    virtual LRESULT on_wm_paint(const device_context& dc, const paint_struct& ps, bool& bHandled) override{
-      if (!_Items.size()) return window::on_wm_paint(dc, ps, bHandled);
+    virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+      if (!_Items.size()) return __super_t::on_wm_paint(dc, ps);
       auto client = ps.client();
       auto oTextSize = dc.get_text_extent(_Items[0]);
       _ItemRects.clear();
@@ -52,13 +50,13 @@ namespace wtf{
         text(_Items[i + _TopIndex]);
         draw_text(dc, _ItemRects[i]);
       }
-      return window::on_wm_paint(dc, ps, bHandled);
+      __super_t::on_wm_paint(dc, ps);
     };
 
-    virtual LRESULT on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& param, bool& bHandled) override{
+    virtual void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& param) override{
       if (delta > 0) _vscroll.StepDecEvent();
       else _vscroll.StepIncEvent();
-      return window::on_wm_mouse_wheel(delta, param, bHandled);
+      __super_t::on_wm_mouse_wheel(delta, param);
     };
 
     virtual void on_wm_click(const mouse_msg_param& m) override{
@@ -71,7 +69,7 @@ namespace wtf{
         _SelectedItems.push_back(_TopIndex + static_cast<int>(i));
       }
       invalidate();
-      window::on_wm_click(m);
+      __super_t::on_wm_click(m);
     };
 
     static const int scroll_width = 15;
@@ -93,15 +91,21 @@ namespace wtf{
     }
   protected:
     friend struct vscroll;
-    void invalidate(){ window::invalidate(); }
-    struct vscroll : scroll_bar{
+    void invalidate(){ __super_t::invalidate(); }
 
+    virtual void handle_msg(window_message& msg) override{}
 
-      vscroll(listbox * pParent) : scroll_bar(pParent), _Parent(pParent){}
+    class vscroll : public window<vscroll, policy::isa_scrollbar> {
+      using __super_t = window<vscroll, policy::isa_scrollbar>;
+      template <typename, policy ... > friend class window_impl;
+    public:
 
-      virtual LRESULT on_wm_create(bool& bHandled) override{ 
+      virtual void handle_msg(window_message& msg) override{}
+      vscroll(__listbox_t * pParent) : __super_t(pParent), _Parent(pParent){}
+
+      virtual void on_wm_create() override{ 
         orientation(orientations::vertical); 
-        return scroll_bar::on_wm_create(bHandled);
+        __super_t::on_wm_create();
       };
 
       virtual void StepIncEvent(){
@@ -114,7 +118,7 @@ namespace wtf{
         --_Parent->_TopIndex;
         _Parent->invalidate();
       }
-      listbox * _Parent;
+      __listbox_t * _Parent;
     };
 
   private:
@@ -122,14 +126,17 @@ namespace wtf{
     UINT_PTR _MouseDownTimer;
     bool _IncrementHeldDown;
     point<coord_frame::client> _MouseDownAt;
-    int _TopIndex;
+    int _TopIndex = 0;
     std::vector<tstring> _Items;
     rect<coord_frame::client>::vector _ItemRects;
     std::vector<int> _SelectedItems;
     vscroll _vscroll;
-    selection_modes _selection_mode;
-    brush _background_brush;
+    selection_modes _selection_mode = selection_modes::single;
+    brush _background_brush = brush::system_brush(system_colors::window);
+  };
+
+  struct listbox : window<listbox, policy::isa_listbox>{
+    explicit listbox(iwindow * pParent) : window(pParent){}
   };
 
 }
-#endif

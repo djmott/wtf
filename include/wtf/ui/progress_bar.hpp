@@ -4,10 +4,10 @@
 namespace wtf{
 
   template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::isa_progressbar, _Policies...> :
-    public wtf::window < _ImplT, policy::isa_label, policy::has_orientation, _Policies...>
+  class window<_ImplT, policy::isa_progressbar, _Policies...> 
+    : public wtf::window_impl < _ImplT, policy::isa_label, policy::has_orientation, _Policies...>
   {
-    using __super_t = wtf::window < _ImplT, policy::isa_label, policy::has_orientation, _Policies...>;
+    using __super_t = wtf::window_impl < _ImplT, policy::isa_label, policy::has_orientation, _Policies...>;
   public:
 
     explicit window(iwindow * hParent) : __super_t(hParent){}
@@ -48,11 +48,12 @@ namespace wtf{
       invalidate();
     }
   protected:
+    virtual void handle_msg(window_message& msg) override{}
 
     virtual void on_wm_create() override{
       border_style(border_styles::lowered);
       auto_draw_text(false);
-      return __super_t::on_wm_create();
+      __super_t::on_wm_create();
     };
 
 
@@ -89,10 +90,15 @@ namespace wtf{
       oFillArea.right = std::max(oTextSize.cx, oFillArea.right);
       text_vertical_alignment(text_vertical_alignments::center);
       text_horizontal_alignment(text_horizontal_alignments::center);
-      return __super_t::on_wm_paint(dc, ps);
+      __super_t::on_wm_paint(dc, ps);
     }
 
 
   };
+
+  struct progress_bar : window<progress_bar, policy::isa_progressbar>{
+    explicit progress_bar(iwindow * pParent) : window(pParent){}
+  };
+
 
 }

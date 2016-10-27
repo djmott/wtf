@@ -4,13 +4,13 @@
 namespace wtf{
 
   template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::isa_scrollbar, _Policies...> :
-    public window<_ImplT, policy::isa_panel,  policy::has_orientation,  
-    policy::wm_mouse_wheel, _Policies...>
+  class window<_ImplT, policy::isa_scrollbar, _Policies...> 
+    : public window_impl<_ImplT, _Policies..., policy::isa_panel,  policy::has_orientation,
+    policy::wm_mouse_wheel>
   {
     using scrollbar_t = window<_ImplT, policy::isa_scrollbar, _Policies...>;
-    using __super_t = window<_ImplT, policy::isa_panel, policy::has_orientation,
-      policy::wm_mouse_wheel, _Policies...>;
+    using __super_t = window_impl<_ImplT, _Policies..., policy::isa_panel, policy::has_orientation,
+      policy::wm_mouse_wheel>;
     using mouse_msg_param = mouse_msg_param;
   public:
     explicit window(iwindow * pParent)
@@ -45,6 +45,7 @@ namespace wtf{
   protected:
 
     friend struct value_step_button;
+    virtual void handle_msg(window_message& msg) override{}
 
     virtual void on_wm_size(const point<coord_frame::client>& p) override{
       auto iExtent = _max - _min;
@@ -61,7 +62,7 @@ namespace wtf{
       } else{
 
       }
-      return __super_t::on_wm_size(p);
+      __super_t::on_wm_size(p);
     };
 
     virtual void StepIncEvent(){
@@ -94,7 +95,7 @@ namespace wtf{
       } else{
         StepDecEvent();
       }
-      return __super_t::on_wm_mouse_wheel(delta, m);
+      __super_t::on_wm_mouse_wheel(delta, m);
     }
 
 
@@ -142,7 +143,7 @@ namespace wtf{
           }
         }
         dc.fill(arrow, _parent->_outline, _parent->_fill);
-        return __super_t::on_wm_paint(dc, ps);
+        __super_t::on_wm_paint(dc, ps);
       };
 
     };
@@ -154,7 +155,7 @@ namespace wtf{
 
       }
       virtual void on_wm_click(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left != m.button) return;
+        if (mouse_msg_param::buttons::left != m.button) return label::on_wm_click(m);
         if (_is_increment) _parent->PageUpEvent();
         else _parent->PageDownEvent();
         label::on_wm_click(m);
@@ -167,6 +168,7 @@ namespace wtf{
     struct slider : window<slider, policy::isa_button>{
       using __super_t = window<slider, policy::isa_button>;
       explicit slider(scrollbar_t * pParent) : __super_t(pParent){}
+      virtual void handle_msg(window_message& msg) override{}
     }_slider;
 
 
@@ -184,4 +186,9 @@ namespace wtf{
     int _small_step = 1;
     int _big_step = 10;
   };
+
+  struct scrollbar : window<scrollbar, policy::isa_scrollbar>{
+    explicit scrollbar(iwindow * pParent) : window(pParent){}
+  };
+
 }

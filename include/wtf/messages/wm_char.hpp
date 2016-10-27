@@ -2,21 +2,19 @@
 
 namespace wtf{
 
-  template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::wm_char, _Policies...> : public window<_ImplT, _Policies...>{
-    using __super_t = window<_ImplT, _Policies...>;
-    template <typename, policy ... > friend class window;
-  public:
+  template <typename _ImplT, typename _SuperT>
+  class wm_char : public _SuperT
+  {
+    template <typename, policy ... > friend class window_impl;
 
   protected:
 
-    virtual void on_wm_char(UINT char_code, keyboard_msg_param){}
+    virtual void on_wm_char(UINT char_code, keyboard_msg_param)=0{}
 
-    window(iwindow * pParent) : __super_t(pParent){}
+    wm_char(iwindow * pParent) : _SuperT(pParent){}
 
-    LRESULT handle_message(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
-      if (WM_CHAR == umsg) on_wm_char(static_cast<UINT>(wparam), *reinterpret_cast<keyboard_msg_param*>(&lparam));
-      return __super_t::handle_message(hwnd, umsg, wparam, lparam);
+    virtual void handle_msg(window_message& msg) override{
+      if (WM_CHAR == msg.umsg) on_wm_char(static_cast<UINT>(msg.wparam), *reinterpret_cast<keyboard_msg_param*>(&msg.lparam));
     }
 
   };
