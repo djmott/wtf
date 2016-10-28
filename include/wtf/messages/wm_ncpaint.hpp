@@ -9,24 +9,21 @@
 #endif
 
 namespace wtf{
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class wm_ncpaint : public _SuperT{
 
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_ncpaint, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
-    public:
+      
 
     protected:
 
       virtual void on_wm_ncpaint(const device_context&, const rect<coord_frame::client>&) = 0{}
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit wm_ncpaint(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void handle_msg(window_message& msg) override{
         if (WM_NCPAINT == msg.umsg){
-          if (1== msg.wparam){
+          if (1 == msg.wparam){
             auto oDC = device_context::get_dcex(*this, DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
             auto oWindow = rect<coord_frame::screen>::get(*this);
 
@@ -52,3 +49,4 @@ namespace wtf{
 
     };
   }
+}

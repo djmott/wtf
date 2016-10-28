@@ -1,12 +1,11 @@
 #pragma once
 
 namespace wtf{
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_invalidate, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class has_invalidate : public _SuperT{
+
+      
     public:
 
       void invalidate(bool EraseBackground = true){
@@ -17,8 +16,8 @@ namespace wtf{
       }
 
     protected:
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit has_invalidate(iwindow * pParent) : _SuperT(pParent){}
 
     };
   }
-
+}

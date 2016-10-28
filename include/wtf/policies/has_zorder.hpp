@@ -8,23 +8,22 @@ namespace wtf{
     top_most = -1,
   };
 
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class has_zorder : public _SuperT{
 
-  template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::has_zorder, _Policies...> 
-    : public window_impl<_ImplT, _Policies...>
-  {
-    using __super_t = window_impl<_ImplT, _Policies...>;
-    template <typename, policy ... > friend class window_impl;
-  public:
+      
+    public:
 
-    void zorder(zorders pos){
-      wtf::exception::throw_lasterr_if(::SetWindowPos(*this, reinterpret_cast<HWND>(pos), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b){ return !b; });
-    }
-    void zorder(HWND insert_after){
-      wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b){ return !b; });
-    }
-  protected:
-    explicit window(iwindow * pParent) : __super_t(pParent){}
+      void zorder(zorders pos){
+        wtf::exception::throw_lasterr_if(::SetWindowPos(*this, reinterpret_cast<HWND>(pos), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b){ return !b; });
+      }
+      void zorder(HWND insert_after){
+        wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b){ return !b; });
+      }
+    protected:
+      explicit has_zorder(iwindow * pParent) : _SuperT(pParent){}
 
-  };
+    };
+  }
 }

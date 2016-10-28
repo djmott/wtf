@@ -5,13 +5,11 @@ namespace wtf{
     horizontal,
     vertical
   };
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class has_orientation : public _SuperT{
 
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_orientation, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+      
     public:
 
 
@@ -21,7 +19,8 @@ namespace wtf{
       }
 
     protected:
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit has_orientation(iwindow * pParent) : _SuperT(pParent){}
       orientations _orientation = orientations::horizontal;
     };
   }
+}

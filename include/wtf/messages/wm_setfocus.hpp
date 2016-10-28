@@ -1,25 +1,24 @@
 #pragma once
 
-namespace wtf {
+namespace wtf{
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class wm_setfocus : public _SuperT{
 
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_setfocus, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+      
     public:
 
     protected:
 
       virtual void on_wm_setfocus(HWND) = 0{}
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit wm_setfocus(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void handle_msg(window_message& msg) override{
-        if (WM_SETFOCUS == msg.umsg) {
+        if (WM_SETFOCUS == msg.umsg){
           on_wm_setfocus(reinterpret_cast<HWND>(msg.wparam));
         }
       }
     };
   }
+}

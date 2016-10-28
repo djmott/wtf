@@ -1,25 +1,25 @@
 #pragma once
 
-namespace wtf {
-    /** has_focus
-    * Provides members and events related to keyboard/mouse focus
-    */
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_focus, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+namespace wtf{
+  /** has_focus
+  * Provides members and events related to keyboard/mouse focus
+  */
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class has_focus : public _SuperT{
+
+      
     public:
 
 
-      void set_focus() const { wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h) { return !h; }); }
+      void set_focus() const{ wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h){ return !h; }); }
 
-      bool got_focus() const { return __super_t::_handle == ::GetFocus(); }
+      bool got_focus() const{ return __super_t::_handle == ::GetFocus(); }
 
     protected:
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit has_focus(iwindow * pParent) : _SuperT(pParent){}
 
     };
   }
+}

@@ -14,15 +14,14 @@ namespace wtf{
     right,
   };
 
-    /** has_text
-    * provides members to draw text on UI elements
-    */
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_text, _Policies...> 
-      : public window_impl<_ImplT, _Policies..., policy::wm_paint, policy::has_font, policy::has_invalidate>
-    {
-      using __super_t = window_impl<_ImplT, _Policies..., policy::wm_paint, policy::has_font, policy::has_invalidate>;
-      template <typename, policy ... > friend class window_impl;
+  /** has_text
+  * provides members to draw text on UI elements
+  */
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class has_text : public _SuperT{
+
+      
     public:
 
 
@@ -34,7 +33,7 @@ namespace wtf{
 
       virtual const tstring &text() const{ return _text; }
       virtual void text(const tstring &newval){
-        _text = newval; 
+        _text = newval;
         if (_auto_draw_text) invalidate();
       }
 
@@ -53,7 +52,7 @@ namespace wtf{
       }
     protected:
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit has_text(iwindow * pParent) : _SuperT(pParent){}
 
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
@@ -89,7 +88,7 @@ namespace wtf{
 
       virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         if (_auto_draw_text) draw_text(dc, ps.client());
-        __super_t::on_wm_paint(dc, ps);
+        _SuperT::on_wm_paint(dc, ps);
       }
 
 
@@ -105,3 +104,4 @@ namespace wtf{
       text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::center;
     };
   }
+}

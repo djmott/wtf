@@ -1,20 +1,18 @@
 #pragma once
 
-namespace wtf {
+namespace wtf{
+  enum class icon_type{
+    big_icon = ICON_BIG,
+    small_icon = ICON_SMALL,
+    small2_icon = ICON_SMALL2,
+  };
 
-    enum class icon_type{
-      big_icon = ICON_BIG,
-      small_icon = ICON_SMALL,
-      small2_icon = ICON_SMALL2,
-    };
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class wm_geticon : public _SuperT{
 
 
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_geticon, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+      
     public:
 
 
@@ -22,7 +20,7 @@ namespace wtf {
 
       virtual HICON on_wm_geticon(icon_type) = 0;
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit wm_geticon(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void handle_msg(window_message& msg) override{
         if (WM_GETICON == msg.umsg){
@@ -31,4 +29,5 @@ namespace wtf {
         }
       }
     };
+  }
 }

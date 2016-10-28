@@ -1,6 +1,6 @@
 #pragma once
 
-namespace wtf {
+namespace wtf{
 
   enum class border_styles{
     none = 0,
@@ -13,15 +13,14 @@ namespace wtf {
     double_lowered,
   };
 
-    /** has_border
-    * Creates borders
-    */
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_border, _Policies...> 
-      : public window_impl<_ImplT, _Policies..., policy::wm_nccalcsize, policy::wm_ncpaint>
-    {
-      using __super_t = window_impl<_ImplT, _Policies..., policy::wm_nccalcsize, policy::wm_ncpaint>;
-      template <typename, policy ... > friend class window_impl;
+  /** has_border
+  * Creates borders
+  */
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class has_border : public _SuperT{
+
+      
     public:
 
 
@@ -35,20 +34,20 @@ namespace wtf {
         }
       }
       virtual const rgb& border_highlight() const{ return _border_highlight; }
-      virtual void border_highlight(const rgb& newval){ 
-        _border_highlight = newval; 
+      virtual void border_highlight(const rgb& newval){
+        _border_highlight = newval;
         refresh_border();
       }
 
       virtual const rgb& border_shadow() const{ return _border_shadow; }
-      virtual void border_shadow(const rgb& newval){ 
+      virtual void border_shadow(const rgb& newval){
         _border_shadow = newval;
         refresh_border();
       }
 
       virtual border_styles border_style() const{ return _border_style; }
-      virtual void border_style(border_styles newval){ 
-        _border_style = newval; 
+      virtual void border_style(border_styles newval){
+        _border_style = newval;
         refresh_border();
       }
 
@@ -58,7 +57,7 @@ namespace wtf {
 
     protected:
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit has_border(iwindow * pParent) : _SuperT(pParent){}
 
       void refresh_border(){
         if (!_handle) return;
@@ -80,13 +79,13 @@ namespace wtf {
         //draw outer border
         switch (border_style()){
           case border_styles::none:
-            return __super_t::on_wm_ncpaint(dc, oClient);
+            return _SuperT::on_wm_ncpaint(dc, oClient);
           case border_styles::flat:
             if (_draw_right) dc.line(shadow, client.right, client.top, client.right, 1 + client.bottom);
             if (_draw_bottom) dc.line(shadow, client.left, client.bottom, client.right, client.bottom);
             if (_draw_top) dc.line(shadow, client.left, client.top, client.right, client.top);
             if (_draw_left) dc.line(shadow, client.left, client.top, client.left, client.bottom);
-            return __super_t::on_wm_ncpaint(dc, oClient);
+            return _SuperT::on_wm_ncpaint(dc, oClient);
           case border_styles::etched:
           case border_styles::lowered:
           case border_styles::double_lowered:
@@ -107,7 +106,7 @@ namespace wtf {
         switch (border_style()){
           case border_styles::raised:
           case border_styles::lowered:
-            return __super_t::on_wm_ncpaint(dc, oClient);
+            return _SuperT::on_wm_ncpaint(dc, oClient);
           case border_styles::etched:
           case border_styles::bumped:
             std::swap(highlight, shadow);
@@ -118,7 +117,7 @@ namespace wtf {
             if (_draw_top) dc.line(highlight, client.left, client.top, client.right, client.top);
             if (_draw_left) dc.line(highlight, client.left, client.top, client.left, client.bottom);
         }
-        return __super_t::on_wm_ncpaint(dc, oClient);
+        return _SuperT::on_wm_ncpaint(dc, oClient);
       }
 
       virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS * pSizes) override{
@@ -126,7 +125,7 @@ namespace wtf {
         pSizes->rgrc[0].left += border_width();
         pSizes->rgrc[0].bottom -= border_width();
         pSizes->rgrc[0].right -= border_width();
-        return WVR_VALIDRECTS | WVR_REDRAW; 
+        return WVR_VALIDRECTS | WVR_REDRAW;
       }
 
     private:
@@ -140,3 +139,4 @@ namespace wtf {
     };
 
   }
+}

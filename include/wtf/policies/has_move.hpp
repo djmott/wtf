@@ -1,16 +1,14 @@
 #pragma once
 
-namespace wtf {
+namespace wtf{
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class has_move : public _SuperT{
 
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_move, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+      
     public:
 
-      enum class wm_size_flags {
+      enum class wm_size_flags{
         hide = SIZE_MAXHIDE,
         maximized = SIZE_MAXIMIZED,
         show = SIZE_MAXSHOW,
@@ -18,9 +16,9 @@ namespace wtf {
         restored = SIZE_RESTORED,
       };
 
-      void move(int x, int y, int width, int height, bool repaint = true) {
+      void move(int x, int y, int width, int height, bool repaint = true){
         wtf::exception::throw_lasterr_if(::MoveWindow(*this, x, y, width, height, repaint ? TRUE : FALSE),
-                                         [](BOOL b) { return !b; });
+                                         [](BOOL b){ return !b; });
       }
 
       virtual int left() const{
@@ -29,11 +27,11 @@ namespace wtf {
         return rc.left;
       }
 
-      virtual int top() const {
+      virtual int top() const{
         auto rc = rect<coord_frame::client>::get(*this);
         SetLastError(ERROR_INVALID_PARAMETER);
-        MapWindowPoints( *this, *parent(), reinterpret_cast<LPPOINT>(&rc), 2);
-        return rc.top; 
+        MapWindowPoints(*this, *parent(), reinterpret_cast<LPPOINT>(&rc), 2);
+        return rc.top;
       }
 
 
@@ -49,9 +47,8 @@ namespace wtf {
 
     protected:
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
-
+      explicit has_move(iwindow * pParent) : _SuperT(pParent){}
 
     };
-
   }
+}

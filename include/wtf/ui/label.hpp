@@ -2,21 +2,18 @@
 
 namespace wtf{
 
-  template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::isa_label, _Policies...> 
-    : public window_impl<_ImplT, _Policies..., policy::isa_panel,policy::has_text>
-  {
-    using __super_t = window_impl<_ImplT, _Policies..., policy::isa_panel, policy::has_text>;
-    template <typename, policy ... > friend class window;
-    template <typename, policy ... > friend class window_impl;
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class isa_label : public _SuperT{
 
-  protected:
-    virtual void handle_msg(window_message& msg) override{}
-    explicit window(iwindow * pParent) : __super_t(pParent){}
-  };
+    protected:
+      virtual void handle_msg(window_message& msg) override{}
+      explicit isa_label(iwindow * pParent) : _SuperT(pParent){}
+    };
+  }
 
-  struct label : window<label, policy::isa_label>{
-    explicit label(iwindow * pParent) : window(pParent){}
+  struct label : window_impl<label, policy::isa_label, policy::has_click, policy::wm_mouse_down, policy::wm_mouse_up >{
+    explicit label(iwindow * pParent) : window_impl(pParent){}
   };
 
 }

@@ -1,18 +1,16 @@
 #pragma once
 
-namespace wtf {
+namespace wtf{
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class wm_timer : public _SuperT{
 
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_timer, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+      
     public:
 
 
     protected:
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit wm_timer(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void on_wm_timer(UINT_PTR){}
 
@@ -23,3 +21,4 @@ namespace wtf {
     };
 
   }
+}

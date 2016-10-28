@@ -1,20 +1,18 @@
 #pragma once
 
 namespace wtf{
-  
 
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_mouse_move, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class wm_mouse_move : public _SuperT{
+
+      
     public:
 
     protected:
-      virtual void on_wm_mouse_move(const mouse_msg_param&) {}
+      virtual void on_wm_mouse_move(const mouse_msg_param&){}
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit wm_mouse_move(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void handle_msg(window_message& msg) override{
         if (WM_MOUSEMOVE == msg.umsg){
@@ -23,3 +21,4 @@ namespace wtf{
       }
     };
   }
+}

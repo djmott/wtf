@@ -2,19 +2,17 @@
 
 namespace wtf{
 
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class wm_mouse_up : public _SuperT{
 
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_mouse_up, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+      
     public:
 
     protected:
       virtual void on_wm_mouse_up(const mouse_msg_param&) = 0{}
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit wm_mouse_up(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void handle_msg(window_message& msg) override{
         if (WM_LBUTTONUP == msg.umsg) on_wm_mouse_up(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::left));
@@ -23,3 +21,4 @@ namespace wtf{
       }
     };
   }
+}

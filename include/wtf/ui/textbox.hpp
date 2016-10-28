@@ -2,29 +2,17 @@
 
 namespace wtf{
 
-  template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::isa_textbox, _Policies...> :
-    public window_impl<_ImplT,
-    _Policies...,
-    policy::isa_label, 
-    policy::wm_char, 
-    policy::wm_keydown, 
-    policy::has_cursor,
-    policy::has_caret,
-    policy::has_click,
-    policy::has_focus>
+  namespace policy{
 
-  {
-    using __super_t = window_impl<_ImplT, _Policies..., policy::isa_label, policy::wm_char, 
-      policy::wm_keydown, policy::has_cursor, policy::has_caret, policy::has_click, policy::has_focus>;
-      template <typename, policy ... > friend class window_impl;
+    template <typename _ImplT, typename _SuperT>
+    class isa_textbox : public _SuperT{
+
+      
     public:
-
-
 
     protected:
       virtual void handle_msg(window_message& msg) override{}
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit isa_textbox(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void on_wm_create() override{
         background_brush(brush::system_brush(system_colors::window));
@@ -33,11 +21,11 @@ namespace wtf{
         text_horizontal_alignment(text_horizontal_alignments::left);
         caret_width(2);
         auto_draw_text(false);
-        __super_t::on_wm_create();
+        _SuperT::on_wm_create();
       };
 
       virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
-        if (!_text.size()) return __super_t::on_wm_paint(dc, ps);
+        if (!_text.size()) return _SuperT::on_wm_paint(dc, ps);
 
         rect<coord_frame::client> client = ps.client();
         auto ClientWidth = client.right - client.left;
@@ -82,13 +70,13 @@ namespace wtf{
           caret_visible(true);
           caret_position(CaretPos);
         }
-        __super_t::on_wm_paint(dc, ps);
+        _SuperT::on_wm_paint(dc, ps);
       };
 
 
       virtual void on_wm_mouse_up(const mouse_msg_param& p) override{
         set_focus();
-        __super_t::on_wm_mouse_up(p);
+        _SuperT::on_wm_mouse_up(p);
       };
 
 
@@ -104,7 +92,7 @@ namespace wtf{
           }
         }
         invalidate();
-        __super_t::on_wm_char(character, k);
+        _SuperT::on_wm_char(character, k);
       };
 
       virtual void on_wm_keydown(UINT key, keyboard_msg_param k) override{
@@ -130,7 +118,7 @@ namespace wtf{
         if (_edit_pos < 0) _edit_pos = 0;
         if (_edit_pos > static_cast<int>(_text.size())) _edit_pos = static_cast<int>(_text.size());
         invalidate();
-        __super_t::on_wm_keydown(key, k);
+        _SuperT::on_wm_keydown(key, k);
 
       };
 
@@ -144,9 +132,10 @@ namespace wtf{
       // _print_pos helps ensure the cursor is always visible e.g. text length > window length
       int _print_pos = 0;
     };
+  }
 
-    struct textbox : window<textbox, policy::isa_textbox>{
-      explicit textbox(iwindow * pParent) : window(pParent){}
-    };
+  struct textbox : window_impl<textbox, policy::isa_textbox>{
+    explicit textbox(iwindow * pParent) : window_impl(pParent){}
+  };
 
 }

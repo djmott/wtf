@@ -2,47 +2,50 @@
 
 namespace wtf{
 
-  template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::isa_button, _Policies...> 
-    : public window_impl<_ImplT, _Policies..., policy::isa_label>
-  {
-    using __super_t = window_impl<_ImplT, _Policies..., policy::isa_label>;
+  namespace policy{
 
-  public:
+    template <typename _ImplT, typename _SuperT>
+    class isa_button : public _SuperT{
 
-    explicit window(iwindow * hParent) : __super_t(hParent){
-      border_style(border_styles::raised);
-    }
+    public:
 
-  protected:
-    virtual void handle_msg(window_message& msg) override{}
-
-    virtual void on_wm_click(const mouse_msg_param& m) override{
-      __super_t::on_wm_click(m);
-    }
-
-    virtual void on_wm_mouse_down(const mouse_msg_param& oParam) override{
-      if (oParam.button == mouse_msg_param::buttons::left){
-        border_style(border_styles::lowered);
-        invalidate();
-        ::SetCapture(*this);
-      }
-      __super_t::on_wm_mouse_down(oParam);
-    }
-
-    virtual void on_wm_mouse_up(const mouse_msg_param& oParam) override{
-      if (oParam.button == mouse_msg_param::buttons::left){
+      explicit isa_button(iwindow * hParent) : _SuperT(hParent){
         border_style(border_styles::raised);
-        invalidate();
-        ::ReleaseCapture();
       }
-      __super_t::on_wm_mouse_up(oParam);
-    }
 
-  };
+    protected:
+      virtual void handle_msg(window_message& msg) override{}
 
-  struct button : window<button, policy::isa_button>{
-    explicit button(iwindow * pParent) : window(pParent){}
+      virtual void on_wm_click(const mouse_msg_param& m) override{
+        _SuperT::on_wm_click(m);
+      }
+
+      virtual void on_wm_mouse_down(const mouse_msg_param& oParam) override{
+        if (oParam.button == mouse_msg_param::buttons::left){
+          border_style(border_styles::lowered);
+          invalidate();
+          ::SetCapture(*this);
+        }
+        _SuperT::on_wm_mouse_down(oParam);
+      }
+
+      virtual void on_wm_mouse_up(const mouse_msg_param& oParam) override{
+        if (oParam.button == mouse_msg_param::buttons::left){
+          border_style(border_styles::raised);
+          invalidate();
+          ::ReleaseCapture();
+        }
+        _SuperT::on_wm_mouse_up(oParam);
+      }
+
+    };
+  }
+
+  struct button 
+    : window_impl<button, policy::isa_button, policy::has_click, policy::wm_mouse_down, policy::wm_mouse_up,
+    policy::wm_paint>
+  {
+    explicit button(iwindow * pParent) : window_impl(pParent){}
   };
 
 }

@@ -1,14 +1,14 @@
 #pragma once
 
-namespace wtf {
-    /** has_caret
-    * Controls the caret of text/input elements
-    */
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::has_caret, _Policies...> 
-      : public window_impl<_ImplT, _Policies..., policy::wm_setfocus, policy::wm_killfocus>{
-      using __super_t = window_impl<_ImplT, _Policies..., policy::wm_setfocus, policy::wm_killfocus>;
-      template <typename, policy ... > friend class window_impl;
+namespace wtf{
+  /** has_caret
+  * Controls the caret of text/input elements
+  */
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class has_caret : public _SuperT{
+
+      
     public:
 
       virtual int caret_width() const{ return _width; }
@@ -17,38 +17,38 @@ namespace wtf {
       virtual int caret_height() const{ return _height; }
       virtual void caret_height(int newval){ _height = newval; }
 
-      virtual void create_caret() {
-        wtf::exception::throw_lasterr_if(::CreateCaret(*this, nullptr, _width, _height), [](BOOL b) { return !b; });
+      virtual void create_caret(){
+        wtf::exception::throw_lasterr_if(::CreateCaret(*this, nullptr, _width, _height), [](BOOL b){ return !b; });
         _caret_visible = false;
       }
 
-      virtual void destroy_caret() {
-        wtf::exception::throw_lasterr_if(::DestroyCaret(), [](BOOL b) { return !b; });
+      virtual void destroy_caret(){
+        wtf::exception::throw_lasterr_if(::DestroyCaret(), [](BOOL b){ return !b; });
         _caret_visible = false;
       }
 
       virtual bool caret_visible() const{ return _caret_visible; }
-      virtual void caret_visible(bool newval) {
+      virtual void caret_visible(bool newval){
         if (_caret_visible){
           if (newval) return;
           wtf::exception::throw_lasterr_if(::HideCaret(*this), [](BOOL b){ return !b; });
-        }else{
+        } else{
           if (!newval) return;
           wtf::exception::throw_lasterr_if(::ShowCaret(*this), [](BOOL b){ return !b; });
         }
         _caret_visible = newval;
       }
 
-      virtual UINT caret_blink_rate() const { return _blink_rate; }
+      virtual UINT caret_blink_rate() const{ return _blink_rate; }
 
-      virtual void caret_blink_rate(UINT newval) {
+      virtual void caret_blink_rate(UINT newval){
         _blink_rate = newval;
-        wtf::exception::throw_lasterr_if(::SetCaretBlinkTime(newval), [](BOOL b) { return !b; });
+        wtf::exception::throw_lasterr_if(::SetCaretBlinkTime(newval), [](BOOL b){ return !b; });
       }
 
-      virtual void caret_position(const point<coord_frame::client> &pos) {
+      virtual void caret_position(const point<coord_frame::client> &pos){
         _pos = pos;
-        wtf::exception::throw_lasterr_if(::SetCaretPos(_pos.x, _pos.y), [](BOOL b) { return !b; });
+        wtf::exception::throw_lasterr_if(::SetCaretPos(_pos.x, _pos.y), [](BOOL b){ return !b; });
       }
 
       virtual point<coord_frame::client> caret_position() const{ return _pos; }
@@ -56,26 +56,27 @@ namespace wtf {
     protected:
 
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit has_caret(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void on_wm_setfocus(HWND hwnd) override{
         create_caret();
         caret_position(_pos);
         caret_visible(true);
         caret_blink_rate(_blink_rate);
-        __super_t::on_wm_setfocus(hwnd);
+        _SuperT::on_wm_setfocus(hwnd);
       }
 
       virtual void on_wm_killfocus(HWND hwnd) override{
         destroy_caret();
-        __super_t::on_wm_killfocus(hwnd);
+        _SuperT::on_wm_killfocus(hwnd);
       }
 
     private:
       UINT _blink_rate = 250;
-      point<coord_frame::client> _pos = point<coord_frame::client>(0,0);
+      point<coord_frame::client> _pos = point<coord_frame::client>(0, 0);
       bool _caret_visible = false;
       int _width = 1;
       int _height = 1;
     };
   }
+}

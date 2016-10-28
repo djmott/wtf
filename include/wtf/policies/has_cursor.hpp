@@ -4,51 +4,51 @@ namespace wtf{
   /** has_cursor
   * Provides mouse pointer customization
   */
-  template <typename _ImplT, policy..._Policies>
-  class window<_ImplT, policy::has_cursor, _Policies...> 
-    : public window_impl<_ImplT, _Policies..., policy::wm_setcursor>
-  {
-    using __super_t = window_impl<_ImplT, _Policies..., policy::wm_setcursor>;
-    template <typename, policy ... > friend class window_impl;
-  public:
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class has_cursor : public _SuperT{
 
-    virtual const wtf::cursor &cursor_pointer() const{ return cursor::global(cursor::style::arrow); }
+      
+    public:
 
-    virtual const wtf::cursor &cursor_size_ns() const{ return cursor::global(cursor::style::size_ns); }
+      virtual const wtf::cursor &cursor_pointer() const{ return cursor::global(cursor::style::arrow); }
 
-    virtual const wtf::cursor &cursor_size_we() const{ return cursor::global(cursor::style::size_we); }
+      virtual const wtf::cursor &cursor_size_ns() const{ return cursor::global(cursor::style::size_ns); }
 
-    virtual const wtf::cursor &cursor_size_nwse() const{ return cursor::global(cursor::style::size_nwse); }
+      virtual const wtf::cursor &cursor_size_we() const{ return cursor::global(cursor::style::size_we); }
 
-    virtual const wtf::cursor &cursor_size_nesw() const{ return cursor::global(cursor::style::size_nesw); }
+      virtual const wtf::cursor &cursor_size_nwse() const{ return cursor::global(cursor::style::size_nwse); }
 
-  protected:
+      virtual const wtf::cursor &cursor_size_nesw() const{ return cursor::global(cursor::style::size_nesw); }
 
-    explicit window(iwindow * pParent) : __super_t(pParent){}
+    protected:
 
-    virtual void on_wm_setcursor(wm_nchittest_flags flags) override{
-      switch (flags){
-        case wm_nchittest_flags::top:
-        case wm_nchittest_flags::bottom:
-          SetCursor(cursor_size_ns());
-          break;
-        case wm_nchittest_flags::bottomleft:
-        case wm_nchittest_flags::topright:
-          SetCursor(cursor_size_nesw());
-          break;
-        case wm_nchittest_flags::bottomright:
-        case wm_nchittest_flags::topleft:
-          SetCursor(cursor_size_nwse());
-          break;
-        case wm_nchittest_flags::left:
-        case wm_nchittest_flags::right:
-          SetCursor(cursor_size_we());
-          break;
-        default:
-          SetCursor(cursor_pointer());
-          break;
+      explicit has_cursor(iwindow * pParent) : _SuperT(pParent){}
+
+      virtual void on_wm_setcursor(wm_nchittest_flags flags) override{
+        switch (flags){
+          case wm_nchittest_flags::top:
+          case wm_nchittest_flags::bottom:
+            SetCursor(cursor_size_ns());
+            break;
+          case wm_nchittest_flags::bottomleft:
+          case wm_nchittest_flags::topright:
+            SetCursor(cursor_size_nesw());
+            break;
+          case wm_nchittest_flags::bottomright:
+          case wm_nchittest_flags::topleft:
+            SetCursor(cursor_size_nwse());
+            break;
+          case wm_nchittest_flags::left:
+          case wm_nchittest_flags::right:
+            SetCursor(cursor_size_we());
+            break;
+          default:
+            SetCursor(cursor_pointer());
+            break;
+        }
       }
-    }
 
-  };
+    };
+  }
 }

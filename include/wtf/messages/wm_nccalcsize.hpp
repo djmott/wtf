@@ -2,12 +2,11 @@
 
 namespace wtf{
 
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_nccalcsize, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class wm_nccalcsize : public _SuperT{
+
+      
     public:
 
       enum class activate_mode{
@@ -21,7 +20,7 @@ namespace wtf{
       virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *) = 0;
       virtual LRESULT on_wm_nccalcsize(RECT *){ return 0; }
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit wm_nccalcsize(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void handle_msg(window_message& msg) override{
         if (WM_NCCALCSIZE == msg.umsg){
@@ -33,3 +32,4 @@ namespace wtf{
 
     };
   }
+}

@@ -29,7 +29,7 @@ namespace wtf{
     screen,
     client,
   };
-
+  /*
   enum class policy{
     //messages
     wm_activate,
@@ -96,8 +96,9 @@ namespace wtf{
     isa_toggle_button,
     isa_tree,
   };
+  */
 
-  template <typename, policy...> class window;
+  template <class, template <class> class...> class window;
 
   using iwindow = window<void>;
 

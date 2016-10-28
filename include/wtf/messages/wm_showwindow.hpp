@@ -1,16 +1,14 @@
 #pragma once
 
-namespace wtf {
+namespace wtf{
 
-    template <typename _ImplT, policy..._Policies>
-    class window<_ImplT, policy::wm_showwindow, _Policies...> 
-      : public window_impl<_ImplT, _Policies...>
-    {
-      using __super_t = window_impl<_ImplT, _Policies...>;
-      template <typename, policy ... > friend class window_impl;
+  namespace policy{
+    template <typename _ImplT, typename _SuperT>
+    class wm_showwindow : public _SuperT{
+
     public:
 
-      enum class visibility_change_flag {
+      enum class visibility_change_flag{
         show_window = 0,
         other_unzoom = SW_OTHERUNZOOM,
         other_zoom = SW_OTHERZOOM,
@@ -20,7 +18,7 @@ namespace wtf {
 
     protected:
 
-      explicit window(iwindow * pParent) : __super_t(pParent){}
+      explicit wm_showwindow(iwindow * pParent) : _SuperT(pParent){}
 
       virtual void on_wm_showwindow(visibility_change_flag) = 0{}
 
@@ -30,3 +28,4 @@ namespace wtf {
     };
 
   }
+}

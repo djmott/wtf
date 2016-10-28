@@ -7,9 +7,7 @@ namespace wtf{
   /** Specialization that terminates the inheritance hierarchy
   * super-most base class of all windows
   */
-  template <> class window<void>{
-    template <typename, policy ... > friend class window_impl;
-    template <typename, policy ... > friend class window;
+  template <> class window<void>{    
   public:
     window(const window&) = delete;
     window& operator=(const window&) = delete;
@@ -79,8 +77,6 @@ namespace wtf{
     static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
     static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
-    template <typename, policy ... > friend class window_impl;
-    template <typename, policy ... > friend class window;
 
     virtual int exec() override{
       _handle = wtf::exception::throw_lasterr_if(::CreateWindowEx(
