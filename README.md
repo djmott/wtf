@@ -1,9 +1,9 @@
 # Introduction
 The Windows Template Framework (WTF) is a lightning fast, light-weight, header-only GUI library for Windows written in C++11. It's designed to be easy to use and quick to setup for a quick-and-dirty Windows GUI application. The architecture is highly modular with maximum code reuse by leveraging modern template meta-programming techniques.
 
-I hate duplicating code as every software engineer should. Maximum reuse is one of the motivating factors behind this library. There are many GUI toolkits around and they all seem to share the trait of code bloat. GUI toolkits present an interesting challenge because the various components and widgets have a mix-and-match composition of behaviors.  For example, a button contains a label that needs to produce click events while a drop-down box has several labels, produces click events and needs to editable, while a text box is editable but produces no click events. The various GUI components share a hodge-podge of behaviors and a variety of programming techniques have been employed in toolkits to minimize the maintenance effort but most fall short IMO.
+WTF is largely an architectural and feasibility experiment. Maximum reuse is one of the motivating factors behind this library. There are many GUI toolkits around and they all seem to share the trait of code bloat. GUI toolkits present an interesting challenge because the various components and widgets have a mix-and-match composition of behaviors.  For example, a button contains a label that needs to produce click events while a drop-down box has several labels, produces click events and needs to editable, while a text box is editable but produces no click events. The various GUI components share a hodge-podge of behaviors and a variety of programming techniques have been employed in toolkits to minimize the maintenance effort but most fall short IMO.
 
-WTL for example should be more properly named Windows Macro Library than a template library but does a fairly good job at reducing duplication.  wxWidgets has lots of duplicate code but their goal is a cross platform toolkit.  It's clumsy and difficult to learn.  Qt has a nice programmer's interface but dont peek behind the sheets if you want to keep your lunch down. WinForms is easy to code but requires a terrabyte of framework libraries, CLI interop to do anything native and its slow as hell. GTK is for linux. The proper response to the current state of GUI toolkits is WTF! So here it is, WTF has arrived.  
+WTL, for example, should be more properly named Windows Macro Library than a template library but does a fairly good job at reducing duplication.  wxWidgets has lots of duplicate code but their goal is a cross platform toolkit.  It's clumsy and difficult to learn.  Qt has a nice programmer's interface but dont peek behind the sheets if you want to keep your lunch down. WinForms is easy to code but requires a terrabyte of framework libraries, CLI interop is required to do anything native and its slow as hell. GTK is for linux. The proper response to the current state of native GUI toolkits on Windows is WTF!
 
 
 # Getting Started
@@ -11,7 +11,7 @@ Add the wtf folder to the project's include path and include wtf.hpp in a compil
 
 
 ~~~cpp
-#include "wtf.hpp"
+#include "wtf/wtf.hpp"
 
 int main(){
   wtf::form oForm;
@@ -25,23 +25,25 @@ This creates a generic form and shows it then begins the main message pump.  To 
 #include "wtf.hpp"
 
 struct MyForm : wtf::form{
-  
-  MyForm() : oButton(*this){
-    oButton.move(10, 10, 150, 25);
-    oButton.text(L"Hello World");
-    oButton.ClickEvent = [](){ std::cout << "Button clicked"; };
+
+  MyForm() : oPanel(this){
+    OnCreate += [this](){ 
+      oPanel.border_style(wtf::border_styles::double_raised);
+      oPanel.move(10, 10, 150, 25);
+    };
   }
 
-  wtf::button oButton;
+  wtf::panel oPanel;
 };
 
 int main(){
   MyForm oForm;
   return oForm.exec();
 }
+
 ~~~
 
-Here a form is sub-classed and it contains a button. One important thing to notice is the constructor of the button accepts the form as the parent e.g. `oButton(*this)` There are a number of ways to enhance the behavior and get event notifications depending on what you're trying to do. The producible events currently use `std::function` for callbacks to _user side_ events. Most of the behaviors from an internal perspective can be modified by providing overridden functions. More advanced widgets use the template framework to generate compositional patterns of various behavioral policies to create new, feature rich GUI components.
+Here a form is sub-classed and it contains a panel. One important thing to notice is the constructor of the panel accepts the form as the parent e.g. `oPanel(this)` There are a number of ways to enhance the behavior and get event notifications depending on what you're trying to do. The producible events currently use a callback mechanism to _user side_ events. Most of the behaviors from an internal perspective can be modified by providing overridden functions. More advanced widgets use the template framework to generate compositional patterns of various behavioral policies to create new, feature rich GUI components.
 
 Currently the controls and themes are limited but I'll be adding them as time permits.
 
