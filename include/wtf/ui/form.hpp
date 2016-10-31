@@ -27,7 +27,6 @@ namespace wtf{
       }
 
 
-
       int top() const override{
         return rect<coord_frame::screen>::get(*this).top;
       }
@@ -73,8 +72,13 @@ namespace wtf{
   }
 
   template <> struct policy_traits<policy::isa_form>{
-    using requires = policy_list<policy::wm_destroy, policy::isa_panel>;
+    using requires = policy_list<policy::wm_destroy, policy::wm_create, policy::has_cursor, policy::has_icon,
+    policy::has_titlebar, policy::has_size, policy::has_move, policy::has_show, policy::wm_size>;
   };
 
+  struct form : window_impl<form, policy::isa_form>{
+    explicit form(iwindow * pParent) : window_impl(pParent){}
+    form() : form(nullptr){}
+  };
 
 }

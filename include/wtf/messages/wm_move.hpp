@@ -4,8 +4,6 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class wm_move : public _SuperT{
-
-      
     public:
 
       enum class wm_size_flags{
@@ -18,7 +16,7 @@ namespace wtf{
 
     protected:
 
-      virtual void on_wm_move(const point<coord_frame::client>&, bool&) {}
+      virtual void on_wm_move(const point<coord_frame::client>&, bool&){}
 
       explicit wm_move(iwindow * pParent) : _SuperT(pParent){}
 

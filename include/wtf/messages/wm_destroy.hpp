@@ -9,7 +9,7 @@ namespace wtf{
 
     protected:
 
-      virtual void on_wm_destroy(){}
+      virtual void on_wm_destroy() {}
 
       explicit wm_destroy(iwindow * pParent) : _SuperT(pParent){}
 

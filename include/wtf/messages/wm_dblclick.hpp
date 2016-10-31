@@ -8,7 +8,7 @@ namespace wtf{
       
 
     protected:
-      virtual void on_wm_dblclick(const mouse_msg_param&) {}
+      virtual void on_wm_dblclick(const mouse_msg_param&){}
 
       explicit wm_dblclick(iwindow * pParent) : _SuperT(pParent){}
 

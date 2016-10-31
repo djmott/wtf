@@ -7,7 +7,6 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class has_icon : public _SuperT{
-
       
     public:
 

@@ -10,9 +10,9 @@ namespace wtf{
 
 
       //append a policy_list to an existing policy_list
-      template <typename _AppendList, typename _SourceList> struct append_list;
-      template <template <typename> typename ... _AppendListTs, template <typename> typename ... _SourceListTs>
-      struct append_list<policy_list<_AppendListTs...>, policy_list<_SourceListTs...>>{
+      template <typename _SourceList, typename _AppendList> struct append_list;
+      template <template <typename> typename ... _SourceListTs, template <typename> typename ... _AppendListTs>
+      struct append_list<policy_list<_SourceListTs...>, policy_list<_AppendListTs...>>{
         using type = policy_list<_SourceListTs..., _AppendListTs...>;
       };
 
@@ -26,23 +26,9 @@ namespace wtf{
       template <template <typename> typename _TargetT, template <typename> typename _HeadT, template <typename> typename ... _TailT>
       struct exists<_TargetT, _HeadT, _TailT...> : exists<_TargetT, _TailT...>{};
 
-      //remove the first occurrence of a policy in a parameter pack
-      template <template <typename> typename _TargetT, template <typename> typename ... _Policies> struct remove;
-      template <template <typename> typename _TargetT> struct remove<_TargetT>{ using type = policy_list<>; };
-      template <template <typename> typename _TargetT, template <typename> typename _HeadT, template <typename> typename ... _TailT>
-      struct remove<_TargetT, _HeadT, _TailT...>{
-        using removed_tail = typename remove<_TargetT, _TailT...>::type;
-        using type = typename append_list<policy_list<_HeadT>, removed_tail>::type;
-      };
-      template <template <typename> typename _TargetT, template <typename> typename ... _TailT>
-      struct remove<_TargetT, _TargetT, _TailT...>{
-        using type = policy_list<_TailT...>;
-      };
-
       //remove all occurrences of a policy from a parameter pack
       template <template <typename> typename _TargetT, template <typename> typename ... _Policies> struct remove_all;
       template <template <typename> typename _TargetT> struct remove_all<_TargetT>{ using type = policy_list<>; };
-
 
 
       template <bool, template <typename> typename _TargetT, template <typename> typename ... _Policies> struct remove_all_b;
@@ -55,7 +41,7 @@ namespace wtf{
       template <template <typename> typename _TargetT, template <typename> typename _HeadT, template <typename> typename ... _TailT>
       struct remove_all_b<false, _TargetT, _HeadT, _TailT...>{
         using tmp_tail = typename remove_all<_TargetT, _TailT...>::type;
-        using type = typename append_list<tmp_tail, policy_list<_HeadT>>::type;
+        using type = typename append_list<policy_list<_HeadT>, tmp_tail>::type;
       };
 
 
@@ -63,7 +49,7 @@ namespace wtf{
       struct remove_all<_TargetT, _HeadT, _TailT...> : remove_all_b< is_same_policy<_TargetT, _HeadT>::value, _TargetT, _HeadT, _TailT...>{};
 
 
-      //remove all from occurrences of a policy from a policy list
+      //remove all occurrences of a policy from a policy list
       template <template <typename> typename _TargetT, typename _PolicyListT> struct remove_all_list;
       template <template <typename> typename _TargetT, template <typename> typename ... _Policies>
       struct remove_all_list<_TargetT, policy_list<_Policies...>>{ using type = typename remove_all<_TargetT, _Policies...>::type; };
@@ -76,7 +62,7 @@ namespace wtf{
       template <template <typename> typename _HeadT, template <typename> typename ... _TailT>
       struct reverse<_HeadT, _TailT...>{
         using reversed_tail = typename reverse<_TailT...>::type;
-        using type = typename append_list<policy_list<_HeadT>, reversed_tail>::type;
+        using type = typename append_list<reversed_tail, policy_list<_HeadT>>::type;
       };
 
       //reverse policy list
@@ -91,18 +77,8 @@ namespace wtf{
       struct undup_list<policy_list<_HeadT, _TailT...>>{
         using unduped_tail = typename undup_list<policy_list<_TailT...>>::type;
         using unduped_head = typename remove_all_list<_HeadT, unduped_tail>::type;
-        using type = typename append_list<unduped_head, policy_list<_HeadT>>::type;
+        using type = typename append_list<policy_list<_HeadT>, unduped_head>::type;
       };
-
-      //remove dups
-      template <template <typename> typename ... _Policies> struct dedup;
-      template <template <typename> typename _HeadT, template <typename> typename ... _TailT>
-      struct dedup<_HeadT, _TailT...>{
-        using reverse_1 = typename reverse<_HeadT, _TailT...>::type;
-        using unduped = typename undup_list<reverse_1>::type;
-        using type = typename reverse_list<unduped>::type;
-      };
-
 
     }
   }
@@ -113,7 +89,7 @@ namespace wtf{
     using append = policy_list<_AppendT...>;
 
     template <typename _AppendT>
-    using append_list = typename _::policy_list_impl::append_list<_AppendT, policy_list<>>::type;
+    using append_list = _AppendT;
 
     template <template <typename> typename _TargetT>
     using exists = std::false_type;
@@ -134,31 +110,31 @@ namespace wtf{
     using append = policy_list<_HeadT, _TailT..., _AppendT...>;
 
     template <typename _AppendT>
-    using append_list = typename _::policy_list_impl::append_list<_AppendT, policy_list<_HeadT, _TailT...>>::type;
+    using append_list = typename _::policy_list_impl::append_list<policy_list<_HeadT, _TailT...>, _AppendT>::type;
 
     template <template <typename> typename _TargetT>
     using exists = typename _::policy_list_impl::exists<_TargetT, _HeadT, _TailT...>::type;
 
-    template <template <typename> typename _TargetT>
-    using remove = typename _::policy_list_impl::remove<_TargetT, _HeadT, _TailT...>::type;
 
     using reverse = typename _::policy_list_impl::reverse<_HeadT, _TailT...>::type;
 
-    using dedup = typename _::policy_list_impl::dedup<_HeadT, _TailT...>::type;
+    using dedup = typename _::policy_list_impl::undup_list<policy_list<_HeadT, _TailT...>>::type;
   };
 
 
   template <typename> struct policy_collector;
   template <> struct policy_collector<policy_list<>>{ using type = policy_list<>; };
-  template <template <typename> typename _HeadT, template <typename> typename ... _TailT> 
+
+  
+  template <template <typename> typename _HeadT, template <typename> typename ... _TailT>
   struct policy_collector<policy_list<_HeadT, _TailT...>>{
     using head_reqs = typename policy_traits<_HeadT>::requires;
-    using tail_list = typename policy_list<_TailT...>::template append_list<head_reqs> ;
-//    using tail_with_reqs = typename tail_list::template append_list<head_reqs>;
-    //using tail_with_reqs = typename head_reqs::template append<_TailT...>;
+    using tail_list = typename policy_list<_TailT...>::template append_list<head_reqs>;
     using full_reqs = typename policy_collector<tail_list>::type;
     using type = typename policy_list<_HeadT>::template append_list<full_reqs>;
   };
+
+
 
 
   template <typename _ImplT, typename _PolicyListT> struct construct_hierarchy;

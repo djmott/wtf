@@ -5,12 +5,9 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class wm_keydown : public _SuperT{
-      
-    public:
-
     protected:
 
-      virtual void on_wm_keydown(UINT char_code, keyboard_msg_param) {}
+      virtual void on_wm_keydown(UINT char_code, keyboard_msg_param){}
 
       explicit wm_keydown(iwindow * pParent) : _SuperT(pParent){}
 

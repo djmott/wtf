@@ -7,7 +7,7 @@ namespace wtf{
 
     protected:
 
-      virtual void on_wm_char(UINT char_code, keyboard_msg_param) {}
+      virtual void on_wm_char(UINT char_code, keyboard_msg_param){}
 
       wm_char(iwindow * pParent) : _SuperT(pParent){}
 

@@ -6,7 +6,7 @@ namespace wtf{
     class wm_sizing : public _SuperT{
 
     protected:
-      virtual void on_wm_sizing(rect<coord_frame::screen>&) {}
+      virtual void on_wm_sizing(rect<coord_frame::screen>&){}
 
       explicit wm_sizing(iwindow * pParent) : _SuperT(pParent){}
 

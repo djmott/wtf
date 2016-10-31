@@ -20,7 +20,7 @@ namespace wtf{
 
       explicit wm_showwindow(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void on_wm_showwindow(visibility_change_flag) {}
+      virtual void on_wm_showwindow(visibility_change_flag){}
 
       void handle_msg(window_message& msg) override{
         if (WM_SHOWWINDOW == msg.umsg) on_wm_showwindow(static_cast<visibility_change_flag>(msg.lparam));

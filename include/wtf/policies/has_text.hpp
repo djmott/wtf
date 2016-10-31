@@ -20,10 +20,8 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class has_text : public _SuperT{
-
       
     public:
-
 
       virtual bool multiline() const{ return _multiline; }
       virtual void multiline(bool newval){ _multiline = newval; }

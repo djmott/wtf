@@ -15,5 +15,8 @@ namespace wtf{
     using requires = policy_list<policy::isa_panel, policy::has_text>;
   };
 
+  struct label : window_impl<label, policy::isa_label >{
+    explicit label(iwindow * pParent) : window_impl(pParent){}
+  };
 
 }

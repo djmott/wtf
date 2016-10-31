@@ -182,5 +182,9 @@ namespace wtf{
     using requires = policy_list<policy::isa_panel, policy::wm_mouse_wheel, policy::has_orientation>;
   };
 
+  struct scrollbar : window_impl<scrollbar, policy::isa_scrollbar>{
+    explicit scrollbar(iwindow * pParent) : window_impl(pParent){}
+  };
+
 
 }

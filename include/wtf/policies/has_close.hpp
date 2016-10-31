@@ -8,7 +8,6 @@ namespace wtf{
     template <typename _SuperT>
     class has_close : public _SuperT{
 
-      
     public:
 
       void close(){ CloseWindow(*this); }

@@ -8,8 +8,7 @@ namespace wtf{
     class splitter : public window_impl<splitter, policy::has_cursor, policy::wm_mouse_move, policy::isa_panel, policy::has_orientation>{
       using __super_t = window_impl<splitter, policy::has_cursor, policy::wm_mouse_move, policy::isa_panel, policy::has_orientation>;
     public:
-      splitter(iwindow * pParent)
-        : __super_t(pParent){}
+      splitter(iwindow * pParent) : __super_t(pParent){}
 
       virtual void size_bar_moved(const point<coord_frame::client>&) = 0;
 
@@ -133,6 +132,10 @@ namespace wtf{
     using requires = policy_list< policy::isa_panel, policy::has_orientation>;
   };
 
+
+  struct split_container : window_impl<split_container, policy::isa_split_container>{
+    explicit split_container(iwindow * pParent) : window_impl(pParent){}
+  };
 
 
 }

@@ -7,10 +7,8 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class has_focus : public _SuperT{
-
       
     public:
-
 
       void set_focus() const{ wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h){ return !h; }); }
 

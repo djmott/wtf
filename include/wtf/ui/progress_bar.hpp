@@ -98,6 +98,9 @@ namespace wtf{
     using requires = policy_list<policy::has_orientation, policy::isa_label>;
   };
 
+  struct progress_bar : window_impl<progress_bar, policy::isa_progressbar>{
+    explicit progress_bar(iwindow * pParent) : window_impl(pParent){}
+  };
 
 
 }

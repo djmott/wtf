@@ -96,4 +96,8 @@ namespace wtf{
     using requires = policy_list< policy::isa_label>;
   };
 
+  struct checkbox : window_impl<checkbox, policy::isa_checkbox>{
+    explicit checkbox(iwindow * pParent) : window_impl(pParent){}
+  };
+
 }

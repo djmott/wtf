@@ -405,4 +405,8 @@ namespace wtf{
     using requires = policy_list<policy::isa_label, policy::wm_mouse_wheel, policy::wm_dblclick >;
   };
 
+  struct tree : window_impl<tree, policy::isa_tree>{
+    explicit tree(iwindow * pParent) : window_impl(pParent){}
+  };
+
 }

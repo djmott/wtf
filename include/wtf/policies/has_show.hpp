@@ -7,10 +7,8 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class has_show : public _SuperT{
-
-      
+     
     public:
-
 
       virtual void show(){ ::ShowWindow(*this, SW_SHOW); }
 

@@ -6,13 +6,9 @@ namespace wtf{
     template <typename _SuperT>
     class wm_setcursor : public _SuperT{
 
-      
-    public:
-
-
     protected:
 
-      virtual void on_wm_setcursor(wm_nchittest_flags) {}
+      virtual void on_wm_setcursor(wm_nchittest_flags){}
 
       explicit wm_setcursor(iwindow * pParent) : _SuperT(pParent){}
 

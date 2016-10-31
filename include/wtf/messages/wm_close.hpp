@@ -12,7 +12,7 @@ namespace wtf{
 
     protected:
 
-      virtual void on_wm_close() {}
+      virtual void on_wm_close(){}
 
       explicit wm_close(iwindow * pParent) : _SuperT(pParent){}
 

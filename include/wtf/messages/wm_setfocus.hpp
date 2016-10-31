@@ -5,12 +5,9 @@ namespace wtf{
     template <typename _SuperT>
     class wm_setfocus : public _SuperT{
 
-      
-    public:
-
     protected:
 
-      virtual void on_wm_setfocus(HWND) {}
+      virtual void on_wm_setfocus(HWND){}
 
       explicit wm_setfocus(iwindow * pParent) : _SuperT(pParent){}
 

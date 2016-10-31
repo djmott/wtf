@@ -4,7 +4,6 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class has_move : public _SuperT{
-
       
     public:
 

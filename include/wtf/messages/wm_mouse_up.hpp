@@ -5,10 +5,6 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class wm_mouse_up : public _SuperT{
-
-      
-    public:
-
     protected:
       virtual void on_wm_mouse_up(const mouse_msg_param&) {}
 

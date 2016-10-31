@@ -6,11 +6,8 @@ namespace wtf{
     template <typename _SuperT>
     class wm_moving : public _SuperT{
 
-      
-    public:
-
     protected:
-      virtual void on_wm_moving(rect<coord_frame::screen>&) {}
+      virtual void on_wm_moving(rect<coord_frame::screen>&){}
 
       explicit window(iwindow * pParent) : _SuperT(pParent){}
 

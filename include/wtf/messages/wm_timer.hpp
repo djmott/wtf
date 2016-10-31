@@ -5,10 +5,6 @@ namespace wtf{
     template <typename _SuperT>
     class wm_timer : public _SuperT{
 
-      
-    public:
-
-
     protected:
       explicit wm_timer(iwindow * pParent) : _SuperT(pParent){}
 

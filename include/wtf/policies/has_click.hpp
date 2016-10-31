@@ -9,10 +9,6 @@ namespace wtf{
     template <typename _SuperT>
     class has_click : public _SuperT{
 
-      
-    public:
-
-
     protected:
 
       explicit has_click(iwindow * pParent) : _SuperT(pParent){}

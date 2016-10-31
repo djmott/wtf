@@ -8,10 +8,8 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class has_orientation : public _SuperT{
-
       
     public:
-
 
       virtual orientations orientation() const{ return _orientation; }
       virtual void orientation(orientations newval){

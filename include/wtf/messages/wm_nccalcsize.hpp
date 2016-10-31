@@ -5,8 +5,6 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class wm_nccalcsize : public _SuperT{
-
-      
     public:
 
       enum class activate_mode{

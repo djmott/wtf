@@ -8,7 +8,7 @@ namespace wtf{
 
     protected:
 
-      virtual void on_wm_mouse_wheel(int16_t /*delta*/, const mouse_msg_param&) {}
+      virtual void on_wm_mouse_wheel(int16_t /*delta*/, const mouse_msg_param&){}
 
       explicit wm_mouse_wheel(iwindow * pParent) : _SuperT(pParent){}
 

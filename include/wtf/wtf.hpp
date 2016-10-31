@@ -141,22 +141,6 @@ namespace wtf {
 #include "policies/has_titlebar.hpp"
 #include "policies/has_zorder.hpp"
 
-namespace wtf{
-  struct button;
-  struct checkbox;
-  struct form;
-  struct label;
-  struct listbox;
-  struct panel;
-  struct progress_bar;
-  struct scrollbar;
-  struct split_container;
-  struct tab_container;
-  struct textbox;
-  struct toggle_button;
-  struct tree;
-}
-
 #include "ui/panel.hpp"
 #include "ui/label.hpp"
 #include "ui/button.hpp"
@@ -170,62 +154,3 @@ namespace wtf{
 #include "ui/textbox.hpp"
 #include "ui/toggle_button.hpp"
 #include "ui/tree.hpp"
-
-
-namespace wtf{
-
-
-  struct button : window_impl<button, policy::isa_button>{
-    explicit button(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct checkbox : window_impl<checkbox, policy::isa_checkbox>{
-    explicit checkbox(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct form : window_impl<form, policy::isa_form>{
-    explicit form(iwindow * pParent) : window_impl(pParent){}
-    form() : form(nullptr){}
-  };
-
-  struct label : window_impl<label, policy::isa_label >{
-    explicit label(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct listbox : window_impl<listbox, policy::isa_listbox>{
-    explicit listbox(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct panel : window_impl<panel, policy::isa_panel>{
-    explicit panel(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct progress_bar : window_impl<progress_bar, policy::isa_progressbar>{
-    explicit progress_bar(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct scrollbar : window_impl<scrollbar, policy::isa_scrollbar>{
-    explicit scrollbar(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct split_container : window_impl<split_container, policy::isa_split_container>{
-    explicit split_container(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct tab_container : window_impl<tab_container, policy::isa_tab_container>{
-    explicit tab_container(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct textbox : window_impl<textbox, policy::isa_textbox>{
-    explicit textbox(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct toggle_button : window_impl<toggle_button, policy::isa_toggle_button>{
-    explicit toggle_button(iwindow * pParent) : window_impl(pParent){}
-  };
-
-  struct tree : window_impl<tree, policy::isa_tree>{
-    explicit tree(iwindow * pParent) : window_impl(pParent){}
-  };
-
-}

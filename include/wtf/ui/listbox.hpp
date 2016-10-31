@@ -132,5 +132,8 @@ namespace wtf{
     using requires = policy_list<policy::isa_label, policy::wm_mouse_wheel>;
   };
 
+  struct listbox : window_impl<listbox, policy::isa_listbox>{
+    explicit listbox(iwindow * pParent) : window_impl(pParent){}
+  };
 
 }

@@ -5,12 +5,8 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class wm_mouse_move : public _SuperT{
-
-      
-    public:
-
     protected:
-      virtual void on_wm_mouse_move(const mouse_msg_param&){}
+      virtual void on_wm_mouse_move(const mouse_msg_param&) {}
 
       explicit wm_mouse_move(iwindow * pParent) : _SuperT(pParent){}
 

@@ -9,7 +9,6 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class wm_mouse_leave : public _SuperT{
-
     protected:
 
       virtual void on_wm_mouse_leave(){}

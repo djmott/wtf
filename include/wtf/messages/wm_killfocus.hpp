@@ -5,10 +5,9 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class wm_killfocus : public _SuperT{
-
     protected:
 
-      virtual void on_wm_killfocus(HWND) {}
+      virtual void on_wm_killfocus(HWND){}
 
       explicit wm_killfocus(iwindow * pParent) : _SuperT(pParent){}
 

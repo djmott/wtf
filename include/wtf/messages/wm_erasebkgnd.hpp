@@ -8,8 +8,7 @@ namespace wtf{
       
     protected:
 
-      virtual void on_wm_erasebkgnd(const device_context&, const rect<coord_frame::client>&) = 0{}
-
+      virtual void on_wm_erasebkgnd(const device_context&, const rect<coord_frame::client>&) {}
       explicit wm_erasebkgnd(iwindow * pParent) : _SuperT(pParent){}
 
       void handle_msg(window_message& msg) override{

@@ -13,8 +13,6 @@ namespace wtf{
     template <typename _SuperT>
     class wm_ncpaint : public _SuperT{
 
-      
-
     protected:
 
       virtual void on_wm_ncpaint(const device_context&, const rect<coord_frame::client>&) {}

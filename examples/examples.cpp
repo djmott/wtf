@@ -1,4 +1,4 @@
-#define __WTF_DEBUG_MESSAGES__ 1
+#define __WTF_DEBUG_MESSAGES__ 0
 
 //#pragma warning(disable: 4503)
 
@@ -9,7 +9,21 @@
 
 using namespace wtf;
 
-#if 1
+#if 0
+struct fnord : normalized_policies<fnord, policy::isa_button>{
+
+};
+
+template <typename _Ty> void DT(){
+  OutputDebugStringA("\n"); OutputDebugStringA(typeid(_Ty).name()); OutputDebugStringA("\n");
+}
+
+int main(){
+  DT<typename fnord::unique_policies>();
+  return 0;
+}
+
+#elif 0
 
 struct main_form : form{
 
@@ -107,7 +121,7 @@ struct main_form : form{
   scrollbar _scroll;
 };
 
-#elif 1
+#elif 0
 
 
 struct main_form : form{
@@ -127,7 +141,7 @@ struct main_form : form{
 
 
 
-#else
+#elif 1
 
 
 
@@ -426,6 +440,7 @@ struct main_form : form{
 
   tab_container _tabs;
 };
+
 #endif
 
 int main(){

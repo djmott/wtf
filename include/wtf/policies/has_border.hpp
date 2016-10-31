@@ -20,7 +20,6 @@ namespace wtf{
     template <typename _SuperT>
     class has_border : public _SuperT{
 
-      
     public:
 
 

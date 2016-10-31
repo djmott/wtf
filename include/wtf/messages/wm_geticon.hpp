@@ -10,12 +10,6 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class wm_geticon : public _SuperT{
-
-
-      
-    public:
-
-
     protected:
 
       virtual HICON on_wm_geticon(icon_type) = 0;

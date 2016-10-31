@@ -31,7 +31,6 @@ namespace wtf{
                                          [](BOOL b){ return !b; });
       }
 
-
     protected:
 
       explicit has_size(iwindow * pParent) : _SuperT(pParent){}

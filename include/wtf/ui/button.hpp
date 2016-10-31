@@ -40,4 +40,9 @@ namespace wtf{
     using requires = policy_list<policy::isa_label>;
   };
 
+  struct button : window_impl<button, policy::isa_button>{
+    explicit button(iwindow * pParent) : window_impl(pParent){}
+  };
+
+
 }

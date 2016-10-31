@@ -6,7 +6,6 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     class wm_mouse_down : public _SuperT{
-      
     protected:
 
       virtual void on_wm_mouse_down(const mouse_msg_param&) {}
