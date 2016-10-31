@@ -2,16 +2,17 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_invalidate : public _SuperT{
 
       
     public:
 
       void invalidate(bool EraseBackground = true){
-        if (_handle){
+	      if (_SuperT::_handle) {
           wtf::exception::throw_lasterr_if(
-            ::InvalidateRect(_handle, nullptr, (EraseBackground ? TRUE : FALSE)), [](BOOL b){ return !b; });
+            ::InvalidateRect(_SuperT::_handle, nullptr, (EraseBackground ? TRUE : FALSE)),
+                                           [](BOOL b){ return !b; });
         }
       }
 

@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_showwindow : public _SuperT{
 
     public:
@@ -20,10 +20,11 @@ namespace wtf{
 
       explicit wm_showwindow(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void on_wm_showwindow(visibility_change_flag) = 0{}
+      virtual void on_wm_showwindow(visibility_change_flag) {}
 
       virtual void handle_msg(window_message& msg) override{
         if (WM_SHOWWINDOW == msg.umsg) on_wm_showwindow(static_cast<visibility_change_flag>(msg.lparam));
+        _SuperT::handle_msg(msg);
       }
     };
 

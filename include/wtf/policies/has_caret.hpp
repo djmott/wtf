@@ -5,7 +5,7 @@ namespace wtf{
   * Controls the caret of text/input elements
   */
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_caret : public _SuperT{
 
       
@@ -58,7 +58,7 @@ namespace wtf{
 
       explicit has_caret(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void on_wm_setfocus(HWND hwnd) override{
+      void on_wm_setfocus(HWND hwnd) override{
         create_caret();
         caret_position(_pos);
         caret_visible(true);
@@ -66,7 +66,7 @@ namespace wtf{
         _SuperT::on_wm_setfocus(hwnd);
       }
 
-      virtual void on_wm_killfocus(HWND hwnd) override{
+      void on_wm_killfocus(HWND hwnd) override{
         destroy_caret();
         _SuperT::on_wm_killfocus(hwnd);
       }
@@ -79,4 +79,10 @@ namespace wtf{
       int _height = 1;
     };
   }
+
+  template <> struct policy_traits<policy::has_caret>{
+    using requires = policy_list<policy::wm_setfocus, policy::wm_killfocus>;
+  };
+
+
 }

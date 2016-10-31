@@ -2,7 +2,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_move : public _SuperT{
 
       
@@ -23,14 +23,14 @@ namespace wtf{
 
       virtual int left() const{
         auto rc = rect<coord_frame::client>::get(*this);
-        MapWindowPoints(*this, *parent(), reinterpret_cast<LPPOINT>(&rc), 2);
+	      MapWindowPoints(*this, *_SuperT::_parent, reinterpret_cast<LPPOINT>(&rc), 2);
         return rc.left;
       }
 
       virtual int top() const{
         auto rc = rect<coord_frame::client>::get(*this);
         SetLastError(ERROR_INVALID_PARAMETER);
-        MapWindowPoints(*this, *parent(), reinterpret_cast<LPPOINT>(&rc), 2);
+	      MapWindowPoints(*this, *_SuperT::_parent, reinterpret_cast<LPPOINT>(&rc), 2);
         return rc.top;
       }
 

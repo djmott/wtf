@@ -2,7 +2,7 @@
 
 #if 0
 namespace wtf{
-  struct rivet : window<rivet, iwindow, wm_paint, policy::has_move>{
+  struct rivet : window<rivet, window, wm_paint, policy::has_move>{
     rivet() = delete;
     rivet(const rivet&) = delete;
     rivet(rivet&&) = delete;

@@ -5,7 +5,7 @@ namespace wtf{
   * Provides members and events related to keyboard/mouse focus
   */
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_focus : public _SuperT{
 
       
@@ -14,7 +14,7 @@ namespace wtf{
 
       void set_focus() const{ wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h){ return !h; }); }
 
-      bool got_focus() const{ return __super_t::_handle == ::GetFocus(); }
+      bool got_focus() const{ return _SuperT::_handle == ::GetFocus(); }
 
     protected:
 

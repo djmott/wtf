@@ -17,7 +17,7 @@ namespace wtf{
   * Creates borders
   */
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_border : public _SuperT{
 
       
@@ -60,7 +60,7 @@ namespace wtf{
       explicit has_border(iwindow * pParent) : _SuperT(pParent){}
 
       void refresh_border(){
-        if (!_handle) return;
+        if (!_SuperT::_handle) return;
         wtf::exception::throw_lasterr_if(
           ::RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_NOCHILDREN),
           [](BOOL b){ return !b; }
@@ -139,4 +139,9 @@ namespace wtf{
     };
 
   }
+
+  template <> struct policy_traits<policy::has_border>{
+    using requires = policy_list<policy::wm_ncpaint, policy::wm_nccalcsize>;
+  };
+
 }

@@ -2,7 +2,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_setfocus : public _SuperT{
 
       
@@ -10,7 +10,7 @@ namespace wtf{
 
     protected:
 
-      virtual void on_wm_setfocus(HWND) = 0{}
+      virtual void on_wm_setfocus(HWND) {}
 
       explicit wm_setfocus(iwindow * pParent) : _SuperT(pParent){}
 
@@ -18,6 +18,7 @@ namespace wtf{
         if (WM_SETFOCUS == msg.umsg){
           on_wm_setfocus(reinterpret_cast<HWND>(msg.wparam));
         }
+        _SuperT::handle_msg(msg);
       }
     };
   }

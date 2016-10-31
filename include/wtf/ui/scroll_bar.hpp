@@ -3,9 +3,9 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
+
     class isa_scrollbar : public _SuperT{
-      using scrollbar_t = isa_scrollbar<_ImplT, _SuperT>;
     public:
       explicit isa_scrollbar(iwindow * pParent)
         : _SuperT(pParent),
@@ -37,12 +37,12 @@ namespace wtf{
     protected:
 
       friend struct value_step_button;
-      virtual void handle_msg(window_message& msg) override{}
+      friend struct value_page_button;
 
-      virtual void on_wm_size(const point<coord_frame::client>& p) override{
+      void on_wm_size(const point<coord_frame::client>& p) override{
         auto iExtent = _max - _min;
 
-        if (orientations::horizontal == _orientation){
+	      if (orientations::horizontal == _SuperT::orientation()) {
           auto iStepWidth = p.y;
           _dec.move(0, 0, iStepWidth, iStepWidth);
           _inc.move(p.x - iStepWidth, 0, iStepWidth, iStepWidth);
@@ -81,7 +81,7 @@ namespace wtf{
         if (_value == iOriginal) return;
       }
 
-      virtual void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& m) override{
+      void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& m) override{
         if (delta > 0){
           StepIncEvent();
         } else{
@@ -94,9 +94,9 @@ namespace wtf{
       struct value_step_button: wtf::button{
         using __super_t = wtf::button;
         bool _is_increment;
-        scrollbar_t * _parent;
+        isa_scrollbar * _parent;
 
-        value_step_button(scrollbar_t * pParent, bool IsIncrementer) :
+        value_step_button(isa_scrollbar * pParent, bool IsIncrementer) :
           __super_t(pParent), _parent(pParent), _is_increment(IsIncrementer){
 
         }
@@ -140,24 +140,23 @@ namespace wtf{
 
       struct value_page_button : label{
 
-        explicit value_page_button(scrollbar_t * pParent, bool IsIncrement) : label(pParent), _parent(pParent), _is_increment(IsIncrement){
+        explicit value_page_button(isa_scrollbar * pParent, bool IsIncrement) : label(pParent), _parent(pParent), _is_increment(IsIncrement){
 
         }
-        virtual void on_wm_click(const mouse_msg_param& m) override{
+        void on_wm_click(const mouse_msg_param& m) override{
           if (mouse_msg_param::buttons::left != m.button) return label::on_wm_click(m);
           if (_is_increment) _parent->PageUpEvent();
           else _parent->PageDownEvent();
           label::on_wm_click(m);
         };
 
-        scrollbar_t * _parent;
+        isa_scrollbar * _parent;
         bool _is_increment;
       };
 
       struct slider : wtf::button{
         using __super_t = wtf::button;
-        explicit slider(scrollbar_t * pParent) : __super_t(pParent){}
-        virtual void handle_msg(window_message& msg) override{}
+        explicit slider(isa_scrollbar * pParent) : __super_t(pParent){}
       }_slider;
 
 
@@ -176,9 +175,12 @@ namespace wtf{
       int _big_step = 10;
     };
   }
-  struct scrollbar : window_impl<scrollbar, policy::isa_scrollbar, policy::wm_size,
-    policy::wm_mouse_wheel
-  >{
+
+  template <> struct policy_traits<policy::isa_scrollbar>{
+    using requires = policy_list<policy::isa_panel, policy::wm_mouse_wheel, policy::has_orientation>;
+  };
+
+  struct scrollbar : window_impl<scrollbar, policy::isa_scrollbar>{
     explicit scrollbar(iwindow * pParent) : window_impl(pParent){}
   };
 

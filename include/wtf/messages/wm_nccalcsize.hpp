@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_nccalcsize : public _SuperT{
 
       
@@ -27,7 +27,9 @@ namespace wtf{
           msg.bhandled = true;
           if (msg.wparam) msg.lresult = on_wm_nccalcsize(reinterpret_cast<NCCALCSIZE_PARAMS*>(msg.lparam));
           else  msg.lresult = on_wm_nccalcsize(reinterpret_cast<RECT*>(msg.lparam));
+
         }
+        _SuperT::handle_msg(msg);
       }
 
     };

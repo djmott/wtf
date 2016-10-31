@@ -3,24 +3,21 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class isa_split_container : public _SuperT{
-      using __split_container = window<_ImplT, policy::isa_split_container, _Policies...>;
-      
-
     public:
 
       explicit isa_split_container(iwindow * pParent) : _SuperT(pParent), _first(this), _second(this), _splitter(this){}
 
 
       void set_split_position(int percentage){
-        int newPos = percentage * width() / 100;
-        if (orientations::horizontal == _orientation){
-          _splitter.move(0, newPos, width(), SplitterWidth);
+	      int newPos = percentage * _SuperT::width() / 100;
+	      if (orientations::horizontal == _SuperT::orientation()) {
+		      _splitter.move(0, newPos, _SuperT::width(), SplitterWidth);
         } else{
-          _splitter.move(newPos, 0, SplitterWidth, height());
+	        _splitter.move(newPos, 0, SplitterWidth, _SuperT::height());
         }
-        invalidate();
+	      _SuperT::invalidate();
       }
 
       panel * first(){ return &_first; }
@@ -31,16 +28,16 @@ namespace wtf{
 
     protected:
 
-      virtual void on_wm_create() override{
-        border_style(border_styles::none);
+      void on_wm_create() override{
+	      _SuperT::border_style(border_styles::none);
         set_split_position(25);
         _first.border_style(border_styles::raised);
         _second.border_style(border_styles::raised);
         _SuperT::on_wm_create();
       };
 
-      virtual void on_wm_size(const point<coord_frame::client>& p) override{
-        if (orientations::horizontal == _orientation){
+      void on_wm_size(const point<coord_frame::client>& p) override{
+	      if (orientations::horizontal == _SuperT::orientation()) {
           auto NewTop = _splitter.top();
           if (NewTop < 10) NewTop = 10;
           if (NewTop > p.y - 10) NewTop = p.y - 10;
@@ -63,48 +60,49 @@ namespace wtf{
       panel _first, _second;
 
       void size_bar_moved(const point<coord_frame::client>& p){
-        if (orientations::horizontal == _orientation){
-          _splitter.move(0, _splitter.top() + p.y, width(), SplitterWidth);
+	      if (orientations::horizontal == _SuperT::orientation()) {
+		      _splitter.move(0, _splitter.top() + p.y, _SuperT::width(), SplitterWidth);
         } else{
-          _splitter.move(_splitter.left() + p.x, 0, SplitterWidth, height());
+	        _splitter.move(_splitter.left() + p.x, 0, SplitterWidth, _SuperT::height());
         }
-        invalidate();
+	      _SuperT::invalidate();
       }
 
 
-      class size_bar : public window<size_bar, policy::isa_panel, policy::has_cursor>{
-        using _SuperT = window<size_bar, policy::isa_panel, policy::has_cursor>;
-        
+      class size_bar : public window_impl<size_bar, policy::wm_create, policy::has_cursor, policy::wm_mouse_move, policy::isa_panel>{
+	      using __super_t = window_impl<size_bar, policy::wm_create, policy::has_cursor, policy::wm_mouse_move, policy::isa_panel>;
       public:
-        size_bar(__split_container * pParent) : _SuperT(pParent), _parent(pParent){}
+	      size_bar(isa_split_container * pParent)
+		      : __super_t(pParent)
+		      , _parent(pParent) {}
 
 
-        virtual void on_wm_create() override{
-          border_style(border_styles::none);
-          _SuperT::on_wm_create();
+        void on_wm_create() override{
+	        __super_t::border_style(border_styles::none);
+	        __super_t::on_wm_create();
         };
 
-        virtual void on_wm_mouse_move(const mouse_msg_param& m) override{
-          if (!(m.key_state & mouse_msg_param::key_states::left)) return _SuperT::on_wm_mouse_move(m);
+        void on_wm_mouse_move(const mouse_msg_param& m) override{
+	        if (!(m.key_state & mouse_msg_param::key_states::left)) return __super_t::on_wm_mouse_move(m);
           _parent->size_bar_moved(m.position);
-          _SuperT::on_wm_mouse_move(m);
+	        __super_t::on_wm_mouse_move(m);
         };
 
-        virtual void on_wm_mouse_down(const mouse_msg_param& m) override{
-          if (mouse_msg_param::buttons::left != m.button) return _SuperT::on_wm_mouse_down(m);
+        void on_wm_mouse_down(const mouse_msg_param& m) override{
+	        if (mouse_msg_param::buttons::left != m.button) return __super_t::on_wm_mouse_down(m);
           SetCapture(*this);
-          _SuperT::on_wm_mouse_down(m);
+	        __super_t::on_wm_mouse_down(m);
         };
 
-        virtual void on_wm_mouse_up(const mouse_msg_param& m) override{
+        void on_wm_mouse_up(const mouse_msg_param& m) override{
           ReleaseCapture();
-          _SuperT::on_wm_mouse_up(m);
+	        __super_t::on_wm_mouse_up(m);
         };
 
-        __split_container * _parent;
+        isa_split_container * _parent;
 
-        virtual const wtf::cursor &cursor_pointer() const override{
-          if (orientations::horizontal == _parent->_orientation){
+        const wtf::cursor &cursor_pointer() const override{
+          if (orientations::horizontal == _parent->orientation()){
             return cursor::global(cursor::style::size_ns);
           } else{
             return cursor::global(cursor::style::size_we);
@@ -115,6 +113,11 @@ namespace wtf{
 
     };
   }
+
+  template <> struct policy_traits<policy::isa_split_container>{
+    using requires = policy_list<policy::has_orientation, policy::wm_create, policy::isa_panel>;
+  };
+
 
   struct split_container : window_impl<split_container, policy::isa_split_container>{
     explicit split_container(iwindow * pParent) : window_impl(pParent){}

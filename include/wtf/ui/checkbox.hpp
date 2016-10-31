@@ -2,13 +2,13 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class isa_checkbox : public _SuperT{
-      using __checkbox_t = isa_checkbox<_ImplT, _SuperT>;
+
     public:
 
       explicit isa_checkbox(iwindow * pParent) : _SuperT(pParent), _check(this){
-        auto_draw_text(false);
+	      _SuperT::auto_draw_text(false);
       }
 
       enum class check_locations{
@@ -22,7 +22,6 @@ namespace wtf{
       }
 
     private:
-      virtual void handle_msg(window_message& msg) override{}
 
       virtual void on_wm_click(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left == m.button){
@@ -33,13 +32,13 @@ namespace wtf{
 
       virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         auto client = ps.client();
-        auto TextSize = prefered_text_size();
+	      auto TextSize = _SuperT::prefered_text_size();
         if (text_horizontal_alignments::left == _text_horizontal_alignment){
           _check.move(0, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
-          draw_text(dc, rect<coord_frame::client>(checkbox_size, 0, client.right - checkbox_size, client.bottom));
+	        _SuperT::draw_text(dc, rect<coord_frame::client>(checkbox_size, 0, client.right - checkbox_size, client.bottom));
         } else{
           _check.move(client.right - checkbox_size, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
-          draw_text(dc, rect<coord_frame::client>(0, 0, client.right - checkbox_size, client.bottom));
+	        _SuperT::draw_text(dc, rect<coord_frame::client>(0, 0, client.right - checkbox_size, client.bottom));
         }
         _SuperT::on_wm_paint(dc, ps);
       };
@@ -51,7 +50,7 @@ namespace wtf{
 
         using __super_t = panel;
 
-        _check(__checkbox_t * pParent)
+        _check(isa_checkbox * pParent)
           : __super_t(pParent),
           _parent(pParent){}
 
@@ -84,13 +83,17 @@ namespace wtf{
 
       private:
         bool _value = false;
-        __checkbox_t * _parent;
+        isa_checkbox * _parent;
       }_check;
 
     private:
       text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::left;
     };
   }
+
+  template <> struct policy_traits<policy::isa_checkbox>{
+    using requires = policy_list< policy::isa_label>;
+  };
 
   struct checkbox : window_impl<checkbox, policy::isa_checkbox>{
     explicit checkbox(iwindow * pParent) : window_impl(pParent){}

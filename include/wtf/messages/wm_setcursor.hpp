@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_setcursor : public _SuperT{
 
       
@@ -12,7 +12,7 @@ namespace wtf{
 
     protected:
 
-      virtual void on_wm_setcursor(wm_nchittest_flags) = 0{}
+      virtual void on_wm_setcursor(wm_nchittest_flags) {}
 
       explicit wm_setcursor(iwindow * pParent) : _SuperT(pParent){}
 
@@ -22,6 +22,7 @@ namespace wtf{
           msg.lresult = TRUE;
           msg.bhandled = true;
         }
+        _SuperT::handle_msg(msg);
       }
     };
   }

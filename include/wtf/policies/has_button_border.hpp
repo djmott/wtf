@@ -3,7 +3,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_button_border : public _SuperT{
 
       
@@ -15,7 +15,7 @@ namespace wtf{
       explicit has_button_border(iwindow * pParent) : _SuperT(pParent){}
 
       virtual LRESULT on_wm_create(bool& bhandled) override{
-        border_style(border_styles::raised);
+	      _SuperT::border_style(border_styles::raised);
         return _SuperT::on_wm_create(bhandled);
       };
 
@@ -24,8 +24,8 @@ namespace wtf{
         if (!rect<coord_frame::client>::get(*this).is_in(m.position)){
           ::ReleaseCapture();
           _Down = false;
-          border_style(border_styles::raised);
-          invalidate();
+	        _SuperT::border_style(border_styles::raised);
+	        _SuperT::invalidate();
         }
         return _SuperT::on_wm_mouse_move(m, bhandled);
       };
@@ -33,17 +33,17 @@ namespace wtf{
       virtual LRESULT on_wm_mouse_down(const mouse_msg_param& m, bool& bhandled) override{
         if (mouse_msg_param::buttons::left != m.button) return _SuperT::on_wm_mouse_down(m, bhandled);
         _Down = true;
-        border_style(border_styles::lowered);
+	      _SuperT::border_style(border_styles::lowered);
         ::SetCapture(*this);
-        invalidate();
+	      _SuperT::invalidate();
         return _SuperT::on_wm_mouse_down(m, bhandled);
       };
 
       virtual LRESULT on_wm_mouse_up(const mouse_msg_param& m, bool& bhandled) override{
         if (!_Down || mouse_msg_param::buttons::left != m.button) return _SuperT::on_wm_mouse_up(m, bhandled);
         _Down = false;
-        border_style(border_styles::raised);
-        invalidate();
+	      _SuperT::border_style(border_styles::raised);
+	      _SuperT::invalidate();
         ::ReleaseCapture();
         return _SuperT::on_wm_mouse_up(m, bhandled);
       };

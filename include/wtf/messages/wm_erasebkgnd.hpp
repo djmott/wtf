@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_erasebkgnd : public _SuperT{
       
     public:
@@ -20,6 +20,7 @@ namespace wtf{
           msg.lresult = TRUE;
           msg.bhandled = true;
         }
+        _SuperT::handle_msg(msg);
       }
 
       explicit wm_erasebkgnd(iwindow * pParent) : _SuperT(pParent){}

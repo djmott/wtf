@@ -20,109 +20,43 @@
 #include <mutex>
 
 
-namespace wtf{
+namespace wtf {
 
-  using tstring = std::basic_string<TCHAR>;
-  using tstringstream = std::basic_stringstream<TCHAR>;
+	using tstring = std::basic_string<TCHAR>;
+	using tstringstream = std::basic_stringstream<TCHAR>;
 
-  enum class coord_frame{
-    screen,
-    client,
-  };
-  /*
-  enum class policy{
-    //messages
-    wm_activate,
-    wm_char,
-    wm_close,
-    wm_create,
-    wm_dblclick,
-    wm_destroy,
-    wm_erasebkgnd,
-    wm_geticon,
-    wm_keydown,
-    wm_keyup,
-    wm_killfocus,
-    wm_mouse_down,
-    wm_mouse_leave,
-    wm_mouse_move,
-    wm_mouse_up,
-    wm_mouse_wheel,
-    wm_move, 
-    wm_moving,
-    wm_nccalcsize,
-    wm_ncpaint,
-    wm_paint,
-    wm_setcursor,
-    wm_setfocus,
-    wm_showwindow,
-    wm_size,
-    wm_sizing,
-    wm_timer,
-    //behaviors
-    has_border,
-    has_button_border,
-    has_caret,
-    has_click,
-    has_close,
-    has_cursor,
-    has_focus,
-    has_font,
-    has_icon,
-    has_image,
-    has_invalidate,
-    has_move,
-    has_orientation,
-    has_repeat_click,
-    has_show,
-    has_size,
-    has_text,
-    has_timer,
-    has_titlebar,
-    has_zorder,
-    //compositions
-    isa_button,
-    isa_checkbox,
-    isa_form,
-    isa_label,
-    isa_listbox,
-    isa_panel,
-    isa_progressbar,
-    isa_scrollbar,
-    isa_split_container,
-    isa_tab_container,
-    isa_tab_page,
-    isa_textbox,
-    isa_toggle_button,
-    isa_tree,
-  };
-  */
+	enum class coord_frame {
+		screen,
+		client,
+	};
 
-  template <class, template <class> class...> class window;
+	template <typename _ImplT> class window;
+  
+	using iwindow = window<void>;
 
-  using iwindow = window<void>;
+	//this is the internal 'hidden' namespace not for external consumption
+	namespace _ {
+		static std::mutex& _active_forms_lock() {
+			static std::mutex _forms_lock;
+			return _forms_lock;
+		}
+
+		static std::vector<const iwindow*>& _active_forms() {
+			static std::vector<const iwindow*> _forms;
+			return _forms;
+		}
+
+		extern "C" HINSTANCE__ __ImageBase;
+		inline static HINSTANCE instance_handle(){ return &__ImageBase; }
+	}
 
 
-  //this is the internal 'hidden' namespace not for external consumption
-  namespace _{
-    static std::mutex& _active_forms_lock(){
-      static std::mutex _forms_lock;
-      return _forms_lock;
-    }
+	static const std::vector<const iwindow*>& active_forms() { return _::_active_forms(); }
 
-    static std::vector<const iwindow*>& _active_forms(){
-      static std::vector<const iwindow*> _forms;
-      return _forms;
-    }
-
-    extern "C" HINSTANCE__ __ImageBase;
-    inline static HINSTANCE instance_handle(){ return &__ImageBase; }
-  }
-
-
-    static const std::vector<const iwindow*>& active_forms(){ 
-      return _::_active_forms(); 
-    }
+	template <template <typename, typename> typename ... _Policies> struct policy_list;
+	template <template <typename, typename> typename> struct policy_traits {
+		using requires = policy_list<>;
+	};
 }
 
 
@@ -140,20 +74,24 @@ namespace wtf{
 #include "region.hpp"
 #include "font.hpp"
 #include "window_message.hpp"
-#include "window_impl.hpp"
-
 
 #include "_/window_class_ex.hpp"
+
+#include "window.hpp"
+#include "policy_list.hpp"
+
+
 #include "_/msg_names.hpp"
 #include "_/weak_enum.hpp"
 #include "_/device_context.hpp"
 #include "_/text_metrics.hpp"
 #include "_/paint_struct.hpp"
 #include "_/SystemParameters.hpp"
+#include "window_impl.hpp"
+
 #include "_/message.hpp"
 
 
-#include "window.hpp"
 
 
 #include "messages/messages.hpp"

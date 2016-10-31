@@ -3,7 +3,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class isa_toggle_button : public _SuperT{
 
     public:
@@ -14,15 +14,14 @@ namespace wtf{
       void value(bool newval){
         if (newval == _value) return;
         _value = newval;
-        border_style((_value ? border_styles::lowered : border_styles::raised));
-        invalidate();
+	      _SuperT::border_style((_value ? border_styles::lowered : border_styles::raised));
+	      _SuperT::invalidate();
       }
 
     protected:
 
-      virtual void handle_msg(window_message& msg) override{}
       virtual void on_wm_create() override{
-        border_style(border_styles::raised);
+	      _SuperT::border_style(border_styles::raised);
         _SuperT::on_wm_create();
       };
 
@@ -37,6 +36,13 @@ namespace wtf{
       bool _value = false;
     };
   }
+
+
+  template <> struct policy_traits<policy::isa_toggle_button>{
+    using requires = policy_list<policy::isa_button>;
+  };
+
+
   struct toggle_button : window_impl<toggle_button, policy::isa_toggle_button>{
     explicit toggle_button(iwindow * pParent) : window_impl(pParent){}
   };

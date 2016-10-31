@@ -5,7 +5,7 @@ namespace wtf{
   * Provides mouse pointer customization
   */
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_cursor : public _SuperT{
 
       
@@ -25,7 +25,7 @@ namespace wtf{
 
       explicit has_cursor(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void on_wm_setcursor(wm_nchittest_flags flags) override{
+      void on_wm_setcursor(wm_nchittest_flags flags) override{
         switch (flags){
           case wm_nchittest_flags::top:
           case wm_nchittest_flags::bottom:
@@ -51,4 +51,10 @@ namespace wtf{
 
     };
   }
+
+  template <> struct policy_traits<policy::has_cursor>{
+    using requires = policy_list<policy::wm_setcursor>;
+  };
+
+
 }

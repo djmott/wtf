@@ -3,16 +3,19 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class isa_label : public _SuperT{
 
     protected:
-      virtual void handle_msg(window_message& msg) override{}
       explicit isa_label(iwindow * pParent) : _SuperT(pParent){}
     };
   }
 
-  struct label : window_impl<label, policy::isa_label, policy::has_click, policy::wm_mouse_down, policy::wm_mouse_up >{
+  template <> struct policy_traits<policy::isa_label>{
+    using requires = policy_list<policy::has_text, policy::isa_panel, policy::wm_create>;
+  };
+
+  struct label : window_impl<label, policy::isa_label >{
     explicit label(iwindow * pParent) : window_impl(pParent){}
   };
 

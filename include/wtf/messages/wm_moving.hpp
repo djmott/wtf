@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_moving : public _SuperT{
 
       
@@ -16,6 +16,7 @@ namespace wtf{
 
       virtual void handle_msg(window_message& msg) override{
         if (WM_MOVING == msg.umsg) on_wm_moving(*reinterpret_cast<rect<coord_frame::screen>*>(msg.lparam));
+        _SuperT::handle_msg(msg);
       }
 
     };

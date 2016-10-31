@@ -5,7 +5,7 @@ namespace wtf{
   * Adds timer creation and produces timer events
   */
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_timer : public _SuperT{
       
     public:

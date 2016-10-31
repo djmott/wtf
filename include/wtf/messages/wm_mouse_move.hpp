@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_mouse_move : public _SuperT{
 
       
@@ -18,6 +18,7 @@ namespace wtf{
         if (WM_MOUSEMOVE == msg.umsg){
           on_wm_mouse_move(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::unspecified));
         }
+        _SuperT::handle_msg(msg);
       }
     };
   }

@@ -4,31 +4,39 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
-    class isa_label : public _SuperT{
-
-      using __listbox_t = window<_ImplT, policy::isa_listbox, _Policies...>;
-      
+    template <typename _SuperT, typename _ImplT>
+    class isa_listbox : public _SuperT{
     public:
+      enum class selection_modes{
+        single,
+        multiple,
+      };
 
+      selection_modes selection_mode() const{ return _selection_mode; }
+      void selection_mode(selection_modes newval){ _selection_mode = newval; }
 
-      explicit isa_label(iwindow * pParent) :
+      void add_item(const tstring& newval){
+        _Items.push_back(newval);
+      }
+
+    protected:
+      explicit isa_listbox(iwindow * pParent) :
         _SuperT(pParent),
         _SelectedItems(1, 0),
         _vscroll(this){}
 
-      virtual void on_wm_create() override{
-        border_style(border_styles::raised);
-        auto_draw_text(false);
+      void on_wm_create() override{
+	      _SuperT::border_style(border_styles::raised);
+	      _SuperT::auto_draw_text(false);
         _SuperT::on_wm_create();
       };
 
-      virtual void on_wm_size(const point<coord_frame::client>& p) override{
+      void on_wm_size(const point<coord_frame::client>& p) override{
         _vscroll.move(p.x - scroll_width - right_margin, top_margin, scroll_width, p.y - top_margin - bottom_margin);
         _SuperT::on_wm_size(p);
       };
 
-      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         if (!_Items.size()) return _SuperT::on_wm_paint(dc, ps);
         auto client = ps.client();
         auto oTextSize = dc.get_text_extent(_Items[0]);
@@ -45,19 +53,19 @@ namespace wtf{
               break;
             }
           }
-          text(_Items[i + _TopIndex]);
-          draw_text(dc, _ItemRects[i]);
+	        _SuperT::text(_Items[i + _TopIndex]);
+	        _SuperT::draw_text(dc, _ItemRects[i]);
         }
         _SuperT::on_wm_paint(dc, ps);
       };
 
-      virtual void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& param) override{
+      void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& param) override{
         if (delta > 0) _vscroll.StepDecEvent();
         else _vscroll.StepIncEvent();
         _SuperT::on_wm_mouse_wheel(delta, param);
       };
 
-      virtual void on_wm_click(const mouse_msg_param& m) override{
+      void on_wm_click(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left != m.button) return;
         if (selection_modes::single == _selection_mode){
           _SelectedItems.clear();
@@ -66,7 +74,7 @@ namespace wtf{
           if (!_ItemRects[i].is_in(m.position)) continue;
           _SelectedItems.push_back(_TopIndex + static_cast<int>(i));
         }
-        invalidate();
+	      _SuperT::invalidate();
         _SuperT::on_wm_click(m);
       };
 
@@ -76,33 +84,19 @@ namespace wtf{
       static const int top_margin = 2;
       static const int bottom_margin = 2;
 
-      enum class selection_modes{
-        single,
-        multiple,
-      };
-
-      selection_modes selection_mode() const{ return _selection_mode; }
-      void selection_mode(selection_modes newval){ _selection_mode = newval; }
-
-      void add_item(const tstring& newval){
-        _Items.push_back(newval);
-      }
-    protected:
       friend struct vscroll;
       void invalidate(){ _SuperT::invalidate(); }
 
-      virtual void handle_msg(window_message& msg) override{}
-
-      class vscroll : public window<vscroll, policy::isa_scrollbar>{
-        using __super_t = window<vscroll, policy::isa_scrollbar>;
-        
+      class vscroll : public window_impl<vscroll, policy::wm_create, policy::isa_scrollbar>{
+        using __super_t = window_impl<vscroll, policy::wm_create, policy::isa_scrollbar>;
       public:
 
-        virtual void handle_msg(window_message& msg) override{}
-        vscroll(__listbox_t * pParent) : __super_t(pParent), _Parent(pParent){}
+        vscroll(isa_listbox * pParent)
+          : __super_t(pParent)
+          , _Parent(pParent) {}
 
-        virtual void on_wm_create() override{
-          orientation(orientations::vertical);
+        void on_wm_create() override{
+          __super_t::orientation(orientations::vertical);
           __super_t::on_wm_create();
         };
 
@@ -116,7 +110,7 @@ namespace wtf{
           --_Parent->_TopIndex;
           _Parent->invalidate();
         }
-        __listbox_t * _Parent;
+        isa_listbox * _Parent;
       };
 
     private:
@@ -133,6 +127,11 @@ namespace wtf{
       brush _background_brush = brush::system_brush(system_colors::window);
     };
   }
+
+
+  template <> struct policy_traits<policy::isa_listbox>{
+    using requires = policy_list<policy::isa_label, policy::wm_mouse_wheel>;
+  };
 
   struct listbox : window_impl<listbox, policy::isa_listbox>{
     explicit listbox(iwindow * pParent) : window_impl(pParent){}

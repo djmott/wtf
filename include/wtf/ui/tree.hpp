@@ -3,41 +3,38 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class isa_tree : public _SuperT{
 
-      using __tree_t = window<_ImplT, policy::isa_tree, _Policies...>;
-      template <typename _ImplT, policy...> friend class window_impl;
     public:
 
       explicit isa_tree(iwindow * pParent)
         : _SuperT(pParent),
         _root(new node(this)),
         _vscroll(this),
-        _hscroll(this){
-        background_brush(brush::system_brush(system_colors::window));
+        _hscroll(this)
+      {
+	      _SuperT::background_brush(brush::system_brush(system_colors::window));
       }
     protected:
-      virtual void handle_msg(window_message& msg) override{}
 
-
-      virtual void on_wm_create() override{
+      void on_wm_create() override{
         _vscroll.orientation(orientations::vertical);
         _hscroll.orientation(orientations::horizontal);
-        auto_draw_text(false);
-        text_vertical_alignment(text_vertical_alignments::center);
-        text_horizontal_alignment(text_horizontal_alignments::left);
+        _SuperT::auto_draw_text(false);
+        _SuperT::text_vertical_alignment(text_vertical_alignments::center);
+        _SuperT::text_horizontal_alignment(text_horizontal_alignments::left);
         full_row_select(false);
         _SuperT::on_wm_create();
       };
 
-      virtual void on_wm_click(const mouse_msg_param& m) override{
+      void on_wm_click(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left != m.button) return _SuperT::on_wm_click(m);
-        node::pointer oClickedNode;
+        typename node::pointer oClickedNode;
         for (size_t i = 0; i < _row_rects.size(); ++i){
           if (_expander_rects[i].is_in(m.position)){
             _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
-            invalidate();
+            _SuperT::invalidate();
             return _SuperT::on_wm_click(m);
           } else if (_item_rects[i].is_in(m.position) || (_full_row_select && _row_rects[i].is_in(m.position))){
             oClickedNode = _displayed_nodes[i];
@@ -46,7 +43,8 @@ namespace wtf{
         }
         if (!oClickedNode) return _SuperT::on_wm_click(m);
         if (select_modes::single == _select_mode){
-          bool bExists = _selected_nodes.end() != std::find_if(_selected_nodes.begin(), _selected_nodes.end(), [oClickedNode](node::pointer oNode){ return oClickedNode.get() != oNode.get(); });
+          bool bExists = (_selected_nodes.end() != std::find_if(_selected_nodes.begin(), _selected_nodes.end(), 
+                                [oClickedNode](typename node::pointer oNode){ return oClickedNode.get() != oNode.get(); }));
           _selected_nodes.clear();
           _selected_nodes.push_back(oClickedNode);
           if (!bExists) OnNodeSelected(oClickedNode);
@@ -62,11 +60,11 @@ namespace wtf{
           oClickedNode->selected(bSelected);
           if (!bSelected) OnNodeSelected(oClickedNode);
         }
-        invalidate();
+        _SuperT::invalidate();
         return _SuperT::on_wm_click(m);
       };
 
-      virtual void on_wm_dblclick(const mouse_msg_param& m) override{
+      void on_wm_dblclick(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left != m.button) return _SuperT::on_wm_dblclick(m);
         for (size_t i = 0; i < _row_rects.size(); ++i){
           if (_item_rects[i].is_in(m.position)){
@@ -74,13 +72,13 @@ namespace wtf{
           } else{
             continue;
           }
-          invalidate();
+          _SuperT::invalidate();
           break;
         }
         return _SuperT::on_wm_dblclick(m);
       };
 
-      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         if (!_root->children().size()) return _SuperT::on_wm_paint(dc, ps);
         auto client = ps.client();
         _item_rects.clear();
@@ -94,7 +92,7 @@ namespace wtf{
         return _SuperT::on_wm_paint(dc, ps);
       };
 
-      virtual void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& m) override{
+      void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& m) override{
         bool bUp = (delta > 0);
         for (int i = 0; i <= (delta % WHEEL_DELTA); ++i){
           if (bUp){
@@ -106,9 +104,9 @@ namespace wtf{
         return _SuperT::on_wm_mouse_wheel(delta, m);
       };
 
-      virtual void on_wm_size(const point<coord_frame::client>& p) override{
-        _vscroll.move(p.x - scroll_width - border_width(), border_width(), scroll_width, p.y - (border_width() * 2) - scroll_width);
-        _hscroll.move(border_width(), p.y - border_width() - scroll_width, p.x - scroll_width - (border_width() * 2), scroll_width);
+      void on_wm_size(const point<coord_frame::client>& p) override{
+        _vscroll.move(p.x - scroll_width - _SuperT::border_width(), _SuperT::border_width(), scroll_width, p.y - (_SuperT::border_width() * 2) - scroll_width);
+        _hscroll.move(_SuperT::border_width(), p.y - _SuperT::border_width() - scroll_width, p.x - scroll_width - (_SuperT::border_width() * 2), scroll_width);
         return _SuperT::on_wm_size(p);
       };
 
@@ -138,6 +136,7 @@ namespace wtf{
         using pointer = std::shared_ptr<node>;
         using weak_ptr = std::weak_ptr<node>;
         using vector = std::vector<pointer>;
+        using __super_t = std::enable_shared_from_this<node>;
 
 
         node(weak_ptr Parent, const tstring& Text) : _text(Text), _children(), _parent(Parent){}
@@ -164,12 +163,13 @@ namespace wtf{
           return oSelectedNodes.cend() != std::find_if(oSelectedNodes.cbegin(), oSelectedNodes.cend(),
                                                        [this](const node::pointer& oNode){ return oNode.get() == this;  });
         }
+
         void selected(bool newval){
           auto & oSelectedNodes = get_tree()._selected_nodes;
           if (newval){
             if (oSelectedNodes.cend() == std::find_if(oSelectedNodes.cbegin(), oSelectedNodes.cend(),
                 [this](const node::pointer& oNode){ return oNode.get() == this;  })){
-              oSelectedNodes.push_back(shared_from_this());
+                  oSelectedNodes.push_back(__super_t::shared_from_this());
             }
           } else{
             auto oItem = std::find_if(oSelectedNodes.cbegin(), oSelectedNodes.cend(),
@@ -183,30 +183,32 @@ namespace wtf{
         const vector& children() const{ return _children; }
 
         pointer add_node(const tstring& Text){
-          _children.push_back(pointer(new node(shared_from_this(), Text)));
+          _children.push_back(pointer(new node(__super_t::shared_from_this(), Text)));
           return _children.back();
         }
+
         void add_node(pointer oChild){
-          oChild->_parent = shared_from_this();
+          oChild->_parent = __super_t::shared_from_this();
           _children.push_back(oChild);
         }
 
       private:
-        friend class __tree_t;
+        friend class isa_tree;
 
-        node(__tree_t * pTree) : _tree(pTree){}
+        node(isa_tree * pTree) : _tree(pTree){}
 
-        __tree_t& get_tree(){
+        isa_tree& get_tree(){
           if (_tree) return *_tree;
           return parent()->get_tree();
         }
-        const __tree_t& get_tree() const{
+
+        const isa_tree& get_tree() const{
           if (_tree)  return *_tree;
           return parent()->get_tree();
         }
 
         pointer get_last(){
-          if (!children().size() || !expanded()) return shared_from_this();
+          if (!children().size() || !expanded()) return __super_t::shared_from_this();
           return children().back()->get_last();
         }
 
@@ -238,7 +240,7 @@ namespace wtf{
           return 1;
         }
 
-        __tree_t * _tree = nullptr;
+        isa_tree * _tree = nullptr;
         bool _selected = false;
         tstring _text;
         bool _expanded = false;
@@ -247,13 +249,14 @@ namespace wtf{
         expander_display_policies _expander_display_policy = expander_display_policies::with_children;
       };
 
+      public:
       callback <void(typename node::pointer)> OnNodeSelected;
 
       typename node::pointer add_node(const tstring& Text){
         auto oNode = _root->add_node(Text);
         if (!_top) _top = oNode;
         if (!_bottom) _bottom = oNode;
-        invalidate();
+        _SuperT::invalidate();
         return oNode;
       }
 
@@ -261,12 +264,16 @@ namespace wtf{
         _root->add_node(oNode);
         if (!_top) _top = oNode;
         if (!_bottom) _bottom = oNode;
-        invalidate();
+        _SuperT::invalidate();
       }
 
       const typename node::vector& selected_items() const{ return _selected_nodes; }
 
     protected:
+      
+      friend struct vscroll;
+      friend struct hscroll;
+
       static const int scroll_width = 15;
 
       typename node::pointer _root;
@@ -324,9 +331,9 @@ namespace wtf{
           dc.text_color(system_rgb<system_colors::button_text>());
         }
 
-        text(oNode->text());
+        _SuperT::text(oNode->text());
 
-        draw_text(dc, _item_rects.back());
+        _SuperT::draw_text(dc, _item_rects.back());
         if (PrintExpander){
           const auto & oExpander = _expander_rects.back();
           point<coord_frame::client>::vector oArrow(3);
@@ -359,7 +366,7 @@ namespace wtf{
         if (!oTopPrev || !oBottomPrev) return;
         _top = oTopPrev;
         _bottom = oBottomPrev;
-        invalidate();
+        _SuperT::invalidate();
       }
 
       void ScrollNext(){
@@ -369,7 +376,7 @@ namespace wtf{
         if (!oTopNext || !oBottomNext) return;
         _top = oTopNext;
         _bottom = oBottomNext;
-        invalidate();
+        _SuperT::invalidate();
       }
 
       void ScrollLeft(){}
@@ -377,24 +384,26 @@ namespace wtf{
 
 
       struct vscroll : scrollbar{
-        vscroll(__tree_t * parent) : scrollbar(parent), _parent(parent){}
-        virtual void StepIncEvent() override{ _parent->ScrollNext(); }
-        virtual void StepDecEvent() override{ _parent->ScrollPrev(); }
-        __tree_t * _parent;
-        virtual void handle_msg(window_message& msg) override{}
+        vscroll(isa_tree * parent) : scrollbar(parent), _parent(parent){}
+        void StepIncEvent() override{ _parent->ScrollNext(); }
+        void StepDecEvent() override{ _parent->ScrollPrev(); }
+        isa_tree * _parent;
       }_vscroll;
 
       struct hscroll : scrollbar{
-        hscroll(__tree_t * parent) : scrollbar(parent), _parent(parent){}
-        virtual void StepIncEvent() override{}
-        virtual void StepDecEvent() override{}
-        __tree_t * _parent;
-        virtual void handle_msg(window_message& msg) override{}
+        hscroll(isa_tree * parent) : scrollbar(parent), _parent(parent){}
+        void StepIncEvent() override{}
+        void StepDecEvent() override{}
+        isa_tree * _parent;
       }_hscroll;
     };
   }
 
-  struct tree : window_impl<tree, policy::isa_tree>{
+  template <> struct policy_traits<policy::isa_tree>{
+    using requires = policy_list<policy::isa_label, policy::wm_dblclick >;
+  };
+
+  struct tree : window_impl<tree, policy::isa_tree, policy::wm_mouse_wheel>{
     explicit tree(iwindow * pParent) : window_impl(pParent){}
   };
 }

@@ -8,7 +8,7 @@ namespace wtf{
   };
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_geticon : public _SuperT{
 
 
@@ -27,6 +27,7 @@ namespace wtf{
           msg.lresult = reinterpret_cast<LRESULT>(on_wm_geticon(static_cast<icon_type>(msg.wparam)));
           msg.bhandled = true;
         }
+        _SuperT::handle_msg(msg);
       }
     };
   }

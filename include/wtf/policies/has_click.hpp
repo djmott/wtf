@@ -6,7 +6,7 @@ namespace wtf{
   * produces click events
   */
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_click : public _SuperT{
 
       
@@ -35,4 +35,8 @@ namespace wtf{
       mouse_msg_param::buttons _Down = mouse_msg_param::buttons::unspecified;
     };
   }
+
+  template <> struct policy_traits<policy::has_click>{
+    using requires = policy_list<policy::wm_mouse_down, policy::wm_mouse_up>;
+  };
 }

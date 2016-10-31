@@ -1,5 +1,7 @@
 #define __WTF_DEBUG_MESSAGES__ 1
 
+#pragma warning(disable: 4503)
+
 #include <strstream>
 #include <iostream>
 #include <random>
@@ -7,7 +9,7 @@
 
 using namespace wtf;
 
-#if 1
+#if 0
 
 struct main_form : form{
 

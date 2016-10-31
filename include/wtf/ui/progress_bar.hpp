@@ -3,7 +3,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class isa_progressbar : public _SuperT{
     public:
 
@@ -12,25 +12,25 @@ namespace wtf{
       int min() const{ return _min; }
       void min(int newval){
         _min = newval;
-        invalidate();
+	      _SuperT::invalidate();
       }
 
       int max() const{ return _max; }
       void max(int newval){
         _max = newval;
-        invalidate();
+	      _SuperT::invalidate();
       }
 
       int value() const{ return _value; }
       void value(int newval){
         _value = newval;
-        invalidate();
+	      _SuperT::invalidate();
       }
 
       rgb fill_color() const{ return _fill_color; }
       void fill_color(rgb newval){
         _fill_color = newval;
-        invalidate();
+	      _SuperT::invalidate();
       }
 
       enum class text_modes{
@@ -42,14 +42,13 @@ namespace wtf{
       text_modes text_mode() const{ return _text_mode; }
       void text_mode(text_modes newval){
         _text_mode = newval;
-        invalidate();
+	      _SuperT::invalidate();
       }
     protected:
-      virtual void handle_msg(window_message& msg) override{}
 
       virtual void on_wm_create() override{
-        border_style(border_styles::lowered);
-        auto_draw_text(false);
+	      _SuperT::border_style(border_styles::lowered);
+	      _SuperT::auto_draw_text(false);
         _SuperT::on_wm_create();
       };
 
@@ -64,7 +63,7 @@ namespace wtf{
         auto oBrush = brush::solid_brush(_fill_color);
         rect<coord_frame::client> oFillArea = ps.client();
         auto iExtent = _max - _min;
-        if (orientations::horizontal == orientation()){
+	      if (orientations::horizontal == _SuperT::orientation()) {
           oFillArea.right = (oFillArea.right * _value) / iExtent;
         } else{
           oFillArea.top = (oFillArea.top * _value) / iExtent;
@@ -83,16 +82,21 @@ namespace wtf{
         }
         std::copy(sTemp.begin(), sTemp.end(), std::back_inserter(sDisplayText));
         auto oTextSize = dc.get_text_extent(sDisplayText);
-        text(sDisplayText);
+	      _SuperT::text(sDisplayText);
         oFillArea.right = std::max(oTextSize.cx, oFillArea.right);
-        text_vertical_alignment(text_vertical_alignments::center);
-        text_horizontal_alignment(text_horizontal_alignments::center);
+	      _SuperT::text_vertical_alignment(text_vertical_alignments::center);
+	      _SuperT::text_horizontal_alignment(text_horizontal_alignments::center);
         _SuperT::on_wm_paint(dc, ps);
       }
 
 
     };
   }
+
+
+  template <> struct policy_traits<policy::isa_progressbar>{
+    using requires = policy_list<policy::has_orientation, policy::isa_label>;
+  };
 
   struct progress_bar : window_impl<progress_bar, policy::isa_progressbar>{
     explicit progress_bar(iwindow * pParent) : window_impl(pParent){}

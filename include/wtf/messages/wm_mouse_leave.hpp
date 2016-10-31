@@ -7,7 +7,7 @@ namespace wtf{
   */
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_mouse_leave : public _SuperT{
 
     protected:
@@ -22,11 +22,12 @@ namespace wtf{
           memset(&oEvent, 0, sizeof(TRACKMOUSEEVENT));
           oEvent.cbSize = sizeof(TRACKMOUSEEVENT);
           oEvent.dwFlags = TME_LEAVE;
-          oEvent.hwndTrack = hwnd;
+          oEvent.hwndTrack = msg.hwnd;
           wtf::exception::throw_lasterr_if(::TrackMouseEvent(&oEvent), [](BOOL b){return !b; });
         } else if (WM_MOUSELEAVE == msg.umsg){
           on_wm_mouse_leave();
         }
+        _SuperT::handle_msg(msg);
       }
 
     };

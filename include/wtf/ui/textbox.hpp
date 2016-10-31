@@ -4,28 +4,28 @@ namespace wtf{
 
   namespace policy{
 
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class isa_textbox : public _SuperT{
 
       
     public:
 
     protected:
-      virtual void handle_msg(window_message& msg) override{}
+      
       explicit isa_textbox(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void on_wm_create() override{
-        background_brush(brush::system_brush(system_colors::window));
-        border_style(border_styles::lowered);
-        text_vertical_alignment(text_vertical_alignments::top);
-        text_horizontal_alignment(text_horizontal_alignments::left);
-        caret_width(2);
-        auto_draw_text(false);
+      void on_wm_create() override{
+	      _SuperT::background_brush(brush::system_brush(system_colors::window));
+	      _SuperT::border_style(border_styles::lowered);
+	      _SuperT::text_vertical_alignment(text_vertical_alignments::top);
+	      _SuperT::text_horizontal_alignment(text_horizontal_alignments::left);
+	      _SuperT::caret_width(2);
+	      _SuperT::auto_draw_text(false);
         _SuperT::on_wm_create();
       };
 
-      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
-        if (!_text.size()) return _SuperT::on_wm_paint(dc, ps);
+      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+	      if (!_SuperT::_text.size()) return _SuperT::on_wm_paint(dc, ps);
 
         rect<coord_frame::client> client = ps.client();
         auto ClientWidth = client.right - client.left;
@@ -33,7 +33,7 @@ namespace wtf{
         //sanity checks
         if (_print_pos < 0) _print_pos = 0;
         if (_edit_pos < 0) _edit_pos = 0;
-        if (_edit_pos > static_cast<int>(_text.size())) _edit_pos = static_cast<int>(_text.size());
+	      if (_edit_pos > static_cast<int>(_SuperT::_text.size())) _edit_pos = static_cast<int>(_SuperT::_text.size());
         if (_print_pos >= _edit_pos && _edit_pos) _print_pos = _edit_pos - 1;
 
 
@@ -41,7 +41,7 @@ namespace wtf{
         point<coord_frame::client> CaretPos;
 
         for (;;){
-          auto tmpExt = dc.get_text_extent(_text.c_str() + _print_pos, EndPrintPos - _print_pos);
+	        auto tmpExt = dc.get_text_extent(_SuperT::_text.c_str() + _print_pos, EndPrintPos - _print_pos);
           CaretPos.x = tmpExt.cx;
           CaretPos.y = tmpExt.cy;
           if (tmpExt.cx <= ClientWidth) break;
@@ -51,51 +51,51 @@ namespace wtf{
 
         for (;;){
           auto tmpEndPos = 1 + EndPrintPos;
-          if (tmpEndPos >= _text.size()) break;
-          auto tmpExt = dc.get_text_extent(_text.c_str() + _print_pos, tmpEndPos - _print_pos);
+	        if (tmpEndPos >= _SuperT::_text.size()) break;
+	        auto tmpExt = dc.get_text_extent(_SuperT::_text.c_str() + _print_pos, tmpEndPos - _print_pos);
           if (tmpExt.cx > ClientWidth) break;
           EndPrintPos = tmpEndPos;
         }
 
-        text(_text.substr(_print_pos, EndPrintPos - _print_pos));
+	      _SuperT::text(_SuperT::_text.substr(_print_pos, EndPrintPos - _print_pos));
 
-        bool bCaretVisible = caret_visible();
-        if (bCaretVisible) caret_visible(false);
+	      bool bCaretVisible = _SuperT::caret_visible();
+	      if (bCaretVisible) _SuperT::caret_visible(false);
 
-        CaretPos.y = border_width();
+	      CaretPos.y = _SuperT::border_width();
 
-        draw_text(dc, client);
+	      _SuperT::draw_text(dc, client);
 
         if (bCaretVisible){
-          caret_visible(true);
-          caret_position(CaretPos);
+	        _SuperT::caret_visible(true);
+	        _SuperT::caret_position(CaretPos);
         }
         _SuperT::on_wm_paint(dc, ps);
       };
 
 
-      virtual void on_wm_mouse_up(const mouse_msg_param& p) override{
-        set_focus();
+      void on_wm_mouse_up(const mouse_msg_param& p) override{
+	      _SuperT::set_focus();
         _SuperT::on_wm_mouse_up(p);
       };
 
 
-      virtual void on_wm_char(UINT character, keyboard_msg_param k) override{
+      void on_wm_char(UINT character, keyboard_msg_param k) override{
         switch (character){
           case VK_BACK:
           {
-            if (_edit_pos) _text.erase(--_edit_pos, 1); break;
+	          if (_edit_pos) _SuperT::_text.erase(--_edit_pos, 1); break;
           }
           default:
           {
-            _text.insert(_edit_pos++, 1, static_cast<char>(character)); break;
+	          _SuperT::_text.insert(_edit_pos++, 1, static_cast<char>(character)); break;
           }
         }
-        invalidate();
+	      _SuperT::invalidate();
         _SuperT::on_wm_char(character, k);
       };
 
-      virtual void on_wm_keydown(UINT key, keyboard_msg_param k) override{
+      void on_wm_keydown(UINT key, keyboard_msg_param k) override{
 
         switch (key){
           case VK_LEFT:
@@ -112,17 +112,17 @@ namespace wtf{
           }
           case VK_END:
           {
-            _edit_pos = static_cast<int>(_text.size()); break;
+	          _edit_pos = static_cast<int>(_SuperT::_text.size()); break;
           }
         }
         if (_edit_pos < 0) _edit_pos = 0;
-        if (_edit_pos > static_cast<int>(_text.size())) _edit_pos = static_cast<int>(_text.size());
-        invalidate();
+	      if (_edit_pos > static_cast<int>(_SuperT::_text.size())) _edit_pos = static_cast<int>(_SuperT::_text.size());
+	      _SuperT::invalidate();
         _SuperT::on_wm_keydown(key, k);
 
       };
 
-      virtual const wtf::cursor& cursor_pointer() const override{ return cursor::global(cursor::style::ibeam); }
+      const wtf::cursor& cursor_pointer() const override{ return cursor::global(cursor::style::ibeam); }
 
     private:
 
@@ -133,6 +133,11 @@ namespace wtf{
       int _print_pos = 0;
     };
   }
+
+  template <> struct policy_traits<policy::isa_textbox>{
+    using requires = policy_list<policy::has_text, policy::wm_keydown, policy::wm_char, policy::has_cursor, policy::has_caret,
+      policy::has_focus, policy::isa_label>;
+  };
 
   struct textbox : window_impl<textbox, policy::isa_textbox>{
     explicit textbox(iwindow * pParent) : window_impl(pParent){}

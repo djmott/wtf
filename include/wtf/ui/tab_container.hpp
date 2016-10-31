@@ -11,36 +11,40 @@ namespace wtf{
   };
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class isa_tab_page : public _SuperT{
-
+    protected:
+      template <typename _SuperT, typename _ImplT> friend class isa_tab_container;
       isa_tab_page(iwindow * pParent) : _SuperT(pParent){}
     };
   }
+
+  template <> struct policy_traits<policy::isa_tab_page>{
+    using requires = policy_list<policy::wm_create, policy::isa_panel>;
+  };
+
 
   struct tab_page : window_impl<tab_page, policy::isa_tab_page>{
     tab_page(iwindow * pParent) : window_impl(pParent){}
   };
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class isa_tab_container : public _SuperT{
-
-      using _tab_container_t = window<_ImplT, policy::isa_tab_container, _Policies...>;
     public:
 
 
       explicit isa_tab_container(iwindow * pParent) : _SuperT(pParent), _button_bar_slider(this){
-        border_style(border_styles::none);
+	      _SuperT::border_style(border_styles::none);
       }
 
       template <typename _Ty>
       tab_page& add_custom(const tstring& title){
-        ipage_info::ptr oRet(new page_info<_Ty>(this, title, _pages.size()));
+        typename ipage_info::ptr oRet(new page_info<_Ty>(this, title, _pages.size()));
         _pages.push_back(oRet);
         oRet->page().border_style(border_styles::raised);
         oRet->button.border_style(border_styles::flat);
-        if (_handle){
+	      if (_SuperT::_handle) {
           oRet->page().exec();
           oRet->button.exec();
           active_page(_active_page);
@@ -73,8 +77,8 @@ namespace wtf{
 
     protected:
 
-      virtual void handle_msg(window_message& msg) override{}
-      virtual int exec() override{
+      
+      int exec() override{
         auto iRet = _SuperT::exec();
         for (auto & oPage : _pages){
           oPage->page().exec();
@@ -83,13 +87,13 @@ namespace wtf{
         return iRet;
       }
 
-      virtual void on_wm_create() override{
+      void on_wm_create() override{
         _button_bar_slider.orientation(orientations::horizontal);
         _button_bar_slider.hide();
         _SuperT::on_wm_create();
       };
 
-      virtual void on_wm_size(const point<coord_frame::client>& newsize) override{
+      void on_wm_size(const point<coord_frame::client>& newsize) override{
         point<coord_frame::client> p = newsize;
         p.x--; p.y--;
         int iBtnPos = _button_left;
@@ -126,48 +130,53 @@ namespace wtf{
         using ptr = std::shared_ptr<ipage_info>;
         using vector = std::vector<ptr>;
 
-        _tab_container_t * _parent;
+        isa_tab_container * _parent;
         size_t _PageIndex;
 
         virtual tab_page& page() = 0;
         virtual const tab_page& page() const = 0;
 
-        struct button : window<button, policy::isa_button>{
-          using _SuperT = window<button, policy::isa_button>;
+        class button : public window_impl<button, policy::isa_button>{
+          using __super_t = window_impl<button, policy::isa_button>;
+          template <typename , typename > friend class isa_tab_container;
+        public:
 
-          button(_tab_container_t * pParent, size_t PageIndex, const tstring& stitle)
-            : _SuperT(pParent), _parent(pParent), _PageIndex(PageIndex), _title(stitle){}
+          button(isa_tab_container * pParent, size_t PageIndex, const tstring& stitle)
+            : __super_t(pParent)
+            , _parent(pParent)
+            , _PageIndex(PageIndex)
+            , _title(stitle) {}
 
           virtual void on_wm_create() override{
-            text(_title);
-            enable_border_elements(true, true, false, true);
+            __super_t::text(_title);
+            __super_t::enable_border_elements(true, true, false, true);
             deactivate();
-            _SuperT::on_wm_create();
+            __super_t::on_wm_create();
           };
 
           virtual void on_wm_click(const mouse_msg_param& m) override{
             if (mouse_msg_param::buttons::left == m.button) _parent->active_page(_PageIndex);
-            _SuperT::on_wm_click(m);
+            __super_t::on_wm_click(m);
           };
 
           void deactivate(){
-            border_style(border_styles::flat);
-            fore_color(wtf::system_rgb<system_colors::gray_text>());
-            font().weight(font::weights::normal);
-            zorder(zorders::bottom);
-            invalidate();
+            __super_t::border_style(border_styles::flat);
+            __super_t::fore_color(wtf::system_rgb<system_colors::gray_text>());
+            __super_t::font().weight(font::weights::normal);
+            __super_t::zorder(zorders::bottom);
+            __super_t::invalidate();
           }
 
           void activate(){
-            border_style(border_styles::raised);
-            fore_color(wtf::system_rgb<system_colors::button_text>());
-            font().weight(font::weights::bold);
-            invalidate();
+            __super_t::border_style(border_styles::raised);
+            __super_t::fore_color(wtf::system_rgb<system_colors::button_text>());
+            __super_t::font().weight(font::weights::bold);
+            __super_t::invalidate();
           }
 
 
           size_t _PageIndex;
-          _tab_container_t * _parent;
+          isa_tab_container * _parent;
           tstring _title;
 
         }button;
@@ -184,7 +193,7 @@ namespace wtf{
           page().invalidate();
         }
 
-        ipage_info(_tab_container_t * pParent, const tstring& sTitle, size_t PageIndex)
+        ipage_info(isa_tab_container * pParent, const tstring& sTitle, size_t PageIndex)
           : _parent(pParent), _PageIndex(PageIndex), button(pParent, PageIndex, sTitle){}
       };
 
@@ -193,18 +202,20 @@ namespace wtf{
 
         _Ty _page;
 
-        virtual tab_page& page() override{ return _page; }
-        virtual const tab_page& page() const override{ return _page; }
+        tab_page& page() override{ return _page; }
+        const tab_page& page() const override{ return _page; }
 
-        page_info(_tab_container_t * pParent, const tstring& sTitle, size_t PageIndex)
+        page_info(isa_tab_container * pParent, const tstring& sTitle, size_t PageIndex)
           : ipage_info(pParent, sTitle, PageIndex), _page(pParent){}
 
       };
 
 
-      struct scrollbar_t : window<scrollbar_t, policy::isa_scrollbar>{
-        scrollbar_t(iwindow*pParent) : window(pParent){}
-        virtual void handle_msg(window_message& msg) override{}
+      class scrollbar_t : public window_impl<scrollbar_t, policy::isa_scrollbar>{
+        using __super_t = window_impl<scrollbar_t, policy::isa_scrollbar>;
+      public:
+        scrollbar_t(iwindow*pParent)
+          : __super_t(pParent) {}
       };
 
       size_t _active_page = 0;
@@ -217,6 +228,11 @@ namespace wtf{
       int _button_left = 0;
     };
   }
+
+
+  template <> struct policy_traits<policy::isa_tab_container>{
+    using requires = policy_list<policy::wm_create, policy::isa_panel>;
+  };
 
   struct tab_container : window_impl<tab_container, policy::isa_tab_container>{
     explicit tab_container(iwindow * pParent) : window_impl(pParent){}

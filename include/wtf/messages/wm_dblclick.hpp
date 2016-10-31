@@ -2,13 +2,13 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_dblclick : public _SuperT{
 
       
 
     protected:
-      virtual void on_wm_dblclick(const mouse_msg_param&) = 0{}
+      virtual void on_wm_dblclick(const mouse_msg_param&) {}
 
       explicit wm_dblclick(iwindow * pParent) : _SuperT(pParent){}
 
@@ -20,6 +20,7 @@ namespace wtf{
         } else if (WM_RBUTTONDBLCLK == msg.umsg){
           on_wm_dblclick(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::right));
         }
+        _SuperT::handle_msg(msg);
       }
     };
   }

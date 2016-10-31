@@ -33,14 +33,14 @@ namespace wtf {
   };
 
   template <>
-  inline static rect<coord_frame::client> rect<coord_frame::client>::get(HWND hwnd){
+  inline rect<coord_frame::client> rect<coord_frame::client>::get(HWND hwnd){
     rect<coord_frame::client> oRet;
     wtf::exception::throw_lasterr_if(::GetClientRect(hwnd, &oRet), [](BOOL b){ return !b; });
     return oRet;
   }
 
   template <>
-  inline static rect<coord_frame::screen> rect<coord_frame::screen>::get(HWND hwnd){
+  inline rect<coord_frame::screen> rect<coord_frame::screen>::get(HWND hwnd){
     rect<coord_frame::screen> oRet;
     wtf::exception::throw_lasterr_if(::GetWindowRect(hwnd, &oRet), [](BOOL b){ return !b; });
     return oRet;

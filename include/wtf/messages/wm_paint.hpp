@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_paint : public _SuperT{
 
       
@@ -21,6 +21,7 @@ namespace wtf{
           auto & ps = *reinterpret_cast<const paint_struct *>(msg.lparam);
           on_wm_paint(dc, ps);
         }
+        _SuperT::handle_msg(msg);
       }
 
     };

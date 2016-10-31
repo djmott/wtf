@@ -18,7 +18,7 @@ namespace wtf{
   * provides members to draw text on UI elements
   */
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_text : public _SuperT{
 
       
@@ -34,7 +34,7 @@ namespace wtf{
       virtual const tstring &text() const{ return _text; }
       virtual void text(const tstring &newval){
         _text = newval;
-        if (_auto_draw_text) invalidate();
+	      if (_auto_draw_text) _SuperT::invalidate();
       }
 
       virtual text_vertical_alignments text_vertical_alignment() const{ return _text_vertical_alignment; }
@@ -46,7 +46,7 @@ namespace wtf{
 
       virtual size prefered_text_size() const{
         auto dc = device_context::get_client(*this);
-        auto hFont = font().open();
+	      auto hFont = _SuperT::font().open();
         dc.select_object(hFont);
         return dc.get_text_extent(_text);
       }
@@ -104,4 +104,10 @@ namespace wtf{
       text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::center;
     };
   }
+
+
+  template <> struct policy_traits<policy::has_text>{
+    using requires = policy_list<policy::has_font, policy::wm_paint, policy::wm_create>;
+  };
+
 }

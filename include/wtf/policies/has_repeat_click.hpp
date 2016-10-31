@@ -2,7 +2,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class has_repeat_click : public _SuperT{
 
       
@@ -22,7 +22,7 @@ namespace wtf{
       virtual void wm_timer(UINT_PTR iTimer){
         if (iTimer == _timerid){
           _SuperT::on_wm_click(mouse_msg_param((WPARAM)0, (LPARAM)0, mouse_msg_param::buttons::left));
-          set_timer(_repeat_rate, iTimer);
+	        _SuperT::set_timer(_repeat_rate, iTimer);
         }
         _SuperT::wm_timer(iTimer);
       }

@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _ImplT, typename _SuperT>
+    template <typename _SuperT, typename _ImplT>
     class wm_destroy : public _SuperT{
       
 
@@ -17,6 +17,7 @@ namespace wtf{
         if (WM_DESTROY == msg.umsg){
           on_wm_destroy();
         }
+        _SuperT::handle_msg(msg);
       }
 
     };
