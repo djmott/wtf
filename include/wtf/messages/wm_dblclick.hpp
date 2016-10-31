@@ -2,7 +2,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class wm_dblclick : public _SuperT{
 
       
@@ -12,7 +12,7 @@ namespace wtf{
 
       explicit wm_dblclick(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void handle_msg(window_message& msg) override{
+      void handle_msg(window_message& msg) override{
         if (WM_LBUTTONDBLCLK == msg.umsg){
           on_wm_dblclick(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::left));
         } else if (WM_MBUTTONDBLCLK == msg.umsg){

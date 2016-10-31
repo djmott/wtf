@@ -4,7 +4,7 @@ namespace wtf{
 
   namespace policy{
 
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_button : public _SuperT{
 
     public:
@@ -14,10 +14,6 @@ namespace wtf{
       }
 
     protected:
-
-      void on_wm_click(const mouse_msg_param& m) override{
-        _SuperT::on_wm_click(m);
-      }
 
       void on_wm_mouse_down(const mouse_msg_param& oParam) override{
         if (oParam.button == mouse_msg_param::buttons::left){
@@ -42,12 +38,6 @@ namespace wtf{
 
   template <> struct policy_traits<policy::isa_button>{
     using requires = policy_list<policy::isa_label>;
-  };
-
-  struct button 
-    : window_impl<button, policy::isa_button>
-  {
-    explicit button(iwindow * pParent) : window_impl(pParent){}
   };
 
 }

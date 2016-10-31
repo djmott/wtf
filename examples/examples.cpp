@@ -1,6 +1,6 @@
 #define __WTF_DEBUG_MESSAGES__ 1
 
-#pragma warning(disable: 4503)
+//#pragma warning(disable: 4503)
 
 #include <strstream>
 #include <iostream>
@@ -9,7 +9,7 @@
 
 using namespace wtf;
 
-#if 0
+#if 1
 
 struct main_form : form{
 
@@ -23,7 +23,7 @@ struct main_form : form{
 
   }
 
-  virtual void on_wm_create() override{
+  void on_wm_create() override{
     _panel.border_style(border_styles::double_lowered);
     _panel.move(5, 5, 50, 30);
     return form::on_wm_create();
@@ -39,7 +39,7 @@ struct main_form : form{
 
   }
 
-  virtual void on_wm_create () override{
+  void on_wm_create () override{
     _label.border_style(border_styles::double_lowered);
     _label.move(5, 5, 50, 30);
     _label.text(_T("FNORD"));
@@ -54,8 +54,9 @@ struct main_form : form{
   main_form() : form(), _text(this){}
 
 
-  virtual void on_wm_size(const point<coord_frame::client>& p) override{
+  void on_wm_size(const point<coord_frame::client>& p) override{
     _text.move(0, 0, p.x - 2, p.y - 2);
+    form::on_wm_size(p);
   }
 
   textbox _text;
@@ -64,7 +65,7 @@ struct main_form : form{
 struct main_form : form{
   main_form() : form(), _pb(this){}
 
-  virtual void on_wm_create() override{
+  void on_wm_create() override{
     _pb.move(10, 10, 100, 25);
     _pb.value(50);
     form::on_wm_create();
@@ -80,8 +81,9 @@ struct main_form : form{
   }
 
 
-  virtual void on_wm_size(const point<coord_frame::client>& p) override{
+  void on_wm_size(const point<coord_frame::client>& p) override{
     _button.move(5, 5, 75, 30);
+    form::on_wm_size(p);
   }
 
   button _button;
@@ -97,23 +99,27 @@ struct main_form : form{
     _scroll.value(5);
   }
 
-  virtual void on_wm_size(const point<coord_frame::client>& p) override{
+  void on_wm_size(const point<coord_frame::client>& p) override{
     _scroll.move(10, 10, 100, 20);
+    form::on_wm_size(p);
   }
 
   scrollbar _scroll;
 };
 
-#elif 0
+#elif 1
 
 
 struct main_form : form{
   main_form() : form(), _tabs(this){
-    _tabs.add("FNORD"); 
+    _tabs.add("Fnord");
+    _tabs.add("Snafoo");
+    _tabs.add("Flopjam");
   };
   
-  virtual void on_wm_size(const point<coord_frame::client>& p) override{ 
+  void on_wm_size(const point<coord_frame::client>& p) override{ 
     _tabs.move(2, 2, p.x - 4, p.y - 4); 
+    form::on_wm_size(p);
   };
   
   tab_container _tabs;
@@ -141,7 +147,7 @@ struct label_page : tab_page{
     _double_lowered.border_style(border_styles::double_lowered);
 
   }
-  virtual void on_wm_create() override {
+  void on_wm_create() override {
     _left.move(5, 5, 150, 25);
     _left.text("Left aligned");
     _left.text_horizontal_alignment(text_horizontal_alignments::left);
@@ -194,7 +200,7 @@ struct label_page : tab_page{
 struct checkbox_page : tab_page{
   checkbox_page(iwindow * parent) : tab_page(parent), _left(this), _right(this){}
 
-  virtual void on_wm_create() override {
+  void on_wm_create() override {
     _left.move(5, 5, 150, 25);
     _left.text("Left aligned");
     _left.text_horizontal_alignment(text_horizontal_alignments::left);
@@ -215,7 +221,7 @@ struct listbox_page : tab_page{
   {
 
   }
-  virtual void on_wm_create() override {
+  void on_wm_create() override {
     for (int i = 0; i < 100; i++){
       tstringstream ss;
       ss << i;
@@ -229,7 +235,7 @@ struct listbox_page : tab_page{
     return tab_page::on_wm_create();
 
   };
-  virtual void on_wm_size(const point<coord_frame::client>& p) override {
+  void on_wm_size(const point<coord_frame::client>& p) override {
     _left.move(0, 0, p.x / 3, p.y);
     _center.move(p.x / 3, 0, p.x / 3, p.y);
     _right.move((p.x / 3) * 2, 0, p.x / 3, p.y);
@@ -243,7 +249,7 @@ struct button_page : tab_page{
   button_page(iwindow * parent) : tab_page(parent),
     _label1(this), _label2(this), _button1(this, _label1), _button2(this, _label2){}
 
-  virtual void on_wm_create() override {
+  void on_wm_create() override {
     _button1.move(5, 5, 100, 35);
     _button1.text("Push button");
     _label1.move(105, 5, 100, 35);
@@ -259,7 +265,7 @@ struct button_page : tab_page{
   struct _button1 : button{
     _button1(iwindow * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
 
-    virtual void on_wm_click(const mouse_msg_param& m) override{
+    void on_wm_click(const mouse_msg_param& m) override{
       tstringstream ss;
       ss << GetTickCount();
       _label1.text(ss.str());
@@ -271,7 +277,7 @@ struct button_page : tab_page{
   struct _button2 : toggle_button{
     _button2(iwindow * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
 
-    virtual void on_wm_click(const mouse_msg_param& m) override{
+    void on_wm_click(const mouse_msg_param& m) override{
       tstringstream ss;
       ss << GetTickCount();
       _label2.text(ss.str());
@@ -289,7 +295,7 @@ struct scroll_page : tab_page{
     : tab_page(parent), _hor_scroll(this), _vert_scroll(this), _hor_progress(this), _vert_progress(this)
   {}
 
-  virtual void on_wm_create() override {
+  void on_wm_create() override {
     _hor_scroll.move(5, 5, 100, 20);
     _hor_scroll.orientation(orientations::horizontal);
 
@@ -312,12 +318,12 @@ struct scroll_page : tab_page{
 
 struct split_page : tab_page{
   split_page(iwindow * parent) : tab_page(parent), _splitter(this){}
-  virtual void on_wm_create() override { 
+  void on_wm_create() override { 
     _splitter.set_split_position(50); 
     return tab_page::on_wm_create();
   };
 
-  virtual void on_wm_size(const point<coord_frame::client>& p) override{
+  void on_wm_size(const point<coord_frame::client>& p) override{
     _splitter.move(0, 0, p.x, p.y); 
     return tab_page::on_wm_size(p);
   };
@@ -328,27 +334,27 @@ struct split_page : tab_page{
       
     }
 
-    virtual void on_wm_create() override{
+    void on_wm_create() override{
       _inner_splitter.set_split_position(25);
       return split_container::on_wm_create();
     };
 
-//     first()->virtual void wm_size(const point<coord_frame::client>& p) override{ _inner_splitter.move(0, 0, p.x, p.y); };
-//     second()->virtual void wm_size(const point<coord_frame::client>& p) override{ _text1.move(0, 0, p.x, p.y); };
+//     first()->void wm_size(const point<coord_frame::client>& p) override{ _inner_splitter.move(0, 0, p.x, p.y); };
+//     second()->void wm_size(const point<coord_frame::client>& p) override{ _text1.move(0, 0, p.x, p.y); };
 
     struct inner_splitter : split_container{
 
       inner_splitter(panel * parent) : split_container(parent), _texta(first()), _textb(second()){
       }
 
-      virtual void on_wm_create() override{
+      void on_wm_create() override{
         orientation(orientations::vertical); 
         _texta.multiline(true);
         return split_container::on_wm_create();
       };
 
-//       first()->virtual void wm_size(const point<coord_frame::client>& p) override{ _texta.move(0, 0, p.x, p.y); };
-//       second()->virtual void wm_size(const point<coord_frame::client>& p) override{ _textb.move(0, 0, p.x, p.y); };
+//       first()->void wm_size(const point<coord_frame::client>& p) override{ _texta.move(0, 0, p.x, p.y); };
+//       second()->void wm_size(const point<coord_frame::client>& p) override{ _textb.move(0, 0, p.x, p.y); };
       
 
       textbox _texta, _textb;
@@ -365,12 +371,12 @@ struct tree_page : tab_page{
 
   }
 
-  virtual void on_wm_size(const point<coord_frame::client>& p) override{
+  void on_wm_size(const point<coord_frame::client>& p) override{
     _tree.move(0, 0, p.x, p.y); 
     return tab_page::on_wm_size(p);
   }
 
-  virtual void on_wm_create() override{
+  void on_wm_create() override{
     for (int i = 0; i < 20; i++){
       auto oChild1 = _tree.add_node(RandomString());
       for (int x = 0; x < 20; x++){
@@ -401,7 +407,7 @@ struct tree_page : tab_page{
 struct main_form : form{
   main_form() : _tabs(this){}
 
-  virtual void on_wm_create() override{
+  void on_wm_create() override{
     titlebar("WTF example");
     _tabs.add_custom<label_page>("label");
     _tabs.add_custom<checkbox_page>("checkbox");
@@ -413,7 +419,7 @@ struct main_form : form{
     return form::on_wm_create();
   };
 
-  virtual void on_wm_size(const point<coord_frame::client>& p) override{
+  void on_wm_size(const point<coord_frame::client>& p) override{
     _tabs.move(5, 5, p.x - 10, p.y - 10);
     return form::on_wm_size(p);
   };

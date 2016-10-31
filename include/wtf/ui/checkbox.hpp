@@ -2,13 +2,14 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_checkbox : public _SuperT{
 
     public:
 
       explicit isa_checkbox(iwindow * pParent) : _SuperT(pParent), _check(this){
 	      _SuperT::auto_draw_text(false);
+        _SuperT::border_style(border_styles::none);
       }
 
       enum class check_locations{
@@ -23,14 +24,14 @@ namespace wtf{
 
     private:
 
-      virtual void on_wm_click(const mouse_msg_param& m) override{
+      void on_wm_click(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left == m.button){
           _check.value(!_check.value());
         }
         _SuperT::on_wm_click(m);
       };
 
-      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         auto client = ps.client();
 	      auto TextSize = _SuperT::prefered_text_size();
         if (text_horizontal_alignments::left == _text_horizontal_alignment){
@@ -46,20 +47,20 @@ namespace wtf{
       static const int checkbox_size = 15;
 
 
-      struct _check : panel {
+      struct _check : window_impl<_check, policy::isa_panel>{
 
-        using __super_t = panel;
+        using __super_t = window_impl<_check, policy::isa_panel>;
 
         _check(isa_checkbox * pParent)
           : __super_t(pParent),
           _parent(pParent){}
 
-        virtual void on_wm_click(const mouse_msg_param& m) override{
+        void on_wm_click(const mouse_msg_param& m) override{
           if (mouse_msg_param::buttons::left == m.button) value(!_value);
           __super_t::on_wm_click(m);
         }
 
-        virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+        void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
           auto client = ps.client();
           dc.fill(client, brush::solid_brush(rgb(255, 255, 255)));
           if (_value){
@@ -93,10 +94,6 @@ namespace wtf{
 
   template <> struct policy_traits<policy::isa_checkbox>{
     using requires = policy_list< policy::isa_label>;
-  };
-
-  struct checkbox : window_impl<checkbox, policy::isa_checkbox>{
-    explicit checkbox(iwindow * pParent) : window_impl(pParent){}
   };
 
 }

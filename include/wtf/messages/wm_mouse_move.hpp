@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class wm_mouse_move : public _SuperT{
 
       
@@ -14,7 +14,7 @@ namespace wtf{
 
       explicit wm_mouse_move(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void handle_msg(window_message& msg) override{
+      void handle_msg(window_message& msg) override{
         if (WM_MOUSEMOVE == msg.umsg){
           on_wm_mouse_move(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::unspecified));
         }

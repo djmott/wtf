@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_label : public _SuperT{
 
     protected:
@@ -12,11 +12,8 @@ namespace wtf{
   }
 
   template <> struct policy_traits<policy::isa_label>{
-    using requires = policy_list<policy::has_text, policy::isa_panel, policy::wm_create>;
+    using requires = policy_list<policy::isa_panel, policy::has_text>;
   };
 
-  struct label : window_impl<label, policy::isa_label >{
-    explicit label(iwindow * pParent) : window_impl(pParent){}
-  };
 
 }

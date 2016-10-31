@@ -8,7 +8,7 @@ namespace wtf{
   };
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class wm_geticon : public _SuperT{
 
 
@@ -22,7 +22,7 @@ namespace wtf{
 
       explicit wm_geticon(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void handle_msg(window_message& msg) override{
+      void handle_msg(window_message& msg) override{
         if (WM_GETICON == msg.umsg){
           msg.lresult = reinterpret_cast<LRESULT>(on_wm_geticon(static_cast<icon_type>(msg.wparam)));
           msg.bhandled = true;

@@ -2,7 +2,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class wm_setfocus : public _SuperT{
 
       
@@ -14,7 +14,7 @@ namespace wtf{
 
       explicit wm_setfocus(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void handle_msg(window_message& msg) override{
+      void handle_msg(window_message& msg) override{
         if (WM_SETFOCUS == msg.umsg){
           on_wm_setfocus(reinterpret_cast<HWND>(msg.wparam));
         }

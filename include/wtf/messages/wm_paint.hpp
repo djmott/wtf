@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class wm_paint : public _SuperT{
 
       
@@ -15,7 +15,7 @@ namespace wtf{
 
       explicit wm_paint(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void handle_msg(window_message& msg) override{
+      void handle_msg(window_message& msg) override{
         if (WM_PAINT == msg.umsg){
           auto & dc = *reinterpret_cast<const device_context *>(msg.wparam);
           auto & ps = *reinterpret_cast<const paint_struct *>(msg.lparam);

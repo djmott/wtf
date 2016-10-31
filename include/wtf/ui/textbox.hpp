@@ -4,7 +4,7 @@ namespace wtf{
 
   namespace policy{
 
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_textbox : public _SuperT{
 
       
@@ -135,12 +135,9 @@ namespace wtf{
   }
 
   template <> struct policy_traits<policy::isa_textbox>{
-    using requires = policy_list<policy::has_text, policy::wm_keydown, policy::wm_char, policy::has_cursor, policy::has_caret,
+    using requires = policy_list<policy::wm_keydown, policy::wm_char, policy::has_cursor, policy::has_caret,
       policy::has_focus, policy::isa_label>;
   };
 
-  struct textbox : window_impl<textbox, policy::isa_textbox>{
-    explicit textbox(iwindow * pParent) : window_impl(pParent){}
-  };
 
 }

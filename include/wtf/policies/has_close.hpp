@@ -5,7 +5,7 @@ namespace wtf{
   * Add members to close a UI element and events to capture it
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_close : public _SuperT{
 
       

@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_tree : public _SuperT{
 
     public:
@@ -383,15 +383,17 @@ namespace wtf{
       void ScrollRight(){}
 
 
-      struct vscroll : scrollbar{
-        vscroll(isa_tree * parent) : scrollbar(parent), _parent(parent){}
+      struct vscroll : window_impl<vscroll, policy::isa_scrollbar>{
+        using __super_t = window_impl<vscroll, policy::isa_scrollbar>;
+        vscroll(isa_tree * parent) : __super_t(parent), _parent(parent){}
         void StepIncEvent() override{ _parent->ScrollNext(); }
         void StepDecEvent() override{ _parent->ScrollPrev(); }
         isa_tree * _parent;
       }_vscroll;
 
-      struct hscroll : scrollbar{
-        hscroll(isa_tree * parent) : scrollbar(parent), _parent(parent){}
+      struct hscroll : window_impl<hscroll, policy::isa_scrollbar>{
+        using __super_t = window_impl<hscroll, policy::isa_scrollbar>;
+        hscroll(isa_tree * parent) : __super_t(parent), _parent(parent){}
         void StepIncEvent() override{}
         void StepDecEvent() override{}
         isa_tree * _parent;
@@ -400,10 +402,7 @@ namespace wtf{
   }
 
   template <> struct policy_traits<policy::isa_tree>{
-    using requires = policy_list<policy::isa_label, policy::wm_dblclick >;
+    using requires = policy_list<policy::isa_label, policy::wm_mouse_wheel, policy::wm_dblclick >;
   };
 
-  struct tree : window_impl<tree, policy::isa_tree, policy::wm_mouse_wheel>{
-    explicit tree(iwindow * pParent) : window_impl(pParent){}
-  };
 }

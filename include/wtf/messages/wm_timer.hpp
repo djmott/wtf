@@ -2,7 +2,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class wm_timer : public _SuperT{
 
       
@@ -14,7 +14,7 @@ namespace wtf{
 
       virtual void on_wm_timer(UINT_PTR){}
 
-      virtual void handle_msg(window_message& msg) override{
+      void handle_msg(window_message& msg) override{
         if (WM_TIMER == msg.umsg) on_wm_timer(static_cast<UINT_PTR>(msg.wparam));
         _SuperT::handle_msg(msg);
       }

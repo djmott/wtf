@@ -17,7 +17,7 @@ namespace wtf{
   * Creates borders
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_border : public _SuperT{
 
       
@@ -67,7 +67,7 @@ namespace wtf{
         );
       }
 
-      virtual void on_wm_ncpaint(const device_context& dc, const rect<coord_frame::client>& oClient) override{
+      void on_wm_ncpaint(const device_context& dc, const rect<coord_frame::client>& oClient) override{
 
         auto highlight = pen::create(pen::style::solid, 1, border_highlight());
         auto shadow = pen::create(pen::style::solid, 1, border_shadow());
@@ -120,7 +120,7 @@ namespace wtf{
         return _SuperT::on_wm_ncpaint(dc, oClient);
       }
 
-      virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS * pSizes) override{
+      LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS * pSizes) override{
         pSizes->rgrc[0].top += border_width();
         pSizes->rgrc[0].left += border_width();
         pSizes->rgrc[0].bottom -= border_width();

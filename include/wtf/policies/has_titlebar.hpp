@@ -6,7 +6,7 @@ namespace wtf{
   * Adds titlebar text features to windows
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_titlebar : public _SuperT{
       
     public:

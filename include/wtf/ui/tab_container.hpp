@@ -11,10 +11,10 @@ namespace wtf{
   };
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_tab_page : public _SuperT{
     protected:
-      template <typename _SuperT, typename _ImplT> friend class isa_tab_container;
+      template <typename> friend class isa_tab_container;
       isa_tab_page(iwindow * pParent) : _SuperT(pParent){}
     };
   }
@@ -24,12 +24,14 @@ namespace wtf{
   };
 
 
-  struct tab_page : window_impl<tab_page, policy::isa_tab_page>{
+  class tab_page : public window_impl<tab_page, policy::isa_tab_page>{
+    template <typename> friend class isa_tab_container;
+   public:
     tab_page(iwindow * pParent) : window_impl(pParent){}
   };
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_tab_container : public _SuperT{
     public:
 
@@ -138,25 +140,24 @@ namespace wtf{
 
         class button : public window_impl<button, policy::isa_button>{
           using __super_t = window_impl<button, policy::isa_button>;
-          template <typename , typename > friend class isa_tab_container;
+          template <typename> friend class isa_tab_container;
         public:
 
           button(isa_tab_container * pParent, size_t PageIndex, const tstring& stitle)
-            : __super_t(pParent)
-            , _parent(pParent)
-            , _PageIndex(PageIndex)
-            , _title(stitle) {}
-
-          virtual void on_wm_create() override{
+            : __super_t(pParent), _parent(pParent), _PageIndex(PageIndex), _title(stitle) 
+          {
             __super_t::text(_title);
             __super_t::enable_border_elements(true, true, false, true);
-            deactivate();
+          }
+
+          void on_wm_create() override{
             __super_t::on_wm_create();
+            deactivate();
           };
 
-          virtual void on_wm_click(const mouse_msg_param& m) override{
-            if (mouse_msg_param::buttons::left == m.button) _parent->active_page(_PageIndex);
+          void on_wm_click(const mouse_msg_param& m) override{
             __super_t::on_wm_click(m);
+            if (mouse_msg_param::buttons::left == m.button) _parent->active_page(_PageIndex);
           };
 
           void deactivate(){
@@ -190,6 +191,7 @@ namespace wtf{
         void activate(){
           page().show();
           button.activate();
+          page().zorder(zorders::top_most);
           page().invalidate();
         }
 
@@ -199,6 +201,7 @@ namespace wtf{
 
       template <typename _Ty>
       struct page_info : ipage_info{
+	      template <typename> friend class isa_tab_container;
 
         _Ty _page;
 
@@ -234,9 +237,6 @@ namespace wtf{
     using requires = policy_list<policy::wm_create, policy::isa_panel>;
   };
 
-  struct tab_container : window_impl<tab_container, policy::isa_tab_container>{
-    explicit tab_container(iwindow * pParent) : window_impl(pParent){}
-  };
 
 
 }

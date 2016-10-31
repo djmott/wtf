@@ -2,10 +2,10 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class wm_close : public _SuperT{
 
-      virtual void handle_msg(window_message& msg) override{
+      void handle_msg(window_message& msg) override{
         if (WM_CLOSE == msg.umsg) on_wm_close();
         _SuperT::handle_msg(msg);
       }

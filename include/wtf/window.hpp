@@ -9,6 +9,10 @@ namespace wtf{
   */
   template <> class window<void>{    
   public:
+    /// an implementation may use different window styles 
+    static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
+    static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
+
     window(const window&) = delete;
     window& operator=(const window&) = delete;
 
@@ -48,9 +52,6 @@ namespace wtf{
 
 	  template <typename _ImplT> friend class window;
 
-    /// an implementation may use different window styles 
-    static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
-    static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
 
     window * _parent;
@@ -69,7 +70,7 @@ namespace wtf{
     virtual void handle_msg(window_message& msg) {
       if (msg.bhandled) return;
 #if __WTF_DEBUG_MESSAGES__
-      std::cout << _::msg_name(msg.umsg) << " default handler" << std::endl;
+      std::cout << GetTickCount() << " " <<  typeid(_ImplT).name() << " " << _::msg_name(msg.umsg) << " default handler" << std::endl;
 #endif
       if (msg.umsg == WM_CLOSE) {
         DestroyWindow(msg.hwnd);
@@ -96,10 +97,7 @@ namespace wtf{
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
 
 #if __WTF_DEBUG_MESSAGES__
-      std::string sTemp = typeid(_ImplT).name();
-      sTemp += " ";
-      sTemp += _::msg_name(umsg);
-      std::cout << sTemp << std::endl;
+      std::cout << GetTickCount() << " " << typeid(_ImplT).name()  << " " << _::msg_name(umsg) << std::endl;
 #endif
 
       try {

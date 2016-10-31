@@ -6,7 +6,7 @@ namespace wtf{
   * produces click events
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_click : public _SuperT{
 
       
@@ -19,12 +19,12 @@ namespace wtf{
 
       virtual void on_wm_click(const mouse_msg_param&){}
 
-      virtual void on_wm_mouse_down(const mouse_msg_param& oParam) override{
+      void on_wm_mouse_down(const mouse_msg_param& oParam) override{
         _Down = oParam.button;
         _SuperT::on_wm_mouse_down(oParam);
       }
 
-      virtual void on_wm_mouse_up(const mouse_msg_param& oParam) override{
+      void on_wm_mouse_up(const mouse_msg_param& oParam) override{
         if (rect<coord_frame::client>::get(*this).is_in(oParam.position) && _Down == oParam.button){
           on_wm_click(oParam);
           _SuperT::on_wm_mouse_up(oParam);

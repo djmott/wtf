@@ -5,7 +5,7 @@ namespace wtf{
   * Controls the caret of text/input elements
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_caret : public _SuperT{
 
       

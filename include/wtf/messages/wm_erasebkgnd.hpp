@@ -3,30 +3,24 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class wm_erasebkgnd : public _SuperT{
       
-    public:
-
-      virtual const brush& background_brush() const{ return _background_brush; }
-      virtual void background_brush(brush&& newval){ _background_brush = std::move(newval); }
-
     protected:
 
-      virtual void handle_msg(window_message& msg) override{
+      virtual void on_wm_erasebkgnd(const device_context&, const rect<coord_frame::client>&) = 0{}
+
+      explicit wm_erasebkgnd(iwindow * pParent) : _SuperT(pParent){}
+
+      void handle_msg(window_message& msg) override{
         if (WM_ERASEBKGND == msg.umsg){
-          auto &dc = *reinterpret_cast<const device_context *>(msg.lparam);
-          dc.fill(rect<coord_frame::client>::get(*this), background_brush());
+          on_wm_erasebkgnd(*reinterpret_cast<const device_context *>(msg.lparam), rect<coord_frame::client>::get(*this));
           msg.lresult = TRUE;
           msg.bhandled = true;
         }
         _SuperT::handle_msg(msg);
       }
 
-      explicit wm_erasebkgnd(iwindow * pParent) : _SuperT(pParent){}
-
-    private:
-      brush _background_brush = brush::solid_brush(system_colors::button_face);
     };
   }
 }

@@ -22,7 +22,7 @@ namespace wtf {
       public:
         ~method_invoker() override = default;
 
-        virtual _ReturnT invoke(_Args...oArgs) const override { return (*_method)(std::forward<_Args>(oArgs)...); }
+        _ReturnT invoke(_Args...oArgs) const override { return (*_method)(std::forward<_Args>(oArgs)...); }
       };
 
       template<typename _LambdaT>
@@ -30,7 +30,7 @@ namespace wtf {
       public:
         ~lamdba_invoker() override = default;
 
-        virtual _ReturnT invoke(_Args...oArgs) const override { return _Lambda(std::forward<_Args>(oArgs)...); }
+        _ReturnT invoke(_Args...oArgs) const override { return _Lambda(std::forward<_Args>(oArgs)...); }
 
         explicit lamdba_invoker(_LambdaT oLambda) : _Lambda(oLambda) {} //NOSONAR
         lamdba_invoker(lamdba_invoker &&src) : _Lambda(std::move(src._Lambda)) {} //NOSONAR
@@ -59,7 +59,7 @@ namespace wtf {
         member_invoker(member_invoker &&oSrc) : _dest(oSrc._dest) {}  //NOSONAR
         member_invoker(const member_invoker &oSrc) : _dest(oSrc._dest) {}  //NOSONAR
         explicit member_invoker(_DestT *dest) : _dest(dest) {} //NOSONAR
-        virtual _ReturnT invoke(_Args...oArgs) const override { return (_dest->*_member)(oArgs...); }
+        _ReturnT invoke(_Args...oArgs) const override { return (_dest->*_member)(oArgs...); }
 
         _DestT *_dest;
       };
@@ -150,7 +150,7 @@ namespace wtf {
       public:
         ~method_invoker() override = default;
 
-        virtual _ReturnT invoke(_Args...oArgs) const override { (*_method)(std::forward<_Args>(oArgs)...); }
+        _ReturnT invoke(_Args...oArgs) const override { (*_method)(std::forward<_Args>(oArgs)...); }
       };
 
       template<typename _LambdaT>
@@ -158,7 +158,7 @@ namespace wtf {
       public:
         ~lamdba_invoker() override = default;
 
-        virtual _ReturnT invoke(_Args...oArgs) const override { _Lambda(std::forward<_Args>(oArgs)...); }
+        _ReturnT invoke(_Args...oArgs) const override { _Lambda(std::forward<_Args>(oArgs)...); }
 
         explicit lamdba_invoker(_LambdaT oLambda) : _Lambda(oLambda) {}
 
@@ -193,7 +193,7 @@ namespace wtf {
 
         explicit member_invoker(_DestT *dest) : _dest(dest) {}
 
-        virtual _ReturnT invoke(_Args...oArgs) const override { (_dest->*_member)(oArgs...); }
+        _ReturnT invoke(_Args...oArgs) const override { (_dest->*_member)(oArgs...); }
 
         _DestT *_dest;
       };

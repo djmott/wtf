@@ -4,7 +4,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_listbox : public _SuperT{
     public:
       enum class selection_modes{
@@ -86,9 +86,8 @@ namespace wtf{
 
       friend struct vscroll;
       void invalidate(){ _SuperT::invalidate(); }
-
-      class vscroll : public window_impl<vscroll, policy::wm_create, policy::isa_scrollbar>{
-        using __super_t = window_impl<vscroll, policy::wm_create, policy::isa_scrollbar>;
+      class vscroll : public window_impl<vscroll, policy::isa_scrollbar>{
+        using __super_t = window_impl<vscroll, policy::isa_scrollbar>;
       public:
 
         vscroll(isa_listbox * pParent)
@@ -133,8 +132,5 @@ namespace wtf{
     using requires = policy_list<policy::isa_label, policy::wm_mouse_wheel>;
   };
 
-  struct listbox : window_impl<listbox, policy::isa_listbox>{
-    explicit listbox(iwindow * pParent) : window_impl(pParent){}
-  };
 
 }

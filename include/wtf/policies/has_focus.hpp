@@ -5,7 +5,7 @@ namespace wtf{
   * Provides members and events related to keyboard/mouse focus
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_focus : public _SuperT{
 
       

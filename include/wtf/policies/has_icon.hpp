@@ -5,7 +5,7 @@ namespace wtf{
   * Provides an icon associated with the window
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_icon : public _SuperT{
 
       
@@ -26,7 +26,7 @@ namespace wtf{
     protected:
       explicit has_icon(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual HICON on_wm_geticon(icon_type ico) override{
+      HICON on_wm_geticon(icon_type ico) override{
         if (icon_type::big_icon == ico) return big_icon();
         else return small_icon();
       }
@@ -35,4 +35,9 @@ namespace wtf{
       icon _small_icon = icon::from_system(icon::system_icons::winlogo);
     };
   }
+
+  template <> struct policy_traits<policy::has_icon>{
+    using requires = policy_list<policy::wm_geticon>;
+  };
+
 }

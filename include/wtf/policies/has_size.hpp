@@ -5,7 +5,7 @@ namespace wtf{
   * Adds members to reposition/resize and events to capture them
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_size : public _SuperT{
       
     public:

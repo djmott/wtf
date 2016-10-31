@@ -10,7 +10,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class wm_ncpaint : public _SuperT{
 
       

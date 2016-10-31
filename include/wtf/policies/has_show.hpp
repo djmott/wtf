@@ -5,7 +5,7 @@ namespace wtf{
   * Adds members to change the display state and capture display state changes
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_show : public _SuperT{
 
       

@@ -3,7 +3,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_toggle_button : public _SuperT{
 
     public:
@@ -20,12 +20,12 @@ namespace wtf{
 
     protected:
 
-      virtual void on_wm_create() override{
+      void on_wm_create() override{
 	      _SuperT::border_style(border_styles::raised);
         _SuperT::on_wm_create();
       };
 
-      virtual void on_wm_mouse_up(const mouse_msg_param& m) override{
+      void on_wm_mouse_up(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left != m.button) return _SuperT::on_wm_mouse_up(m);
         value(!_value);
         _SuperT::on_wm_mouse_up(m);
@@ -43,7 +43,4 @@ namespace wtf{
   };
 
 
-  struct toggle_button : window_impl<toggle_button, policy::isa_toggle_button>{
-    explicit toggle_button(iwindow * pParent) : window_impl(pParent){}
-  };
 }

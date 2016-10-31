@@ -2,27 +2,29 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_form : public _SuperT{
 
-      
     public:
+
+      static const DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW;
+      static const DWORD Style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 
       explicit isa_form(iwindow * pParent) : _SuperT(pParent){}
 
       isa_form() : isa_form(nullptr){}
 
       void show() override{
-	      if (!_SuperT::_handle) _SuperT::exec();
+        if (!_SuperT::_handle) _SuperT::exec();
         _SuperT::show();
       }
 
-    int exec() override{
-      message oMsg;
-	    _SuperT::exec();
-      auto iRet = oMsg.pump();
-      return iRet;
-    }
+      int exec() override{
+        message oMsg;
+        _SuperT::exec();
+        auto iRet = oMsg.pump();
+        return iRet;
+      }
 
 
 
@@ -71,16 +73,8 @@ namespace wtf{
   }
 
   template <> struct policy_traits<policy::isa_form>{
-    using requires = policy_list<policy::wm_create, policy::wm_destroy, policy::isa_panel, policy::has_titlebar>;
+    using requires = policy_list<policy::wm_destroy, policy::isa_panel>;
   };
 
-  struct form : window_impl<form, policy::isa_form>{
-    static const DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW;
-    static const DWORD Style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-
-    explicit form(iwindow * pParent) : window_impl(pParent){}
-    form() : form(nullptr){}
-
-  };
 
 }

@@ -18,7 +18,7 @@ namespace wtf{
   * provides members to draw text on UI elements
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_text : public _SuperT{
 
       
@@ -86,7 +86,7 @@ namespace wtf{
 
       }
 
-      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         if (_auto_draw_text) draw_text(dc, ps.client());
         _SuperT::on_wm_paint(dc, ps);
       }
@@ -107,7 +107,7 @@ namespace wtf{
 
 
   template <> struct policy_traits<policy::has_text>{
-    using requires = policy_list<policy::has_font, policy::wm_paint, policy::wm_create>;
+    using requires = policy_list<policy::has_font, policy::wm_paint>;
   };
 
 }

@@ -2,7 +2,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_repeat_click : public _SuperT{
 
       
@@ -19,7 +19,7 @@ namespace wtf{
     protected:
       explicit has_repeat_click(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void wm_timer(UINT_PTR iTimer){
+      void wm_timer(UINT_PTR iTimer) override{
         if (iTimer == _timerid){
           _SuperT::on_wm_click(mouse_msg_param((WPARAM)0, (LPARAM)0, mouse_msg_param::buttons::left));
 	        _SuperT::set_timer(_repeat_rate, iTimer);
@@ -27,7 +27,7 @@ namespace wtf{
         _SuperT::wm_timer(iTimer);
       }
 
-      virtual void wm_mouse_move(const mouse_msg_param& m){
+      void wm_mouse_move(const mouse_msg_param& m) override{
         auto client = rect<coord_frame::client>::get(*this);
         if (!client.is_in(m.position) && _down && _timerid){
           _SuperT::kill_timer(_timerid);
@@ -37,14 +37,14 @@ namespace wtf{
         _SuperT::wm_mouse_move(m);
       }
 
-      virtual void wm_mouse_down(const mouse_msg_param& m){
+      void wm_mouse_down(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left != m.button) return;
         _down = true;
         _timerid = _SuperT::set_timer(_repeat_delay);
         _SuperT::wm_mouse_down(m);
       }
 
-      virtual void wm_mouse_up(const mouse_msg_param& m){
+      void wm_mouse_up(const mouse_msg_param& m) override{
         if (_down && _timerid){
           _SuperT::kill_timer(_timerid);
           _timerid = 0;

@@ -5,7 +5,7 @@ namespace wtf{
   * Provides mouse pointer customization
   */
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_cursor : public _SuperT{
 
       

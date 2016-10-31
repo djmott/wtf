@@ -8,7 +8,7 @@ namespace wtf{
   };
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_font : public _SuperT{
       
     public:
@@ -30,14 +30,11 @@ namespace wtf{
 
       explicit has_font(iwindow * pParent) : _SuperT(pParent){}
 
-      void on_wm_create() override{
-        apply_font(device_context::get_client(*this));
-        return _SuperT::on_wm_create();
-      }
-
-      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+      
+      void on_wm_erasebkgnd(const device_context& dc, const rect<coord_frame::client>& client) override
+      {
         apply_font(dc);
-        return _SuperT::on_wm_paint(dc, ps);
+        return _SuperT::on_wm_erasebkgnd(dc, client);
       }
 
       void apply_font(const device_context& dc){
@@ -58,7 +55,7 @@ namespace wtf{
 
 
   template <> struct policy_traits<policy::has_font>{
-    using requires = policy_list<policy::wm_create>;
+    using requires = policy_list<policy::wm_erasebkgnd>;
   };
 
 }

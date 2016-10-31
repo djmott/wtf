@@ -3,7 +3,7 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_progressbar : public _SuperT{
     public:
 
@@ -46,7 +46,7 @@ namespace wtf{
       }
     protected:
 
-      virtual void on_wm_create() override{
+      void on_wm_create() override{
 	      _SuperT::border_style(border_styles::lowered);
 	      _SuperT::auto_draw_text(false);
         _SuperT::on_wm_create();
@@ -59,7 +59,7 @@ namespace wtf{
       rgb _fill_color = system_rgb<system_colors::highlight>();
       text_modes _text_mode = text_modes::percentage;
 
-      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         auto oBrush = brush::solid_brush(_fill_color);
         rect<coord_frame::client> oFillArea = ps.client();
         auto iExtent = _max - _min;
@@ -98,9 +98,6 @@ namespace wtf{
     using requires = policy_list<policy::has_orientation, policy::isa_label>;
   };
 
-  struct progress_bar : window_impl<progress_bar, policy::isa_progressbar>{
-    explicit progress_bar(iwindow * pParent) : window_impl(pParent){}
-  };
 
 
 }

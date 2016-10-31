@@ -9,7 +9,7 @@ namespace wtf{
   };
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class has_zorder : public _SuperT{
 
       

@@ -3,14 +3,9 @@
 namespace wtf{
   namespace policy{
 
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class wm_activate : public _SuperT{
 
-
-      virtual void handle_msg(window_message& msg) override{
-        if (WM_ACTIVATE == msg.umsg) on_wm_activate(static_cast<activate_mode>(LOWORD(msg.wparam)), HIWORD(msg.wparam) ? true : false, reinterpret_cast<HWND>(msg.lparam));
-        _SuperT::handle_msg(msg);
-      }
 
     public:
       enum class activate_mode{
@@ -22,6 +17,12 @@ namespace wtf{
     protected:
 
       virtual void on_wm_activate(activate_mode, bool minimized, HWND target){}
+
+      void handle_msg(window_message& msg) override{
+        if (WM_ACTIVATE == msg.umsg) on_wm_activate(static_cast<activate_mode>(LOWORD(msg.wparam)), HIWORD(msg.wparam) ? true : false, reinterpret_cast<HWND>(msg.lparam));
+        _SuperT::handle_msg(msg);
+      }
+
 
       explicit wm_activate(iwindow * pParent) : _SuperT(pParent){}
 

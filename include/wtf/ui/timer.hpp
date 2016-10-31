@@ -8,7 +8,7 @@ namespace wtf{
     callback<void()> wm_timer;
 
   protected:
-    virtual void TimerEvent(UINT_PTR) override{ wm_timer(); }
+    void TimerEvent(UINT_PTR) override{ wm_timer(); }
 
   };
 }

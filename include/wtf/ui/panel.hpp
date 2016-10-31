@@ -3,7 +3,7 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT, typename _ImplT>
+    template <typename _SuperT>
     class isa_panel : public _SuperT{
 
     protected:
@@ -14,14 +14,10 @@ namespace wtf{
   }
 
   template <> struct policy_traits<policy::isa_panel>{
-    using requires = policy_list<policy::has_border, policy::has_click, policy::wm_paint, policy::has_show,
-    policy::has_size, policy::has_move, policy::wm_size, policy::has_invalidate, policy::wm_erasebkgnd,
-    policy::has_zorder>;
+    using requires = policy_list<policy::has_border, policy::has_click,  policy::has_show,
+    policy::has_size, policy::has_move,  policy::has_invalidate, policy::has_background,
+    policy::has_zorder, policy::wm_size, policy::wm_paint, policy::wm_create>;
   };
 
-  struct panel : window_impl<panel, policy::isa_panel>
-  {
-    explicit panel(iwindow * pParent) : window_impl(pParent){}
-  };
 
 }
