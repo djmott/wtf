@@ -1,148 +1,37 @@
-#define __WTF_DEBUG_MESSAGES__ 0
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 
-//#pragma warning(disable: 4503)
+#define __WTF_DEBUG_MESSAGES__ 1
 
 #include <strstream>
 #include <iostream>
 #include <random>
 #include "wtf/wtf.hpp"
-
 using namespace wtf;
 
-#if 0
-struct fnord : normalized_policies<fnord, policy::isa_button>{
-
-};
-
-template <typename _Ty> void DT(){
-  OutputDebugStringA("\n"); OutputDebugStringA(typeid(_Ty).name()); OutputDebugStringA("\n");
-}
-
-int main(){
-  DT<typename fnord::unique_policies>();
-  return 0;
-}
-
-#elif 0
-
+#if 1
 struct main_form : form{
 
-};
-
-
-#elif 0
-
-struct main_form : form{
-  main_form() : form(), _panel(this){
-
+  main_form() : _text(this){
+    OnCreate += [this]{ _text.move(10, 10, 100, 50); };
   }
-
-  void on_wm_create() override{
-    _panel.border_style(border_styles::double_lowered);
-    _panel.move(5, 5, 50, 30);
-    return form::on_wm_create();
-  };
-
-
-  panel _panel;
-};
-
-#elif 0
-struct main_form : form{
-  main_form() : form(), _label(this){
-
-  }
-
-  void on_wm_create () override{
-    _label.border_style(border_styles::double_lowered);
-    _label.move(5, 5, 50, 30);
-    _label.text(_T("FNORD"));
-    return form::on_wm_create();
-  };
-
-
-  label _label;
-};
-#elif 0
-struct main_form : form{
-  main_form() : form(), _text(this){}
-
-
-  void on_wm_size(const point<coord_frame::client>& p) override{
-    _text.move(0, 0, p.x - 2, p.y - 2);
-    form::on_wm_size(p);
-  }
-
   textbox _text;
 };
-#elif 0
-struct main_form : form{
-  main_form() : form(), _pb(this){}
-
-  void on_wm_create() override{
-    _pb.move(10, 10, 100, 25);
-    _pb.value(50);
-    form::on_wm_create();
-  }
-  progress_bar _pb;
-};
 
 #elif 0
-
 struct main_form : form{
-  main_form() : form(), _button(this){
-    _button.text(_T("Click me."));
+
+  main_form() : _split(this){
+    OnCreate += [this](){  };
+    OnSize += [this](const point<coord_frame::client>& oSize){ _split.move(5, 5, oSize.x - 10, oSize.y - 10); };
   }
 
-
-  void on_wm_size(const point<coord_frame::client>& p) override{
-    _button.move(5, 5, 75, 30);
-    form::on_wm_size(p);
-  }
-
-  button _button;
-};
-
-#elif 0
-
-struct main_form : form{
-  main_form() : form(), _scroll(this){
-    _scroll.orientation(orientations::horizontal);
-    _scroll.min(0);
-    _scroll.max(10);
-    _scroll.value(5);
-  }
-
-  void on_wm_size(const point<coord_frame::client>& p) override{
-    _scroll.move(10, 10, 100, 20);
-    form::on_wm_size(p);
-  }
-
-  scrollbar _scroll;
-};
-
-#elif 0
-
-
-struct main_form : form{
-  main_form() : form(), _tabs(this){
-    _tabs.add("Fnord");
-    _tabs.add("Snafoo");
-    _tabs.add("Flopjam");
-  };
-  
-  void on_wm_size(const point<coord_frame::client>& p) override{ 
-    _tabs.move(2, 2, p.x - 4, p.y - 4); 
-    form::on_wm_size(p);
-  };
-  
-  tab_container _tabs;
+  split_container _split;
 };
 
 
-
-#elif 1
-
+#else
 
 
 
@@ -237,11 +126,10 @@ struct listbox_page : tab_page{
   }
   void on_wm_create() override {
     for (int i = 0; i < 100; i++){
-      tstringstream ss;
-      ss << i;
-      _left.add_item(ss.str());
-      _center.add_item(ss.str());
-      _right.add_item(ss.str());
+      auto sTemp = to_tstring(i);
+      _left.add_item(sTemp);
+      _center.add_item(sTemp);
+      _right.add_item(sTemp);
     }
     _left.text_horizontal_alignment(text_horizontal_alignments::left);
     _center.text_horizontal_alignment(text_horizontal_alignments::center);
@@ -280,9 +168,7 @@ struct button_page : tab_page{
     _button1(iwindow * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
 
     void on_wm_click(const mouse_msg_param& m) override{
-      tstringstream ss;
-      ss << GetTickCount();
-      _label1.text(ss.str());
+      _label1.text(to_tstring(GetTickCount()));
       button::on_wm_click(m);
     };
     label& _label1;
@@ -292,9 +178,7 @@ struct button_page : tab_page{
     _button2(iwindow * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
 
     void on_wm_click(const mouse_msg_param& m) override{
-      tstringstream ss;
-      ss << GetTickCount();
-      _label2.text(ss.str());
+      _label2.text(to_tstring(GetTickCount()));
       toggle_button::on_wm_click(m);
     };
 
@@ -331,49 +215,44 @@ struct scroll_page : tab_page{
 
 
 struct split_page : tab_page{
-  split_page(iwindow * parent) : tab_page(parent), _splitter(this){}
-  void on_wm_create() override { 
-    _splitter.set_split_position(50); 
-    return tab_page::on_wm_create();
-  };
 
-  void on_wm_size(const point<coord_frame::client>& p) override{
-    _splitter.move(0, 0, p.x, p.y); 
-    return tab_page::on_wm_size(p);
-  };
+  split_page(iwindow * parent) : tab_page(parent), _splitter(this){
+    OnSize += [this](const point<coord_frame::client>& p){ _splitter.move(0, 0, p.x, p.y); };
+  }
 
   struct splitter : split_container{
-    splitter(split_page * parent) : split_container(parent), _inner_splitter(first()), _text1(second())
-    {
-      
+
+    splitter(split_page * parent) : split_container(parent), _inner_splitter(&first()), _text1(&second()){
+      OnCreate += [this]{ orientation(orientations::horizontal); };
+      OnSize += [this](const point<coord_frame::client>& p){
+        if (!_InitialPosition && p.x && p.y){
+          _InitialPosition = true;
+          set_split_relative(25);
+        }
+      };
+      first().OnSize += [this](const point<coord_frame::client>& p){_inner_splitter.move(0, 0, p.x, p.y); };
+      second().OnSize += [this](const point<coord_frame::client>& p){_text1.move(0, 0, p.x, p.y); };
     }
-
-    void on_wm_create() override{
-      _inner_splitter.set_split_position(25);
-      return split_container::on_wm_create();
-    };
-
-//     first()->void wm_size(const point<coord_frame::client>& p) override{ _inner_splitter.move(0, 0, p.x, p.y); };
-//     second()->void wm_size(const point<coord_frame::client>& p) override{ _text1.move(0, 0, p.x, p.y); };
 
     struct inner_splitter : split_container{
 
-      inner_splitter(panel * parent) : split_container(parent), _texta(first()), _textb(second()){
+      inner_splitter(panel * parent) : split_container(parent), _texta(&first()), _textb(&second()){
+        OnCreate += [this]{ orientation(orientations::vertical); };
+        OnSize += [this](const point<coord_frame::client>& p){
+          if (!_InitialPosition && p.x && p.y){
+            _InitialPosition = true;
+            set_split_relative(25);
+          }
+        };
+        first().OnSize += [this](const point<coord_frame::client>& p){_texta.move(0, 0, p.x, p.y); };
+        second().OnSize += [this](const point<coord_frame::client>& p){_textb.move(0, 0, p.x, p.y); };
       }
 
-      void on_wm_create() override{
-        orientation(orientations::vertical); 
-        _texta.multiline(true);
-        return split_container::on_wm_create();
-      };
-
-//       first()->void wm_size(const point<coord_frame::client>& p) override{ _texta.move(0, 0, p.x, p.y); };
-//       second()->void wm_size(const point<coord_frame::client>& p) override{ _textb.move(0, 0, p.x, p.y); };
-      
-
+      bool _InitialPosition = false;
       textbox _texta, _textb;
     }_inner_splitter;
 
+    bool _InitialPosition = false;
     textbox _text1;
   }_splitter;
 
@@ -445,24 +324,12 @@ struct main_form : form{
 
 int main(){
   try{
-
-/*
-    form frm;
-    scroll_bar s(frm);
-    s.move(10, 10, 25, 100);
-    s.orientation(orientations::vertical);
-    return frm.exec();
-*/
-
-    main_form oForm;
-    return oForm.exec();
+    return main_form().exec();
   }
   catch (const wtf::exception& ex){
-    tstringstream ss;
-    ss << ex.what() << std::endl << std::endl;
-    ss << ex.file() << "(" << ex.line() << ")" << std::endl << std::endl;
-    ss << ex.code();
-    message_box::exec(nullptr, ss.str(), _T("An exception occurred."), message_box::buttons::ok, message_box::icons::stop);
+    std::cerr << ex.what() << std::endl << std::endl;
+    std::cerr << ex.file() << "(" << ex.line() << ")" << std::endl << std::endl;
+    std::cerr << ex.code();
     return -1;
   }
 }

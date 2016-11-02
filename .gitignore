@@ -34,3 +34,4 @@ CodeDB
 **/.*
 *.vgdbsettings
 **/*.VC.db
+/docs/Doxyfile

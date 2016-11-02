@@ -1,12 +1,14 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT>
-    class has_repeat_click : public _SuperT{
-      
-    public:
 
+    template <typename _SuperT>
+    struct has_repeat_click : _SuperT{
+      
       using mouse_msg_param = mouse_msg_param;
 
       int repeat_delay() const{ return _repeat_delay; }
@@ -21,7 +23,7 @@ namespace wtf{
       void wm_timer(UINT_PTR iTimer) override{
         if (iTimer == _timerid){
           _SuperT::on_wm_click(mouse_msg_param((WPARAM)0, (LPARAM)0, mouse_msg_param::buttons::left));
-	        _SuperT::set_timer(_repeat_rate, iTimer);
+          _SuperT::set_timer(_repeat_rate, iTimer);
         }
         _SuperT::wm_timer(iTimer);
       }

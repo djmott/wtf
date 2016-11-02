@@ -1,31 +1,32 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 
 namespace wtf{
   namespace policy{
 
-
     class splitter : public window_impl<splitter, policy::has_cursor, policy::wm_mouse_move, policy::isa_panel, policy::has_orientation>{
       using __super_t = window_impl<splitter, policy::has_cursor, policy::wm_mouse_move, policy::isa_panel, policy::has_orientation>;
+
     public:
+
       splitter(iwindow * pParent) : __super_t(pParent){}
 
-      virtual void size_bar_moved(const point<coord_frame::client>&) = 0;
+      callback<void(const point<coord_frame::client>&)> OnMoved;
 
-      void on_wm_create() override{
-        __super_t::border_style(border_styles::none);
-        __super_t::on_wm_create();
-      };
+    protected:
+
+      virtual void size_bar_moved(const point<coord_frame::client>& p){ OnMoved(p); }
 
       void on_wm_mouse_move(const mouse_msg_param& m) override{
-        if (!(m.key_state & mouse_msg_param::key_states::left)) return __super_t::on_wm_mouse_move(m);
-        size_bar_moved(m.position);
+        if (m.key_state & mouse_msg_param::key_states::left) size_bar_moved(m.position);        
         __super_t::on_wm_mouse_move(m);
       };
 
       void on_wm_mouse_down(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left != m.button) return __super_t::on_wm_mouse_down(m);
-        SetCapture(*this);
+        if (mouse_msg_param::buttons::left == m.button) SetCapture(*this);        
         __super_t::on_wm_mouse_down(m);
       };
 
@@ -45,85 +46,93 @@ namespace wtf{
     };
 
     template <typename _SuperT>
-    class isa_split_container : public _SuperT{
-    public:
-
-      explicit isa_split_container(iwindow * pParent) : _SuperT(pParent), _first(this), _second(this), _splitter(this){}
+    struct isa_split_container : _SuperT{
 
 
-      void set_split_position(int percentage){
-	      int newPos = percentage * _SuperT::width() / 100;
-	      if (orientations::horizontal == _SuperT::orientation()) {
-		      _splitter.move(0, newPos, _SuperT::width(), SplitterWidth);
-        } else{
-	        _splitter.move(newPos, 0, SplitterWidth, _SuperT::height());
-        }
-	      _SuperT::invalidate();
+      panel& first(){ return _first; }
+      const panel& first() const{ return _first; }
+
+      panel& second(){ return _second; }
+      const panel& second() const{ return _second; }
+
+      int splitter_width() const{ return _splitter_width; }
+      void splitter_width(int newval){
+        _splitter_width = newval;
+        _SuperT::invalidate();
       }
 
-      panel * first(){ return &_first; }
-      const panel * first() const{ return &_first; }
+      void set_split_absolute(int pixels){
+        _splitter_pos = pixels;
+        auto oSize = rect<coord_frame::client>::get(*this);
+        _SuperT::move(oSize.left, oSize.top, oSize.right, oSize.bottom);
+      }
 
-      panel * second(){ return &_second; }
-      const panel * second() const{ return &_second; }
+      void set_split_relative(int percent){
+        auto oSize = rect<coord_frame::client>::get(*this);
+        if (orientations::horizontal == _SuperT::orientation()){
+          if (oSize.bottom) _splitter_pos = (percent * oSize.bottom / 100);
+        } else{
+          if (oSize.right) _splitter_pos = (percent * oSize.right / 100);
+        }
+        _SuperT::move(oSize.left, oSize.top, oSize.right, oSize.bottom);
+      }
+
+      void orientation(orientations newval) override{
+        _splitter.orientation(newval);
+        _SuperT::orientation(newval);
+      }
+
 
     protected:
 
-      void on_wm_create() override{
-	      _SuperT::border_style(border_styles::none);
-        set_split_position(25);
-        _first.border_style(border_styles::raised);
-        _second.border_style(border_styles::raised);
-        _SuperT::on_wm_create();
-      };
-
+      explicit isa_split_container(iwindow * pParent) : _SuperT(pParent), _first(this), _second(this), _splitter(this){}
+      
       void on_wm_size(const point<coord_frame::client>& p) override{
-	      if (orientations::horizontal == _SuperT::orientation()) {
-          auto NewTop = _splitter.top();
-          if (NewTop < 10) NewTop = 10;
-          if (NewTop > p.y - 10) NewTop = p.y - 10;
-          _first.move(0, 0, p.x, NewTop);
-          _splitter.move(0, NewTop, p.x, SplitterWidth);
-          _second.move(0, NewTop + SplitterWidth, p.x, p.y - NewTop - SplitterWidth);
+        if (orientations::horizontal == _SuperT::orientation()) {
+          if (_splitter_pos < 10) _splitter_pos = 10;
+          if (_splitter_pos > p.y - 10) _splitter_pos = p.y - 10;
+          _first.move(0, 0, p.x, _splitter_pos);
+          _splitter.move(0, _splitter_pos, p.x, _splitter_width);
+          _second.move(0, _splitter_pos + _splitter_width, p.x, p.y - _splitter_pos - _splitter_width);
         } else{
-          auto NewLeft = _splitter.left();
-          if (NewLeft < 10) NewLeft = 10;
-          if (NewLeft > p.x - 10) NewLeft = p.x - 10;
-          _first.move(0, 0, NewLeft, p.y);
-          _splitter.move(NewLeft, 0, SplitterWidth, p.y);
-          _second.move(NewLeft + SplitterWidth, 0, p.x - NewLeft - SplitterWidth, p.y);
+          if (_splitter_pos < 10) _splitter_pos = 10;
+          if (_splitter_pos > p.x - 10) _splitter_pos = p.x - 10;
+          _first.move(0, 0, _splitter_pos, p.y);
+          _splitter.move(_splitter_pos, 0, _splitter_width, p.y);
+          _second.move(_splitter_pos + _splitter_width, 0, p.x - _splitter_pos - _splitter_width, p.y);
         }
         _SuperT::on_wm_size(p);
       };
 
-      static const int SplitterWidth = 5;
-
-      panel _first, _second;
 
       void size_bar_moved(const point<coord_frame::client>& p){
-	      if (orientations::horizontal == _SuperT::orientation()) {
-		      _splitter.move(0, _splitter.top() + p.y, _SuperT::width(), SplitterWidth);
+        if (orientations::horizontal == _SuperT::orientation()) {
+          _splitter_pos = _splitter.top() + p.y;
         } else{
-	        _splitter.move(_splitter.left() + p.x, 0, SplitterWidth, _SuperT::height());
+          _splitter_pos = _splitter.left() + p.x;
         }
-	      _SuperT::invalidate();
+        auto oSize = rect<coord_frame::client>::get(*this);
+        on_wm_size(oSize.dimensions());
       }
 
 
       class size_bar : public splitter{
       public:
-	      size_bar(isa_split_container * pParent)
-		      : splitter(pParent)
-		      , _parent(pParent) {}
-
+        size_bar(isa_split_container * pParent) : splitter(pParent), _parent(pParent) {}
 
         void size_bar_moved(const point<coord_frame::client>& pos) override{
           _parent->size_bar_moved(pos);
+          splitter::size_bar_moved(pos);
         }
 
         isa_split_container * _parent;
 
       }_splitter;
+
+    private:
+      int _splitter_width = 5;
+      int _splitter_pos = 0;
+      panel _first, _second;
 
     };
   }

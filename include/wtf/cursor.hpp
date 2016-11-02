@@ -1,8 +1,11 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf {
 
-    struct cursor : std::unique_ptr<HICON__, void (*)(HICON)> {
+    struct cursor : std::shared_ptr<HICON__> {
       enum class style {
         arrow = 32512,
         ibeam = 32513,
@@ -28,10 +31,10 @@ namespace wtf {
           [](HCURSOR) {});
       }
 
-      cursor(cursor &&src) : unique_ptr(std::move(src)) {}
+      cursor(cursor &&src) : shared_ptr(std::move(src)) {}
 
       cursor &operator=(cursor &&src) {
-        unique_ptr::swap(src);
+        shared_ptr::swap(src);
         return *this;
       }
 
@@ -109,7 +112,7 @@ namespace wtf {
 
     protected:
       template<typename ... _ArgTs>
-      cursor(_ArgTs &&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...) {}
+      cursor(_ArgTs &&...oArgs) : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
     };
   }
 

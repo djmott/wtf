@@ -1,19 +1,14 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 
 namespace wtf{
   namespace policy{
     template <typename _SuperT>
+    struct isa_scrollbar : _SuperT{
 
-    class isa_scrollbar : public _SuperT{
-    public:
-      explicit isa_scrollbar(iwindow * pParent)
-        : _SuperT(pParent),
-        _inc(this, true),
-        _dec(this, false),
-        _page_inc(this, true),
-        _page_dec(this, false),
-        _slider(this){}
 
       int min() const{ return _min; }
       void min(int newval){ _min = newval; }
@@ -35,14 +30,21 @@ namespace wtf{
       void big_step(int newval){ _big_step = newval; }
 
     protected:
-
       friend struct value_step_button;
       friend struct value_page_button;
+
+      explicit isa_scrollbar(iwindow * pParent)
+        : _SuperT(pParent),
+        _inc(this, true),
+        _dec(this, false),
+        _page_inc(this, true),
+        _page_dec(this, false),
+        _slider(this){}
 
       void on_wm_size(const point<coord_frame::client>& p) override{
         auto iExtent = _max - _min;
 
-	      if (orientations::horizontal == _SuperT::orientation()) {
+        if (orientations::horizontal == _SuperT::orientation()) {
           auto iStepWidth = p.y;
           _dec.move(0, 0, iStepWidth, iStepWidth);
           _inc.move(p.x - iStepWidth, 0, iStepWidth, iStepWidth);
@@ -108,7 +110,7 @@ namespace wtf{
           __super_t::on_wm_click(m);
         };
 
-        void on_wm_paint(const device_context& dc, const paint_struct&ps) override{
+        void on_wm_paint(const _::device_context& dc, const _::paint_struct&ps) override{
           auto client = ps.client();
           point<coord_frame::client>::vector arrow(3);
           if (orientations::horizontal == _parent->_orientation){

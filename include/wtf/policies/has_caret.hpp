@@ -1,21 +1,31 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
-  /** has_caret
-  * Controls the caret of text/input elements
-  */
   namespace policy{
+
+    /** has_caret
+    * Controls the caret of text/input elements
+    */
     template <typename _SuperT>
-    class has_caret : public _SuperT{
-
+    struct has_caret : _SuperT{
       
-    public:
-
       virtual int caret_width() const{ return _width; }
       virtual void caret_width(int newval){ _width = newval; }
 
       virtual int caret_height() const{ return _height; }
       virtual void caret_height(int newval){ _height = newval; }
+
+      virtual UINT caret_blink_rate() const{ return _blink_rate; }
+
+      virtual void caret_blink_rate(UINT newval){
+        _blink_rate = newval;
+        wtf::exception::throw_lasterr_if(::SetCaretBlinkTime(newval), [](BOOL b){ return !b; });
+      }
+
+    protected:
 
       virtual void create_caret(){
         wtf::exception::throw_lasterr_if(::CreateCaret(*this, nullptr, _width, _height), [](BOOL b){ return !b; });
@@ -29,21 +39,13 @@ namespace wtf{
 
       virtual bool caret_visible() const{ return _caret_visible; }
       virtual void caret_visible(bool newval){
+        if (_caret_visible == newval) return;
+        _caret_visible = newval;
         if (_caret_visible){
-          if (newval) return;
           wtf::exception::throw_lasterr_if(::HideCaret(*this), [](BOOL b){ return !b; });
         } else{
-          if (!newval) return;
           wtf::exception::throw_lasterr_if(::ShowCaret(*this), [](BOOL b){ return !b; });
         }
-        _caret_visible = newval;
-      }
-
-      virtual UINT caret_blink_rate() const{ return _blink_rate; }
-
-      virtual void caret_blink_rate(UINT newval){
-        _blink_rate = newval;
-        wtf::exception::throw_lasterr_if(::SetCaretBlinkTime(newval), [](BOOL b){ return !b; });
       }
 
       virtual void caret_position(const point<coord_frame::client> &pos){
@@ -52,9 +54,6 @@ namespace wtf{
       }
 
       virtual point<coord_frame::client> caret_position() const{ return _pos; }
-
-    protected:
-
 
       explicit has_caret(iwindow * pParent) : _SuperT(pParent){}
 
@@ -72,6 +71,7 @@ namespace wtf{
       }
 
     private:
+
       UINT _blink_rate = 250;
       point<coord_frame::client> _pos = point<coord_frame::client>(0, 0);
       bool _caret_visible = false;

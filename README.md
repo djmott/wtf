@@ -1,59 +1,85 @@
 # Introduction
 The Windows Template Framework (WTF) is a lightning fast, light-weight, header-only GUI library for Windows written in C++11. It's designed to be easy to use and quick to setup for a quick-and-dirty Windows GUI application. The architecture is highly modular with maximum code reuse by leveraging modern template meta-programming techniques.
 
-WTF is largely an architectural and feasibility experiment. Maximum reuse is one of the motivating factors behind this library. There are many GUI toolkits around and they all seem to share the trait of code bloat. GUI toolkits present an interesting challenge because the various components and widgets have a mix-and-match composition of behaviors.  For example, a button contains a label that needs to produce click events while a drop-down box has several labels, produces click events and needs to editable, while a text box is editable but produces no click events. The various GUI components share a hodge-podge of behaviors and a variety of programming techniques have been employed in toolkits to minimize the maintenance effort but most fall short IMO.
+WTF is largely an architectural and feasibility experiment. Maximum reuse is one of the motivating factors behind this library. There are many GUI toolkits around and they all seem to share the trait of code bloat and complex configuration. GUI toolkits present an interesting challenge because the various components and widgets have a mix-and-match composition of behaviors.  For example, a button contains a label that needs to produce click events while a drop-down box has several labels, produces click events and needs to editable, while a text box is editable but produces no click events. The various GUI components share a hodge-podge of behaviors and a variety of programming techniques have been employed in toolkits to minimize the maintenance effort but most fall short IMO.
 
 WTL, for example, should be more properly named Windows Macro Library than a template library but does a fairly good job at reducing duplication.  wxWidgets has lots of duplicate code but their goal is a cross platform toolkit.  It's clumsy and difficult to learn.  Qt has a nice programmer's interface but dont peek behind the sheets if you want to keep your lunch down. WinForms is easy to code but requires a terrabyte of framework libraries, CLI interop is required to do anything native and its slow as hell. GTK is for linux. The proper response to the current state of native GUI toolkits on Windows is WTF!
 
 
 # Getting Started
-Add the wtf folder to the project's include path and include wtf.hpp in a compilation unit. Here's a minimal example:
+Add the wtf folder to the project's include path and include `wtf.hpp` in a compilation unit. That's it! There is nothing to compile (except for your application.) and there are no additional binaries to link or distribute.
 
+Here's a minimal example:
 
 ~~~cpp
 #include "wtf/wtf.hpp"
-
+using namespace wtf;
 int main(){
-  wtf::form oForm;
-  return oForm.exec();
+  return form().exec();
 }
 ~~~
 
-This creates a generic form and shows it then begins the main message pump.  To make things more exciting the forms and controls can be sub-classed and methods overridden to accomplish various tasks.  Here's a slightly more involved example:
+This creates a generic form and shows it then begins the main message pump. To make things more exciting, the forms and controls can be sub-classed and methods overridden to accomplish various tasks.  Here's a slightly more involved example:
 
 ~~~cpp
-#include "wtf.hpp"
+#include "wtf/wtf.hpp"
+using namespace wtf;
+struct MyForm : form{
 
-struct MyForm : wtf::form{
-
-  MyForm() : oPanel(this){
-    OnCreate += [this](){ 
-      oPanel.border_style(wtf::border_styles::double_raised);
+  MyForm() : oPanel(this)
+  {
+    OnCreate.connect([this](){ 
+      oPanel.border_style(border_styles::double_raised);
       oPanel.move(10, 10, 150, 25);
-    };
+    });
   }
 
-  wtf::panel oPanel;
+  panel oPanel;
 };
 
 int main(){
-  MyForm oForm;
-  return oForm.exec();
+  return MyForm().exec();
 }
 
 ~~~
 
-Here a form is sub-classed and it contains a panel. One important thing to notice is the constructor of the panel accepts the form as the parent e.g. `oPanel(this)` There are a number of ways to enhance the behavior and get event notifications depending on what you're trying to do. The producible events currently use a callback mechanism to _user side_ events. Most of the behaviors from an internal perspective can be modified by providing overridden functions. More advanced widgets use the template framework to generate compositional patterns of various behavioral policies to create new, feature rich GUI components.
+Here a form is sub-classed and it contains a panel. An important thing to note is the constructor of the panel which accepts a pointer to the parent form as it's argument e.g. `oPanel(this)`. Every child widget must be constructed in this manner to work properly. The _user side_ is notified of events using a callback mechanism. In this example a lambda is invoked when the form's window is created to change the panel's border and position it.  The callback mechanism is very flexible permitting a variety of ways to execute actions when various UI events occur.
 
-Currently the controls and themes are limited but I'll be adding them as time permits.
+Callback objects exist for all the typically expected events. Zero or more _targets_ can be invoked by the callback objects when the event occurs. Targets are connected to callback objects with the `connect` method and can include lambdas, static methods and class members:
+
+~~~cpp
+void StaticMethod(){ std::cout << "StaticMethod target invoked" << std::endl; }
+
+struct MyForm : form{
+  MyForm(){
+    OnCreate.connect(&StaticMethod);
+    OnCreate.connect<MyForm, &MyForm::ClassMember>(this);
+    OnCreate += [](){ std::cout << "Lambda target invoked" << std::endl; };
+  }
+
+  void ClassMember() { std::cout << "ClassMember target invoked" << std::endl; }
+};
+
+int main(){ 
+  return MyForm().exec(); 
+};
+~~~
+
+Here the various callback targets are demonstrated. The last target is a lambda which is connected with the `+=` operator short hand which is equivelent to calling the `connect` method. All the targets are invoked when the form's window is created and produces the following output:
+<pre>
+StaticMethod target invoked
+ClassMember target invoked
+Lambda target invoked
+</pre>
+*NOTE: there is no guarantee on the order in which targets are invoked when multiple targets are connected to the same callback.*
 
 # Architecture
 The WTF library is partitioned into two primary layers.
 1. __policy layer__ - descrete and self contained behavioral policies 
-2. __user interface layer__ - GUI widgets composition of elements in the policy layer for library consumers
+2. __user interface layer__ - GUI widgets composition of elements from the policy layer for library consumers
 
 ## The Policy Layer
-Each item in the policy layer is a descrete decoration or behavioral unit. The composition of these elements produce the feature rich UI widgets with minimal duplication.
+Each item in the policy layer is a descrete decoration or behavioral unit. The composition of these elements produce the feature rich UI widgets with minimal code duplication.
 #### The Problem
 So you have some code to draw a border around a control and you want to use it in a button, label and text box. You also have some code to type text into a control and you want to include it in a text box and combo box. You also want to collect click events from a button and combo box but you don't want to duplicate any of the code. The trouble comes when you try to compose these behaviors into concrete widgets using multiple inheritance and the behavior policies need to communicate with each other.  For example, the combo box might need to respond to a click event to show the list contents which makes the click event and the list display tightly coupled. The coupling might be reversed in another widget so you've got some trouble on your hands.
 
@@ -80,15 +106,15 @@ WTF composes discrete policies in self-contained classes that can be combine to 
 The parameterized super class idiom is a bit ugly but it certainly beats the alternative. Widgets inherit these behaviors by listing them during declaration:
 
 ~~~cpp
-struct NewWidget : window<NewWidget, has_close, has_show, has_move>...
+struct NewWidget : window_impl<NewWidget, has_close, has_show, has_move>...
 ~~~
 The NewWidget inherits from all the policies which results in a hierarchy like:
 
 ![class hierarchy](docs/images/example_hierarchy_1.png)
 
-The `window` template collects all the policies into a linear class hierarchy with the top-most super class being a `window<>` specialization that holds the HWND. There is a little bit more going on with WTF implementation but for this illustration it's sufficient and useful. Between each policy is a specialization of the `window` template that assists with the construction of the hierarchy and dispatching windows messages. 
+The `window_impl` class template collects all the policies into a linear class hierarchy with the top-most super class being a `window<void>` specialization that holds the HWND. There is a little bit more going on with the WTF implementation but for this illustration it's sufficient and useful. 
 
-There are a number of places where ease of code and architecture were chosen over performance but they're not of much concern.  I normally frown on virtual method calls particularly in process intensive paths but this is a GUI toolkit afterall and it's not intended render 120fps. Despite the inefficiencies it will probably skill smoke wxWidgets. I'm certain it will make a mockery of Qt in the performance and footprint department.  WinForms will be several light-years behind.
+There are a number of places where ease of code and architecture were chosen over performance but they're not of much concern.  I normally frown on virtual method calls particularly in process intensive paths but this is a GUI toolkit afterall and it's not intended render 120fps. Despite the inefficiencies it will probably skill smoke a number of other similar toolkits in the performance arena. I'm certain it will make a mockery of Qt in the performance and footprint department.  WinForms will be several light-years behind.
 
 
 

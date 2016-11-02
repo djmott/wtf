@@ -1,16 +1,19 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
 
   namespace policy{
     template <typename _SuperT>
-    class wm_mouse_move : public _SuperT{
+    struct wm_mouse_move : _SuperT{
     protected:
       virtual void on_wm_mouse_move(const mouse_msg_param&) {}
 
       explicit wm_mouse_move(iwindow * pParent) : _SuperT(pParent){}
 
-      void handle_msg(window_message& msg) override{
+      void handle_msg(_::window_message& msg) override{
         if (WM_MOUSEMOVE == msg.umsg){
           on_wm_mouse_move(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::unspecified));
         }

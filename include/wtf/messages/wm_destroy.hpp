@@ -1,22 +1,24 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
 
   namespace policy{
     template <typename _SuperT>
-    class wm_destroy : public _SuperT{
-      
+    struct wm_destroy : _SuperT{
+
+      callback<void()> OnDestroy;
 
     protected:
 
-      virtual void on_wm_destroy() {}
+      virtual void on_wm_destroy(){ OnDestroy(); }
 
       explicit wm_destroy(iwindow * pParent) : _SuperT(pParent){}
 
-      void handle_msg(window_message& msg) override{
-        if (WM_DESTROY == msg.umsg){
-          on_wm_destroy();
-        }
+      void handle_msg(_::window_message& msg) override{
+        if (WM_DESTROY == msg.umsg) on_wm_destroy();
         _SuperT::handle_msg(msg);
       }
 

@@ -1,23 +1,21 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
 
   namespace policy{
+
     template <typename _SuperT>
-    class isa_tree : public _SuperT{
+    struct isa_tree : _SuperT{
 
-    public:
-
-      explicit isa_tree(iwindow * pParent)
-        : _SuperT(pParent),
-        _root(new node(this)),
-        _vscroll(this),
-        _hscroll(this)
-      {
-	      _SuperT::background_brush(brush::system_brush(system_colors::window));
-      }
     protected:
 
+      explicit isa_tree(iwindow * pParent) : _SuperT(pParent), _root(new node(this)), _vscroll(this), _hscroll(this){
+        _SuperT::background_brush(brush::system_brush(system_colors::window));
+      }
+      
       void on_wm_create() override{
         _vscroll.orientation(orientations::vertical);
         _hscroll.orientation(orientations::horizontal);
@@ -29,7 +27,7 @@ namespace wtf{
       };
 
       void on_wm_click(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left != m.button) return _SuperT::on_wm_click(m);
+        if (mouse_msg_param::buttons::left != m.button){ return _SuperT::on_wm_click(m); }
         typename node::pointer oClickedNode;
         for (size_t i = 0; i < _row_rects.size(); ++i){
           if (_expander_rects[i].is_in(m.position)){
@@ -41,7 +39,7 @@ namespace wtf{
             break;
           }
         }
-        if (!oClickedNode) return _SuperT::on_wm_click(m);
+        if (!oClickedNode){ return _SuperT::on_wm_click(m); }
         if (select_modes::single == _select_mode){
           bool bExists = (_selected_nodes.end() != std::find_if(_selected_nodes.begin(), _selected_nodes.end(), 
                                 [oClickedNode](typename node::pointer oNode){ return oClickedNode.get() != oNode.get(); }));
@@ -78,14 +76,14 @@ namespace wtf{
         return _SuperT::on_wm_dblclick(m);
       };
 
-      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
         if (!_root->children().size()) return _SuperT::on_wm_paint(dc, ps);
         auto client = ps.client();
         _item_rects.clear();
         _expander_rects.clear();
         _displayed_nodes.clear();
         _row_rects.clear();
-        auto oTextMetrics = text_metrics::get(dc);
+        auto oTextMetrics = wtf::_::text_metrics::get(dc);
         for (auto oNode = _top; oNode; oNode = oNode->get_next(false)){
           if (!print_node(oNode, dc, oTextMetrics, client)) break;
         }
@@ -193,7 +191,7 @@ namespace wtf{
         }
 
       private:
-        friend class isa_tree;
+        template <class> friend struct isa_tree;
 
         node(isa_tree * pTree) : _tree(pTree){}
 
@@ -301,7 +299,7 @@ namespace wtf{
         return 1 + get_item_depth(oNode->parent());
       }
 
-      bool print_node(const typename node::pointer& oNode, const device_context& dc, const text_metrics& oTextMetrics, rect<coord_frame::client>& oClient){
+      bool print_node(const typename node::pointer& oNode, const _::device_context& dc, const wtf::_::text_metrics& oTextMetrics, rect<coord_frame::client>& oClient){
         if (oClient.top > oClient.bottom) return false;
         _bottom = oNode;
         bool PrintExpander = false;

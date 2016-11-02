@@ -1,8 +1,11 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf {
 
-    struct pen : std::unique_ptr<HPEN__, void (*)(HPEN)> {
+    struct pen : std::shared_ptr<HPEN__> {
       enum class style {
         solid = PS_SOLID,
         dash = PS_DASH,
@@ -25,12 +28,12 @@ namespace wtf {
                    [](HPEN p) { ::DeleteObject(p); });
       }
 
-      pen(pen &&src) : unique_ptr(std::move(src)) {}
+      pen(pen &&src) : shared_ptr(std::move(src)) {}
 
       operator HPEN() const { return get(); }
 
       pen &operator=(pen &&src) {
-        unique_ptr::swap(src);
+        shared_ptr::swap(src);
         return *this;
       }
 
@@ -39,7 +42,7 @@ namespace wtf {
 
     protected:
       template<typename ... _ArgTs>
-      pen(_ArgTs...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...) {}
+      pen(_ArgTs...oArgs) : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
     };
   }
 

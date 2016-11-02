@@ -1,14 +1,16 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
-  /** has_icon
-  * Provides an icon associated with the window
-  */
   namespace policy{
+
+    /** has_icon
+    * Provides an icon associated with the window
+    */
     template <typename _SuperT>
-    class has_icon : public _SuperT{
-      
-    public:
+    struct has_icon : _SuperT{
 
       virtual icon &big_icon(){ return _big_icon; }
 

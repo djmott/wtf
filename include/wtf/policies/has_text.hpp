@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
@@ -14,37 +17,48 @@ namespace wtf{
     right,
   };
 
-  /** has_text
-  * provides members to draw text on UI elements
-  */
   namespace policy{
+
+    /** has_text
+    * provides members to draw text on UI elements
+    */
     template <typename _SuperT>
-    class has_text : public _SuperT{
-      
-    public:
+    struct has_text : _SuperT{
 
       virtual bool multiline() const{ return _multiline; }
-      virtual void multiline(bool newval){ _multiline = newval; }
+      virtual void multiline(bool newval){ 
+        _multiline = newval; 
+        _SuperT::invalidate();
+      }
 
       bool word_wrap() const{ return _word_wrap; }
-      void word_wrap(bool newval){ _word_wrap = newval; }
+      void word_wrap(bool newval){ 
+        _word_wrap = newval; 
+        _SuperT::invalidate();
+      }
 
       virtual const tstring &text() const{ return _text; }
       virtual void text(const tstring &newval){
         _text = newval;
-	      if (_auto_draw_text) _SuperT::invalidate();
+        _SuperT::invalidate();
       }
 
       virtual text_vertical_alignments text_vertical_alignment() const{ return _text_vertical_alignment; }
-      virtual void text_vertical_alignment(text_vertical_alignments newval){ _text_vertical_alignment = newval; }
+      virtual void text_vertical_alignment(text_vertical_alignments newval){ 
+        _text_vertical_alignment = newval; 
+        _SuperT::invalidate();
+      }
 
       virtual text_horizontal_alignments text_horizontal_alignment() const{ return _text_horizontal_alignment; }
-      virtual void text_horizontal_alignment(text_horizontal_alignments newval){ _text_horizontal_alignment = newval; }
+      virtual void text_horizontal_alignment(text_horizontal_alignments newval){ 
+        _text_horizontal_alignment = newval; 
+        _SuperT::invalidate();
+      }
 
 
       virtual size prefered_text_size() const{
-        auto dc = device_context::get_client(*this);
-	      auto hFont = _SuperT::font().open();
+        auto dc = _::device_context::get_client(*this);
+        auto hFont = _SuperT::font().open();
         dc.select_object(hFont);
         return dc.get_text_extent(_text);
       }
@@ -55,8 +69,8 @@ namespace wtf{
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
 
-      virtual void draw_text(const device_context& dc, const rect<coord_frame::client>& client){
-        wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
+      virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client, LPCTSTR str){
+          wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
                                          [](UINT i){ return GDI_ERROR == i; });
 
         UINT format = (multiline() ? 0 : DT_SINGLELINE) | (word_wrap() ? DT_WORDBREAK : 0);
@@ -79,18 +93,27 @@ namespace wtf{
 
         rect<coord_frame::client> oClient = client;
 
-        wtf::exception::throw_lasterr_if(::DrawText(dc, _text.c_str(), -1, &oClient, format),
+        wtf::exception::throw_lasterr_if(::DrawText(dc, str, -1, &oClient, format),
                                          [](BOOL b){ return !b; });
 
       }
 
-      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
-        if (_auto_draw_text) draw_text(dc, ps.client());
+      virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client){
+        draw_text(dc, client, _text.c_str());
+      }
+
+      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
+        if (_auto_draw_text) draw_text(dc, ps.client(), _text.c_str());
         _SuperT::on_wm_paint(dc, ps);
       }
 
 
       tstring _text = _T("");
+
+    protected:
+
+      text_vertical_alignments _text_vertical_alignment = text_vertical_alignments::center;
+      text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::center;
 
     private:
 
@@ -98,8 +121,6 @@ namespace wtf{
       bool _auto_draw_text = true;
       bool _word_wrap = false;
 
-      text_vertical_alignments _text_vertical_alignment = text_vertical_alignments::center;
-      text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::center;
     };
   }
 

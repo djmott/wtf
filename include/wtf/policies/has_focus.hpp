@@ -1,14 +1,16 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
-  /** has_focus
-  * Provides members and events related to keyboard/mouse focus
-  */
   namespace policy{
+
+    /** has_focus
+    * Provides set_focus and got_focus
+    */
     template <typename _SuperT>
-    class has_focus : public _SuperT{
-      
-    public:
+    struct has_focus : _SuperT{
 
       void set_focus() const{ wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h){ return !h; }); }
 

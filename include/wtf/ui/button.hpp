@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
@@ -5,20 +8,19 @@ namespace wtf{
   namespace policy{
 
     template <typename _SuperT>
-    class isa_button : public _SuperT{
+    struct isa_button : _SuperT{
 
-    public:
-
-      explicit isa_button(iwindow * hParent) : _SuperT(hParent){
-	      _SuperT::border_style(border_styles::raised);
-      }
 
     protected:
 
+      explicit isa_button(iwindow * hParent) : _SuperT(hParent){
+        _SuperT::border_style(border_styles::raised);
+      }
+
       void on_wm_mouse_down(const mouse_msg_param& oParam) override{
         if (oParam.button == mouse_msg_param::buttons::left){
-	        _SuperT::border_style(border_styles::lowered);
-	        _SuperT::invalidate();
+          _SuperT::border_style(border_styles::lowered);
+          _SuperT::invalidate();
           ::SetCapture(*this);
         }
         _SuperT::on_wm_mouse_down(oParam);
@@ -26,8 +28,8 @@ namespace wtf{
 
       void on_wm_mouse_up(const mouse_msg_param& oParam) override{
         if (oParam.button == mouse_msg_param::buttons::left){
-	        _SuperT::border_style(border_styles::raised);
-	        _SuperT::invalidate();
+          _SuperT::border_style(border_styles::raised);
+          _SuperT::invalidate();
           ::ReleaseCapture();
         }
         _SuperT::on_wm_mouse_up(oParam);

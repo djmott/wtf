@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 
@@ -11,18 +14,18 @@
 namespace wtf{
   namespace policy{
     template <typename _SuperT>
-    class wm_ncpaint : public _SuperT{
+    struct wm_ncpaint : _SuperT{
 
     protected:
 
-      virtual void on_wm_ncpaint(const device_context&, const rect<coord_frame::client>&) {}
+      virtual void on_wm_ncpaint(const _::device_context&, const rect<coord_frame::client>&) {}
 
       explicit wm_ncpaint(iwindow * pParent) : _SuperT(pParent){}
 
-      void handle_msg(window_message& msg) override{
+      void handle_msg(_::window_message& msg) override{
         if (WM_NCPAINT == msg.umsg){
           if (1 == msg.wparam){
-            auto oDC = device_context::get_dcex(*this, DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
+            auto oDC = _::device_context::get_dcex(*this, DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
             auto oWindow = rect<coord_frame::screen>::get(*this);
 
             oWindow.offset(oWindow.position());
@@ -36,7 +39,7 @@ namespace wtf{
             auto oRegion = region::attach((HRGN)msg.wparam);
             oRegion.offset(oWindow.position());
 
-            auto oDC = device_context::get_dcex(*this, oRegion, DCX_EXCLUDERGN | DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
+            auto oDC = _::device_context::get_dcex(*this, oRegion, DCX_EXCLUDERGN | DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
 
             oWindow.offset(oWindow.position());
             rect<coord_frame::client> oClient(oWindow);

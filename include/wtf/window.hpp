@@ -1,14 +1,16 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
 
-  template <typename _ImplT> class window;
+  template <typename _ImplT> struct window;
   
   /** Specialization that terminates the inheritance hierarchy
   * super-most base class of all windows
   */
-  template <> class window<void>{    
-  public:
+  template <> struct window<void>{    
     /// an implementation may use different window styles 
     static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
     static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
@@ -37,7 +39,7 @@ namespace wtf{
 
     const std::vector<window*>& children() const{ return _children; }
 
-	  virtual const std::type_info& type() const = 0;
+    virtual const std::type_info& type() const = 0;
 
     HWND operator*() const{ return _handle; }
     operator HWND() const{ return _handle; }
@@ -45,32 +47,42 @@ namespace wtf{
     void add(window*pChild){
       assert(pChild && !pChild->_handle);
       _children.push_back(pChild);
-      if (_handle) pChild->exec();
+      if (_handle){
+        if (pChild->_handle){
+          ::SetParent(*pChild, *this);
+        } else{
+          pChild->exec();
+        }
+      }
     }
+
+    callback<void()> OnCreated;
 
   protected:
 
-	  template <typename _ImplT> friend class window;
-
-
+    template <typename> friend struct window;
 
     window * _parent;
     HWND _handle;
     std::vector<window*> _children;
 
     virtual int exec() = 0;
-
+    //this is different than WM_CREATE, its not part of windows and called by exec after CreateWindow returns
+    virtual void on_wm_created(){ OnCreated(); }
   };
 
-  template <typename _ImplT> class window : public iwindow{
-  public:
-    
-	  explicit window(iwindow * Parent) : iwindow(Parent) {}
+
+  template <typename _ImplT> struct window : iwindow{
+   
+    explicit window(iwindow * Parent) : iwindow(Parent) {}
+
   protected:
-    virtual void handle_msg(window_message& msg) {
+    template <typename> friend struct window;
+
+    virtual void handle_msg(_::window_message& msg) {
       if (msg.bhandled) return;
 #if __WTF_DEBUG_MESSAGES__
-      std::cout << GetTickCount() << " " <<  typeid(_ImplT).name() << " " << _::msg_name(msg.umsg) << " default handler" << std::endl;
+      std::cout << GetTickCount() << " " <<  typeid(_ImplT).name() << " " << _::msg_name(msg.umsg) << " default handler" << '\n';
 #endif
       if (msg.umsg == WM_CLOSE) {
         DestroyWindow(msg.hwnd);
@@ -86,6 +98,7 @@ namespace wtf{
             ::CreateWindowEx(_ImplT::ExStyle, window_class_type::get().name(), nullptr, _ImplT::Style,
             CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,(_parent ? _parent->_handle : nullptr),
             nullptr,_::instance_handle(),this), [](HWND h){ return nullptr == h; });
+      iwindow::on_wm_created();
       return 0;
     }
 
@@ -97,7 +110,7 @@ namespace wtf{
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
 
 #if __WTF_DEBUG_MESSAGES__
-      std::cout << GetTickCount() << " " << typeid(_ImplT).name()  << " " << _::msg_name(umsg) << std::endl;
+      std::cout << GetTickCount() << " " << typeid(_ImplT).name()  << " " << _::msg_name(umsg) << '\n';
 #endif
 
       try {
@@ -119,10 +132,10 @@ namespace wtf{
 
         if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
 
-        window_message msg{ hwnd, umsg, wparam, lparam, false, 0 };
+        _::window_message msg{ hwnd, umsg, wparam, lparam, false, 0 };
 
         if (WM_ERASEBKGND == umsg) {
-          auto oDC = wtf::device_context::get_client(hwnd);
+          auto oDC = wtf::_::device_context::get_client(hwnd);
           msg.lparam = reinterpret_cast<LPARAM>(&oDC);
           pThis->handle_msg(msg);
           return msg.lresult;
@@ -131,8 +144,8 @@ namespace wtf{
           if (0 == GetUpdateRect(hwnd, &r, FALSE)) {
             return DefWindowProc(hwnd, umsg, wparam, lparam);
           }
-          paint_struct oPaint(*pThis);
-          auto oDC = wtf::device_context::get_client(hwnd);
+          _::paint_struct oPaint(*pThis);
+          auto oDC = wtf::_::device_context::get_client(hwnd);
           msg.wparam = reinterpret_cast<WPARAM>(&oDC);
           msg.lparam = reinterpret_cast<LPARAM>(&oPaint);
           pThis->handle_msg(msg);

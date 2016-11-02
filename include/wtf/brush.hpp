@@ -1,6 +1,9 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 namespace wtf {
-    struct brush : std::unique_ptr<HBRUSH__, void (*)(HBRUSH)> {
+    struct brush : std::shared_ptr<HBRUSH__> {
       enum class hatch_style {
         b_diagonal = HS_BDIAGONAL,
         cross = HS_CROSS,
@@ -14,10 +17,10 @@ namespace wtf {
 
       brush &operator=(const brush &) = delete;
 
-      brush(brush &&src) : unique_ptr(std::move(src)) {}
+      brush(brush &&src) : shared_ptr(std::move(src)) {}
 
       brush &operator=(brush &&src) {
-        unique_ptr::swap(src);
+        shared_ptr::swap(src);
         return *this;
       }
 
@@ -47,7 +50,7 @@ namespace wtf {
 
     protected:
       template<typename ... _ArgTs>
-      explicit brush(_ArgTs &&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...) {}
+      explicit brush(_ArgTs &&...oArgs) : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
     };
 
 }

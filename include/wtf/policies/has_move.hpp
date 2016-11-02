@@ -1,12 +1,14 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT>
-    class has_move : public _SuperT{
-      
-    public:
 
+    template <typename _SuperT>
+    struct has_move : _SuperT{
+      
       enum class wm_size_flags{
         hide = SIZE_MAXHIDE,
         maximized = SIZE_MAXIMIZED,
@@ -22,14 +24,14 @@ namespace wtf{
 
       virtual int left() const{
         auto rc = rect<coord_frame::client>::get(*this);
-	      MapWindowPoints(*this, *_SuperT::_parent, reinterpret_cast<LPPOINT>(&rc), 2);
+        MapWindowPoints(*this, *_SuperT::_parent, reinterpret_cast<LPPOINT>(&rc), 2);
         return rc.left;
       }
 
       virtual int top() const{
         auto rc = rect<coord_frame::client>::get(*this);
         SetLastError(ERROR_INVALID_PARAMETER);
-	      MapWindowPoints(*this, *_SuperT::_parent, reinterpret_cast<LPPOINT>(&rc), 2);
+        MapWindowPoints(*this, *_SuperT::_parent, reinterpret_cast<LPPOINT>(&rc), 2);
         return rc.top;
       }
 

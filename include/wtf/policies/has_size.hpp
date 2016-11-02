@@ -1,14 +1,16 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
-  /** has_size
-  * Adds members to reposition/resize and events to capture them
-  */
   namespace policy{
+
+    /** has_size
+    * Adds members to reposition/resize and events to capture them
+    */
     template <typename _SuperT>
-    class has_size : public _SuperT{
-      
-    public:
+    struct has_size : _SuperT{
 
       virtual int width() const{
         auto r = rect<coord_frame::client>::get(*this);

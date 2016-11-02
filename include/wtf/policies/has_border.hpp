@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
@@ -13,15 +16,13 @@ namespace wtf{
     double_lowered,
   };
 
-  /** has_border
-  * Creates borders
-  */
   namespace policy{
+
+    /** has_border
+    * Creates borders
+    */
     template <typename _SuperT>
-    class has_border : public _SuperT{
-
-    public:
-
+    struct has_border :  _SuperT{
 
       virtual int border_width() const{
         switch (_border_style){
@@ -66,7 +67,7 @@ namespace wtf{
         );
       }
 
-      void on_wm_ncpaint(const device_context& dc, const rect<coord_frame::client>& oClient) override{
+      void on_wm_ncpaint(const _::device_context& dc, const rect<coord_frame::client>& oClient) override{
 
         auto highlight = pen::create(pen::style::solid, 1, border_highlight());
         auto shadow = pen::create(pen::style::solid, 1, border_shadow());
@@ -103,6 +104,8 @@ namespace wtf{
         client.top++;
         client.bottom--;
         switch (border_style()){
+          case border_styles::flat:
+          case border_styles::none:
           case border_styles::raised:
           case border_styles::lowered:
             return _SuperT::on_wm_ncpaint(dc, oClient);
@@ -128,7 +131,7 @@ namespace wtf{
       }
 
     private:
-      border_styles _border_style = border_styles::raised;
+      border_styles _border_style = border_styles::none;
       rgb _border_highlight = system_rgb<system_colors::button_highlight>();
       rgb _border_shadow = system_rgb<system_colors::button_shadow>();
       bool _draw_top = true;

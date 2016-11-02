@@ -1,14 +1,16 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
-  /** has_show
-  * Adds members to change the display state and capture display state changes
-  */
   namespace policy{
+
+    /** has_show
+    * Adds members to change the display state and capture display state changes
+    */
     template <typename _SuperT>
-    class has_show : public _SuperT{
-     
-    public:
+    struct has_show :  _SuperT{
 
       virtual void show(){ ::ShowWindow(*this, SW_SHOW); }
 
@@ -19,5 +21,6 @@ namespace wtf{
       explicit has_show(iwindow * pParent) : _SuperT(pParent){}
 
     };
+
   }
 }

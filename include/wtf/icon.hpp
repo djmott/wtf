@@ -1,8 +1,11 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf {
 
-    struct icon : std::unique_ptr<HICON__, void (*)(HICON)> {
+    struct icon : std::shared_ptr<HICON__> {
       enum class system_icons {
         application = 32512,
         asterisk = 32516,
@@ -33,10 +36,10 @@ namespace wtf {
       icon(const icon&) = delete;
       icon &operator=(const icon &) = delete;
 
-      icon(icon &&src) : unique_ptr(std::move(src)) {}
+      icon(icon &&src) : shared_ptr(std::move(src)) {}
 
       icon &operator=(icon &&src) {
-        unique_ptr::swap(src);
+        shared_ptr::swap(src);
         return *this;
       }
 
@@ -44,7 +47,7 @@ namespace wtf {
 
     protected:
       template<typename ... _ArgTs>
-      icon(_ArgTs &&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...) {}
+      icon(_ArgTs &&...oArgs) : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
     };
   }
 

@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
@@ -8,10 +11,9 @@ namespace wtf{
   };
 
   namespace policy{
+
     template <typename _SuperT>
-    class has_font : public _SuperT{
-      
-    public:
+    struct has_font : _SuperT{
 
       virtual font_background_modes background_mode() const{ return _background_mode; }
       virtual void background_mode(font_background_modes newval){ _background_mode = newval; }
@@ -31,13 +33,13 @@ namespace wtf{
       explicit has_font(iwindow * pParent) : _SuperT(pParent){}
 
       
-      void on_wm_erasebkgnd(const device_context& dc, const rect<coord_frame::client>& client) override
+      void on_wm_erasebkgnd(const _::device_context& dc, const rect<coord_frame::client>& client) override
       {
         apply_font(dc);
         return _SuperT::on_wm_erasebkgnd(dc, client);
       }
 
-      void apply_font(const device_context& dc){
+      void apply_font(const _::device_context& dc){
         dc.select_object(font().open());
         wtf::exception::throw_lasterr_if(::SetBkMode(dc, static_cast<int>(background_mode())), [](int i){ return !i; });
         wtf::exception::throw_lasterr_if(::SetTextColor(dc, fore_color()), [](COLORREF c){ return CLR_INVALID == c; });
@@ -46,7 +48,7 @@ namespace wtf{
 
     private:
 
-      wtf::font _font = _::non_client_metrics::get().lfMessageFont;
+      wtf::font _font = wtf::_::non_client_metrics::get().lfMessageFont;
       rgb _fore_color = system_rgb<system_colors::window_text>();
       rgb _back_color = system_rgb<system_colors::button_face>();
       font_background_modes _background_mode = font_background_modes::transparent;

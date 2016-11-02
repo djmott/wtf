@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 
@@ -5,8 +8,8 @@ namespace wtf{
 
   namespace policy{
     template <typename _SuperT>
-    class isa_listbox : public _SuperT{
-    public:
+    struct isa_listbox : _SuperT{
+
       enum class selection_modes{
         single,
         multiple,
@@ -26,8 +29,8 @@ namespace wtf{
         _vscroll(this){}
 
       void on_wm_create() override{
-	      _SuperT::border_style(border_styles::raised);
-	      _SuperT::auto_draw_text(false);
+        _SuperT::border_style(border_styles::raised);
+        _SuperT::auto_draw_text(false);
         _SuperT::on_wm_create();
       };
 
@@ -36,7 +39,7 @@ namespace wtf{
         _SuperT::on_wm_size(p);
       };
 
-      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
         if (!_Items.size()) return _SuperT::on_wm_paint(dc, ps);
         auto client = ps.client();
         auto oTextSize = dc.get_text_extent(_Items[0]);
@@ -53,8 +56,7 @@ namespace wtf{
               break;
             }
           }
-	        _SuperT::text(_Items[i + _TopIndex]);
-	        _SuperT::draw_text(dc, _ItemRects[i]);
+          _SuperT::draw_text(dc, _ItemRects[i], _Items[i + _TopIndex].c_str());
         }
         _SuperT::on_wm_paint(dc, ps);
       };
@@ -74,7 +76,7 @@ namespace wtf{
           if (!_ItemRects[i].is_in(m.position)) continue;
           _SelectedItems.push_back(_TopIndex + static_cast<int>(i));
         }
-	      _SuperT::invalidate();
+        _SuperT::invalidate();
         _SuperT::on_wm_click(m);
       };
 
@@ -99,12 +101,12 @@ namespace wtf{
           __super_t::on_wm_create();
         };
 
-        virtual void StepIncEvent(){
+        void StepIncEvent() override{
           if ((_Parent->_TopIndex + _Parent->_ItemRects.size()) < _Parent->_Items.size()) _Parent->_TopIndex++;
           _Parent->invalidate();
         }
 
-        virtual void StepDecEvent(){
+        void StepDecEvent() override{
           if (!_Parent->_TopIndex) return;
           --_Parent->_TopIndex;
           _Parent->invalidate();

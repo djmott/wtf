@@ -1,27 +1,29 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 
 namespace wtf{
   namespace policy{
+
     template <typename _SuperT>
-    class isa_toggle_button : public _SuperT{
-
-    public:
-
-      explicit isa_toggle_button(iwindow * pParent) : _SuperT(pParent){}
+    struct isa_toggle_button : _SuperT{
 
       bool value() const{ return _value; }
       void value(bool newval){
         if (newval == _value) return;
         _value = newval;
-	      _SuperT::border_style((_value ? border_styles::lowered : border_styles::raised));
-	      _SuperT::invalidate();
+        _SuperT::border_style((_value ? border_styles::lowered : border_styles::raised));
+        _SuperT::invalidate();
       }
 
     protected:
 
+      explicit isa_toggle_button(iwindow * pParent) : _SuperT(pParent){}
+      
       void on_wm_create() override{
-	      _SuperT::border_style(border_styles::raised);
+        _SuperT::border_style(border_styles::raised);
         _SuperT::on_wm_create();
       };
 

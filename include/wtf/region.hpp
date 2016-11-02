@@ -1,13 +1,16 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf {
 
-    struct region : std::unique_ptr<HRGN__, void (*)(HRGN)> {
+    struct region : std::shared_ptr<HRGN__> {
 
-      region(region &&src) : unique_ptr(std::move(src)) {}
+      region(region &&src) : shared_ptr(std::move(src)) {}
 
       region &operator=(region &&src) {
-        unique_ptr::swap(src);
+        shared_ptr::swap(src);
         return *this;
       }
 
@@ -40,7 +43,7 @@ namespace wtf {
 
     protected:
       template<typename ... _ArgTs>
-      region(_ArgTs &&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...) {}
+      region(_ArgTs &&...oArgs) : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
     };
   }
 

@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 
@@ -11,10 +14,12 @@ namespace wtf{
   };
 
   namespace policy{
+
     template <typename _SuperT>
-    class isa_tab_page : public _SuperT{
+    struct isa_tab_page :  _SuperT{
+
     protected:
-      template <typename> friend class isa_tab_container;
+      template <typename> friend struct isa_tab_container;
       isa_tab_page(iwindow * pParent) : _SuperT(pParent){}
     };
   }
@@ -31,13 +36,12 @@ namespace wtf{
   };
 
   namespace policy{
-    template <typename _SuperT>
-    class isa_tab_container : public _SuperT{
-    public:
 
+    template <typename _SuperT>
+    struct isa_tab_container : _SuperT{
 
       explicit isa_tab_container(iwindow * pParent) : _SuperT(pParent), _button_bar_slider(this){
-	      _SuperT::border_style(border_styles::none);
+        _SuperT::border_style(border_styles::none);
       }
 
       template <typename _Ty>
@@ -46,9 +50,8 @@ namespace wtf{
         _pages.push_back(oRet);
         oRet->page().border_style(border_styles::raised);
         oRet->button.border_style(border_styles::flat);
-	      if (_SuperT::_handle) {
-          oRet->page().exec();
-          oRet->button.exec();
+        if (_SuperT::_handle) {
+          oRet->exec();
           active_page(_active_page);
         }
         return oRet->page();
@@ -83,8 +86,7 @@ namespace wtf{
       int exec() override{
         auto iRet = _SuperT::exec();
         for (auto & oPage : _pages){
-          oPage->page().exec();
-          oPage->button.exec();
+          oPage->exec();
         }
         return iRet;
       }
@@ -138,13 +140,17 @@ namespace wtf{
         virtual tab_page& page() = 0;
         virtual const tab_page& page() const = 0;
 
+        virtual void exec() {
+          button.exec();
+        }
+
         class button : public window_impl<button, policy::isa_button>{
           using __super_t = window_impl<button, policy::isa_button>;
-          template <typename> friend class isa_tab_container;
+          template <typename> friend struct isa_tab_container;
         public:
 
           button(isa_tab_container * pParent, size_t PageIndex, const tstring& stitle)
-            : __super_t(pParent), _parent(pParent), _PageIndex(PageIndex), _title(stitle) 
+            : __super_t(pParent), _parent(pParent), _PageIndex(PageIndex), _title(stitle)
           {
             __super_t::text(_title);
             __super_t::enable_border_elements(true, true, false, true);
@@ -182,6 +188,7 @@ namespace wtf{
 
         }button;
 
+
         void deactivate(){
           page().hide();
           page().zorder(zorders::bottom);
@@ -201,12 +208,17 @@ namespace wtf{
 
       template <typename _Ty>
       struct page_info : ipage_info{
-	      template <typename> friend class isa_tab_container;
+        template <typename> friend struct isa_tab_container;
 
         _Ty _page;
 
         tab_page& page() override{ return _page; }
         const tab_page& page() const override{ return _page; }
+
+        void exec() override {
+          _page.exec();
+          ipage_info::exec();
+        }
 
         page_info(isa_tab_container * pParent, const tstring& sTitle, size_t PageIndex)
           : ipage_info(pParent, sTitle, PageIndex), _page(pParent){}

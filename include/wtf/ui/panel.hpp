@@ -1,18 +1,17 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
 
   namespace policy{
     template <typename _SuperT>
-    class isa_panel : public _SuperT{
+    struct isa_panel : _SuperT{
 
     protected:
 
       explicit isa_panel(iwindow * pParent) : _SuperT(pParent){}
-      
-      void on_wm_create() override{ _SuperT::on_wm_create(); }
-      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{ _SuperT::on_wm_paint(dc, ps); }
-      void on_wm_size(const point<coord_frame::client>& pt) override{ _SuperT::on_wm_size(pt); }
 
     };
   }

@@ -1,21 +1,27 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
 
-  /** has_mouse_leave
-  * produces mouse leave events
-  */
 
   namespace policy{
+    /** produces OnMouseLeave event 
+    */
     template <typename _SuperT>
-    class wm_mouse_leave : public _SuperT{
+    struct wm_mouse_leave : _SuperT{
+
+      callback<void()> OnMouseLeave;
+
+
     protected:
 
-      virtual void on_wm_mouse_leave(){}
+      virtual void on_wm_mouse_leave(){ OnMouseLeave(); }
 
       explicit wm_mouse_leave(iwindow * pParent) : _SuperT(pParent){}
 
-      void handle_msg(window_message& msg) override{
+      void handle_msg(_::window_message& msg) override{
         if (WM_CREATE == msg.umsg){
           TRACKMOUSEEVENT oEvent;
           memset(&oEvent, 0, sizeof(TRACKMOUSEEVENT));

@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
@@ -9,14 +12,14 @@ namespace wtf{
 
   namespace policy{
     template <typename _SuperT>
-    class wm_geticon : public _SuperT{
+    struct wm_geticon : _SuperT{
     protected:
 
       virtual HICON on_wm_geticon(icon_type) = 0;
 
       explicit wm_geticon(iwindow * pParent) : _SuperT(pParent){}
 
-      void handle_msg(window_message& msg) override{
+      void handle_msg(_::window_message& msg) override{
         if (WM_GETICON == msg.umsg){
           msg.lresult = reinterpret_cast<LRESULT>(on_wm_geticon(static_cast<icon_type>(msg.wparam)));
           msg.bhandled = true;

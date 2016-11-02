@@ -1,17 +1,18 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
-  /** has_close
-  * Add members to close a UI element and events to capture it
-  */
   namespace policy{
-    template <typename _SuperT>
-    class has_close : public _SuperT{
 
-    public:
+    /** has_close
+    * Add close method
+    */
+    template <typename _SuperT>
+    struct has_close :  _SuperT{
 
       void close(){ CloseWindow(*this); }
-
 
     protected:
 

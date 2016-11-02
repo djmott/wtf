@@ -1,15 +1,16 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
-  /** has_cursor
-  * Provides mouse pointer customization
-  */
   namespace policy{
-    template <typename _SuperT>
-    class has_cursor : public _SuperT{
 
-      
-    public:
+    /** has_cursor
+    * Provides mouse pointer customization
+    */
+    template <typename _SuperT>
+    struct has_cursor : _SuperT{
 
       virtual const wtf::cursor &cursor_pointer() const{ return cursor::global(cursor::style::arrow); }
 

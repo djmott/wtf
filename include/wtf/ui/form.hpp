@@ -1,11 +1,12 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
   namespace policy{
     template <typename _SuperT>
-    class isa_form : public _SuperT{
-
-    public:
+    struct isa_form : _SuperT{
 
       static const DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW;
       static const DWORD Style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
@@ -20,7 +21,7 @@ namespace wtf{
       }
 
       int exec() override{
-        message oMsg;
+        _::message oMsg;
         _SuperT::exec();
         auto iRet = oMsg.pump();
         return iRet;
@@ -50,8 +51,8 @@ namespace wtf{
       void on_wm_destroy() override{
         bool bQuit = false;
         {
-          std::unique_lock<std::mutex> oLock(_::_active_forms_lock());
-          auto & oForms = _::_active_forms();
+          std::unique_lock<std::mutex> oLock(wtf::_::_active_forms_lock());
+          auto & oForms = wtf::_::_active_forms();
           auto it = std::find(oForms.begin(), oForms.end(), this);
           if (oForms.end() != it){
             oForms.erase(it);
@@ -63,8 +64,8 @@ namespace wtf{
       }
 
       void on_wm_create() override{
-        std::unique_lock<std::mutex> oLock(_::_active_forms_lock());
-        _::_active_forms().push_back(this);
+        std::unique_lock<std::mutex> oLock(wtf::_::_active_forms_lock());
+        wtf::_::_active_forms().push_back(this);
         _SuperT::on_wm_create();
       }
 
@@ -72,8 +73,10 @@ namespace wtf{
   }
 
   template <> struct policy_traits<policy::isa_form>{
-    using requires = policy_list<policy::wm_destroy, policy::wm_create, policy::has_cursor, policy::has_icon,
-    policy::has_titlebar, policy::has_size, policy::has_move, policy::has_show, policy::wm_size>;
+    using requires = policy_list<policy::has_background, policy::has_cursor, policy::has_icon,
+    policy::has_titlebar, policy::has_size, policy::has_move, policy::has_show,
+    policy::wm_destroy, policy::wm_create, policy::wm_size, policy::wm_close,
+    policy::wm_showwindow, policy::wm_activate>;
   };
 
   struct form : window_impl<form, policy::isa_form>{

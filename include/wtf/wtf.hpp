@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 #define NOMINMAX 1
@@ -18,45 +21,76 @@
 #include <iterator>
 #include <sstream>
 #include <mutex>
+#include <locale>
 
-
+/** @namespace wtf
+Primary namespace
+*/
 namespace wtf {
 
-	using tstring = std::basic_string<TCHAR>;
-	using tstringstream = std::basic_stringstream<TCHAR>;
 
-	enum class coord_frame {
-		screen,
-		client,
-	};
+  /** @enum coord_frame
+  Distinguishes coordinate frame relative to the screen or window client area  
+  */
+  enum class coord_frame {
+    screen, /**< screen relative */
+    client, /**< window client area relative */
+  };
 
-	template <typename _ImplT> class window;
+  template <class _ImplT> struct window;
   
-	using iwindow = window<void>;
+  using iwindow = window<void>;
 
-	//this is the internal 'hidden' namespace not for external consumption
-	namespace _ {
-		static std::mutex& _active_forms_lock() {
-			static std::mutex _forms_lock;
-			return _forms_lock;
-		}
+  /** @typedef tstring
+  Primary string representation based on stl. Can be either MULTIBYTE or UNICODE depending on compilation mode.
+  */
+  using tstring = std::basic_string<TCHAR>;
 
-		static std::vector<const iwindow*>& _active_forms() {
-			static std::vector<const iwindow*> _forms;
-			return _forms;
-		}
+  /** @namespace wtf::_
+  Hidden namespace for internal structures and algorithms not for external consumption
+  */
+  namespace _ {
+    static std::mutex& _active_forms_lock() {
+      static std::mutex _forms_lock;
+      return _forms_lock;
+    }
 
-		extern "C" HINSTANCE__ __ImageBase;
-		inline static HINSTANCE instance_handle(){ return &__ImageBase; }
-	}
+    static std::vector<const iwindow*>& _active_forms() {
+      static std::vector<const iwindow*> _forms;
+      return _forms;
+    }
+
+    extern "C" HINSTANCE__ __ImageBase;
+    inline static HINSTANCE instance_handle(){ return &__ImageBase; }
+
+    template <typename, int> struct to_tstring_impl;
+
+    template <typename _Ty> struct to_tstring_impl<_Ty, sizeof(wchar_t)>{
+      static tstring get(const _Ty& value){ return std::to_wstring(value); }
+    };
+    template <typename _Ty> struct to_tstring_impl<_Ty, sizeof(char)>{
+      static tstring get(const _Ty& value){ return std::to_string(value); }
+    };
+  }
 
 
-	static const std::vector<const iwindow*>& active_forms() { return _::_active_forms(); }
+  template <typename _Ty> static tstring to_tstring(_Ty value){ return _::to_tstring_impl<_Ty, sizeof(TCHAR)>::get(value); }
 
-	template <template <typename> typename ... _Policies> struct policy_list;
-	template <template <typename> typename> struct policy_traits {
-		using requires = policy_list<>;
-	};
+  /** @namespace wtf::policy
+  Contains the behavioral policies
+  */
+  namespace policy{}
+
+  static const std::vector<const iwindow*>& active_forms() { return _::_active_forms(); }
+
+  template <template <class> class ... _Policies> struct policy_list;
+  template <template <class> class> struct policy_traits {
+    using requires = policy_list<>;
+  };
+
+
+  
+
 }
 
 
@@ -73,9 +107,8 @@ namespace wtf {
 #include "pen.hpp"
 #include "region.hpp"
 #include "font.hpp"
-#include "window_message.hpp"
 
-
+#include "_/window_message.hpp"
 #include "_/window_class_ex.hpp"
 #include "_/device_context.hpp"
 #include "_/msg_names.hpp"
