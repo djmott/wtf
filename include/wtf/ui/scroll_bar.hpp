@@ -180,13 +180,16 @@ namespace wtf{
     };
   }
 
-  template <> struct policy_traits<policy::isa_scrollbar>{
-    using requires = policy_list<policy::isa_panel, policy::wm_mouse_wheel, policy::has_orientation>;
-  };
+  namespace _{
+
+    template <> struct policy_traits<policy::isa_scrollbar>{
+      using requires = policy_list<policy::isa_panel, policy::wm_mouse_wheel, policy::has_orientation>;
+    };
+
+  }
 
   struct scrollbar : window_impl<scrollbar, policy::isa_scrollbar>{
     explicit scrollbar(iwindow * pParent) : window_impl(pParent){}
   };
-
 
 }

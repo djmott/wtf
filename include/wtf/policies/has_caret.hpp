@@ -83,9 +83,10 @@ namespace wtf{
     };
   }
 
-  template <> struct policy_traits<policy::has_caret>{
-    using requires = policy_list<policy::wm_setfocus, policy::wm_killfocus>;
-  };
-
+  namespace _{
+    template <> struct policy_traits<policy::has_caret>{
+      using requires = policy_list<policy::wm_setfocus, policy::wm_killfocus>;
+    };
+  }
 
 }

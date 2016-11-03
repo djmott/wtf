@@ -13,11 +13,13 @@ namespace wtf{
     template <typename _SuperT>
     struct has_click : _SuperT{
 
+      callback<void(mouse_msg_param)> OnClick;
+
     protected:
 
       explicit has_click(iwindow * pParent) : _SuperT(pParent){}
 
-      virtual void on_wm_click(const mouse_msg_param&){}
+      virtual void on_wm_click(const mouse_msg_param& p){ OnClick(p); }
 
       void on_wm_mouse_down(const mouse_msg_param& oParam) override{
         _Down = oParam.button;
@@ -36,7 +38,9 @@ namespace wtf{
     };
   }
 
-  template <> struct policy_traits<policy::has_click>{
-    using requires = policy_list<policy::wm_mouse_down, policy::wm_mouse_up>;
-  };
+  namespace _{
+    template <> struct policy_traits<policy::has_click>{
+      using requires = policy_list<policy::wm_mouse_down, policy::wm_mouse_up>;
+    };
+  }
 }

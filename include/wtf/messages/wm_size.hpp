@@ -6,9 +6,16 @@
 namespace wtf{
 
   namespace policy{
+    /** @class wm_size 
+    captures WM_SIZE message and produces OnSize event
+    @ingroup Messages
+    */
     template <typename _SuperT>
     struct wm_size : _SuperT{
 
+      /** @var OnSize The window has been resized
+      @ingroup Callbacks
+      */
       callback<void(const point<coord_frame::client>&)> OnSize;
 
     protected:

@@ -37,8 +37,9 @@ namespace wtf{
     };
   }
 
-  template <> struct policy_traits<policy::has_icon>{
-    using requires = policy_list<policy::wm_geticon>;
-  };
-
+  namespace _{
+    template <> struct policy_traits<policy::has_icon>{
+      using requires = policy_list<policy::wm_geticon>;
+    };
+  }
 }

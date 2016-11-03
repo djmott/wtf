@@ -84,76 +84,74 @@ namespace wtf{
       };
 
     }
+
+
+    template <> struct policy_list<>{
+      template<template <class> class ... _AppendT>
+      using append = policy_list<_AppendT...>;
+
+      template <class _AppendT>
+      using append_list = _AppendT;
+
+      template <template <class> class _TargetT>
+      using exists = std::false_type;
+
+      template <template <class> class _TargetT>
+      using remove = policy_list<>;
+
+      using reverse = policy_list<>;
+
+      using dedup = policy_list<>;
+
+    };
+
+    template <template <class> class _HeadT, template <class> class ... _TailT>
+    struct policy_list<_HeadT, _TailT...> : policy_list<_TailT...>{
+
+      template<template <class> class ... _AppendT>
+      using append = policy_list<_HeadT, _TailT..., _AppendT...>;
+
+      template <class _AppendT>
+      using append_list = typename _::policy_list_impl::append_list<policy_list<_HeadT, _TailT...>, _AppendT>::type;
+
+      template <template <class> class _TargetT>
+      using exists = typename _::policy_list_impl::exists<_TargetT, _HeadT, _TailT...>::type;
+
+
+      using reverse = typename _::policy_list_impl::reverse<_HeadT, _TailT...>::type;
+
+      using dedup = typename _::policy_list_impl::undup_list<policy_list<_HeadT, _TailT...>>::type;
+    };
+
+
+    template <class> struct policy_collector;
+    template <> struct policy_collector<policy_list<>>{ using type = policy_list<>; };
+
+
+    template <template <class> class _HeadT, template <class> class ... _TailT>
+    struct policy_collector<policy_list<_HeadT, _TailT...>>{
+      using head_reqs = typename policy_traits<_HeadT>::requires;
+      using tail_list = typename policy_list<_TailT...>::template append_list<head_reqs>;
+      using full_reqs = typename policy_collector<tail_list>::type;
+      using type = typename policy_list<_HeadT>::template append_list<full_reqs>;
+    };
+
+
+    template <class _ImplT, class _PolicyListT> struct construct_hierarchy;
+    template <class _ImplT> struct construct_hierarchy<_ImplT, policy_list<>>{ using type = wtf::window<_ImplT>; };
+    template <class _ImplT, template <class> class _HeadT, template <class> class ... _TailT>
+    struct construct_hierarchy<_ImplT, policy_list<_HeadT, _TailT...>>{
+      using tail_hierarchy = typename construct_hierarchy<_ImplT, policy_list<_TailT...>>::type;
+      using type = _HeadT<tail_hierarchy>;
+    };
+
+    template <class _ImplT, template <class> class ... _Policies> struct normalized_policies{
+      using collected_policies = typename policy_collector<policy_list<_Policies...>>::type;
+      using reversed_policies = typename collected_policies::reverse;
+      using unique_policies = typename reversed_policies::dedup;
+      using unique_ordered_policies = typename unique_policies::reverse;
+      using type = typename construct_hierarchy<_ImplT, unique_ordered_policies>::type;
+    };
+
   }
-
-
-  template <> struct policy_list<>{
-    template<template <class> class ... _AppendT>
-    using append = policy_list<_AppendT...>;
-
-    template <class _AppendT>
-    using append_list = _AppendT;
-
-    template <template <class> class _TargetT>
-    using exists = std::false_type;
-
-    template <template <class> class _TargetT>
-    using remove = policy_list<>;
-
-    using reverse = policy_list<>;
-
-    using dedup = policy_list<>;
-
-  };
-
-  template <template <class> class _HeadT, template <class> class ... _TailT>
-  struct policy_list<_HeadT, _TailT...> : policy_list<_TailT...>{
-
-    template<template <class> class ... _AppendT>
-    using append = policy_list<_HeadT, _TailT..., _AppendT...>;
-
-    template <class _AppendT>
-    using append_list = typename _::policy_list_impl::append_list<policy_list<_HeadT, _TailT...>, _AppendT>::type;
-
-    template <template <class> class _TargetT>
-    using exists = typename _::policy_list_impl::exists<_TargetT, _HeadT, _TailT...>::type;
-
-
-    using reverse = typename _::policy_list_impl::reverse<_HeadT, _TailT...>::type;
-
-    using dedup = typename _::policy_list_impl::undup_list<policy_list<_HeadT, _TailT...>>::type;
-  };
-
-
-  template <class> struct policy_collector;
-  template <> struct policy_collector<policy_list<>>{ using type = policy_list<>; };
-
-  
-  template <template <class> class _HeadT, template <class> class ... _TailT>
-  struct policy_collector<policy_list<_HeadT, _TailT...>>{
-    using head_reqs = typename policy_traits<_HeadT>::requires;
-    using tail_list = typename policy_list<_TailT...>::template append_list<head_reqs>;
-    using full_reqs = typename policy_collector<tail_list>::type;
-    using type = typename policy_list<_HeadT>::template append_list<full_reqs>;
-  };
-
-
-
-
-  template <class _ImplT, class _PolicyListT> struct construct_hierarchy;
-  template <class _ImplT> struct construct_hierarchy<_ImplT, policy_list<>>{ using type = wtf::window<_ImplT>; };
-  template <class _ImplT, template <class> class _HeadT, template <class> class ... _TailT>
-  struct construct_hierarchy<_ImplT, policy_list<_HeadT, _TailT...>>{
-    using tail_hierarchy = typename construct_hierarchy<_ImplT, policy_list<_TailT...>>::type;
-    using type = _HeadT<tail_hierarchy>;
-  };
-
-  template <class _ImplT, template <class> class ... _Policies> struct normalized_policies{
-    using collected_policies = typename policy_collector<policy_list<_Policies...>>::type;
-    using reversed_policies = typename collected_policies::reverse;
-    using unique_policies = typename reversed_policies::dedup;
-    using unique_ordered_policies = typename unique_policies::reverse;
-    using type = typename construct_hierarchy<_ImplT, unique_ordered_policies>::type;
-  };
-
 }

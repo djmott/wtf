@@ -160,14 +160,16 @@ namespace wtf{
     };
   }
 
-  template <> struct policy_traits<policy::isa_textbox>{
-    using requires = policy_list<policy::isa_label, policy::has_cursor, policy::has_caret,
-      policy::has_focus, policy::wm_keydown, policy::wm_char>;
-  };
+  namespace _{
+    template <> struct policy_traits<policy::isa_textbox>{
+      using requires = policy_list<policy::isa_label, policy::has_cursor, policy::has_caret,
+        policy::has_focus, policy::wm_keydown, policy::wm_char>;
+    };
+
+  }
 
   struct textbox : window_impl<textbox, policy::isa_textbox>{
     explicit textbox(iwindow * pParent) : window_impl(pParent){}
   };
-
 
 }

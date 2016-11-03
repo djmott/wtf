@@ -46,6 +46,7 @@ namespace wtf {
   */
   using tstring = std::basic_string<TCHAR>;
 
+
   /** @namespace wtf::_
   Hidden namespace for internal structures and algorithms not for external consumption
   */
@@ -71,6 +72,13 @@ namespace wtf {
     template <typename _Ty> struct to_tstring_impl<_Ty, sizeof(char)>{
       static tstring get(const _Ty& value){ return std::to_string(value); }
     };
+
+    template <template <class> class ... _Policies> struct policy_list;
+
+    template <template <class> class> struct policy_traits{
+      using requires = policy_list<>;
+    };
+
   }
 
 
@@ -83,16 +91,12 @@ namespace wtf {
 
   static const std::vector<const iwindow*>& active_forms() { return _::_active_forms(); }
 
-  template <template <class> class ... _Policies> struct policy_list;
-  template <template <class> class> struct policy_traits {
-    using requires = policy_list<>;
-  };
-
-
-  
 
 }
 
+/**
+@defgroup UI Widgets
+*/
 
 #include "exception.hpp"
 #include "message_box.hpp"
@@ -117,10 +121,10 @@ namespace wtf {
 #include "_/paint_struct.hpp"
 #include "_/SystemParameters.hpp"
 #include "_/message.hpp"
+#include "_/policy_list.hpp"
 
 
 #include "window.hpp"
-#include "policy_list.hpp"
 #include "window_impl.hpp"
 
 
@@ -181,6 +185,7 @@ namespace wtf {
 #include "ui/checkbox.hpp"
 #include "ui/form.hpp"
 #include "ui/listbox.hpp"
+#include "ui/menu.hpp"
 #include "ui/progress_bar.hpp"
 #include "ui/split_container.hpp"
 #include "ui/tab_container.hpp"

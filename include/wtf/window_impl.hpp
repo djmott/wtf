@@ -6,8 +6,8 @@
 namespace wtf{
 
   template <typename _ImplT, template <typename> typename..._Policies> 
-  class window_impl : public normalized_policies<_ImplT, _Policies...>::type{
-    using __super_t = typename normalized_policies<_ImplT, _Policies...>::type;
+  class window_impl : public wtf::_::normalized_policies<_ImplT, _Policies...>::type{
+    using __super_t = typename wtf::_::normalized_policies<_ImplT, _Policies...>::type;
   public:
     template <typename ... _ParamTs> window_impl(_ParamTs&&...oParam) : __super_t(std::forward<_ParamTs>(oParam)...){}
   protected:
