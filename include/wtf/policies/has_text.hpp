@@ -69,7 +69,7 @@ namespace wtf{
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
 
-      virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client, LPCTSTR str){
+      virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client, LPCTSTR str, int length=-1){
           wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
                                          [](UINT i){ return GDI_ERROR == i; });
 
@@ -93,7 +93,7 @@ namespace wtf{
 
         rect<coord_frame::client> oClient = client;
 
-        wtf::exception::throw_lasterr_if(::DrawText(dc, str, -1, &oClient, format),
+        wtf::exception::throw_lasterr_if(::DrawText(dc, str, length, &oClient, format),
                                          [](BOOL b){ return !b; });
 
       }

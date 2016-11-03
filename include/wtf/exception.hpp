@@ -13,6 +13,7 @@ namespace wtf{
       template<typename _TestT, typename _ExprT>
       static _TestT _throw_lasterr_if(_TestT test, const char *sfile, int line, const char *sTest, _ExprT expr){
         if (!expr(test)) return test; 
+        assert(false);
         throw exception(sfile, line, sTest, GetLastError());        
       }
 

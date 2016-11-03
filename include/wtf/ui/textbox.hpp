@@ -32,9 +32,10 @@ namespace wtf{
         _SuperT::border_style(border_styles::lowered);
         _SuperT::text_vertical_alignment(text_vertical_alignments::top);
         _SuperT::text_horizontal_alignment(text_horizontal_alignments::left);
-        _SuperT::caret_width(2);
+        _SuperT::caret_width(1);
         _SuperT::auto_draw_text(false);
-        _SuperT::caret_blink_rate(250);
+        _SuperT::caret_blink_rate(300);
+        _SuperT::multiline(false);
         _SuperT::on_wm_create();
       };
 
@@ -42,7 +43,16 @@ namespace wtf{
       void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
         auto otext_metrics = wtf::_::text_metrics::get(dc);
         _SuperT::draw_text(dc, ps.client(), _SuperT::_text.c_str() + _print);
-        auto oCaretPos = dc.get_text_extent(_SuperT::_text.c_str() + _print, _print - _edit);
+        point<coord_frame::client> oCaretPos{ 0, otext_metrics.tmHeight };
+        if (_edit > _print){
+          auto oTextSize = dc.get_text_extent(_SuperT::_text.c_str() + _print, _edit - _print);
+          oCaretPos.x = oTextSize.cx; 
+        }
+        _SuperT::on_wm_paint(dc, ps);
+        _SuperT::create_caret();
+        _SuperT::caret_height(otext_metrics.tmHeight);
+        _SuperT::caret_visible(true);
+        _SuperT::caret_position(oCaretPos);
       };
 
       void on_wm_size(const point<coord_frame::client>& p) override{
@@ -58,49 +68,84 @@ namespace wtf{
 
 
       void on_wm_char(UINT character, keyboard_msg_param k) override{
+        std::cout << std::hex << "on_wm_char character: " << character << '\n';
         switch (character){
-          case _T('\9'):{
-            backspace(); break;
-          }
-          case _T('\n'):{
-
-          }
-          default:{
-            assert(std::isprint(character, std::locale("en_US")));
+          case VK_ESCAPE:
+          case VK_BACK:
+          case VK_TAB:
+          case _T('\r'):
+          case _T('\n'):
+            break;
+          default:
+          {
+            _SuperT::_text.insert(_edit, 1, static_cast<TCHAR>(character));
+            ++_edit;
+            auto oDC = _::device_context::get_client(*this);
+            for (;;){              
+              auto oTextSize = oDC.get_text_extent(_SuperT::_text.c_str() + _print, _edit - _print);
+              if (_print >= _edit || oTextSize.cx < _size.x) break;
+              ++_print;
+            }
+            break;
           }
         }
         _SuperT::invalidate();
         _SuperT::on_wm_char(character, k);
       };
 
-      void on_wm_keydown(UINT key, keyboard_msg_param k) override{
+      void on_wm_keydown(UINT key, keyboard_msg_param param) override{
+        std::cout << std::hex << "on_wm_keydown key: " << key << '\n';
+        const auto cstr = _SuperT::_text.c_str();
+        auto cstrlen = _SuperT::_text.size();
+        if (!cstrlen) return _SuperT::on_wm_keydown(key, param);
         switch (key){
-          case VK_LEFT:{
-
+          case VK_LEFT:
+          case VK_BACK:
+          case VK_DELETE:
+          {
+            if (!_edit) break;
+            if (VK_DELETE != key) --_edit;
+            if (VK_BACK == key || VK_DELETE == key) _SuperT::_text.erase(_edit, 1);
+            auto oDC = _::device_context::get_client(*this);
+            for (; _print && _print > _edit - 4; --_print){
+              auto oTextSize = oDC.get_text_extent(cstr + _print, _edit - _print);
+              if (oTextSize.cx >= _size.x) break;
+            }
+            break;
           }
-          case VK_RIGHT:{
-
+          case VK_RIGHT:
+          {
+            if (_edit >= cstrlen) break;
+            ++_edit;
+            auto oDC = _::device_context::get_client(*this);
+            for (;;){
+              auto oTextSize = oDC.get_text_extent(cstr + _print, _edit - _print);
+              if (_print >= _edit || oTextSize.cx < _size.x) break;
+              ++_print;
+            }
+            break;
           }
-          case VK_UP:{
-
+          case VK_HOME:
+          {
+            _print = _edit = 0;
+            break;
           }
-          case VK_DOWN:{
-
-          }
-          case VK_BACK:{
-
-          }
-          case VK_HOME:{
-
-          }
-          case VK_END:{
-
+          case VK_END:
+          {
+            _edit = _print = static_cast<int>(cstrlen);
+            if (!cstrlen) break;
+            auto oDC = _::device_context::get_client(*this);
+            for (;;){
+              auto oTextSize = oDC.get_text_extent(cstr + _print, _edit - _print);
+              if (!_print || oTextSize.cx > _size.x) break;
+              ++_print;
+            }
+            break;
           }
         }
         _SuperT::invalidate();
-        _SuperT::on_wm_keydown(key, k);
-
-      };
+        _SuperT::on_wm_keydown(key, param);
+      }
 
       const wtf::cursor& cursor_pointer() const override{ return cursor::global(cursor::style::ibeam); }
 

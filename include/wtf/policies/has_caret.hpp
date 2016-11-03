@@ -22,13 +22,13 @@ namespace wtf{
 
       virtual void caret_blink_rate(UINT newval){
         _blink_rate = newval;
-        wtf::exception::throw_lasterr_if(::SetCaretBlinkTime(newval), [](BOOL b){ return !b; });
+        _has_focus && wtf::exception::throw_lasterr_if(::SetCaretBlinkTime(newval), [](BOOL b){ return !b; });
       }
 
     protected:
 
       virtual void create_caret(){
-        wtf::exception::throw_lasterr_if(::CreateCaret(*this, nullptr, _width, _height), [](BOOL b){ return !b; });
+        _has_focus && wtf::exception::throw_lasterr_if(::CreateCaret(*this, nullptr, _width, _height), [](BOOL b){ return !b; });
         _caret_visible = false;
       }
 
@@ -42,15 +42,15 @@ namespace wtf{
         if (_caret_visible == newval) return;
         _caret_visible = newval;
         if (_caret_visible){
-          wtf::exception::throw_lasterr_if(::HideCaret(*this), [](BOOL b){ return !b; });
+          _has_focus && wtf::exception::throw_lasterr_if(::HideCaret(*this), [](BOOL b){ return !b; });
         } else{
-          wtf::exception::throw_lasterr_if(::ShowCaret(*this), [](BOOL b){ return !b; });
+          _has_focus && wtf::exception::throw_lasterr_if(::ShowCaret(*this), [](BOOL b){ return !b; });
         }
       }
 
       virtual void caret_position(const point<coord_frame::client> &pos){
         _pos = pos;
-        wtf::exception::throw_lasterr_if(::SetCaretPos(_pos.x, _pos.y), [](BOOL b){ return !b; });
+        _has_focus && wtf::exception::throw_lasterr_if(::SetCaretPos(_pos.x, _pos.y), [](BOOL b){ return !b; });
       }
 
       virtual point<coord_frame::client> caret_position() const{ return _pos; }
@@ -58,6 +58,7 @@ namespace wtf{
       explicit has_caret(iwindow * pParent) : _SuperT(pParent){}
 
       void on_wm_setfocus(HWND hwnd) override{
+        _has_focus = true;
         create_caret();
         caret_position(_pos);
         caret_visible(true);
@@ -66,6 +67,7 @@ namespace wtf{
       }
 
       void on_wm_killfocus(HWND hwnd) override{
+        _has_focus = false;
         destroy_caret();
         _SuperT::on_wm_killfocus(hwnd);
       }
@@ -77,6 +79,7 @@ namespace wtf{
       bool _caret_visible = false;
       int _width = 1;
       int _height = 1;
+      bool _has_focus = false;
     };
   }
 
