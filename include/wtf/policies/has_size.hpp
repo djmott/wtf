@@ -6,8 +6,9 @@
 namespace wtf{
   namespace policy{
 
-    /** has_size
-    * Adds members to reposition/resize and events to capture them
+    /** @class has_size
+    Adds members to reposition/resize
+    @addtogroup Policy
     */
     template <typename _SuperT>
     struct has_size : _SuperT{

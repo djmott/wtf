@@ -72,12 +72,15 @@ namespace wtf{
     };
   }
 
-  template <> struct policy_traits<policy::isa_form>{
-    using requires = policy_list<policy::has_background, policy::has_cursor, policy::has_icon,
-    policy::has_titlebar, policy::has_size, policy::has_move, policy::has_show,
-    policy::wm_destroy, policy::wm_create, policy::wm_size, policy::wm_close,
-    policy::wm_showwindow, policy::wm_activate>;
-  };
+  namespace _{
+    template <> struct policy_traits<policy::isa_form>{
+      using requires = policy_list<policy::has_background, policy::has_cursor, policy::has_icon,
+        policy::has_titlebar, policy::has_size, policy::has_move, policy::has_show,
+        policy::wm_destroy, policy::wm_create, policy::wm_size, policy::wm_close,
+        policy::wm_showwindow, policy::wm_activate>;
+    };
+  }
+
 
   struct form : window_impl<form, policy::isa_form>{
     explicit form(iwindow * pParent) : window_impl(pParent){}

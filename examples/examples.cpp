@@ -13,6 +13,16 @@ using namespace wtf;
 #if 1
 struct main_form : form{
 
+  main_form() : _button(this), _menu(this){
+    OnCreate += [this]{ _menu.move(10, 10, 100, 100); };
+    _button.OnClick += [this](const mouse_msg_param& p){ _menu.popup( left(), top()); };
+  }
+  button _button;
+  menu _menu;
+};
+#elif 0
+struct main_form : form{
+
   main_form() : _text(this){
     OnCreate += [this]{ _text.move(10, 10, 100, 50); };
   }

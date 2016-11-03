@@ -55,9 +55,9 @@ namespace wtf{
     };
   }
 
-
-  template <> struct policy_traits<policy::has_font>{
-    using requires = policy_list<policy::wm_erasebkgnd>;
-  };
-
+  namespace _{
+    template <> struct policy_traits<policy::has_font>{
+      using requires = policy_list<policy::wm_erasebkgnd>;
+    };
+  }
 }

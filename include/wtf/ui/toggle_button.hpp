@@ -39,10 +39,14 @@ namespace wtf{
     };
   }
 
+  namespace _{
 
-  template <> struct policy_traits<policy::isa_toggle_button>{
-    using requires = policy_list<policy::isa_button>;
-  };
+    template <> struct policy_traits<policy::isa_toggle_button>{
+      using requires = policy_list<policy::isa_button>;
+    };
+
+  }
+
 
   struct toggle_button : window_impl<toggle_button, policy::isa_toggle_button>{
     explicit toggle_button(iwindow * pParent) : window_impl(pParent){}

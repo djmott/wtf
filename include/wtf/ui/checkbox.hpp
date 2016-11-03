@@ -82,9 +82,11 @@ namespace wtf{
     };
   }
 
-  template <> struct policy_traits<policy::isa_checkbox>{
-    using requires = policy_list< policy::isa_label>;
-  };
+  namespace _{
+    template <> struct policy_traits<policy::isa_checkbox>{
+      using requires = policy_list< policy::isa_label>;
+    };
+  }
 
   struct checkbox : window_impl<checkbox, policy::isa_checkbox>{
     explicit checkbox(iwindow * pParent) : window_impl(pParent){}

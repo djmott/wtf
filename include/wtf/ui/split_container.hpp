@@ -137,10 +137,13 @@ namespace wtf{
     };
   }
 
-  template <> struct policy_traits<policy::isa_split_container>{
-    using requires = policy_list< policy::isa_panel, policy::has_orientation>;
-  };
+  namespace _{
 
+    template <> struct policy_traits<policy::isa_split_container>{
+      using requires = policy_list< policy::isa_panel, policy::has_orientation>;
+    };
+
+  }
 
   struct split_container : window_impl<split_container, policy::isa_split_container>{
     explicit split_container(iwindow * pParent) : window_impl(pParent){}

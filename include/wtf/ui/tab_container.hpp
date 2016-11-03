@@ -24,10 +24,11 @@ namespace wtf{
     };
   }
 
-  template <> struct policy_traits<policy::isa_tab_page>{
-    using requires = policy_list<policy::isa_panel>;
-  };
-
+  namespace _{
+    template <> struct policy_traits<policy::isa_tab_page>{
+      using requires = policy_list<policy::isa_panel>;
+    };
+  }
 
   class tab_page : public window_impl<tab_page, policy::isa_tab_page>{
     template <typename> friend class isa_tab_container;
@@ -244,15 +245,17 @@ namespace wtf{
     };
   }
 
+  namespace _{
 
-  template <> struct policy_traits<policy::isa_tab_container>{
-    using requires = policy_list<policy::isa_panel>;
-  };
+    template <> struct policy_traits<policy::isa_tab_container>{
+      using requires = policy_list<policy::isa_panel>;
+    };
+
+  }
 
 
   struct tab_container : window_impl<tab_container, policy::isa_tab_container>{
     explicit tab_container(iwindow * pParent) : window_impl(pParent){}
   };
-
 
 }

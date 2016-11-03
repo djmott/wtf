@@ -38,13 +38,14 @@ namespace wtf{
     };
   }
 
-  template <> struct policy_traits<policy::isa_button>{
-    using requires = policy_list<policy::isa_label>;
-  };
+  namespace _{
+    template <> struct policy_traits<policy::isa_button>{
+      using requires = policy_list<policy::isa_label>;
+    };
+  }
 
   struct button : window_impl<button, policy::isa_button>{
     explicit button(iwindow * pParent) : window_impl(pParent){}
   };
-
 
 }
