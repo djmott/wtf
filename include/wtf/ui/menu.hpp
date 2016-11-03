@@ -18,7 +18,7 @@ namespace wtf{
 
     protected:
 
-      explicit isa_menu(iwindow * pParent) : _SuperT(pParent){
+      explicit isa_menu(window * pParent) : _SuperT(pParent){
         _SuperT::border_style(border_styles::double_raised);
       }
       
@@ -36,7 +36,7 @@ namespace wtf{
 
 
   struct menu : window_impl<menu, policy::isa_menu>{
-    explicit menu(iwindow * pParent) : window_impl(pParent){}
+    explicit menu(window * pParent) : window_impl(pParent){}
   };
 
 }

@@ -13,7 +13,7 @@ namespace wtf{
 
       virtual void on_wm_mouse_wheel(int16_t /*delta*/, const mouse_msg_param&){}
 
-      explicit wm_mouse_wheel(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_mouse_wheel(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_MOUSEWHEEL == msg.umsg) on_wm_mouse_wheel(static_cast<int16_t>(HIWORD(msg.wparam)), mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::unspecified));

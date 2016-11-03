@@ -20,7 +20,7 @@ namespace wtf{
 
     protected:
 
-      explicit isa_toggle_button(iwindow * pParent) : _SuperT(pParent){}
+      explicit isa_toggle_button(window * pParent) : _SuperT(pParent){}
       
       void on_wm_create() override{
         _SuperT::border_style(border_styles::raised);
@@ -29,8 +29,8 @@ namespace wtf{
 
       void on_wm_mouse_up(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left != m.button) return _SuperT::on_wm_mouse_up(m);
-        value(!_value);
         _SuperT::on_wm_mouse_up(m);
+        value(!_value);
       };
 
     private:
@@ -49,7 +49,7 @@ namespace wtf{
 
 
   struct toggle_button : window_impl<toggle_button, policy::isa_toggle_button>{
-    explicit toggle_button(iwindow * pParent) : window_impl(pParent){}
+    explicit toggle_button(window * pParent) : window_impl(pParent){}
   };
 
 }

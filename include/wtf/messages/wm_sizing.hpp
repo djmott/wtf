@@ -11,7 +11,7 @@ namespace wtf{
     protected:
       virtual void on_wm_sizing(rect<coord_frame::screen>&){}
 
-      explicit wm_sizing(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_sizing(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_SIZING == msg.umsg) on_wm_sizing(*reinterpret_cast<rect<coord_frame::screen>*>(msg.lparam));

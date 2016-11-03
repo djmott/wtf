@@ -12,7 +12,7 @@ namespace wtf{
 
       virtual void on_wm_keyup(UINT char_code, keyboard_msg_param, bool&){}
 
-      explicit wm_keyup(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_keyup(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_KEYUP == msg.umsg) on_wm_keyup(static_cast<UINT>(msg.wparam), *reinterpret_cast<keyboard_msg_param*>(&msg.lparam));

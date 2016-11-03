@@ -20,7 +20,7 @@ namespace wtf{
       virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *) = 0;
       virtual LRESULT on_wm_nccalcsize(RECT *){ return 0; }
 
-      explicit wm_nccalcsize(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_nccalcsize(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_NCCALCSIZE == msg.umsg){

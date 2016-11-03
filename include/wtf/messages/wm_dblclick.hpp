@@ -13,7 +13,7 @@ namespace wtf{
     protected:
       virtual void on_wm_dblclick(const mouse_msg_param& p){ OnDblClick(p); }
 
-      explicit wm_dblclick(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_dblclick(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_LBUTTONDBLCLK == msg.umsg){

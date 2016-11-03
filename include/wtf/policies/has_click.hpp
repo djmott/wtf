@@ -17,7 +17,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_click(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_click(window * pParent) : _SuperT(pParent){}
 
       virtual void on_wm_click(const mouse_msg_param& p){ OnClick(p); }
 

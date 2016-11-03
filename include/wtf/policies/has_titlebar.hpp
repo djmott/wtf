@@ -23,7 +23,7 @@ namespace wtf{
       }
 
     protected:
-      explicit has_titlebar(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_titlebar(window * pParent) : _SuperT(pParent){}
     private:
       tstring _titlebar = _T("");
     };

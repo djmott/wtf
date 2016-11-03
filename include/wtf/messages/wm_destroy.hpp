@@ -15,7 +15,7 @@ namespace wtf{
 
       virtual void on_wm_destroy(){ OnDestroy(); }
 
-      explicit wm_destroy(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_destroy(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_DESTROY == msg.umsg) on_wm_destroy();

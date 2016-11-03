@@ -13,7 +13,7 @@ namespace wtf{
 
       virtual void on_wm_setcursor(wm_nchittest_flags){}
 
-      explicit wm_setcursor(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_setcursor(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_SETCURSOR == msg.umsg){

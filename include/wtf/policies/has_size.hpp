@@ -36,7 +36,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_size(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_size(window * pParent) : _SuperT(pParent){}
     };
   }
 }

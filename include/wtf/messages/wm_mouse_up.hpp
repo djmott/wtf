@@ -11,7 +11,7 @@ namespace wtf{
     protected:
       virtual void on_wm_mouse_up(const mouse_msg_param&) {}
 
-      explicit wm_mouse_up(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_mouse_up(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_LBUTTONUP == msg.umsg) on_wm_mouse_up(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::left));

@@ -11,7 +11,7 @@ namespace wtf{
     protected:
       virtual void on_wm_mouse_move(const mouse_msg_param&) {}
 
-      explicit wm_mouse_move(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_mouse_move(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_MOUSEMOVE == msg.umsg){

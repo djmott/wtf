@@ -13,7 +13,7 @@ namespace wtf{
 
       virtual void on_wm_paint(const _::device_context&, const _::paint_struct&) {}
 
-      explicit wm_paint(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_paint(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_PAINT == msg.umsg){

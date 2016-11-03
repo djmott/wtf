@@ -20,7 +20,7 @@ namespace wtf{
 
     protected:
 
-      explicit wm_size(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_size(window * pParent) : _SuperT(pParent){}
 
       virtual void on_wm_size(const point<coord_frame::client>& p){ OnSize(p); }
 

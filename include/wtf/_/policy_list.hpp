@@ -138,7 +138,7 @@ namespace wtf{
 
 
     template <class _ImplT, class _PolicyListT> struct construct_hierarchy;
-    template <class _ImplT> struct construct_hierarchy<_ImplT, policy_list<>>{ using type = wtf::window<_ImplT>; };
+    template <class _ImplT> struct construct_hierarchy<_ImplT, policy_list<>>{ using type = wtf::window; };
     template <class _ImplT, template <class> class _HeadT, template <class> class ... _TailT>
     struct construct_hierarchy<_ImplT, policy_list<_HeadT, _TailT...>>{
       using tail_hierarchy = typename construct_hierarchy<_ImplT, policy_list<_TailT...>>::type;

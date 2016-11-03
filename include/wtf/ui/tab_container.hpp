@@ -20,7 +20,7 @@ namespace wtf{
 
     protected:
       template <typename> friend struct isa_tab_container;
-      isa_tab_page(iwindow * pParent) : _SuperT(pParent){}
+      isa_tab_page(window * pParent) : _SuperT(pParent){}
     };
   }
 
@@ -31,9 +31,9 @@ namespace wtf{
   }
 
   class tab_page : public window_impl<tab_page, policy::isa_tab_page>{
-    template <typename> friend class isa_tab_container;
+    template <typename, template <typename> class...> friend class window_impl;
    public:
-    tab_page(iwindow * pParent) : window_impl(pParent){}
+    tab_page(window * pParent) : window_impl(pParent){}
   };
 
   namespace policy{
@@ -41,7 +41,7 @@ namespace wtf{
     template <typename _SuperT>
     struct isa_tab_container : _SuperT{
 
-      explicit isa_tab_container(iwindow * pParent) : _SuperT(pParent), _button_bar_slider(this){
+      explicit isa_tab_container(window * pParent) : _SuperT(pParent), _button_bar_slider(this){
         _SuperT::border_style(border_styles::none);
       }
 
@@ -100,7 +100,6 @@ namespace wtf{
 
       void on_wm_size(const point<coord_frame::client>& newsize) override{
         point<coord_frame::client> p = newsize;
-        p.x--; p.y--;
         int iBtnPos = _button_left;
         _button_bar_slider.move(p.x - (_tab_height * 2), 0, _tab_height * 2, _tab_height);
         for (auto & oPageInfo : _pages){
@@ -108,7 +107,7 @@ namespace wtf{
           PreferedSize.cx += 6;
           if (PreferedSize.cx < _tab_min_width) PreferedSize.cx = _tab_min_width;
           if (PreferedSize.cx > _tab_max_width) PreferedSize.cx = _tab_max_width;
-          oPageInfo->button.move(iBtnPos, 0, PreferedSize.cx, _tab_height);
+          oPageInfo->button.move(iBtnPos, 0, PreferedSize.cx, 1 + _tab_height);
           iBtnPos += PreferedSize.cx;
           iBtnPos--;
           oPageInfo->page().move(0, _tab_height - 1, p.x, p.y - _tab_height);
@@ -124,11 +123,6 @@ namespace wtf{
           _pages[i]->deactivate();
         }
         _pages[newval]->activate();
-        for (size_t i = 0; i < _pages.size(); ++i){
-          if (i == _active_page) continue;
-          _pages[i]->button.zorder(*(_pages[_active_page]->page()));
-        }
-        _pages[_active_page]->page().zorder(*_pages[_active_page]->button);
       }
 
       struct ipage_info{
@@ -158,13 +152,13 @@ namespace wtf{
           }
 
           void on_wm_create() override{
-            __super_t::on_wm_create();
             deactivate();
+            __super_t::on_wm_create();
           };
 
           void on_wm_click(const mouse_msg_param& m) override{
-            __super_t::on_wm_click(m);
             if (mouse_msg_param::buttons::left == m.button) _parent->active_page(_PageIndex);
+            __super_t::on_wm_click(m);
           };
 
           void deactivate(){
@@ -172,14 +166,13 @@ namespace wtf{
             __super_t::fore_color(wtf::system_rgb<system_colors::gray_text>());
             __super_t::font().weight(font::weights::normal);
             __super_t::zorder(zorders::bottom);
-            __super_t::invalidate();
           }
 
           void activate(){
             __super_t::border_style(border_styles::raised);
             __super_t::fore_color(wtf::system_rgb<system_colors::button_text>());
             __super_t::font().weight(font::weights::bold);
-            __super_t::invalidate();
+            __super_t::zorder(zorders::top_most);
           }
 
 
@@ -199,7 +192,7 @@ namespace wtf{
         void activate(){
           page().show();
           button.activate();
-          page().zorder(zorders::top_most);
+          page().zorder(button);
           page().invalidate();
         }
 
@@ -230,8 +223,7 @@ namespace wtf{
       class scrollbar_t : public window_impl<scrollbar_t, policy::isa_scrollbar>{
         using __super_t = window_impl<scrollbar_t, policy::isa_scrollbar>;
       public:
-        scrollbar_t(iwindow*pParent)
-          : __super_t(pParent) {}
+        scrollbar_t(window*pParent) : __super_t(pParent) {}
       };
 
       size_t _active_page = 0;
@@ -255,7 +247,7 @@ namespace wtf{
 
 
   struct tab_container : window_impl<tab_container, policy::isa_tab_container>{
-    explicit tab_container(iwindow * pParent) : window_impl(pParent){}
+    explicit tab_container(window * pParent) : window_impl(pParent){}
   };
 
 }

@@ -31,7 +31,7 @@ namespace wtf{
       }
 
 
-      explicit wm_activate(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_activate(window * pParent) : _SuperT(pParent){}
 
     };
 

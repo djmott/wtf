@@ -30,7 +30,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_font(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_font(window * pParent) : _SuperT(pParent){}
 
       
       void on_wm_erasebkgnd(const _::device_context& dc, const rect<coord_frame::client>& client) override

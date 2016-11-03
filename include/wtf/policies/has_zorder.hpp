@@ -23,7 +23,7 @@ namespace wtf{
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b){ return !b; });
       }
     protected:
-      explicit has_zorder(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_zorder(window * pParent) : _SuperT(pParent){}
 
     };
   }

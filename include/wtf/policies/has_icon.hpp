@@ -25,7 +25,7 @@ namespace wtf{
       virtual void small_icon(icon &&src){ _small_icon = std::move(src); }
 
     protected:
-      explicit has_icon(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_icon(window * pParent) : _SuperT(pParent){}
 
       HICON on_wm_geticon(icon_type ico) override{
         if (icon_type::big_icon == ico) return big_icon();

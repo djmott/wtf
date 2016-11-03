@@ -8,11 +8,11 @@ namespace wtf{
   namespace policy{
 
     class splitter : public window_impl<splitter, policy::has_cursor, policy::wm_mouse_move, policy::isa_panel, policy::has_orientation>{
-      using __super_t = window_impl<splitter, policy::has_cursor, policy::wm_mouse_move, policy::isa_panel, policy::has_orientation>;
+      using _SuperT = window_impl<splitter, policy::has_cursor, policy::wm_mouse_move, policy::isa_panel, policy::has_orientation>;
 
     public:
 
-      splitter(iwindow * pParent) : __super_t(pParent){}
+      splitter(window * pParent) : _SuperT(pParent){}
 
       callback<void(const point<coord_frame::client>&)> OnMoved;
 
@@ -22,21 +22,21 @@ namespace wtf{
 
       void on_wm_mouse_move(const mouse_msg_param& m) override{
         if (m.key_state & mouse_msg_param::key_states::left) size_bar_moved(m.position);        
-        __super_t::on_wm_mouse_move(m);
+        _SuperT::on_wm_mouse_move(m);
       };
 
       void on_wm_mouse_down(const mouse_msg_param& m) override{
         if (mouse_msg_param::buttons::left == m.button) SetCapture(*this);        
-        __super_t::on_wm_mouse_down(m);
+        _SuperT::on_wm_mouse_down(m);
       };
 
       void on_wm_mouse_up(const mouse_msg_param& m) override{
         ReleaseCapture();
-        __super_t::on_wm_mouse_up(m);
+        _SuperT::on_wm_mouse_up(m);
       };
 
       const wtf::cursor &cursor_pointer() const override{
-        if (orientations::horizontal == __super_t::orientation()){
+        if (orientations::horizontal == _SuperT::orientation()){
           return cursor::global(cursor::style::size_ns);
         } else{
           return cursor::global(cursor::style::size_we);
@@ -85,7 +85,7 @@ namespace wtf{
 
     protected:
 
-      explicit isa_split_container(iwindow * pParent) : _SuperT(pParent), _first(this), _second(this), _splitter(this){}
+      explicit isa_split_container(window * pParent) : _SuperT(pParent), _first(this), _second(this), _splitter(this){}
       
       void on_wm_size(const point<coord_frame::client>& p) override{
         if (orientations::horizontal == _SuperT::orientation()) {
@@ -146,7 +146,7 @@ namespace wtf{
   }
 
   struct split_container : window_impl<split_container, policy::isa_split_container>{
-    explicit split_container(iwindow * pParent) : window_impl(pParent){}
+    explicit split_container(window * pParent) : window_impl(pParent){}
   };
 
 

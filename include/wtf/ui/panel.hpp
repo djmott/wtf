@@ -11,7 +11,7 @@ namespace wtf{
 
     protected:
 
-      explicit isa_panel(iwindow * pParent) : _SuperT(pParent){}
+      explicit isa_panel(window * pParent) : _SuperT(pParent){}
 
     };
   }
@@ -26,10 +26,8 @@ namespace wtf{
 
   }
 
-
   struct panel : window_impl<panel, policy::isa_panel>{
-    explicit panel(iwindow * pParent) : window_impl(pParent){}
+    explicit panel(window * pParent) : window_impl(pParent){}
   };
-
 
 }

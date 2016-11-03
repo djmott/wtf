@@ -17,7 +17,7 @@ namespace wtf{
 
       virtual HICON on_wm_geticon(icon_type) = 0;
 
-      explicit wm_geticon(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_geticon(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_GETICON == msg.umsg){

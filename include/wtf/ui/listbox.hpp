@@ -23,7 +23,7 @@ namespace wtf{
       }
 
     protected:
-      explicit isa_listbox(iwindow * pParent) :
+      explicit isa_listbox(window * pParent) :
         _SuperT(pParent),
         _SelectedItems(1, 0),
         _vscroll(this){}
@@ -138,6 +138,6 @@ namespace wtf{
   }
 
   struct listbox : window_impl<listbox, policy::isa_listbox>{
-    explicit listbox(iwindow * pParent) : window_impl(pParent){}
+    explicit listbox(window * pParent) : window_impl(pParent){}
   };
 }

@@ -12,7 +12,7 @@ namespace wtf{
     protected:
 
       virtual void on_wm_erasebkgnd(const wtf::_::device_context&, const rect<coord_frame::client>&) {}
-      explicit wm_erasebkgnd(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_erasebkgnd(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_ERASEBKGND == msg.umsg){

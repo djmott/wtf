@@ -20,7 +20,7 @@ namespace wtf{
 
       virtual void on_wm_close(){ OnClose(); }
 
-      explicit wm_close(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_close(window * pParent) : _SuperT(pParent){}
 
 
     };

@@ -12,7 +12,7 @@ namespace wtf{
 
       virtual void on_wm_killfocus(HWND){}
 
-      explicit wm_killfocus(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_killfocus(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_KILLFOCUS == msg.umsg) on_wm_killfocus(reinterpret_cast<HWND>(msg.wparam));

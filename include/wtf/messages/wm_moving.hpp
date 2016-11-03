@@ -12,7 +12,7 @@ namespace wtf{
     protected:
       virtual void on_wm_moving(rect<coord_frame::screen>&){}
 
-      explicit window(iwindow * pParent) : _SuperT(pParent){}
+      explicit window(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_MOVING == msg.umsg) on_wm_moving(*reinterpret_cast<rect<coord_frame::screen>*>(msg.lparam));

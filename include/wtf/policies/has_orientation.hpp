@@ -20,7 +20,7 @@ namespace wtf{
       }
 
     protected:
-      explicit has_orientation(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_orientation(window * pParent) : _SuperT(pParent){}
       orientations _orientation = orientations::horizontal;
     };
   }

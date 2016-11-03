@@ -16,7 +16,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_close(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_close(window * pParent) : _SuperT(pParent){}
 
     };
   }

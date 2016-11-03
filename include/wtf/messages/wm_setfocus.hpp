@@ -12,7 +12,7 @@ namespace wtf{
 
       virtual void on_wm_setfocus(HWND){}
 
-      explicit wm_setfocus(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_setfocus(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_SETFOCUS == msg.umsg){

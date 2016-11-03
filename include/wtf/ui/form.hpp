@@ -11,7 +11,7 @@ namespace wtf{
       static const DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW;
       static const DWORD Style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 
-      explicit isa_form(iwindow * pParent) : _SuperT(pParent){}
+      explicit isa_form(window * pParent) : _SuperT(pParent){}
 
       isa_form() : isa_form(nullptr){}
 
@@ -19,14 +19,6 @@ namespace wtf{
         if (!_SuperT::_handle) _SuperT::exec();
         _SuperT::show();
       }
-
-      int exec() override{
-        _::message oMsg;
-        _SuperT::exec();
-        auto iRet = oMsg.pump();
-        return iRet;
-      }
-
 
       int top() const override{
         return rect<coord_frame::screen>::get(*this).top;
@@ -83,8 +75,19 @@ namespace wtf{
 
 
   struct form : window_impl<form, policy::isa_form>{
-    explicit form(iwindow * pParent) : window_impl(pParent){}
+  private:
+    using _SuperT = window_impl<form, policy::isa_form>;
+  public:
+    explicit form(window * pParent) : _SuperT(pParent){}
     form() : form(nullptr){}
+
+    int exec() override{
+      _::message oMsg;
+      _SuperT::exec();
+      auto iRet = oMsg.pump();
+      return iRet;
+    }
+
   };
 
 }

@@ -28,31 +28,31 @@ namespace wtf{
       virtual bool multiline() const{ return _multiline; }
       virtual void multiline(bool newval){ 
         _multiline = newval; 
-        _SuperT::invalidate();
+        if (_auto_draw_text) _SuperT::invalidate();
       }
 
       bool word_wrap() const{ return _word_wrap; }
       void word_wrap(bool newval){ 
         _word_wrap = newval; 
-        _SuperT::invalidate();
+        if (_auto_draw_text) _SuperT::invalidate();
       }
 
       virtual const tstring &text() const{ return _text; }
       virtual void text(const tstring &newval){
         _text = newval;
-        _SuperT::invalidate();
+        if (_auto_draw_text) _SuperT::invalidate();
       }
 
       virtual text_vertical_alignments text_vertical_alignment() const{ return _text_vertical_alignment; }
       virtual void text_vertical_alignment(text_vertical_alignments newval){ 
         _text_vertical_alignment = newval; 
-        _SuperT::invalidate();
+        if (_auto_draw_text) _SuperT::invalidate();
       }
 
       virtual text_horizontal_alignments text_horizontal_alignment() const{ return _text_horizontal_alignment; }
       virtual void text_horizontal_alignment(text_horizontal_alignments newval){ 
         _text_horizontal_alignment = newval; 
-        _SuperT::invalidate();
+        if (_auto_draw_text) _SuperT::invalidate();
       }
 
 
@@ -64,7 +64,7 @@ namespace wtf{
       }
     protected:
 
-      explicit has_text(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_text(window * pParent) : _SuperT(pParent){}
 
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }

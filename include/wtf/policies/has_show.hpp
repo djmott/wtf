@@ -18,7 +18,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_show(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_show(window * pParent) : _SuperT(pParent){}
 
     };
 

@@ -29,9 +29,16 @@ namespace wtf{
 
     protected:
 
-      explicit has_timer(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_timer(window * pParent) : _SuperT(pParent){}
     private:
       UINT_PTR _next_timer_id = 1;
     };
   }
+
+  namespace _{
+    template <> struct policy_traits<policy::has_timer>{
+      using requires = policy_list<policy::wm_timer>;
+    };
+  }
+
 }

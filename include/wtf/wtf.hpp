@@ -37,9 +37,8 @@ namespace wtf {
     client, /**< window client area relative */
   };
 
-  template <class _ImplT> struct window;
+  struct window;
   
-  using iwindow = window<void>;
 
   /** @typedef tstring
   Primary string representation based on stl. Can be either MULTIBYTE or UNICODE depending on compilation mode.
@@ -56,8 +55,8 @@ namespace wtf {
       return _forms_lock;
     }
 
-    static std::vector<const iwindow*>& _active_forms() {
-      static std::vector<const iwindow*> _forms;
+    static std::vector<const window*>& _active_forms() {
+      static std::vector<const window*> _forms;
       return _forms;
     }
 
@@ -89,7 +88,7 @@ namespace wtf {
   */
   namespace policy{}
 
-  static const std::vector<const iwindow*>& active_forms() { return _::_active_forms(); }
+  static const std::vector<const window*>& active_forms() { return _::_active_forms(); }
 
 
 }
@@ -112,6 +111,7 @@ namespace wtf {
 #include "region.hpp"
 #include "font.hpp"
 
+
 #include "_/window_message.hpp"
 #include "_/window_class_ex.hpp"
 #include "_/device_context.hpp"
@@ -125,7 +125,6 @@ namespace wtf {
 
 
 #include "window.hpp"
-#include "window_impl.hpp"
 
 
 #include "messages/messages.hpp"
@@ -170,13 +169,14 @@ namespace wtf {
 #include "policies/has_invalidate.hpp"
 #include "policies/has_move.hpp"
 #include "policies/has_orientation.hpp"
+#include "policies/has_timer.hpp"
 #include "policies/has_repeat_click.hpp"
 #include "policies/has_show.hpp"
 #include "policies/has_size.hpp"
 #include "policies/has_text.hpp"
-#include "policies/has_timer.hpp"
 #include "policies/has_titlebar.hpp"
 #include "policies/has_zorder.hpp"
+
 
 #include "ui/panel.hpp"
 #include "ui/label.hpp"

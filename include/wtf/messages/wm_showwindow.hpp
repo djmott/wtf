@@ -21,7 +21,7 @@ namespace wtf{
 
     protected:
 
-      explicit wm_showwindow(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_showwindow(window * pParent) : _SuperT(pParent){}
 
       virtual void on_wm_showwindow(visibility_change_flag f){ OnShow(f); }
 

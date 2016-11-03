@@ -10,7 +10,7 @@ namespace wtf{
     struct has_image : _SuperT{
 
     protected:
-      explicit has_image(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_image(window * pParent) : _SuperT(pParent){}
     };
 
   }

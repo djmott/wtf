@@ -19,7 +19,7 @@ namespace wtf{
 
       virtual void on_wm_mouse_leave(){ OnMouseLeave(); }
 
-      explicit wm_mouse_leave(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_mouse_leave(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_CREATE == msg.umsg){

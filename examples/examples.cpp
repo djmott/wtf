@@ -10,7 +10,28 @@
 #include "wtf/wtf.hpp"
 using namespace wtf;
 
-#if 1
+#if 0
+
+struct main_form : form{
+
+  main_form() : _scroll(this){
+
+    OnCreate += [this]{
+//       _scroll.min(0);
+//       _scroll.max(10);
+//       _scroll.value(5);
+      _scroll.orientation(orientations::vertical);
+      _scroll.move(10, 10, 20, 100);
+      
+    };
+
+  }
+
+  scrollbar _scroll;
+
+};
+
+#elif 0
 struct main_form : form{
 
   main_form() : _button(this), _menu(this){
@@ -46,7 +67,7 @@ struct main_form : form{
 
 
 struct label_page : tab_page{
-  label_page(iwindow * parent) : tab_page(parent),
+  label_page(window * parent) : tab_page(parent),
     _left(this), _right(this), _center(this),
     _raised(this), _lowered(this), _flat(this), 
     _etched(this), _bumped(this), _double_raised(this), _double_lowered(this)
@@ -111,7 +132,7 @@ struct label_page : tab_page{
 
 
 struct checkbox_page : tab_page{
-  checkbox_page(iwindow * parent) : tab_page(parent), _left(this), _right(this){}
+  checkbox_page(window * parent) : tab_page(parent), _left(this), _right(this){}
 
   void on_wm_create() override {
     _left.move(5, 5, 150, 25);
@@ -129,7 +150,7 @@ struct checkbox_page : tab_page{
 
 
 struct listbox_page : tab_page{
-  listbox_page(iwindow * parent) : tab_page(parent),
+  listbox_page(window * parent) : tab_page(parent),
     _left(this), _center(this), _right(this)
   {
 
@@ -158,7 +179,7 @@ struct listbox_page : tab_page{
 };
 
 struct button_page : tab_page{
-  button_page(iwindow * parent) : tab_page(parent),
+  button_page(window * parent) : tab_page(parent),
     _label1(this), _label2(this), _button1(this, _label1), _button2(this, _label2){}
 
   void on_wm_create() override {
@@ -175,7 +196,7 @@ struct button_page : tab_page{
   label _label2;
 
   struct _button1 : button{
-    _button1(iwindow * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
+    _button1(window * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
 
     void on_wm_click(const mouse_msg_param& m) override{
       _label1.text(to_tstring(GetTickCount()));
@@ -185,7 +206,7 @@ struct button_page : tab_page{
   }_button1;
 
   struct _button2 : toggle_button{
-    _button2(iwindow * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
+    _button2(window * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
 
     void on_wm_click(const mouse_msg_param& m) override{
       _label2.text(to_tstring(GetTickCount()));
@@ -199,7 +220,7 @@ struct button_page : tab_page{
 
 
 struct scroll_page : tab_page{
-  scroll_page(iwindow * parent)
+  scroll_page(window * parent)
     : tab_page(parent), _hor_scroll(this), _vert_scroll(this), _hor_progress(this), _vert_progress(this)
   {}
 
@@ -226,7 +247,7 @@ struct scroll_page : tab_page{
 
 struct split_page : tab_page{
 
-  split_page(iwindow * parent) : tab_page(parent), _splitter(this){
+  split_page(window * parent) : tab_page(parent), _splitter(this){
     OnSize += [this](const point<coord_frame::client>& p){ _splitter.move(0, 0, p.x, p.y); };
   }
 
@@ -270,7 +291,7 @@ struct split_page : tab_page{
 
 struct tree_page : tab_page{
 
-  tree_page(iwindow * parent) : tab_page(parent), _tree(this), rd(), gen(rd()), dist(1, 999999) {
+  tree_page(window * parent) : tab_page(parent), _tree(this), rd(), gen(rd()), dist(1, 999999) {
 
   }
 

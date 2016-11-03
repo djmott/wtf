@@ -24,7 +24,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_cursor(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_cursor(window * pParent) : _SuperT(pParent){}
 
       void on_wm_setcursor(wm_nchittest_flags flags) override{
         switch (flags){

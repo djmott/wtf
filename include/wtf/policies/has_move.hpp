@@ -48,7 +48,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_move(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_move(window * pParent) : _SuperT(pParent){}
 
     };
   }

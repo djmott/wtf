@@ -11,7 +11,7 @@ namespace wtf{
 
     protected:
 
-      explicit isa_checkbox(iwindow * pParent) : _SuperT(pParent), _check(this){
+      explicit isa_checkbox(window * pParent) : _SuperT(pParent), _check(this){
         _SuperT::auto_draw_text(false);
         _SuperT::border_style(border_styles::none);
       }
@@ -89,7 +89,7 @@ namespace wtf{
   }
 
   struct checkbox : window_impl<checkbox, policy::isa_checkbox>{
-    explicit checkbox(iwindow * pParent) : window_impl(pParent){}
+    explicit checkbox(window * pParent) : window_impl(pParent){}
   };
 
 }

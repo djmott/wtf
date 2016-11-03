@@ -57,7 +57,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_border(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_border(window * pParent) : _SuperT(pParent){}
 
       void refresh_border(){
         if (!_SuperT::_handle) return;

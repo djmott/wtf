@@ -18,7 +18,7 @@ namespace wtf{
       }
 
     protected:
-      explicit has_invalidate(iwindow * pParent) : _SuperT(pParent){}
+      explicit has_invalidate(window * pParent) : _SuperT(pParent){}
 
     };
   }

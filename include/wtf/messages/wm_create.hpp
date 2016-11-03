@@ -14,7 +14,7 @@ namespace wtf{
 
       virtual void on_wm_create(){ OnCreate(); }
 
-      explicit wm_create(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_create(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_CREATE == msg.umsg) on_wm_create();

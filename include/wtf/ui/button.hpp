@@ -13,7 +13,7 @@ namespace wtf{
 
     protected:
 
-      explicit isa_button(iwindow * hParent) : _SuperT(hParent){
+      explicit isa_button(window * hParent) : _SuperT(hParent){
         _SuperT::border_style(border_styles::raised);
       }
 
@@ -45,7 +45,7 @@ namespace wtf{
   }
 
   struct button : window_impl<button, policy::isa_button>{
-    explicit button(iwindow * pParent) : window_impl(pParent){}
+    explicit button(window * pParent) : window_impl(pParent){}
   };
 
 }

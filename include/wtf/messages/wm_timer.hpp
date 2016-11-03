@@ -9,7 +9,7 @@ namespace wtf{
     struct wm_timer : _SuperT{
 
     protected:
-      explicit wm_timer(iwindow * pParent) : _SuperT(pParent){}
+      explicit wm_timer(window * pParent) : _SuperT(pParent){}
 
       virtual void on_wm_timer(UINT_PTR){}
 
