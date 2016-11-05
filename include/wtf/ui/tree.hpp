@@ -334,18 +334,13 @@ namespace wtf{
         _SuperT::draw_text(dc, _item_rects.back());
         if (PrintExpander){
           const auto & oExpander = _expander_rects.back();
-          point<coord_frame::client>::vector oArrow(3);
+
           if (oNode->expanded()){
-            oArrow[0].x = oExpander.left; oArrow[0].y = oExpander.top;
-            oArrow[1].x = oExpander.right; oArrow[1].y = oExpander.top;
-            oArrow[2].x = oExpander.left + ((oExpander.right - oExpander.left) / 2); oArrow[2].y = oExpander.bottom;
-            dc.fill(oArrow, _black_pen, _black_brush);
+            _::effects::draw_arrow(dc, oExpander, quadrants::bottom, _black_pen, _black_brush);
           } else{
-            oArrow[0].x = oExpander.left; oArrow[0].y = oExpander.top;
-            oArrow[1].x = oExpander.right; oArrow[1].y = oExpander.top + ((oExpander.bottom - oExpander.top) / 2);
-            oArrow[2].x = oExpander.left; oArrow[2].y = oExpander.bottom;
-            dc.fill(oArrow, _black_pen, _white_brush);
+            _::effects::draw_arrow(dc, oExpander, quadrants::right, _black_pen, _white_brush);
           }
+
         }
         oClient.top += oTextMetrics.tmHeight;
         if (oNode->children().size() && oNode->expanded()){
@@ -377,23 +372,22 @@ namespace wtf{
         _SuperT::invalidate();
       }
 
-      void ScrollLeft(){}
-      void ScrollRight(){}
 
-
-      struct vscroll : window_impl<vscroll, policy::isa_scrollbar>{
-        using __super_t = window_impl<vscroll, policy::isa_scrollbar>;
+      struct vscroll : window_impl<vscroll, policy::isa_scroll_bar>{
+        using __super_t = window_impl<vscroll, policy::isa_scroll_bar>;
         vscroll(isa_tree * parent) : __super_t(parent), _parent(parent){}
-        void StepIncEvent() override{ _parent->ScrollNext(); }
-        void StepDecEvent() override{ _parent->ScrollPrev(); }
+
+        void on_value_changed(int prev_val) override{
+          for (int i=prev_val ; i<__super_t::value() ; ++i){ _parent->ScrollNext(); }
+          for (int i=__super_t::value() ; i<prev_val ; ++i){ _parent->ScrollPrev(); }
+        }
+
         isa_tree * _parent;
       }_vscroll;
 
-      struct hscroll : window_impl<hscroll, policy::isa_scrollbar>{
-        using __super_t = window_impl<hscroll, policy::isa_scrollbar>;
+      struct hscroll : window_impl<hscroll, policy::isa_scroll_bar>{
+        using __super_t = window_impl<hscroll, policy::isa_scroll_bar>;
         hscroll(isa_tree * parent) : __super_t(parent), _parent(parent){}
-        void StepIncEvent() override{}
-        void StepDecEvent() override{}
         isa_tree * _parent;
       }_hscroll;
     };

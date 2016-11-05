@@ -122,6 +122,7 @@ namespace wtf {
 #include "_/SystemParameters.hpp"
 #include "_/message.hpp"
 #include "_/policy_list.hpp"
+#include "_/effects.hpp"
 
 
 #include "window.hpp"
@@ -184,6 +185,7 @@ namespace wtf {
 #include "ui/scroll_bar.hpp"
 #include "ui/checkbox.hpp"
 #include "ui/form.hpp"
+#include "ui/scroll_window.hpp"
 #include "ui/listbox.hpp"
 #include "ui/menu.hpp"
 #include "ui/progress_bar.hpp"

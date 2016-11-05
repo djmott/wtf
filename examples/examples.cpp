@@ -2,15 +2,26 @@
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 
-#define __WTF_DEBUG_MESSAGES__ 0
+#define __WTF_DEBUG_MESSAGES__ 1
 
 #include <strstream>
 #include <iostream>
 #include <random>
 #include "wtf/wtf.hpp"
 using namespace wtf;
-
 #if 0
+struct main_form : form{
+
+  main_form() : _scroll(this){
+    OnCreate += [this]{
+      _scroll.orientation(orientations::vertical);
+      _scroll.move(5, 5, 20, 200); };
+  }
+
+  scroll_bar _scroll;
+
+};
+#elif 0
 
 struct main_form : form{
 
@@ -27,7 +38,7 @@ struct main_form : form{
 
   }
 
-  scrollbar _scroll;
+  scroll_bar _scroll;
 
 };
 
@@ -231,15 +242,15 @@ struct scroll_page : tab_page{
     _hor_progress.move(5, 30, 100, 20);
     _hor_progress.orientation(orientations::horizontal);
 
-    _vert_scroll.move(120, 30, 20, 100);
+    _vert_scroll.move(120, 5, 20, 100);
     _vert_scroll.orientation(orientations::vertical);
 
-    _vert_progress.move(150, 30, 20, 100);
+    _vert_progress.move(150, 5, 20, 100);
     _vert_progress.orientation(orientations::vertical);
     return tab_page::on_wm_create();
   };
 
-  scrollbar _hor_scroll, _vert_scroll;
+  scroll_bar _hor_scroll, _vert_scroll;
   progress_bar _hor_progress, _vert_progress;
 };
 

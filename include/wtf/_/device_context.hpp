@@ -125,6 +125,12 @@ namespace wtf{
         wtf::exception::throw_lasterr_if(::LineTo(*this, x2, y2), [](BOOL b){ return !b; });
       }
 
+      void line(const pen &oPen, const point<coord_frame::client>& p1, const point<coord_frame::client>& p2) const{
+        select_object(oPen);
+        wtf::exception::throw_lasterr_if(::MoveToEx(*this, p1.x, p1.y, nullptr), [](BOOL b){ return !b; });
+        wtf::exception::throw_lasterr_if(::LineTo(*this, p2.x, p2.y), [](BOOL b){ return !b; });
+      }
+
       void line(const pen &oPen, const point<coord_frame::client>::vector& oPoints) const{
         select_object(oPen);
         wtf::exception::throw_lasterr_if(::Polyline(*this, &oPoints[0], static_cast<int>(oPoints.size())), [](BOOL b){ return !b; });

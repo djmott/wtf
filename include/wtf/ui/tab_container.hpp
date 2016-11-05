@@ -220,8 +220,8 @@ namespace wtf{
       };
 
 
-      class scrollbar_t : public window_impl<scrollbar_t, policy::isa_scrollbar>{
-        using __super_t = window_impl<scrollbar_t, policy::isa_scrollbar>;
+      class scrollbar_t : public window_impl<scrollbar_t, policy::isa_scroll_bar>{
+        using __super_t = window_impl<scrollbar_t, policy::isa_scroll_bar>;
       public:
         scrollbar_t(window*pParent) : __super_t(pParent) {}
       };

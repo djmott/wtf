@@ -6,7 +6,7 @@ namespace wtf {
 
 
     enum class system_colors {
-      scrollbar = COLOR_SCROLLBAR,
+      scroll_bar = COLOR_SCROLLBAR,
       background = COLOR_BACKGROUND,
       active_action = COLOR_ACTIVECAPTION,
       inactive_caption = COLOR_INACTIVECAPTION,

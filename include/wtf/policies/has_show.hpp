@@ -7,7 +7,7 @@ namespace wtf{
   namespace policy{
 
     /** has_show
-    * Adds members to change the display state and capture display state changes
+    * Adds show() and hide() members
     */
     template <typename _SuperT>
     struct has_show :  _SuperT{

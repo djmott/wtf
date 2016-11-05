@@ -5,17 +5,6 @@
 
 namespace wtf{
 
-  enum class border_styles{
-    none = 0,
-    flat,
-    raised,
-    lowered,
-    bumped,
-    etched,
-    double_raised,
-    double_lowered,
-  };
-
   namespace policy{
 
     /** has_border
@@ -71,54 +60,11 @@ namespace wtf{
 
         auto highlight = pen::create(pen::style::solid, 1, border_highlight());
         auto shadow = pen::create(pen::style::solid, 1, border_shadow());
-
         rect<coord_frame::client> client = oClient;
-        client.bottom--;
         client.right--;
+        client.bottom--;
+        _::effects::draw_border(dc, client, border_style(), highlight, shadow, _draw_left, _draw_top, _draw_right, _draw_bottom);
 
-        //draw outer border
-        switch (border_style()){
-          case border_styles::none:
-            return _SuperT::on_wm_ncpaint(dc, oClient);
-          case border_styles::flat:
-            if (_draw_right) dc.line(shadow, client.right, client.top, client.right, 1 + client.bottom);
-            if (_draw_bottom) dc.line(shadow, client.left, client.bottom, client.right, client.bottom);
-            if (_draw_top) dc.line(shadow, client.left, client.top, client.right, client.top);
-            if (_draw_left) dc.line(shadow, client.left, client.top, client.left, client.bottom);
-            return _SuperT::on_wm_ncpaint(dc, oClient);
-          case border_styles::etched:
-          case border_styles::lowered:
-          case border_styles::double_lowered:
-            std::swap(highlight, shadow); //fall through
-          case border_styles::bumped:
-          case border_styles::raised:
-          case border_styles::double_raised:
-            if (_draw_right) dc.line(shadow, client.right, client.top, client.right, 1 + client.bottom);
-            if (_draw_bottom) dc.line(shadow, client.left, client.bottom, client.right, client.bottom);
-            if (_draw_top) dc.line(highlight, client.left, client.top, client.right, client.top);
-            if (_draw_left) dc.line(highlight, client.left, client.top, client.left, client.bottom);
-        }
-        //draw inner border
-        client.left++;
-        client.right--;
-        client.top++;
-        client.bottom--;
-        switch (border_style()){
-          case border_styles::flat:
-          case border_styles::none:
-          case border_styles::raised:
-          case border_styles::lowered:
-            return _SuperT::on_wm_ncpaint(dc, oClient);
-          case border_styles::etched:
-          case border_styles::bumped:
-            std::swap(highlight, shadow);
-          case border_styles::double_raised:
-          case border_styles::double_lowered:
-            if (_draw_right) dc.line(shadow, client.right, client.top, client.right, 1 + client.bottom);
-            if (_draw_bottom) dc.line(shadow, client.left, client.bottom, client.right, client.bottom);
-            if (_draw_top) dc.line(highlight, client.left, client.top, client.right, client.top);
-            if (_draw_left) dc.line(highlight, client.left, client.top, client.left, client.bottom);
-        }
         return _SuperT::on_wm_ncpaint(dc, oClient);
       }
 

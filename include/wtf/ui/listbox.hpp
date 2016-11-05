@@ -20,7 +20,10 @@ namespace wtf{
 
       void add_item(const tstring& newval){
         _Items.push_back(newval);
+        _vscroll.max(1 + _vscroll.max());
       }
+
+      int visible_list_items() const{ return _visible_list_items; }
 
     protected:
       explicit isa_listbox(window * pParent) :
@@ -32,10 +35,13 @@ namespace wtf{
         _SuperT::border_style(border_styles::raised);
         _SuperT::auto_draw_text(false);
         _SuperT::on_wm_create();
+        _vscroll.value(0);
+        _vscroll.max(0);
       };
 
       void on_wm_size(const point<coord_frame::client>& p) override{
         _vscroll.move(p.x - scroll_width - right_margin, top_margin, scroll_width, p.y - top_margin - bottom_margin);
+        _vscroll.big_step(_visible_list_items / 2);
         _SuperT::on_wm_size(p);
       };
 
@@ -43,6 +49,7 @@ namespace wtf{
         if (!_Items.size()) return _SuperT::on_wm_paint(dc, ps);
         auto client = ps.client();
         auto oTextSize = dc.get_text_extent(_Items[0]);
+        _visible_list_items = 0;
         _ItemRects.clear();
         int listWidth = client.right - right_margin - scroll_width - left_margin;
         for (int i = top_margin; i < client.bottom; i += oTextSize.cy){
@@ -56,14 +63,15 @@ namespace wtf{
               break;
             }
           }
+          ++_visible_list_items;
           _SuperT::draw_text(dc, _ItemRects[i], _Items[i + _TopIndex].c_str());
         }
         _SuperT::on_wm_paint(dc, ps);
       };
 
       void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& param) override{
-        if (delta > 0) _vscroll.StepDecEvent();
-        else _vscroll.StepIncEvent();
+        if (delta > 0) _vscroll.value( _vscroll.value() + 1);
+        else _vscroll.value(_vscroll.value() - 1);
         _SuperT::on_wm_mouse_wheel(delta, param);
       };
 
@@ -88,8 +96,9 @@ namespace wtf{
 
       friend struct vscroll;
       void invalidate(){ _SuperT::invalidate(); }
-      class vscroll : public window_impl<vscroll, policy::isa_scrollbar>{
-        using __super_t = window_impl<vscroll, policy::isa_scrollbar>;
+
+      class vscroll : public scroll_bar{
+        using __super_t = scroll_bar;
       public:
 
         vscroll(isa_listbox * pParent)
@@ -99,18 +108,23 @@ namespace wtf{
         void on_wm_create() override{
           __super_t::orientation(orientations::vertical);
           __super_t::on_wm_create();
-        };
-
-        void StepIncEvent() override{
-          if ((_Parent->_TopIndex + _Parent->_ItemRects.size()) < _Parent->_Items.size()) _Parent->_TopIndex++;
-          _Parent->invalidate();
         }
 
-        void StepDecEvent() override{
-          if (!_Parent->_TopIndex) return;
-          --_Parent->_TopIndex;
+        void on_value_changed(int prev_val) override{
+          if (prev_val < __super_t::value()){
+            for (int i = prev_val; i < __super_t::value(); ++i){
+              if ((_Parent->_TopIndex + _Parent->_ItemRects.size()) < _Parent->_Items.size()) _Parent->_TopIndex++;
+            }
+          } else{
+            for (int i = __super_t::value(); i < prev_val; ++i){
+              if (_Parent->_TopIndex) --_Parent->_TopIndex;
+            }
+          }
           _Parent->invalidate();
+          __super_t::on_value_changed(prev_val);
         }
+
+
         isa_listbox * _Parent;
       };
 
@@ -126,6 +140,7 @@ namespace wtf{
       vscroll _vscroll;
       selection_modes _selection_mode = selection_modes::single;
       brush _background_brush = brush::system_brush(system_colors::window);
+      int _visible_list_items = 0;
     };
   }
 
