@@ -9,11 +9,11 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_destroy : _SuperT{
 
-      callback<void()> OnDestroy;
+      callback<void(window * sender)> OnDestroy;
 
     protected:
 
-      virtual void on_wm_destroy(){ OnDestroy(); }
+      virtual void on_wm_destroy(){ OnDestroy(this); }
 
       explicit wm_destroy(window * pParent) : _SuperT(pParent){}
 

@@ -9,11 +9,27 @@
 #include <random>
 #include "wtf/wtf.hpp"
 using namespace wtf;
-#if 0
+
+#if 1
+struct main_form : form{
+
+  main_form() : _listbox(this){
+    OnCreate += [this](window*){
+      _listbox.move(5, 5, 100, 200);
+      for (int i = 0; i < 1000; ++i){
+        _listbox.add_item(wtf::to_tstring(i));
+      }
+    };
+  }
+
+  listbox _listbox;
+
+};
+#elif 0
 struct main_form : form{
 
   main_form() : _scroll(this){
-    OnCreate += [this]{
+    OnCreate += [this](window*){
       _scroll.orientation(orientations::vertical);
       _scroll.move(5, 5, 20, 200); };
   }
@@ -27,7 +43,7 @@ struct main_form : form{
 
   main_form() : _scroll(this){
 
-    OnCreate += [this]{
+    OnCreate += [this](window*){
 //       _scroll.min(0);
 //       _scroll.max(10);
 //       _scroll.value(5);
@@ -46,7 +62,7 @@ struct main_form : form{
 struct main_form : form{
 
   main_form() : _button(this), _menu(this){
-    OnCreate += [this]{ _menu.move(10, 10, 100, 100); };
+    OnCreate += [this](window*){ _menu.move(10, 10, 100, 100); };
     _button.OnClick += [this](const mouse_msg_param& p){ _menu.popup( left(), top()); };
   }
   button _button;
@@ -56,7 +72,7 @@ struct main_form : form{
 struct main_form : form{
 
   main_form() : _text(this){
-    OnCreate += [this]{ _text.move(10, 10, 100, 50); };
+    OnCreate += [this](window*){ _text.move(10, 10, 100, 50); };
   }
   textbox _text;
 };
@@ -65,8 +81,7 @@ struct main_form : form{
 struct main_form : form{
 
   main_form() : _split(this){
-    OnCreate += [this](){  };
-    OnSize += [this](const point<coord_frame::client>& oSize){ _split.move(5, 5, oSize.x - 10, oSize.y - 10); };
+    OnSize += [this](window *, const point<coord_frame::client>& oSize){ _split.move(5, 5, oSize.x - 10, oSize.y - 10); };
   }
 
   split_container _split;
@@ -259,35 +274,35 @@ struct scroll_page : tab_page{
 struct split_page : tab_page{
 
   split_page(window * parent) : tab_page(parent), _splitter(this){
-    OnSize += [this](const point<coord_frame::client>& p){ _splitter.move(0, 0, p.x, p.y); };
+    OnSize += [this](window *,const point<coord_frame::client>& p){ _splitter.move(0, 0, p.x, p.y); };
   }
 
   struct splitter : split_container{
 
     splitter(split_page * parent) : split_container(parent), _inner_splitter(&first()), _text1(&second()){
-      OnCreate += [this]{ orientation(orientations::horizontal); };
-      OnSize += [this](const point<coord_frame::client>& p){
+      OnCreate += [this](window *){ orientation(orientations::horizontal); };
+      OnSize += [this](window *, const point<coord_frame::client>& p){
         if (!_InitialPosition && p.x && p.y){
           _InitialPosition = true;
           set_split_relative(25);
         }
       };
-      first().OnSize += [this](const point<coord_frame::client>& p){_inner_splitter.move(0, 0, p.x, p.y); };
-      second().OnSize += [this](const point<coord_frame::client>& p){_text1.move(0, 0, p.x, p.y); };
+      first().OnSize += [this](window *,const point<coord_frame::client>& p){_inner_splitter.move(0, 0, p.x, p.y); };
+      second().OnSize += [this](window *,const point<coord_frame::client>& p){_text1.move(0, 0, p.x, p.y); };
     }
 
     struct inner_splitter : split_container{
 
       inner_splitter(panel * parent) : split_container(parent), _texta(&first()), _textb(&second()){
-        OnCreate += [this]{ orientation(orientations::vertical); };
-        OnSize += [this](const point<coord_frame::client>& p){
+        OnCreate += [this](window*){ orientation(orientations::vertical); };
+        OnSize += [this](window*,const point<coord_frame::client>& p){
           if (!_InitialPosition && p.x && p.y){
             _InitialPosition = true;
             set_split_relative(25);
           }
         };
-        first().OnSize += [this](const point<coord_frame::client>& p){_texta.move(0, 0, p.x, p.y); };
-        second().OnSize += [this](const point<coord_frame::client>& p){_textb.move(0, 0, p.x, p.y); };
+        first().OnSize += [this](window*,const point<coord_frame::client>& p){_texta.move(0, 0, p.x, p.y); };
+        second().OnSize += [this](window*,const point<coord_frame::client>& p){_textb.move(0, 0, p.x, p.y); };
       }
 
       bool _InitialPosition = false;

@@ -8,9 +8,12 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     struct wm_killfocus :  _SuperT{
+
+      callback<void(window * sender, HWND)> OnKillFocus;
+
     protected:
 
-      virtual void on_wm_killfocus(HWND){}
+      virtual void on_wm_killfocus(HWND hwnd){ OnKillFocus(this, hwnd); }
 
       explicit wm_killfocus(window * pParent) : _SuperT(pParent){}
 

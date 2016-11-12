@@ -8,9 +8,14 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     struct wm_keyup : _SuperT{
+
+      callback<void(window * sender, UINT char_code, keyboard_msg_param param)> OnKeyUp;
+
     protected:
 
-      virtual void on_wm_keyup(UINT char_code, keyboard_msg_param, bool&){}
+      virtual void on_wm_keyup(UINT char_code, keyboard_msg_param param){
+        OnKeyUp(this, char_code, param);
+      }
 
       explicit wm_keyup(window * pParent) : _SuperT(pParent){}
 

@@ -31,7 +31,6 @@ namespace wtf{
   }
 
   class tab_page : public window_impl<tab_page, policy::isa_tab_page>{
-    template <typename, template <typename> class...> friend class window_impl;
    public:
     tab_page(window * pParent) : window_impl(pParent){}
   };

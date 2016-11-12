@@ -9,8 +9,10 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_moving : _SuperT{
 
+      callback<void(window * sender, rect<coord_frame::screen>&)> OnMoving;
+
     protected:
-      virtual void on_wm_moving(rect<coord_frame::screen>&){}
+      virtual void on_wm_moving(rect<coord_frame::screen>& param){ OnMoving(this, param); }
 
       explicit window(window * pParent) : _SuperT(pParent){}
 

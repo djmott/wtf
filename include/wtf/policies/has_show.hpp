@@ -7,14 +7,29 @@ namespace wtf{
   namespace policy{
 
     /** has_show
-    * Adds show() and hide() members
+    * Adds show/hide/visible members
     */
     template <typename _SuperT>
     struct has_show :  _SuperT{
 
-      virtual void show(){ ::ShowWindow(*this, SW_SHOW); }
+      virtual void show(){
+        ::ShowWindow(*this, SW_SHOW);
+      }
 
-      virtual void hide(){ ::ShowWindow(*this, SW_HIDE); }
+      virtual void hide(){
+        ::ShowWindow(*this, SW_HIDE);
+      }
+
+      virtual bool visible() const{ 
+        return wtf::exception::throw_lasterr_if(
+          ::GetWindowLong(*this, GWL_STYLE), [](LONG l){ return !l; })
+          & WS_VISIBLE ? true : false; 
+      }
+
+      virtual void visible(bool newval) { 
+        if (newval) show();
+        else hide();
+      }
 
     protected:
 

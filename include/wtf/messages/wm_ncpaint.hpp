@@ -16,9 +16,11 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_ncpaint : _SuperT{
 
+      callback<void(window * sender, const _::device_context&, const rect<coord_frame::client>&)> OnNCPaint;
+
     protected:
 
-      virtual void on_wm_ncpaint(const _::device_context&, const rect<coord_frame::client>&) {}
+      virtual void on_wm_ncpaint(const _::device_context& dc, const rect<coord_frame::client>& rc){ OnNCPaint(this, dc, rc); }
 
       explicit wm_ncpaint(window * pParent) : _SuperT(pParent){}
 

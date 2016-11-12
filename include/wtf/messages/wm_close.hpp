@@ -8,7 +8,7 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_close : _SuperT{
 
-      callback<void()> OnClose;
+      callback<void(window * sender)> OnClose;
 
     protected:
 
@@ -18,7 +18,7 @@ namespace wtf{
       }
 
 
-      virtual void on_wm_close(){ OnClose(); }
+      virtual void on_wm_close(){ OnClose(this); }
 
       explicit wm_close(window * pParent) : _SuperT(pParent){}
 

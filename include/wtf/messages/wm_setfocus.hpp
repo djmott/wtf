@@ -8,9 +8,11 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_setfocus : _SuperT{
 
+      callback<void(window * sender, HWND)> OnSetFocus;
+
     protected:
 
-      virtual void on_wm_setfocus(HWND){}
+      virtual void on_wm_setfocus(HWND hwnd){ OnSetFocus(this, hwnd); }
 
       explicit wm_setfocus(window * pParent) : _SuperT(pParent){}
 

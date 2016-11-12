@@ -12,12 +12,12 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_mouse_leave : _SuperT{
 
-      callback<void()> OnMouseLeave;
+      callback<void(window * sender)> OnMouseLeave;
 
 
     protected:
 
-      virtual void on_wm_mouse_leave(){ OnMouseLeave(); }
+      virtual void on_wm_mouse_leave(){ OnMouseLeave(this); }
 
       explicit wm_mouse_leave(window * pParent) : _SuperT(pParent){}
 

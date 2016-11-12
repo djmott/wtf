@@ -9,9 +9,12 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     struct wm_mouse_down : _SuperT{
+
+      callback<void(window * sender, const mouse_msg_param&)> OnMouseDown;
+
     protected:
 
-      virtual void on_wm_mouse_down(const mouse_msg_param&) {}
+      virtual void on_wm_mouse_down(const mouse_msg_param& param){ OnMouseDown(this, param); }
 
       explicit wm_mouse_down(window * pParent) : _SuperT(pParent){}
 

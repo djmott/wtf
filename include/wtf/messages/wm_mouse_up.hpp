@@ -8,8 +8,11 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     struct wm_mouse_up : _SuperT{
+
+      callback<void(window *, const mouse_msg_param&)> OnMouseUp;
+
     protected:
-      virtual void on_wm_mouse_up(const mouse_msg_param&) {}
+      virtual void on_wm_mouse_up(const mouse_msg_param& param){ OnMouseUp(this, param); }
 
       explicit wm_mouse_up(window * pParent) : _SuperT(pParent){}
 

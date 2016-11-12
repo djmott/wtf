@@ -20,6 +20,10 @@ namespace wtf{
     protected:
       explicit has_repeat_click(window * pParent) : _SuperT(pParent){}
 
+      void on_wm_click(const mouse_msg_param& p) override {
+        _SuperT::on_wm_click(p);
+      }
+      
       void on_wm_timer(UINT_PTR iTimer) override{
         if (iTimer == _timerid){
           on_wm_click(mouse_msg_param((WPARAM)0, (LPARAM)0, mouse_msg_param::buttons::left));

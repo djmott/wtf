@@ -10,18 +10,6 @@ namespace wtf{
     template <typename _SuperT>
     struct isa_textbox : _SuperT{
 
-      const tstring &text() const override{ return _text; }
-      void text(const tstring & newval) override{
-        _text = newval;
-        _SuperT::invalidate();
-      }
-
-      bool accepts_tab() const{ return _accepts_tab; }
-      void accepts_tab(bool newval){
-        if (newval == _accepts_tab) return;
-        _accepts_tab = newval;
-        _SuperT::invalidate();
-      }
 
     protected:
       
@@ -68,7 +56,6 @@ namespace wtf{
 
 
       void on_wm_char(UINT character, keyboard_msg_param k) override{
-        std::cout << std::hex << "on_wm_char character: " << character << '\n';
         switch (character){
           case VK_ESCAPE:
           case VK_BACK:
@@ -94,7 +81,6 @@ namespace wtf{
       };
 
       void on_wm_keydown(UINT key, keyboard_msg_param param) override{
-        std::cout << std::hex << "on_wm_keydown key: " << key << '\n';
         const auto cstr = _SuperT::_text.c_str();
         auto cstrlen = _SuperT::_text.size();
         if (!cstrlen) return _SuperT::on_wm_keydown(key, param);

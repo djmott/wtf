@@ -15,14 +15,14 @@ namespace wtf{
         inactive = WA_INACTIVE,
       };
 
-      callback<void()> OnActivate;
-      callback<void()> OnDeactivate;
+      callback<void(window * sender)> OnActivate;
+      callback<void(window * sender)> OnDeactivate;
 
     protected:
 
       virtual void on_wm_activate(activate_mode mode, bool minimized, HWND target){
-        if (activate_mode::inactive == mode) OnDeactivate();
-        else OnActivate();
+        if (activate_mode::inactive == mode) OnDeactivate(this);
+        else OnActivate(this);
       }
 
       void handle_msg(_::window_message& msg) override{

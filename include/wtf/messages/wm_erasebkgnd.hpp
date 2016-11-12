@@ -9,9 +9,14 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_erasebkgnd : _SuperT{
       
+      callback<void(window * sender, const wtf::_::device_context&, const rect<coord_frame::client>&)> OnEraseBackground;
+
     protected:
 
-      virtual void on_wm_erasebkgnd(const wtf::_::device_context&, const rect<coord_frame::client>&) {}
+      virtual void on_wm_erasebkgnd(const wtf::_::device_context& dc, const rect<coord_frame::client>& rc) {
+        OnEraseBackground(this, dc, rc);
+      }
+
       explicit wm_erasebkgnd(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{

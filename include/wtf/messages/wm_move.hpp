@@ -16,9 +16,11 @@ namespace wtf{
         restored = SIZE_RESTORED,
       };
 
+      callback<void(window * sender, const point<coord_frame::client>&)> OnMove;
+
     protected:
 
-      virtual void on_wm_move(const point<coord_frame::client>&, bool&){}
+      virtual void on_wm_move(const point<coord_frame::client>& param){ OnMove(this, param); }
 
       explicit wm_move(window * pParent) : _SuperT(pParent){}
 

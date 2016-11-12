@@ -8,9 +8,11 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_char : _SuperT{
 
+      callback<void(window * sender, UINT char_code, keyboard_msg_param)> OnChar;
+
     protected:
 
-      virtual void on_wm_char(UINT char_code, keyboard_msg_param){}
+      virtual void on_wm_char(UINT char_code, keyboard_msg_param param){ OnChar(this, char_code, param); }
 
       wm_char(window * pParent) : _SuperT(pParent){}
 

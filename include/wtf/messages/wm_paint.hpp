@@ -6,12 +6,13 @@
 namespace wtf{
 
   namespace policy{
+
     template <typename _SuperT>
     struct wm_paint : _SuperT{
 
     protected:
 
-      virtual void on_wm_paint(const _::device_context&, const _::paint_struct&) {}
+      virtual void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps){ }
 
       explicit wm_paint(window * pParent) : _SuperT(pParent){}
 

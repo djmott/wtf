@@ -16,13 +16,13 @@ namespace wtf{
       /** @var OnSize The window has been resized
       @ingroup Callbacks
       */
-      callback<void(const point<coord_frame::client>&)> OnSize;
+      callback<void(window * sender, const point<coord_frame::client>&)> OnSize;
 
     protected:
 
       explicit wm_size(window * pParent) : _SuperT(pParent){}
 
-      virtual void on_wm_size(const point<coord_frame::client>& p){ OnSize(p); }
+      virtual void on_wm_size(const point<coord_frame::client>& p){ OnSize(this, p); }
 
       void handle_msg(_::window_message& msg) override{
         if (WM_SIZE == msg.umsg) on_wm_size(point<coord_frame::client>(LOWORD(msg.lparam), HIWORD(msg.lparam)));

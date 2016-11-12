@@ -8,11 +8,11 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_create : _SuperT{
 
-      callback<void()> OnCreate;
+      callback<void(window * sender)> OnCreate;
 
     protected:
 
-      virtual void on_wm_create(){ OnCreate(); }
+      virtual void on_wm_create(){ OnCreate(this); }
 
       explicit wm_create(window * pParent) : _SuperT(pParent){}
 

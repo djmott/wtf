@@ -13,13 +13,13 @@ namespace wtf{
     template <typename _SuperT>
     struct has_click : _SuperT{
 
-      callback<void(mouse_msg_param)> OnClick;
+      callback<void(window *, mouse_msg_param)> OnClick;
 
     protected:
 
       explicit has_click(window * pParent) : _SuperT(pParent){}
 
-      virtual void on_wm_click(const mouse_msg_param& p){ OnClick(p); }
+      virtual void on_wm_click(const mouse_msg_param& p){ OnClick(this, p); }
 
       void on_wm_mouse_down(const mouse_msg_param& oParam) override{
         _Down = oParam.button;

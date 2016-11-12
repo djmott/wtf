@@ -1,6 +1,12 @@
 #pragma once
 namespace wtf{
 
+  enum class scroll_visibilities{
+    on,
+    off,
+    as_needed,
+  };
+
   namespace policy{
 
     template <typename _SuperT>
@@ -85,51 +91,47 @@ namespace wtf{
         _SuperT::on_wm_mouse_move(param);
       }
 
-      void on_wm_size(const point<coord_frame::client>& p) override{
-        if (orientations::vertical == _SuperT::orientation()){
-          _button_size = p.x - 1;
-          _step_dec = { 0,0,_button_size, _button_size };
-          _step_inc = { 0, p.y - _button_size - 1, _button_size, p.y - 1 };
-          _arrow_dec = { _step_dec.left + 5, _step_dec.top + 5, _step_dec.right - 5, _step_dec.bottom - 5 };
-          _arrow_inc = { _step_inc.left + 5, _step_inc.top + 5, _step_inc.right - 5, _step_inc.bottom - 5 };
-        } else{
-          _button_size = p.y - 1;
-          _step_dec = { 0,0,_button_size, _button_size };
-          _step_inc = { p.x - _button_size - 1, 0, p.x - 1, _button_size };
-          _arrow_dec = { _step_dec.left + 5, _step_dec.top + 5, _step_dec.right - 5, _step_dec.bottom - 5 };
-          _arrow_inc = { _step_inc.left + 5, _step_inc.top + 5, _step_inc.right - 5, _step_inc.bottom - 5 };
-        }
-        _SuperT::on_wm_size(p);
-      }
-
-      void on_wm_paint(const _::device_context& dc, const _::paint_struct&ps) override{
+      void paint(const _::device_context& dc, const rect<coord_frame::client>& client){
         auto iExtent = _max - _min;
         if (!iExtent) return _SuperT::on_wm_paint(dc, ps);
-        on_wm_size(ps.client().dimensions());
         rect<coord_frame::client> _slider;
-        _::effects::draw_border(dc, _step_dec, (_down == step_dec ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
-        _::effects::draw_border(dc, _step_inc, (_down == step_inc ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
         if (orientations::vertical == _SuperT::orientation()){
+          _button_size = client.right - 1;
+          _step_dec = { 0,0,_button_size, _button_size };
+          _step_inc = { 0, client.bottom - _button_size - 1, _button_size, client.bottom - 1 };
+          _arrow_dec = { _step_dec.left + 5, _step_dec.top + 5, _step_dec.right - 5, _step_dec.bottom - 5 };
+          _arrow_inc = { _step_inc.left + 5, _step_inc.top + 5, _step_inc.right - 5, _step_inc.bottom - 5 };
           _::effects::draw_arrow(dc, _arrow_dec, quadrants::top, _shadow, _fill);
           _::effects::draw_arrow(dc, _arrow_inc, quadrants::bottom, _shadow, _fill);
-          auto iSlideRange = (ps.rcPaint.bottom - (_button_size * 3)) - 1;
+          auto iSlideRange = (client.bottom - (_button_size * 3)) - 1;
           auto iValRange = _max - _min;
           auto iNewTop = 1 + _button_size + ((_value * iSlideRange) / iValRange);
-          if ((2 + iNewTop + (_button_size * 2)) >= ps.rcPaint.bottom) iNewTop = (ps.rcPaint.bottom - (_button_size * 2)) - 2;
+          if ((2 + iNewTop + (_button_size * 2)) >= client.bottom) iNewTop = (client.bottom - (_button_size * 2)) - 2;
 
           _slider = { 0,iNewTop,_button_size,iNewTop + _button_size };
         } else{
+          _button_size = client.bottom - 1;
+          _step_dec = { 0,0,_button_size, _button_size };
+          _step_inc = { client.right - _button_size - 1, 0,  client.right - 1, _button_size };
+          _arrow_dec = { _step_dec.left + 5, _step_dec.top + 5, _step_dec.right - 5, _step_dec.bottom - 5 };
+          _arrow_inc = { _step_inc.left + 5, _step_inc.top + 5, _step_inc.right - 5, _step_inc.bottom - 5 };
           _::effects::draw_arrow(dc, _arrow_dec, quadrants::left, _shadow, _fill);
           _::effects::draw_arrow(dc, _arrow_inc, quadrants::right, _shadow, _fill);
 
-          auto iSlideRange = (ps.rcPaint.right - (_button_size * 3)) - 1;
+          auto iSlideRange = (client.right - (_button_size * 3)) - 1;
           auto iValRange = _max - _min;
           auto iNewLeft = 1 + _button_size + ((_value * iSlideRange) / iValRange);
-          if ((2 + iNewLeft + (_button_size * 2)) >= ps.rcPaint.right) iNewLeft = (ps.rcPaint.right - (_button_size * 2)) - 2;
+          if ((2 + iNewLeft + (_button_size * 2)) >= client.right) iNewLeft = (client.right - (_button_size * 2)) - 2;
 
           _slider = { iNewLeft,0,iNewLeft + _button_size,_button_size };
         }
+        _::effects::draw_border(dc, _step_dec, (_down == step_dec ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
+        _::effects::draw_border(dc, _step_inc, (_down == step_inc ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
         _::effects::draw_border(dc, _slider, (_down == slide ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
+      }
+
+      void on_wm_paint(const _::device_context& dc, const _::paint_struct&ps) override{
+        paint(dc, ps.rcPaint);
         _SuperT::on_wm_paint(dc, ps);
       }
 

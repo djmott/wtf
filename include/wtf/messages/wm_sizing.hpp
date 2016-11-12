@@ -8,8 +8,10 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_sizing : _SuperT{
 
+      callback<void(window * sender, rect<coord_frame::screen>&)> OnSizing;
+
     protected:
-      virtual void on_wm_sizing(rect<coord_frame::screen>&){}
+      virtual void on_wm_sizing(rect<coord_frame::screen>& param){ OnSizing(this, param); }
 
       explicit wm_sizing(window * pParent) : _SuperT(pParent){}
 

@@ -9,14 +9,18 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_mouse_wheel : _SuperT{
 
+      callback<void(window * sender, int16_t delta, const mouse_msg_param& param)> OnMouseWheel;
+
     protected:
 
-      virtual void on_wm_mouse_wheel(int16_t /*delta*/, const mouse_msg_param&){}
+      virtual void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& param){ OnMouseWheel(this, delta, param); }
 
       explicit wm_mouse_wheel(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
-        if (WM_MOUSEWHEEL == msg.umsg) on_wm_mouse_wheel(static_cast<int16_t>(HIWORD(msg.wparam)), mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::unspecified));
+        if (WM_MOUSEWHEEL == msg.umsg){
+          on_wm_mouse_wheel(static_cast<int16_t>(HIWORD(msg.wparam)), mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::unspecified));
+        }
         _SuperT::handle_msg(msg);
       }
     };

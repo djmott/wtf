@@ -8,10 +8,10 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_dblclick : _SuperT{
 
-      callback<void(const mouse_msg_param&)> OnDblClick;
+      callback<void(window * sender, const mouse_msg_param&)> OnDblClick;
       
     protected:
-      virtual void on_wm_dblclick(const mouse_msg_param& p){ OnDblClick(p); }
+      virtual void on_wm_dblclick(const mouse_msg_param& p){ OnDblClick(this, p); }
 
       explicit wm_dblclick(window * pParent) : _SuperT(pParent){}
 
