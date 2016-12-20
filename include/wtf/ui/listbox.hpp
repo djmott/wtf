@@ -3,10 +3,149 @@
 */
 #pragma once
 
+namespace wtf {
+
+  enum class item_selection_modes {
+    none,
+    single,
+    multiple,
+    extended,
+  };
+
+  namespace policy {
+    
+    template <typename _SuperT>
+    struct isa_listbox : _SuperT {
+
+      item_selection_modes selection_mode() const { return _selection_mode; }
+      void selection_mode(item_selection_modes newval) { _selection_mode = newval; }
+
+
+      struct item : std::enable_shared_from_this<item>{
+        using pointer = std::shared_ptr<item>;
+
+        tstring& text() { return _text; }
+        const tstring& text() const { return _text; }
+        void text(const tstring& newval) { 
+          _text = newval; 
+          if (_parent) _parent->invalidate();
+        }
+
+        bool selected() const { return _selected; }
+        void selected(bool newval) { 
+          _selected = newval; 
+          if (_parent) _parent->invalidate();
+        }
+
+      private:
+        tstring _text = _T("");
+        bool _selected = false;
+        isa_listbox<_SuperT> * _parent = nullptr;
+      };
+
+      void add_item(const tstring& newval) {
+        _items.push_back(newval);
+        resize();
+      }
+
+      void add_items(const std::initializer_list<tstring> items) {
+        std::copy(items.begin(), items.end(), std::back_insert_iterator<std::vector<tstring>>(_items));
+        resize();
+      }
+
+    protected:
+
+      isa_listbox(window * parent) : _SuperT(parent), _contents(*this){}
+
+
+      void on_wm_size(const point<coord_frame::client>& p) override {
+        _current_size = p;
+        resize();
+        _SuperT::on_wm_size(p);
+      }
+
+
+
+    private:
+      friend struct contents;
+
+      item_selection_modes _selection_mode;
+      std::vector<tstring> _items;
+
+      point<coord_frame::client> _current_size;
+
+      void resize() {
+        auto oExtent = _contents.calc_size();
+        bool vscroll_visible = oExtent.cy > _current_size.y;
+        bool hscroll_visible = oExtent.cx > _current_size.x;
+        _SuperT::vscroll().max(_current_size.y);
+        _SuperT::hscroll().max(_current_size.x);
+        _SuperT::vscroll().visible(vscroll_visible);
+        _SuperT::hscroll().visible(hscroll_visible);
+        _contents.move(_SuperT::hscroll().value(), _SuperT::vscroll().value(), oExtent.cx, oExtent.cy);
+      }
+
+
+
+      struct contents : label {
+
+        contents(isa_listbox& parent) : label(&parent.client()), _parent(parent) {
+          label::multiline(true);
+          label::word_wrap(false);
+          label::text_vertical_alignment(text_vertical_alignments::top);
+          label::text_horizontal_alignment(text_horizontal_alignments::left);
+          label::auto_draw_text(false);
+        }
+
+
+        size calc_size() const {
+          tstring sList = _T("");
+          for (const auto & oItem : _parent._items) {
+            sList += oItem;
+            sList += _T('\n');
+          }
+          auto oDC = _::device_context::get_client(*this);
+          return oDC.get_text_extent(sList);
+        }
+
+        void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override {
+          tstring sList = _T("");
+          for (const auto & oItem : _parent._items) {
+            sList += oItem;
+            sList += _T('\n');
+          }
+          label::draw_text(dc, ps.client(), sList);
+          label::on_wm_paint(dc, ps);
+        }
+
+
+        isa_listbox& _parent;
+      }_contents;
+    };
+
+  }
+
+
+  namespace _ {
+
+    template <> struct policy_traits<policy::isa_listbox> {
+      using requires = policy_list<policy::isa_scroll_panel>;
+    };
+
+  }
+
+  struct listbox : window_impl<listbox, policy::isa_listbox> {
+    explicit listbox(window * pParent) : window_impl(pParent) {}
+  };
+
+}
+
+#if 0
 
 namespace wtf{
 
   namespace policy{
+
     template <typename _SuperT>
     struct isa_listbox : _SuperT{
 
@@ -60,8 +199,8 @@ namespace wtf{
         _SuperT::on_wm_paint(dc, ps);
       };
 
-      void on_wm_click(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left != m.button) return;
+      void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
+        if (mouse_buttons::left != m.button) return;
         if (selection_modes::single == _selection_mode){
           _SelectedItems.clear();
         }
@@ -101,7 +240,7 @@ namespace wtf{
   namespace _{
 
     template <> struct policy_traits<policy::isa_listbox>{
-      using requires = policy_list<policy::isa_label, policy::isa_scroll_window, policy::wm_mouse_wheel>;
+      using requires = policy_list<policy::isa_label, policy::wm_mouse_wheel>;
     };
 
   }
@@ -110,7 +249,7 @@ namespace wtf{
     explicit listbox(window * pParent) : window_impl(pParent){}
   };
 }
-
+#endif
 #if 0
 /** @file
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
@@ -183,14 +322,14 @@ namespace wtf{
         _SuperT::on_wm_paint(dc, ps);
       };
 
-      void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param& param) override{
+      void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param<coord_frame::client>& param) override{
         if (delta > 0) _vscroll.value( _vscroll.value() + 1);
         else _vscroll.value(_vscroll.value() - 1);
         _SuperT::on_wm_mouse_wheel(delta, param);
       };
 
-      void on_wm_click(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left != m.button) return;
+      void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
+        if (mouse_buttons::left != m.button) return;
         if (selection_modes::single == _selection_mode){
           _SelectedItems.clear();
         }

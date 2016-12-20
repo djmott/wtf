@@ -11,14 +11,52 @@
 using namespace wtf;
 
 #if 1
+
+struct main_form : form {
+  main_form(){}
+  void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override {
+    tstring sTemp = "this\nis\na\ntest";
+    RECT rc = ps.rcPaint;
+    ::DrawText(dc, sTemp.c_str(), -1, &rc, DT_LEFT | DT_TOP);
+  }
+};
+
+#elif 0
+
+struct main_form : form {
+
+  main_form() : _scroll_panel(this) {
+    OnCreate += [this](window*) {
+      _scroll_panel.move(5, 5, 100, 200);
+    };
+  }
+
+  vscroll_panel _scroll_panel;
+
+};
+
+#elif 0
+struct main_form : form{
+
+  main_form() : _scroll_panel(this){
+    OnCreate += [this](window*){
+      _scroll_panel.move(5, 5, 100, 200);
+    };
+  }
+
+  scroll_panel _scroll_panel;
+
+};
+#elif 0
 struct main_form : form{
 
   main_form() : _listbox(this){
     OnCreate += [this](window*){
       _listbox.move(5, 5, 100, 200);
-      for (int i = 0; i < 1000; ++i){
-        _listbox.add_item(wtf::to_tstring(i));
-      }
+//       for (int i = 0; i < 1000; ++i){
+//         _listbox.add_item(wtf::to_tstring(i));
+//       }
+      _listbox.add_items({ _T("1"), _T("2"), _T("3"), _T("4"), _T("5") });
     };
   }
 
@@ -44,11 +82,9 @@ struct main_form : form{
   main_form() : _scroll(this){
 
     OnCreate += [this](window*){
-//       _scroll.min(0);
-//       _scroll.max(10);
-//       _scroll.value(5);
-      _scroll.orientation(orientations::vertical);
-      _scroll.move(10, 10, 20, 100);
+
+      _scroll.orientation(orientations::horizontal);
+      _scroll.move(10, 10, 200, 20);
       
     };
 
@@ -188,9 +224,9 @@ struct listbox_page : tab_page{
       _center.add_item(sTemp);
       _right.add_item(sTemp);
     }
-    _left.text_horizontal_alignment(text_horizontal_alignments::left);
-    _center.text_horizontal_alignment(text_horizontal_alignments::center);
-    _right.text_horizontal_alignment(text_horizontal_alignments::right);
+//     _left.text_horizontal_alignment(text_horizontal_alignments::left);
+//     _center.text_horizontal_alignment(text_horizontal_alignments::center);
+//     _right.text_horizontal_alignment(text_horizontal_alignments::right);
     return tab_page::on_wm_create();
 
   };
@@ -224,7 +260,7 @@ struct button_page : tab_page{
   struct _button1 : button{
     _button1(window * pParent, label& oLabel) : button(pParent), _label1(oLabel){}
 
-    void on_wm_click(const mouse_msg_param& m) override{
+    void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
       _label1.text(to_tstring(GetTickCount()));
       button::on_wm_click(m);
     };
@@ -234,7 +270,7 @@ struct button_page : tab_page{
   struct _button2 : toggle_button{
     _button2(window * pParent, label& oLabel) : toggle_button(pParent), _label2(oLabel){}
 
-    void on_wm_click(const mouse_msg_param& m) override{
+    void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
       _label2.text(to_tstring(GetTickCount()));
       toggle_button::on_wm_click(m);
     };
@@ -328,11 +364,11 @@ struct tree_page : tab_page{
 
   void on_wm_create() override{
     for (int i = 0; i < 20; i++){
-      auto oChild1 = _tree.add_node(RandomString());
+      auto oChild1 = _tree.add_item(RandomString());
       for (int x = 0; x < 20; x++){
-        auto oChild2 = oChild1->add_node(RandomString());
+        auto oChild2 = oChild1->add_item(RandomString());
         for (int j = 0; j < 20; j++){
-          oChild2->add_node(RandomString());
+          oChild2->add_item(RandomString());
         }
       }
     }

@@ -20,17 +20,17 @@ namespace wtf{
 
       virtual void size_bar_moved(const point<coord_frame::client>& p){ OnMoved(p); }
 
-      void on_wm_mouse_move(const mouse_msg_param& m) override{
-        if (m.key_state & mouse_msg_param::key_states::left) size_bar_moved(m.position);        
+      void on_wm_mouse_move(const mouse_msg_param<coord_frame::client>& m) override{
+        if (m.key_state & mouse_key_states::left) size_bar_moved(m.position);        
         _SuperT::on_wm_mouse_move(m);
       };
 
-      void on_wm_mouse_down(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left == m.button) SetCapture(*this);        
+      void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& m) override{
+        if (mouse_buttons::left == m.button) SetCapture(*this);        
         _SuperT::on_wm_mouse_down(m);
       };
 
-      void on_wm_mouse_up(const mouse_msg_param& m) override{
+      void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& m) override{
         ReleaseCapture();
         _SuperT::on_wm_mouse_up(m);
       };

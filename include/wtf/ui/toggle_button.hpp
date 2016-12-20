@@ -27,8 +27,8 @@ namespace wtf{
         _SuperT::on_wm_create();
       };
 
-      void on_wm_mouse_up(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left != m.button) return _SuperT::on_wm_mouse_up(m);
+      void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& m) override{
+        if (mouse_buttons::left != m.button) return _SuperT::on_wm_mouse_up(m);
         _SuperT::on_wm_mouse_up(m);
         value(!_value);
       };

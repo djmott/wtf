@@ -16,8 +16,8 @@ namespace wtf{
         _SuperT::border_style(border_styles::none);
       }
 
-      void on_wm_click(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left == m.button){
+      void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
+        if (mouse_buttons::left == m.button){
           _check.value(!_check.value());
         }
         _SuperT::on_wm_click(m);
@@ -26,7 +26,7 @@ namespace wtf{
       void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
         auto client = ps.client();
         auto TextSize = _SuperT::prefered_text_size();
-        if (text_horizontal_alignments::left == _SuperT::_text_horizontal_alignment){
+        if (text_horizontal_alignments::left == _SuperT::text_horizontal_alignment()){
           _check.move(0, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
           _SuperT::draw_text(dc, rect<coord_frame::client>(checkbox_size, 0, client.right - checkbox_size, client.bottom));
         } else{
@@ -47,8 +47,8 @@ namespace wtf{
           __super_t::border_style(border_styles::raised);
         }
 
-        void on_wm_click(const mouse_msg_param& m) override{
-          if (mouse_msg_param::buttons::left == m.button) value(!_value);
+        void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
+          if (mouse_buttons::left == m.button) value(!_value);
           __super_t::on_wm_click(m);
         }
 

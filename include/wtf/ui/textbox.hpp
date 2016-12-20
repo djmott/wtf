@@ -30,10 +30,10 @@ namespace wtf{
 
       void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
         auto otext_metrics = wtf::_::text_metrics::get(dc);
-        _SuperT::draw_text(dc, ps.client(), _SuperT::_text.c_str() + _print);
+        _SuperT::draw_text(dc, ps.client(), _SuperT::text().c_str() + _print);
         point<coord_frame::client> oCaretPos{ 0, otext_metrics.tmHeight };
         if (_edit > _print){
-          auto oTextSize = dc.get_text_extent(_SuperT::_text.c_str() + _print, _edit - _print);
+          auto oTextSize = dc.get_text_extent(_SuperT::text().c_str() + _print, _edit - _print);
           oCaretPos.x = oTextSize.cx; 
         }
         _SuperT::on_wm_paint(dc, ps);
@@ -49,7 +49,7 @@ namespace wtf{
       }
 
 
-      void on_wm_mouse_down(const mouse_msg_param& p) override{
+      void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& p) override{
         _SuperT::set_focus();
         _SuperT::on_wm_mouse_up(p);
       };
@@ -65,11 +65,11 @@ namespace wtf{
             break;
           default:
           {
-            _SuperT::_text.insert(_edit, 1, static_cast<TCHAR>(character));
+            _SuperT::text().insert(_edit, 1, static_cast<TCHAR>(character));
             ++_edit;
             auto oDC = _::device_context::get_client(*this);
             for (;;){              
-              auto oTextSize = oDC.get_text_extent(_SuperT::_text.c_str() + _print, _edit - _print);
+              auto oTextSize = oDC.get_text_extent(_SuperT::text().c_str() + _print, _edit - _print);
               if (_print >= _edit || oTextSize.cx < _size.x) break;
               ++_print;
             }
@@ -81,8 +81,8 @@ namespace wtf{
       };
 
       void on_wm_keydown(UINT key, keyboard_msg_param param) override{
-        const auto cstr = _SuperT::_text.c_str();
-        auto cstrlen = _SuperT::_text.size();
+        const auto cstr = _SuperT::text().c_str();
+        auto cstrlen = _SuperT::text().size();
         if (!cstrlen) return _SuperT::on_wm_keydown(key, param);
         switch (key){
           case VK_LEFT:
@@ -91,7 +91,7 @@ namespace wtf{
           {
             if (!_edit) break;
             if (VK_DELETE != key) --_edit;
-            if (VK_BACK == key || VK_DELETE == key) _SuperT::_text.erase(_edit, 1);
+            if (VK_BACK == key || VK_DELETE == key) _SuperT::text().erase(_edit, 1);
             auto oDC = _::device_context::get_client(*this);
             for (; _print && _print > _edit - 4; --_print){
               auto oTextSize = oDC.get_text_extent(cstr + _print, _edit - _print);

@@ -12,7 +12,7 @@ namespace wtf{
     template <typename _SuperT>
     struct has_close :  _SuperT{
 
-      void close(){ CloseWindow(*this); }
+      virtual void close(){ CloseWindow(*this); }
 
     protected:
 

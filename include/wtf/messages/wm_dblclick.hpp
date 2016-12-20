@@ -8,20 +8,20 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_dblclick : _SuperT{
 
-      callback<void(window * sender, const mouse_msg_param&)> OnDblClick;
+      callback<void(window * sender, const mouse_msg_param<coord_frame::client>&)> OnDblClick;
       
     protected:
-      virtual void on_wm_dblclick(const mouse_msg_param& p){ OnDblClick(this, p); }
+      virtual void on_wm_dblclick(const mouse_msg_param<coord_frame::client>& p){ OnDblClick(this, p); }
 
       explicit wm_dblclick(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_LBUTTONDBLCLK == msg.umsg){
-          on_wm_dblclick(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::left));
+          on_wm_dblclick(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::left));
         } else if (WM_MBUTTONDBLCLK == msg.umsg){
-          on_wm_dblclick(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::middle));
+          on_wm_dblclick(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::middle));
         } else if (WM_RBUTTONDBLCLK == msg.umsg){
-          on_wm_dblclick(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::right));
+          on_wm_dblclick(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::right));
         }
         _SuperT::handle_msg(msg);
       }

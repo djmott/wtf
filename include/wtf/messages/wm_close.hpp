@@ -8,17 +8,21 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_close : _SuperT{
 
-      callback<void(window * sender)> OnClose;
+      callback<void(window * sender, bool& cancel)> OnClose;
 
     protected:
 
       void handle_msg(_::window_message& msg) override{
-        if (WM_CLOSE == msg.umsg) on_wm_close();
+        bool cancel = false;
+        if (WM_CLOSE == msg.umsg) {
+          on_wm_close(cancel);
+          if (cancel) return;
+        }
         _SuperT::handle_msg(msg);
       }
 
 
-      virtual void on_wm_close(){ OnClose(this); }
+      virtual void on_wm_close(bool& cancel){ OnClose(this, cancel); }
 
       explicit wm_close(window * pParent) : _SuperT(pParent){}
 

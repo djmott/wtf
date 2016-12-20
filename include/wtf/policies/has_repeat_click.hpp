@@ -9,8 +9,6 @@ namespace wtf{
     template <typename _SuperT>
     struct has_repeat_click : _SuperT{
       
-      using mouse_msg_param = mouse_msg_param;
-
       int repeat_delay() const{ return _repeat_delay; }
       void repeat_delay(int newval){ _repeat_delay = newval; }
 
@@ -20,26 +18,26 @@ namespace wtf{
     protected:
       explicit has_repeat_click(window * pParent) : _SuperT(pParent){}
 
-      void on_wm_click(const mouse_msg_param& p) override {
+      void on_wm_click(const mouse_msg_param<coord_frame::client>& p) override {
         _SuperT::on_wm_click(p);
       }
       
       void on_wm_timer(UINT_PTR iTimer) override{
         if (iTimer == _timerid){
-          on_wm_click(mouse_msg_param((WPARAM)0, (LPARAM)0, mouse_msg_param::buttons::left));
+          on_wm_click(mouse_msg_param<coord_frame::client>((WPARAM)0, (LPARAM)0, mouse_buttons::left));
           _SuperT::set_timer(_repeat_rate, iTimer);
         }
         _SuperT::on_wm_timer(iTimer);
       }
 
-      void on_wm_mouse_down(const mouse_msg_param& m) override{
-        if (mouse_msg_param::buttons::left != m.button) return;
+      void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& m) override{
+        if (mouse_buttons::left != m.button) return;
         _down = true;
         _timerid = _SuperT::set_timer(_repeat_delay);
         _SuperT::on_wm_mouse_down(m);
       }
 
-      void on_wm_mouse_up(const mouse_msg_param& m) override{
+      void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& m) override{
         if (_down && _timerid){
           if (_timerid) _SuperT::kill_timer(_timerid);
           _timerid = 0;

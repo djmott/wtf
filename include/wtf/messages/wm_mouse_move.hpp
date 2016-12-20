@@ -9,17 +9,17 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_mouse_move : _SuperT{
 
-      callback<void(window * sender, const mouse_msg_param&)> OnMouseMove;
+      callback<void(window * sender, const mouse_msg_param<coord_frame::client>&)> OnMouseMove;
 
     protected:
 
-      virtual void on_wm_mouse_move(const mouse_msg_param& param){ OnMouseMove(this, param); }
+      virtual void on_wm_mouse_move(const mouse_msg_param<coord_frame::client>& param){ OnMouseMove(this, param); }
 
       explicit wm_mouse_move(window * pParent) : _SuperT(pParent){}
 
       void handle_msg(_::window_message& msg) override{
         if (WM_MOUSEMOVE == msg.umsg){
-          on_wm_mouse_move(mouse_msg_param(msg.wparam, msg.lparam, mouse_msg_param::buttons::unspecified));
+          on_wm_mouse_move(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::unspecified));
         }
         _SuperT::handle_msg(msg);
       }

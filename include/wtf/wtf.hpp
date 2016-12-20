@@ -5,6 +5,10 @@
 
 #define NOMINMAX 1
 
+#if !defined(__WTF_DEBUG_MESSAGES__)
+  #define __WTF_DEBUG_MESSAGES__ 0
+#endif
+
 #include <Windows.h>
 #include <windowsx.h>
 #include <tchar.h>
@@ -22,6 +26,9 @@
 #include <sstream>
 #include <mutex>
 #include <locale>
+#if (__WTF_DEBUG_MESSAGES__)
+#include <iostream>
+#endif
 
 /** @namespace wtf
 Primary namespace
@@ -148,6 +155,10 @@ namespace wtf {
 #include "messages/wm_mouse_wheel.hpp"
 #include "messages/wm_move.hpp"
 #include "messages/wm_nccalcsize.hpp"
+#include "messages/wm_ncmouse_down.hpp"
+#include "messages/wm_ncmouse_leave.hpp"
+#include "messages/wm_ncmouse_move.hpp"
+#include "messages/wm_ncmouse_up.hpp"
 #include "messages/wm_ncpaint.hpp"
 #include "messages/wm_paint.hpp"
 #include "messages/wm_setcursor.hpp"
@@ -187,8 +198,8 @@ namespace wtf {
 #include "ui/scroll_bar.hpp"
 #include "ui/checkbox.hpp"
 #include "ui/form.hpp"
-#include "ui/scroll_window.hpp"
-#include "ui/listbox.hpp"
+#include "ui/scroll_panel.hpp"
+#include "ui/list.hpp"
 #include "ui/menu.hpp"
 #include "ui/progress_bar.hpp"
 #include "ui/split_container.hpp"

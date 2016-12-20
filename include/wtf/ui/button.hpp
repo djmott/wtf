@@ -17,8 +17,8 @@ namespace wtf{
         _SuperT::border_style(border_styles::raised);
       }
 
-      void on_wm_mouse_down(const mouse_msg_param& oParam) override{
-        if (oParam.button == mouse_msg_param::buttons::left){
+      void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& oParam) override{
+        if (oParam.button == mouse_buttons::left){
           _SuperT::border_style(border_styles::lowered);
           _SuperT::invalidate();
           ::SetCapture(*this);
@@ -26,8 +26,8 @@ namespace wtf{
         _SuperT::on_wm_mouse_down(oParam);
       }
 
-      void on_wm_mouse_up(const mouse_msg_param& oParam) override{
-        if (oParam.button == mouse_msg_param::buttons::left){
+      void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& oParam) override{
+        if (oParam.button == mouse_buttons::left){
           _SuperT::border_style(border_styles::raised);
           _SuperT::invalidate();
           ::ReleaseCapture();

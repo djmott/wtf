@@ -37,7 +37,8 @@ namespace wtf{
         if (_auto_draw_text) _SuperT::invalidate();
       }
 
-      virtual const tstring &text() const{ return _text; }
+      virtual const tstring &text() const { return _text; }
+      virtual tstring &text() { return _text; }
       virtual void text(const tstring &newval){
         _text = newval;
         if (_auto_draw_text) _SuperT::invalidate();
@@ -98,6 +99,10 @@ namespace wtf{
 
       }
 
+      virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client, const tstring& str) {
+        draw_text(dc, client, str.c_str(), static_cast<int>(str.size()));
+      }
+
       virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client){
         draw_text(dc, client, _text.c_str());
       }
@@ -108,14 +113,11 @@ namespace wtf{
       }
 
 
+    private:
+
       tstring _text = _T("");
-
-    protected:
-
       text_vertical_alignments _text_vertical_alignment = text_vertical_alignments::center;
       text_horizontal_alignments _text_horizontal_alignment = text_horizontal_alignments::center;
-
-    private:
 
       bool _multiline = false;
       bool _auto_draw_text = true;

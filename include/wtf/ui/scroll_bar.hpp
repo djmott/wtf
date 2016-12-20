@@ -63,7 +63,7 @@ namespace wtf{
         slide,
       };
 
-      void on_wm_mouse_move(const mouse_msg_param& param) override{
+      void on_wm_mouse_move(const mouse_msg_param<coord_frame::client>& param) override{
         if (_down != button_down_on::slide) return _SuperT::on_wm_mouse_move(param);
         auto oClient = rect<coord_frame::client>::get(*this);
         auto prev_val = _value;
@@ -91,10 +91,11 @@ namespace wtf{
         _SuperT::on_wm_mouse_move(param);
       }
 
-      void paint(const _::device_context& dc, const rect<coord_frame::client>& client){
+      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
         auto iExtent = _max - _min;
         if (!iExtent) return _SuperT::on_wm_paint(dc, ps);
         rect<coord_frame::client> _slider;
+        const rect<coord_frame::client>& client = ps.client();
         if (orientations::vertical == _SuperT::orientation()){
           _button_size = client.right - 1;
           _step_dec = { 0,0,_button_size, _button_size };
@@ -128,15 +129,11 @@ namespace wtf{
         _::effects::draw_border(dc, _step_dec, (_down == step_dec ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
         _::effects::draw_border(dc, _step_inc, (_down == step_inc ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
         _::effects::draw_border(dc, _slider, (_down == slide ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
-      }
-
-      void on_wm_paint(const _::device_context& dc, const _::paint_struct&ps) override{
-        paint(dc, ps.rcPaint);
         _SuperT::on_wm_paint(dc, ps);
       }
 
-      void on_wm_mouse_down(const mouse_msg_param& param){
-        if (mouse_msg_param::buttons::left != param.button) return _SuperT::on_wm_mouse_down(param);
+      void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& param){
+        if (mouse_buttons::left != param.button) return _SuperT::on_wm_mouse_down(param);
         ::SetCapture(*this);
         _down = button_down_on::none;
         if (_step_dec.is_in(param.position)){
@@ -155,8 +152,8 @@ namespace wtf{
         _SuperT::on_wm_mouse_down(param);
       }
 
-      void on_wm_click(const mouse_msg_param& param) override{
-        if (mouse_msg_param::buttons::left != param.button) return _SuperT::on_wm_mouse_down(param);
+      void on_wm_click(const mouse_msg_param<coord_frame::client>& param) override{
+        if (mouse_buttons::left != param.button) return _SuperT::on_wm_mouse_down(param);
         auto prevval = _value;
         if (button_down_on::step_inc == _down){
           value(_value + _small_step);
@@ -171,7 +168,7 @@ namespace wtf{
         _SuperT::on_wm_click(param);
       }
 
-      void on_wm_mouse_up(const mouse_msg_param& param) override{
+      void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& param) override{
         ::ReleaseCapture();
         _down = button_down_on::none;
         _SuperT::invalidate();

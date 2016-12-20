@@ -83,12 +83,11 @@ namespace wtf{
     protected:
 
       
-      int exec() override{
-        auto iRet = _SuperT::exec();
+      void exec() override{
+        _SuperT::exec();
         for (auto & oPage : _pages){
           oPage->exec();
         }
-        return iRet;
       }
 
       void on_wm_create() override{
@@ -155,8 +154,8 @@ namespace wtf{
             __super_t::on_wm_create();
           };
 
-          void on_wm_click(const mouse_msg_param& m) override{
-            if (mouse_msg_param::buttons::left == m.button) _parent->active_page(_PageIndex);
+          void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
+            if (mouse_buttons::left == m.button) _parent->active_page(_PageIndex);
             __super_t::on_wm_click(m);
           };
 

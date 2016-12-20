@@ -8,15 +8,12 @@ namespace wtf{
     template <typename _SuperT>
     struct isa_form : _SuperT{
 
-      static const DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW;
-      static const DWORD Style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-
       explicit isa_form(window * pParent) : _SuperT(pParent){}
 
       isa_form() : isa_form(nullptr){}
 
       void show() override{
-        if (!_SuperT::_handle) _SuperT::exec();
+        if (!_SuperT::_handle) exec();
         _SuperT::show();
       }
 
@@ -24,19 +21,21 @@ namespace wtf{
         return rect<coord_frame::screen>::get(*this).top;
       }
 
-      int left() const  override{
+      int left() const override{
         return rect<coord_frame::screen>::get(*this).left;
       }
 
-      int width() const  override{
+      int width() const override{
         auto r = rect<coord_frame::client>::get(*this);
         return r.right - r.left;
       }
 
-      int height() const  override{
+      int height() const override{
         auto r = rect<coord_frame::client>::get(*this);
         return r.bottom - r.top;
       }
+
+       void close() override { ::DestroyWindow(*this); }
 
     protected:
 
@@ -53,6 +52,7 @@ namespace wtf{
         }
         if (bQuit) ::PostQuitMessage(0);
         _SuperT::on_wm_destroy();
+        _SuperT::_handle = nullptr;
       }
 
       void on_wm_create() override{
@@ -67,26 +67,55 @@ namespace wtf{
   namespace _{
     template <> struct policy_traits<policy::isa_form>{
       using requires = policy_list<policy::has_background, policy::has_cursor, policy::has_icon,
-        policy::has_titlebar, policy::has_size, policy::has_move, policy::has_show,
+        policy::has_titlebar, policy::has_size, policy::has_move, policy::has_show, policy::has_close,
         policy::wm_destroy, policy::wm_create, policy::wm_size, policy::wm_close,
-        policy::wm_showwindow, policy::wm_activate>;
+        policy::wm_showwindow, policy::wm_activate, policy::wm_paint>;
     };
   }
 
-
-  struct form : window_impl<form, policy::isa_form>{
+  template <DWORD _ExStyle, DWORD _Style>
+  struct form_impl : window_impl<form_impl<_ExStyle, _Style>, policy::isa_form>{
+    static const DWORD ExStyle = _ExStyle;
+    static const DWORD Style = _Style;
   private:
-    using _SuperT = window_impl<form, policy::isa_form>;
+    using _SuperT = window_impl<form_impl<_ExStyle, _Style>, policy::isa_form>;
   public:
-    explicit form(window * pParent) : _SuperT(pParent){}
-    form() : form(nullptr){}
+    explicit form_impl(window * pParent) : _SuperT(pParent){}
+    form_impl() : form_impl(nullptr){}
 
-    int exec() override{
+    int run(){
       _::message oMsg;
       _SuperT::exec();
       auto iRet = oMsg.pump();
       return iRet;
     }
+
+  };
+
+  struct form : form_impl<WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE|WS_OVERLAPPEDWINDOW> {
+  private:
+    using _SuperT = form_impl<WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW>;
+  public:
+    explicit form(window * pParent) : _SuperT(pParent) {}
+    form() : form(nullptr) {}
+
+  };
+
+  struct dialog : form_impl<WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE > {
+  private:
+    using _SuperT = form_impl<WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE >;
+  public:
+    explicit dialog(window * pParent) : _SuperT(pParent) {}
+    dialog() : dialog(nullptr) {}
+
+  };
+
+  struct tool_window : form_impl<WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW > {
+  private:
+    using _SuperT = form_impl<WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW>;
+  public:
+    explicit tool_window(window * pParent) : _SuperT(pParent) {}
+    tool_window() : tool_window(nullptr) {}
 
   };
 
