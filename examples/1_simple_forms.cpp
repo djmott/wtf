@@ -1,5 +1,5 @@
 #include "wtf/wtf.hpp"
 
-int WinMain(HINSTANCE, HINSTANCE, LPSTR, int){
+int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int){
   return wtf::form().run();
 }

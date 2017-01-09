@@ -13,7 +13,7 @@ namespace wtf{
       isa_form() : isa_form(nullptr){}
 
       void show() override{
-        if (!_SuperT::_handle) exec();
+        if (!_SuperT::_handle) run();
         _SuperT::show();
       }
 
@@ -83,9 +83,9 @@ namespace wtf{
     explicit form_impl(window * pParent) : _SuperT(pParent){}
     form_impl() : form_impl(nullptr){}
 
-    int run(){
+    int run() override{
       _::message oMsg;
-      _SuperT::exec();
+      _SuperT::run();
       auto iRet = oMsg.pump();
       return iRet;
     }

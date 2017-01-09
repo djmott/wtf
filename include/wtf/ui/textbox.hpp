@@ -138,9 +138,9 @@ namespace wtf{
     private:
 
       //tracks the edit cursor 
-      int _edit = 0;
+      size_t _edit = 0;
       //tracks where printing begins
-      int _print = 0;
+      size_t _print = 0;
       //control dimensions
       point<coord_frame::client> _size{ 0,0 };
     };

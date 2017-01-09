@@ -1,6 +1,10 @@
 #pragma once
 namespace wtf{
 
+  namespace policy {
+    template <typename> struct isa_tab_container;
+  }
+
   template <typename _ImplT, template <typename> class..._Policies>
   class window_impl : public wtf::_::normalized_policies<_ImplT, _Policies...>::type{
     using __super_t = typename wtf::_::normalized_policies<_ImplT, _Policies...>::type;
@@ -21,7 +25,7 @@ namespace wtf{
     const std::type_info& type() const override{ return typeid(_ImplT); }
 
 
-    int exec() override{
+    int run() override{
       _handle = wtf::exception::throw_lasterr_if(
         ::CreateWindowEx(_ImplT::ExStyle, window_class_type::get().name(), nullptr, _ImplT::Style,
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, (_parent ? _parent->_handle : nullptr),
@@ -52,7 +56,7 @@ namespace wtf{
           pThis->_handle = hwnd;
           SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
           for (auto pChild : pThis->children()){
-            pChild->exec();
+            pChild->run();
           }
         } else{
           pThis = reinterpret_cast<_ImplT*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));

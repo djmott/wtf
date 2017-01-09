@@ -127,7 +127,7 @@ namespace wtf{
           auto oParent = parent();
           if (!oParent) return oParent;
           const auto & oSibblings = oParent->children();
-          for (int i = 1; i < oSibblings.size() - 1; ++i) {
+          for (size_t i = 1; oSibblings.size() && i < oSibblings.size() - 1; ++i) {
             if (oSibblings[i].get() == this) return oSibblings[i - 1]->get_last();
           }
           if (oParent->parent()) return oParent;

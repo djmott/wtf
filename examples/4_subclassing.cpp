@@ -23,6 +23,6 @@ struct SubclassedForm : wtf::form {
 
 
 
-int main() {
+int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
   return SubclassedForm().run();
 }

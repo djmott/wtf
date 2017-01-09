@@ -83,11 +83,12 @@ namespace wtf{
     protected:
 
       
-      void exec() override{
-        _SuperT::exec();
+      int run() override{
+        _SuperT::run();
         for (auto & oPage : _pages){
-          oPage->exec();
+          oPage->run();
         }
+        return 0;
       }
 
       void on_wm_create() override{
@@ -133,8 +134,8 @@ namespace wtf{
         virtual tab_page& page() = 0;
         virtual const tab_page& page() const = 0;
 
-        virtual void exec() {
-          button.exec();
+        virtual void run() {
+          button.run();
         }
 
         class button : public window_impl<button, policy::isa_button>{

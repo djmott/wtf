@@ -133,7 +133,7 @@ namespace wtf {
 
 
 #include "window.hpp"
-
+#include "window_impl.hpp"
 
 #include "messages/messages.hpp"
 #include "messages/wm_activate.hpp"

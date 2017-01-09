@@ -54,7 +54,7 @@ void MemberExample() {
   oForm.run();
 }
 
-int main() {
+int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
   LambdaExample();
   StaticExample();
   MemberExample();

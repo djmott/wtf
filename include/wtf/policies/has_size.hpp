@@ -14,12 +14,12 @@ namespace wtf{
     struct has_size : _SuperT{
 
       virtual int width() const{
-        auto r = rect<coord_frame::client>::get(*this);
+        auto r = rect<coord_frame::screen>::get(*this);
         return r.right - r.left;
       }
 
       virtual int height() const{
-        auto r = rect<coord_frame::client>::get(*this);
+        auto r = rect<coord_frame::screen>::get(*this);
         return r.bottom - r.top;
       }
 

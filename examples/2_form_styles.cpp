@@ -1,6 +1,6 @@
 #include "wtf/wtf.hpp"
 
-int WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
   wtf::message_box::exec(nullptr, _T("A standard resizable form will now display"));
   wtf::form().run();
   wtf::message_box::exec(nullptr, _T("A fixed popup dialog will now display"));
