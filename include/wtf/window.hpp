@@ -65,7 +65,7 @@ namespace wtf{
     HWND _handle;
     std::vector<window*> _children;
 
-    virtual int run() = 0;
+    virtual int run() { return  0; }
 
     //this is different than WM_CREATE, its not part of windows and called by exec after CreateWindow returns
     virtual void on_wm_created(){ OnCreated(this); }

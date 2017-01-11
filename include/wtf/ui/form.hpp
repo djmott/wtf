@@ -13,7 +13,7 @@ namespace wtf{
       isa_form() : isa_form(nullptr){}
 
       void show() override{
-        if (!_SuperT::_handle) run();
+        if (!_SuperT::_handle) _SuperT::run();
         _SuperT::show();
       }
 

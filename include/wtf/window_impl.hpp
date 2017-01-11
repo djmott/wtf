@@ -26,9 +26,9 @@ namespace wtf{
 
 
     int run() override{
-      _handle = wtf::exception::throw_lasterr_if(
+      __super_t::_handle = wtf::exception::throw_lasterr_if(
         ::CreateWindowEx(_ImplT::ExStyle, window_class_type::get().name(), nullptr, _ImplT::Style,
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, (_parent ? _parent->_handle : nullptr),
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, (__super_t::_parent ? __super_t::_parent->_handle : nullptr),
         nullptr, _::instance_handle(), this), [](HWND h){ return nullptr == h; });
       window::on_wm_created();
       return 0;
