@@ -22,5 +22,4 @@ struct frmMain : form {
 
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
   return frmMain().run();
-  return 0;
 }

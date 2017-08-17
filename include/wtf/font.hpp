@@ -38,6 +38,12 @@ namespace wtf {
       bool italic() const{ return (lfItalic ? true : false); }
       void italic(bool newval){ lfItalic = (newval ? 1 : 0); }
 
+      bool strikeout() const { return (lfStrikeOut ? true : false); }
+      void strikeout(bool newval) { lfStrikeOut = (newval ? 1 : 0); }
+
+      bool underline() const { return (lfUnderline ? true : false); }
+      void underline(bool newval) { lfUnderline = (newval ? 1 : 0); }
+
       LONG height() const{ return lfHeight; }
       void height(LONG newval){ lfHeight = newval; }
 

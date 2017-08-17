@@ -10,7 +10,6 @@ namespace wtf{
     template <typename _SuperT>
     struct isa_button : _SuperT{
 
-
     protected:
 
       explicit isa_button(window * hParent) : _SuperT(hParent){

@@ -19,8 +19,7 @@ namespace wtf {
 
       item_selection_modes selection_mode() const { return _selection_mode; }
       void selection_mode(item_selection_modes newval) { _selection_mode = newval; }
-
-
+      
       struct item : std::enable_shared_from_this<item>{
         using pointer = std::shared_ptr<item>;
 

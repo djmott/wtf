@@ -117,7 +117,7 @@ namespace wtf{
           auto oParent = parent();
           if (!oParent) return oParent;
           const auto & oSibblings = oParent->children();
-          for (int i = 0; i < (static_cast<int>(oSibblings.size()) - 2); ++i) {
+          for (int i = 0; i < (static_cast<int>(oSibblings.size()) - 1); ++i) {
             if (oSibblings[i].get() == this) return oSibblings[i + 1];
           }
           return oParent->get_next(false);
@@ -214,7 +214,7 @@ namespace wtf{
           }
           bool bSelected = !oClickedNode->selected();
           oClickedNode->selected(bSelected);
-          if (!bSelected) OnItemSelected(oClickedNode);
+          if (bSelected) OnItemSelected(oClickedNode);
         }
         _SuperT::invalidate();
         return _SuperT::on_wm_click(m);
