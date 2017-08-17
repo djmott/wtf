@@ -69,7 +69,7 @@ namespace wtf{
         if (orientations::horizontal == _SuperT::orientation()) {
           oFillArea.right = (oFillArea.right * _value) / iExtent;
         } else{
-          oFillArea.top = (oFillArea.top * _value) / iExtent;
+          oFillArea.top = (oFillArea.bottom * _value)/ iExtent;
         }
         dc.fill(oFillArea, oBrush);
         if (text_modes::none == _text_mode) return _SuperT::on_wm_paint(dc, ps);
