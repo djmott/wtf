@@ -199,6 +199,7 @@ namespace wtf {
 #include "ui/checkbox.hpp"
 #include "ui/form.hpp"
 #include "ui/scroll_panel.hpp"
+#include "ui/inputbox.hpp"
 #include "ui/list.hpp"
 #include "ui/menu.hpp"
 #include "ui/progress_bar.hpp"

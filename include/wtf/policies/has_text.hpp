@@ -70,7 +70,7 @@ namespace wtf{
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
 
-      virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client, LPCTSTR str, int length=-1){
+      virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client, const tstring& str, int length){
           wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
                                          [](UINT i){ return GDI_ERROR == i; });
 
@@ -94,21 +94,21 @@ namespace wtf{
 
         rect<coord_frame::client> oClient = client;
 
-        wtf::exception::throw_lasterr_if(::DrawText(dc, str, length, &oClient, format),
+        wtf::exception::throw_lasterr_if(::DrawText(dc, str.c_str(), length, &oClient, format),
                                          [](BOOL b){ return !b; });
 
       }
 
       virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client, const tstring& str) {
-        draw_text(dc, client, str.c_str(), static_cast<int>(str.size()));
+        draw_text(dc, client, str, static_cast<int>(str.size()));
       }
 
       virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client){
-        draw_text(dc, client, _text.c_str());
+        draw_text(dc, client, text());
       }
 
       void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
-        if (_auto_draw_text) draw_text(dc, ps.client(), _text.c_str());
+        if (_auto_draw_text) draw_text(dc, ps.client(), text());
         _SuperT::on_wm_paint(dc, ps);
       }
 

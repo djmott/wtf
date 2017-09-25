@@ -8,7 +8,7 @@ struct frmMain : form {
       _textbox.text("Enter text here");
     };
     OnSize += [this](...) {
-      _textbox.move(0, 0, this->width(), 15);
+		_textbox.move(15, 15, this->width() - 30, 20);
     };
 
   }
