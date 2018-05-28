@@ -9,6 +9,7 @@ namespace wtf{
   /** @class window base class of all windows
   */
   struct window{
+    using vector = std::vector<window*>;
     /// an implementation may use different window styles 
     static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
     static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
@@ -23,19 +24,21 @@ namespace wtf{
     window& operator=(window&& src){
       std::swap(_parent, src._parent);
       std::swap(_handle, src._handle);
-      std::swap(_children, src._children);
       return *this;
     }
 
     window(window&& src){ *this = std::move(src); }
 
-    explicit window(window * Parent) : _parent(Parent), _handle(nullptr){
-      if (Parent) Parent->_children.push_back(this);
+    explicit window(window *) : _handle(nullptr){
     }
 
     const window * const parent() const{ return _parent; }
 
-    const std::vector<window*>& children() const{ return _children; }
+    vector children() const{ 
+      vector oRet;
+      exception::throw_lasterr_if(EnumChildWindows(_handle, enum_children, reinterpret_cast<LPARAM>(&oRet)), [](BOOL b) {return FALSE == b; });
+      return oRet;
+    }
 
     virtual const std::type_info& type() const = 0;
 
@@ -44,13 +47,10 @@ namespace wtf{
 
     void add(window*pChild){
       assert(pChild && !pChild->_handle);
-      _children.push_back(pChild);
-      if (_handle){
-        if (pChild->_handle){
-          ::SetParent(*pChild, *this);
-        } else{
-          pChild->run();
-        }
+      if (pChild->_handle){
+        ::SetParent(*pChild, *this);
+      } else{
+        pChild->run();
       }
     }
 
@@ -60,10 +60,16 @@ namespace wtf{
 
     template <typename, template <typename> typename...> friend class window_impl;
 
-
     window * _parent;
     HWND _handle;
-    std::vector<window*> _children;
+
+
+    static BOOL CALLBACK enum_children(HWND hwnd, LPARAM lParam) {
+      auto pRet = reinterpret_cast<vector*>(lParam);
+      auto pChild = exception::throw_lasterr_if(reinterpret_cast<window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA)), [](window*p) {return nullptr == p; });
+      pRet->push_back(pChild);
+      return TRUE;
+    }
 
     virtual int run() { return  0; }
 
@@ -77,7 +83,7 @@ namespace wtf{
         DestroyWindow(msg.hwnd);
         _handle = nullptr;
       }
-      msg.lresult = DefWindowProc(msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
+      msg.lresult = ::DefWindowProc(msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
     }
   };
   
