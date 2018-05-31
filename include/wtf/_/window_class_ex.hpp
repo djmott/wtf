@@ -5,7 +5,7 @@
 namespace wtf{
   namespace _{
 
-    template <typename _ImplT, WNDPROC window_proc>
+    template <typename _impl_t, WNDPROC window_proc>
     struct window_class_ex : WNDCLASSEX{
 
       static window_class_ex& get(){
@@ -20,7 +20,7 @@ namespace wtf{
       window_class_ex(){
         memset(this, 0, sizeof(WNDCLASSEX));
         //this goofy looking bit of code creates a unique class name in unicode or multibyte
-        std::string sTemp = "wtf:" + std::to_string(typeid(_ImplT).hash_code());
+        std::string sTemp = "wtf:" + std::to_string(typeid(_impl_t).hash_code());
         std::copy(sTemp.begin(), sTemp.end(), std::back_inserter(_class_name));
         cbSize = sizeof(WNDCLASSEX);
         style = CS_OWNDC | CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;

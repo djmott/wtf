@@ -23,7 +23,7 @@ namespace wtf{
         _SuperT::on_wm_click(m);
       };
 
-      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
+      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
         auto client = ps.client();
         auto TextSize = _SuperT::prefered_text_size();
         if (text_horizontal_alignments::left == _SuperT::text_horizontal_alignment()){
@@ -52,7 +52,7 @@ namespace wtf{
           __super_t::on_wm_click(m);
         }
 
-        void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
+        void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
           auto client = ps.client();
           dc.fill(client, brush::solid_brush(rgb(255, 255, 255)));
           if (_value){

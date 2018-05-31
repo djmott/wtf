@@ -14,7 +14,7 @@ using namespace wtf;
 
 struct main_form : form {
   main_form(){}
-  void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override {
+  void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override {
     tstring sTemp = "this\nis\na\ntest";
     RECT rc = ps.rcPaint;
     ::DrawText(dc, sTemp.c_str(), -1, &rc, DT_LEFT | DT_TOP);

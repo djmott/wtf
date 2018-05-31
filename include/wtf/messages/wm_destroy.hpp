@@ -11,16 +11,15 @@ namespace wtf{
 
       callback<void(window * sender)> OnDestroy;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_DESTROY == msg.umsg) on_wm_destroy();
+      }
+
     protected:
 
       virtual void on_wm_destroy(){ OnDestroy(this); }
 
       explicit wm_destroy(window * pParent) : _SuperT(pParent){}
-
-      void handle_msg(_::window_message& msg) override{
-        if (WM_DESTROY == msg.umsg) on_wm_destroy();
-        _SuperT::handle_msg(msg);
-      }
 
     };
 

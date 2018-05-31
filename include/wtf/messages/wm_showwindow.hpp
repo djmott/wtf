@@ -19,16 +19,16 @@ namespace wtf{
 
       callback<void(window * sender, visibility_change_flag)> OnShow;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_SHOWWINDOW == msg.umsg) on_wm_showwindow(static_cast<visibility_change_flag>(msg.lparam));
+
+      }
     protected:
 
       explicit wm_showwindow(window * pParent) : _SuperT(pParent){}
 
       virtual void on_wm_showwindow(visibility_change_flag f){ OnShow(this, f); }
 
-      void handle_msg(_::window_message& msg) override{
-        if (WM_SHOWWINDOW == msg.umsg) on_wm_showwindow(static_cast<visibility_change_flag>(msg.lparam));
-        _SuperT::handle_msg(msg);
-      }
     };
 
   }

@@ -23,7 +23,7 @@ namespace wtf{
 
     struct effects{
 
-      static void draw_arrow(const _::device_context& dc, const rect<coord_frame::client>& oclient, quadrants direction, pen& outline, brush& fill){
+      static void draw_arrow(const wtf::_::device_context& dc, const rect<coord_frame::client>& oclient, quadrants direction, pen& outline, brush& fill){
         point<coord_frame::client>::vector arrow(3);
 
         switch (direction){
@@ -52,7 +52,7 @@ namespace wtf{
 
       }
 
-      static void draw_border(const _::device_context& dc, const rect<coord_frame::client>& oclient, border_styles style, const pen& highlight, const pen& shadow, bool left=true, bool top=true, bool right=true, bool bottom=true){
+      static void draw_border(const wtf::_::device_context& dc, const rect<coord_frame::client>& oclient, border_styles style, const pen& highlight, const pen& shadow, bool left=true, bool top=true, bool right=true, bool bottom=true){
         bool bInvert = false;
         rect<coord_frame::client> client = oclient;
         //outer border

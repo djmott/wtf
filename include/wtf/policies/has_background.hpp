@@ -17,7 +17,7 @@ namespace wtf{
 
       explicit has_background(window * pParent) : _SuperT(pParent){}
 
-      void on_wm_erasebkgnd(const _::device_context& dc, const rect<coord_frame::client>& client) override{
+      void on_wm_erasebkgnd(const wtf::_::device_context& dc, const rect<coord_frame::client>& client) override{
           dc.fill(client, background_brush());
         _SuperT::on_wm_erasebkgnd(dc, client);
       }

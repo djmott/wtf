@@ -13,19 +13,18 @@ namespace wtf{
   namespace policy{
     template <typename _SuperT>
     struct wm_geticon : _SuperT{
+
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_GETICON != msg.umsg) return;
+        msg.lresult = reinterpret_cast<LRESULT>(on_wm_geticon(static_cast<icon_type>(msg.wparam)));
+        msg.bhandled = true;
+      }
+
     protected:
 
       virtual HICON on_wm_geticon(icon_type) = 0;
 
       explicit wm_geticon(window * pParent) : _SuperT(pParent){}
-
-      void handle_msg(_::window_message& msg) override{
-        if (WM_GETICON == msg.umsg){
-          msg.lresult = reinterpret_cast<LRESULT>(on_wm_geticon(static_cast<icon_type>(msg.wparam)));
-          msg.bhandled = true;
-        }
-        _SuperT::handle_msg(msg);
-      }
     };
   }
 }

@@ -10,22 +10,22 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_paint : _SuperT{
 
-    protected:
-
-      virtual void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps){ }
-
-      explicit wm_paint(window * pParent) : _SuperT(pParent){}
-
-      void handle_msg(_::window_message& msg) override{
-        if (WM_PAINT == msg.umsg){
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_PAINT == msg.umsg) {
           msg.lresult = 0;
           msg.bhandled = true;
-          auto & dc = *reinterpret_cast<const _::device_context *>(msg.wparam);
-          auto & ps = *reinterpret_cast<const _::paint_struct *>(msg.lparam);
+          auto & dc = *reinterpret_cast<const wtf::_::device_context *>(msg.wparam);
+          auto & ps = *reinterpret_cast<const wtf::_::paint_struct *>(msg.lparam);
           on_wm_paint(dc, ps);
         }
-        _SuperT::handle_msg(msg);
+
       }
+
+    protected:
+
+      virtual void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps){ }
+
+      explicit wm_paint(window * pParent) : _SuperT(pParent){}
 
     };
   }

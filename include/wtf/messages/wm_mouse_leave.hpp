@@ -14,6 +14,19 @@ namespace wtf{
 
       callback<void(window * sender)> OnMouseLeave;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_CREATE == msg.umsg) {
+          TRACKMOUSEEVENT oEvent;
+          memset(&oEvent, 0, sizeof(TRACKMOUSEEVENT));
+          oEvent.cbSize = sizeof(TRACKMOUSEEVENT);
+          oEvent.dwFlags = TME_LEAVE;
+          oEvent.hwndTrack = msg.hwnd;
+          wtf::exception::throw_lasterr_if(::TrackMouseEvent(&oEvent), [](BOOL b) {return !b; });
+        }
+        else if (WM_MOUSELEAVE == msg.umsg) {
+          on_wm_mouse_leave();
+        }
+      }
 
     protected:
 
@@ -21,19 +34,6 @@ namespace wtf{
 
       explicit wm_mouse_leave(window * pParent) : _SuperT(pParent){}
 
-      void handle_msg(_::window_message& msg) override{
-        if (WM_CREATE == msg.umsg){
-          TRACKMOUSEEVENT oEvent;
-          memset(&oEvent, 0, sizeof(TRACKMOUSEEVENT));
-          oEvent.cbSize = sizeof(TRACKMOUSEEVENT);
-          oEvent.dwFlags = TME_LEAVE;
-          oEvent.hwndTrack = msg.hwnd;
-          wtf::exception::throw_lasterr_if(::TrackMouseEvent(&oEvent), [](BOOL b){return !b; });
-        } else if (WM_MOUSELEAVE == msg.umsg){
-          on_wm_mouse_leave();
-        }
-        _SuperT::handle_msg(msg);
-      }
 
     };
   }

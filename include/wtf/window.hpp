@@ -5,6 +5,9 @@
 
 namespace wtf{
 
+  namespace _ {
+    template <class, class> struct _;
+  }
   
   /** @class window base class of all windows
   */
@@ -54,12 +57,21 @@ namespace wtf{
       }
     }
 
+    virtual void handle_msg(wtf::window_message& msg) {
+      if (msg.bhandled) return;
+      if (msg.umsg == WM_CLOSE) {
+        DestroyWindow(msg.hwnd);
+        _handle = nullptr;
+      }
+      msg.lresult = DefWindowProc(msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
+    }
+
     callback<void(window *)> OnCreated;
 
   protected:
 
     template <typename, template <typename> typename...> friend class window_impl;
-
+    template <class, class> friend struct _::_;
 
     window * _parent;
     HWND _handle;
@@ -71,14 +83,6 @@ namespace wtf{
     virtual void on_wm_created(){ OnCreated(this); }
 
 
-    virtual void handle_msg(_::window_message& msg){
-      if (msg.bhandled) return;
-      if (msg.umsg == WM_CLOSE){
-        DestroyWindow(msg.hwnd);
-        _handle = nullptr;
-      }
-      msg.lresult = DefWindowProc(msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
-    }
   };
   
 

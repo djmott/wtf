@@ -11,18 +11,18 @@ namespace wtf{
 
       callback<void(window * sender, const mouse_msg_param<coord_frame::screen>&)> OnNCMouseMove;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_NCMOUSEMOVE == msg.umsg) {
+          on_wm_ncmouse_move(mouse_msg_param<coord_frame::screen>(msg.lparam, mouse_buttons::unspecified));
+        }
+      }
+
     protected:
 
       virtual void on_wm_ncmouse_move(const mouse_msg_param<coord_frame::screen>& param){ OnNCMouseMove(this, param); }
 
       explicit wm_ncmouse_move(window * pParent) : _SuperT(pParent){}
 
-      void handle_msg(_::window_message& msg) override{
-        if (WM_NCMOUSEMOVE == msg.umsg){
-          on_wm_ncmouse_move(mouse_msg_param<coord_frame::screen>(msg.lparam, mouse_buttons::unspecified));
-        }
-        _SuperT::handle_msg(msg);
-      }
     };
   }
 }

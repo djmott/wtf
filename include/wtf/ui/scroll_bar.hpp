@@ -91,7 +91,7 @@ namespace wtf{
         _SuperT::on_wm_mouse_move(param);
       }
 
-      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
+      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
         auto iExtent = _max - _min;
         if (!iExtent) return _SuperT::on_wm_paint(dc, ps);
         rect<coord_frame::client> _slider;
@@ -102,8 +102,8 @@ namespace wtf{
           _step_inc = { 0, client.bottom - _button_size - 1, _button_size, client.bottom - 1 };
           _arrow_dec = { _step_dec.left + 5, _step_dec.top + 5, _step_dec.right - 5, _step_dec.bottom - 5 };
           _arrow_inc = { _step_inc.left + 5, _step_inc.top + 5, _step_inc.right - 5, _step_inc.bottom - 5 };
-          _::effects::draw_arrow(dc, _arrow_dec, quadrants::top, _shadow, _fill);
-          _::effects::draw_arrow(dc, _arrow_inc, quadrants::bottom, _shadow, _fill);
+          wtf::_::effects::draw_arrow(dc, _arrow_dec, quadrants::top, _shadow, _fill);
+          wtf::_::effects::draw_arrow(dc, _arrow_inc, quadrants::bottom, _shadow, _fill);
           auto iSlideRange = (client.bottom - (_button_size * 3)) - 1;
           auto iValRange = _max - _min;
           auto iNewTop = 1 + _button_size + ((_value * iSlideRange) / iValRange);
@@ -116,8 +116,8 @@ namespace wtf{
           _step_inc = { client.right - _button_size - 1, 0,  client.right - 1, _button_size };
           _arrow_dec = { _step_dec.left + 5, _step_dec.top + 5, _step_dec.right - 5, _step_dec.bottom - 5 };
           _arrow_inc = { _step_inc.left + 5, _step_inc.top + 5, _step_inc.right - 5, _step_inc.bottom - 5 };
-          _::effects::draw_arrow(dc, _arrow_dec, quadrants::left, _shadow, _fill);
-          _::effects::draw_arrow(dc, _arrow_inc, quadrants::right, _shadow, _fill);
+          wtf::_::effects::draw_arrow(dc, _arrow_dec, quadrants::left, _shadow, _fill);
+          wtf::_::effects::draw_arrow(dc, _arrow_inc, quadrants::right, _shadow, _fill);
 
           auto iSlideRange = (client.right - (_button_size * 3)) - 1;
           auto iValRange = _max - _min;
@@ -126,9 +126,9 @@ namespace wtf{
 
           _slider = { iNewLeft,0,iNewLeft + _button_size,_button_size };
         }
-        _::effects::draw_border(dc, _step_dec, (_down == step_dec ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
-        _::effects::draw_border(dc, _step_inc, (_down == step_inc ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
-        _::effects::draw_border(dc, _slider, (_down == slide ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
+        wtf::_::effects::draw_border(dc, _step_dec, (_down == step_dec ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
+        wtf::_::effects::draw_border(dc, _step_inc, (_down == step_inc ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
+        wtf::_::effects::draw_border(dc, _slider, (_down == slide ? border_styles::lowered : border_styles::raised), _highlight, _shadow);
         _SuperT::on_wm_paint(dc, ps);
       }
 

@@ -10,21 +10,23 @@ namespace wtf{
 
       callback<void(window * sender, const mouse_msg_param<coord_frame::client>&)> OnDblClick;
       
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_LBUTTONDBLCLK == msg.umsg) {
+          on_wm_dblclick(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::left));
+        }
+        else if (WM_MBUTTONDBLCLK == msg.umsg) {
+          on_wm_dblclick(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::middle));
+        }
+        else if (WM_RBUTTONDBLCLK == msg.umsg) {
+          on_wm_dblclick(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::right));
+        }
+      }
+
     protected:
       virtual void on_wm_dblclick(const mouse_msg_param<coord_frame::client>& p){ OnDblClick(this, p); }
 
       explicit wm_dblclick(window * pParent) : _SuperT(pParent){}
 
-      void handle_msg(_::window_message& msg) override{
-        if (WM_LBUTTONDBLCLK == msg.umsg){
-          on_wm_dblclick(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::left));
-        } else if (WM_MBUTTONDBLCLK == msg.umsg){
-          on_wm_dblclick(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::middle));
-        } else if (WM_RBUTTONDBLCLK == msg.umsg){
-          on_wm_dblclick(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::right));
-        }
-        _SuperT::handle_msg(msg);
-      }
     };
   }
 }

@@ -10,17 +10,14 @@ namespace wtf{
 
       callback<void(window * sender, bool& cancel)> OnClose;
 
-    protected:
-
-      void handle_msg(_::window_message& msg) override{
+      void handle_msg(wtf::window_message& msg) override {
         bool cancel = false;
-        if (WM_CLOSE == msg.umsg) {
-          on_wm_close(cancel);
-          if (cancel) return;
-        }
-        _SuperT::handle_msg(msg);
+        if (WM_CLOSE != msg.umsg) return;
+        on_wm_close(cancel);
+        if (cancel) msg.bhandled = true;
       }
 
+    protected:
 
       virtual void on_wm_close(bool& cancel){ OnClose(this, cancel); }
 

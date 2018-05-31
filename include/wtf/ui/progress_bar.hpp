@@ -62,7 +62,7 @@ namespace wtf{
       rgb _fill_color = system_rgb<system_colors::highlight>();
       text_modes _text_mode = text_modes::percentage;
 
-      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
+      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
         auto oBrush = brush::solid_brush(_fill_color);
         rect<coord_frame::client> oFillArea = ps.client();
         auto iExtent = _max - _min;

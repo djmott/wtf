@@ -84,7 +84,7 @@ namespace wtf{
     form_impl() : form_impl(nullptr){}
 
     int run() override{
-      _::message oMsg;
+      wtf::_::message oMsg;
       _SuperT::run();
       auto iRet = oMsg.pump();
       return iRet;

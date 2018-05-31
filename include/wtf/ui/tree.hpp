@@ -234,7 +234,7 @@ namespace wtf{
         return _SuperT::on_wm_dblclick(m);
       };
 
-      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
+      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
         if (!_root->children().size()) return _SuperT::on_wm_paint(dc, ps);
         auto client = ps.client();
         _item_rects.clear();
@@ -280,7 +280,7 @@ namespace wtf{
         return 1 + get_item_depth(oItem->parent());
       }
 
-      bool print_node(const typename item::pointer& oItem, const _::device_context& dc, const wtf::_::text_metrics& oTextMetrics, rect<coord_frame::client>& oClient){
+      bool print_node(const typename item::pointer& oItem, const wtf::_::device_context& dc, const wtf::_::text_metrics& oTextMetrics, rect<coord_frame::client>& oClient){
         if (oClient.top >= oClient.bottom - scroll_width) return false;
         _bottom = oItem;
         bool PrintExpander = false;
@@ -317,9 +317,9 @@ namespace wtf{
           const auto & oExpander = _expander_rects.back();
 
           if (oItem->expanded()){
-            _::effects::draw_arrow(dc, oExpander, quadrants::bottom, _black_pen, _black_brush);
+            wtf::_::effects::draw_arrow(dc, oExpander, quadrants::bottom, _black_pen, _black_brush);
           } else{
-            _::effects::draw_arrow(dc, oExpander, quadrants::right, _black_pen, _white_brush);
+            wtf::_::effects::draw_arrow(dc, oExpander, quadrants::right, _black_pen, _white_brush);
           }
 
         }

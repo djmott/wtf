@@ -18,6 +18,10 @@ namespace wtf{
       callback<void(window * sender)> OnActivate;
       callback<void(window * sender)> OnDeactivate;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_ACTIVATE == msg.umsg) on_wm_activate(static_cast<activate_mode>(LOWORD(msg.wparam)), HIWORD(msg.wparam) ? true : false, reinterpret_cast<HWND>(msg.lparam));
+      }
+
     protected:
 
       virtual void on_wm_activate(activate_mode mode, bool minimized, HWND target){
@@ -25,10 +29,6 @@ namespace wtf{
         else OnActivate(this);
       }
 
-      void handle_msg(_::window_message& msg) override{
-        if (WM_ACTIVATE == msg.umsg) on_wm_activate(static_cast<activate_mode>(LOWORD(msg.wparam)), HIWORD(msg.wparam) ? true : false, reinterpret_cast<HWND>(msg.lparam));
-        _SuperT::handle_msg(msg);
-      }
 
 
       explicit wm_activate(window * pParent) : _SuperT(pParent){}

@@ -14,26 +14,26 @@ namespace wtf{
 
       callback<void(window * sender)> OnNCMouseLeave;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_CREATE == msg.umsg) {
+          TRACKMOUSEEVENT oEvent;
+          memset(&oEvent, 0, sizeof(TRACKMOUSEEVENT));
+          oEvent.cbSize = sizeof(TRACKMOUSEEVENT);
+          oEvent.dwFlags = TME_LEAVE;
+          oEvent.hwndTrack = msg.hwnd;
+          wtf::exception::throw_lasterr_if(::TrackMouseEvent(&oEvent), [](BOOL b) {return !b; });
+        }
+        else if (WM_NCMOUSELEAVE == msg.umsg) {
+          on_wm_ncmouse_leave();
+        }
+
+      }
 
     protected:
 
       virtual void on_wm_ncmouse_leave(){ OnNCMouseLeave(this); }
 
       explicit wm_ncmouse_leave(window * pParent) : _SuperT(pParent){}
-
-      void handle_msg(_::window_message& msg) override{
-        if (WM_CREATE == msg.umsg){
-          TRACKMOUSEEVENT oEvent;
-          memset(&oEvent, 0, sizeof(TRACKMOUSEEVENT));
-          oEvent.cbSize = sizeof(TRACKMOUSEEVENT);
-          oEvent.dwFlags = TME_LEAVE;
-          oEvent.hwndTrack = msg.hwnd;
-          wtf::exception::throw_lasterr_if(::TrackMouseEvent(&oEvent), [](BOOL b){return !b; });
-        } else if (WM_NCMOUSELEAVE == msg.umsg){
-          on_wm_ncmouse_leave();
-        }
-        _SuperT::handle_msg(msg);
-      }
 
     };
   }

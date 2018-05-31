@@ -79,7 +79,7 @@ namespace wtf {
       static tstring get(const _Ty& value){ return std::to_string(value); }
     };
 
-    template <template <class> class ... _Policies> struct policy_list;
+    template <template <class> class ... _policy_ts> struct policy_list;
 
     template <template <class> class> struct policy_traits{
       using requires = policy_list<>;
@@ -118,8 +118,9 @@ namespace wtf {
 #include "region.hpp"
 #include "font.hpp"
 
+#include "window_message.hpp"
+#include "window.hpp"
 
-#include "_/window_message.hpp"
 #include "_/window_class_ex.hpp"
 #include "_/device_context.hpp"
 #include "_/msg_names.hpp"
@@ -132,7 +133,6 @@ namespace wtf {
 #include "_/effects.hpp"
 
 
-#include "window.hpp"
 #include "window_impl.hpp"
 
 #include "messages/messages.hpp"

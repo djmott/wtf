@@ -58,7 +58,7 @@ namespace wtf{
 
 
       virtual size prefered_text_size() const{
-        auto dc = _::device_context::get_client(*this);
+        auto dc = wtf::_::device_context::get_client(*this);
         auto hFont = _SuperT::font().open();
         dc.select_object(hFont);
         return dc.get_text_extent(_text);
@@ -70,8 +70,9 @@ namespace wtf{
       virtual bool auto_draw_text() const{ return _auto_draw_text; }
       virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
 
-      virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client, const tstring& str, int length){
-          wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
+      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client, const tstring& str, int length){
+        if (!length) return;
+        wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
                                          [](UINT i){ return GDI_ERROR == i; });
 
         UINT format = (multiline() ? 0 : DT_SINGLELINE) | (word_wrap() ? DT_WORDBREAK : 0);
@@ -94,20 +95,18 @@ namespace wtf{
 
         rect<coord_frame::client> oClient = client;
 
-        wtf::exception::throw_lasterr_if(::DrawText(dc, str.c_str(), length, &oClient, format),
-                                         [](BOOL b){ return !b; });
-
+        wtf::exception::throw_lasterr_if(::DrawText(dc, str.c_str(), length, &oClient, format), [](int i){ return 0==i; });
       }
 
-      virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client, const tstring& str) {
+      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client, const tstring& str) {
         draw_text(dc, client, str, static_cast<int>(str.size()));
       }
 
-      virtual void draw_text(const _::device_context& dc, const rect<coord_frame::client>& client){
+      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client){
         draw_text(dc, client, text());
       }
 
-      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
+      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
         if (_auto_draw_text) draw_text(dc, ps.client(), text());
         _SuperT::on_wm_paint(dc, ps);
       }

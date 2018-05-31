@@ -33,13 +33,13 @@ namespace wtf{
       explicit has_font(window * pParent) : _SuperT(pParent){}
 
       
-      void on_wm_erasebkgnd(const _::device_context& dc, const rect<coord_frame::client>& client) override
+      void on_wm_erasebkgnd(const wtf::_::device_context& dc, const rect<coord_frame::client>& client) override
       {
         apply_font(dc);
         return _SuperT::on_wm_erasebkgnd(dc, client);
       }
 
-      void apply_font(const _::device_context& dc){
+      void apply_font(const wtf::_::device_context& dc){
         dc.select_object(font().open());
         wtf::exception::throw_lasterr_if(::SetBkMode(dc, static_cast<int>(background_mode())), [](int i){ return !i; });
         wtf::exception::throw_lasterr_if(::SetTextColor(dc, fore_color()), [](COLORREF c){ return CLR_INVALID == c; });

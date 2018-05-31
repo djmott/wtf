@@ -10,15 +10,15 @@ namespace wtf{
 
       callback<void(window * sender, UINT_PTR timer_id)> OnTimer;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_TIMER == msg.umsg) on_wm_timer(static_cast<UINT_PTR>(msg.wparam));
+
+      }
     protected:
       explicit wm_timer(window * pParent) : _SuperT(pParent){}
 
       virtual void on_wm_timer(UINT_PTR timer_id){ OnTimer(this, timer_id); }
 
-      void handle_msg(_::window_message& msg) override{
-        if (WM_TIMER == msg.umsg) on_wm_timer(static_cast<UINT_PTR>(msg.wparam));
-        _SuperT::handle_msg(msg);
-      }
 
     };
 

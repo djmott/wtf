@@ -9,7 +9,7 @@ namespace wtf{
       text_metrics() = default;
       text_metrics(const TEXTMETRIC& src) : TEXTMETRIC(src){}
       text_metrics(const text_metrics& src) : TEXTMETRIC(src){}
-      static text_metrics get(const _::device_context& dc){
+      static text_metrics get(const wtf::_::device_context& dc){
         text_metrics oRet;
         wtf::exception::throw_lasterr_if(::GetTextMetrics(dc, &oRet), [](BOOL b){ return !b; });
         return oRet;

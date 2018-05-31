@@ -103,11 +103,11 @@ namespace wtf {
             sList += oItem;
             sList += _T('\n');
           }
-          auto oDC = _::device_context::get_client(*this);
+          auto oDC = wtf::_::device_context::get_client(*this);
           return oDC.get_text_extent(sList);
         }
 
-        void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override {
+        void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override {
           tstring sList = _T("");
           for (const auto & oItem : _parent._items) {
             sList += oItem;
@@ -174,7 +174,7 @@ namespace wtf{
         _SuperT::on_wm_create();
       };
 
-      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
+      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
         if (!_Items.size()) return _SuperT::on_wm_paint(dc, ps);
         auto client = ps.client();
         auto oTextSize = dc.get_text_extent(_Items[0]);
@@ -297,7 +297,7 @@ namespace wtf{
         _SuperT::on_wm_size(p);
       };
 
-      void on_wm_paint(const _::device_context& dc, const _::paint_struct& ps) override{
+      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
         if (!_Items.size()) return _SuperT::on_wm_paint(dc, ps);
         auto client = ps.client();
         auto oTextSize = dc.get_text_extent(_Items[0]);

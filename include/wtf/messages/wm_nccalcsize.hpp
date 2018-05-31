@@ -15,22 +15,19 @@ namespace wtf{
         inactive = WA_INACTIVE,
       };
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_NCCALCSIZE != msg.umsg) return;
+        msg.bhandled = true;
+        if (msg.wparam) msg.lresult = on_wm_nccalcsize(reinterpret_cast<NCCALCSIZE_PARAMS*>(msg.lparam));
+        else  msg.lresult = on_wm_nccalcsize(reinterpret_cast<RECT*>(msg.lparam));
+      }
+
     protected:
 
       virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *) = 0;
       virtual LRESULT on_wm_nccalcsize(RECT *){ return 0; }
 
       explicit wm_nccalcsize(window * pParent) : _SuperT(pParent){}
-
-      void handle_msg(_::window_message& msg) override{
-        if (WM_NCCALCSIZE == msg.umsg){
-          msg.bhandled = true;
-          if (msg.wparam) msg.lresult = on_wm_nccalcsize(reinterpret_cast<NCCALCSIZE_PARAMS*>(msg.lparam));
-          else  msg.lresult = on_wm_nccalcsize(reinterpret_cast<RECT*>(msg.lparam));
-
-        }
-        _SuperT::handle_msg(msg);
-      }
 
     };
   }

@@ -12,7 +12,7 @@ namespace wtf{
         wtf::exception::throw_lasterr_if(::BeginPaint(_hwnd, this), [](HDC dc){ return !dc; });
       }
 
-      paint_struct(const _::paint_struct &) = delete;
+      paint_struct(const wtf::_::paint_struct &) = delete;
 
       rect<coord_frame::client>& client(){ return *static_cast<rect<coord_frame::client>*>(&rcPaint); }
       const rect<coord_frame::client>& client() const{ return *static_cast<const rect<coord_frame::client>*>(&rcPaint); }

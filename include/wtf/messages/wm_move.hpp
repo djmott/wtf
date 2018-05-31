@@ -18,16 +18,15 @@ namespace wtf{
 
       callback<void(window * sender, const point<coord_frame::client>&)> OnMove;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_MOVE == msg.umsg) on_wm_move(point<coord_frame::client>(LOWORD(msg.lparam), HIWORD(msg.lparam)));
+      }
+
     protected:
 
       virtual void on_wm_move(const point<coord_frame::client>& param){ OnMove(this, param); }
 
       explicit wm_move(window * pParent) : _SuperT(pParent){}
-
-      void handle_msg(_::window_message& msg) override{
-        if (WM_MOVE == msg.umsg) on_wm_move(point<coord_frame::client>(LOWORD(msg.lparam), HIWORD(msg.lparam)));
-        _SuperT::handle_msg(msg);
-      }
 
     };
 

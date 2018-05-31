@@ -16,40 +16,42 @@ namespace wtf{
     template <typename _SuperT>
     struct wm_ncpaint : _SuperT{
 
-      callback<void(window * sender, const _::device_context&, const rect<coord_frame::client>&)> OnNCPaint;
+      callback<void(window * sender, const wtf::_::device_context&, const rect<coord_frame::client>&)> OnNCPaint;
 
-    protected:
-
-      virtual void on_wm_ncpaint(const _::device_context& dc, const rect<coord_frame::client>& rc){ OnNCPaint(this, dc, rc); }
-
-      explicit wm_ncpaint(window * pParent) : _SuperT(pParent){}
-
-      void handle_msg(_::window_message& msg) override{
-        if (WM_NCPAINT == msg.umsg){
-          if (1 == msg.wparam){
-            auto oDC = _::device_context::get_dcex(*this, DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_NCPAINT == msg.umsg) {
+          if (1 == msg.wparam) {
+            auto oDC = wtf::_::device_context::get_dcex(*this, DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
             auto oWindow = rect<coord_frame::screen>::get(*this);
 
             oWindow.offset(oWindow.position());
             rect<coord_frame::client> oClient(oWindow);
             on_wm_ncpaint(oDC, oClient);
 
-          } else{
+          }
+          else {
 
             auto oWindow = rect<coord_frame::screen>::get(*this);
 
             auto oRegion = region::attach((HRGN)msg.wparam);
             oRegion.offset(oWindow.position());
 
-            auto oDC = _::device_context::get_dcex(*this, oRegion, DCX_EXCLUDERGN | DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
+            auto oDC = wtf::_::device_context::get_dcex(*this, oRegion, DCX_EXCLUDERGN | DCX_WINDOW | DCX_USESTYLE | DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN);
 
             oWindow.offset(oWindow.position());
             rect<coord_frame::client> oClient(oWindow);
             on_wm_ncpaint(oDC, oClient);
           }
         }
-        _SuperT::handle_msg(msg);
+
       }
+    protected:
+
+      virtual void on_wm_ncpaint(const wtf::_::device_context& dc, const rect<coord_frame::client>& rc){ OnNCPaint(this, dc, rc); }
+
+      explicit wm_ncpaint(window * pParent) : _SuperT(pParent){}
+
+
 
     };
   }

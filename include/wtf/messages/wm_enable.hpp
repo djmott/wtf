@@ -12,6 +12,12 @@ namespace wtf{
       callback<void(window * sender)> OnEnable;
       callback<void(window * sender)> OnDisable;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_ENABLE != msg.umsg) return;
+        if (msg.wparam) on_wm_enable(true);
+        else on_wm_enable(false);
+      }
+
     protected:
 
       virtual void on_wm_enable(bool bEnable){ 
@@ -21,13 +27,6 @@ namespace wtf{
 
       explicit wm_enable(window * pParent) : _SuperT(pParent){}
 
-      void handle_msg(_::window_message& msg) override{
-        if (WM_ENABLE == msg.umsg){
-          if (msg.wparam) on_wm_enable(true);
-          else on_wm_enable(false);
-        }
-        _SuperT::handle_msg(msg);
-      }
 
     };
 

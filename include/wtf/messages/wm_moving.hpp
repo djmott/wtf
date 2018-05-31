@@ -11,15 +11,14 @@ namespace wtf{
 
       callback<void(window * sender, rect<coord_frame::screen>&)> OnMoving;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_MOVING == msg.umsg) on_wm_moving(*reinterpret_cast<rect<coord_frame::screen>*>(msg.lparam));
+      }
+
     protected:
       virtual void on_wm_moving(rect<coord_frame::screen>& param){ OnMoving(this, param); }
 
       explicit window(window * pParent) : _SuperT(pParent){}
-
-      void handle_msg(_::window_message& msg) override{
-        if (WM_MOVING == msg.umsg) on_wm_moving(*reinterpret_cast<rect<coord_frame::screen>*>(msg.lparam));
-        _SuperT::handle_msg(msg);
-      }
 
     };
 

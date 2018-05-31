@@ -11,6 +11,13 @@ namespace wtf{
       
       callback<void(window * sender, const wtf::_::device_context&, const rect<coord_frame::client>&)> OnEraseBackground;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_ERASEBKGND != msg.umsg) return;
+        on_wm_erasebkgnd(*reinterpret_cast<const wtf::_::device_context *>(msg.lparam), rect<coord_frame::client>::get(*this));
+        msg.lresult = TRUE;
+        msg.bhandled = true;
+      }
+
     protected:
 
       virtual void on_wm_erasebkgnd(const wtf::_::device_context& dc, const rect<coord_frame::client>& rc) {
@@ -18,15 +25,6 @@ namespace wtf{
       }
 
       explicit wm_erasebkgnd(window * pParent) : _SuperT(pParent){}
-
-      void handle_msg(_::window_message& msg) override{
-        if (WM_ERASEBKGND == msg.umsg){
-          on_wm_erasebkgnd(*reinterpret_cast<const wtf::_::device_context *>(msg.lparam), rect<coord_frame::client>::get(*this));
-          msg.lresult = TRUE;
-          msg.bhandled = true;
-        }
-        _SuperT::handle_msg(msg);
-      }
 
     };
   }

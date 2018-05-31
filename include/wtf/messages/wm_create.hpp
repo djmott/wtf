@@ -10,16 +10,16 @@ namespace wtf{
 
       callback<void(window * sender)> OnCreate;
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_CREATE == msg.umsg) on_wm_create();
+      }
+
     protected:
 
       virtual void on_wm_create(){ OnCreate(this); }
 
       explicit wm_create(window * pParent) : _SuperT(pParent){}
 
-      void handle_msg(_::window_message& msg) override{
-        if (WM_CREATE == msg.umsg) on_wm_create();
-        _SuperT::handle_msg(msg);
-      }
 
     };
 

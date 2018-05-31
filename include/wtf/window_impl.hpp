@@ -5,9 +5,9 @@ namespace wtf{
     template <typename> struct isa_tab_container;
   }
 
-  template <typename _ImplT, template <typename> class..._Policies>
-  class window_impl : public wtf::_::normalized_policies<_ImplT, _Policies...>::type{
-    using __super_t = typename wtf::_::normalized_policies<_ImplT, _Policies...>::type;
+  template <typename _impl_t, template <typename> class..._policy_ts>
+  class window_impl : public wtf::_::normalized_policies<_impl_t, _policy_ts...>::type{
+    using __super_t = typename wtf::_::normalized_policies<_impl_t, _policy_ts...>::type;
 
   public:
 
@@ -16,18 +16,17 @@ namespace wtf{
   protected:
 
     friend struct window;
+    template <class, class> friend struct _::_;
+
     template <typename> friend struct policy::isa_tab_container;
 
-    void handle_msg(_::window_message& msg) override{
-      __super_t::handle_msg(msg);
-    }
 
-    const std::type_info& type() const override{ return typeid(_ImplT); }
+    const std::type_info& type() const override{ return typeid(_impl_t); }
 
 
     int run() override{
       __super_t::_handle = wtf::exception::throw_lasterr_if(
-        ::CreateWindowEx(_ImplT::ExStyle, window_class_type::get().name(), nullptr, _ImplT::Style,
+        ::CreateWindowEx(_impl_t::ExStyle, window_class_type::get().name(), nullptr, _impl_t::Style,
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, (__super_t::_parent ? __super_t::_parent->_handle : nullptr),
         nullptr, _::instance_handle(), this), [](HWND h){ return nullptr == h; });
       window::on_wm_created();
@@ -46,12 +45,12 @@ namespace wtf{
     #endif
 
       try{
-        _ImplT * pThis = nullptr;
+        _impl_t * pThis = nullptr;
 
         if (WM_NCCREATE == umsg){
           auto pCreate = reinterpret_cast<CREATESTRUCT*>(lparam);
           assert(pCreate);
-          pThis = reinterpret_cast<_ImplT*>(pCreate->lpCreateParams);
+          pThis = reinterpret_cast<_impl_t*>(pCreate->lpCreateParams);
           assert(pThis);
           pThis->_handle = hwnd;
           SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
@@ -59,31 +58,31 @@ namespace wtf{
             pChild->run();
           }
         } else{
-          pThis = reinterpret_cast<_ImplT*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+          pThis = reinterpret_cast<_impl_t*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
         }
 
         if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
 
-        _::window_message msg{ hwnd, umsg, wparam, lparam, false, 0 };
+        wtf::window_message msg{ hwnd, umsg, wparam, lparam, false, 0 };
 
         if (WM_ERASEBKGND == umsg){
           auto oDC = wtf::_::device_context::get_client(hwnd);
           msg.lparam = reinterpret_cast<LPARAM>(&oDC);
-          pThis->handle_msg(msg);
+          pThis->fwd_msg(msg);
           return msg.lresult;
         } else if (WM_PAINT == umsg){
           RECT r;
           if (0 == GetUpdateRect(hwnd, &r, FALSE)){
             return DefWindowProc(hwnd, umsg, wparam, lparam);
           }
-          _::paint_struct oPaint(*pThis);
+          wtf::_::paint_struct oPaint(*pThis);
           auto oDC = wtf::_::device_context::get_client(hwnd);
           msg.wparam = reinterpret_cast<WPARAM>(&oDC);
           msg.lparam = reinterpret_cast<LPARAM>(&oPaint);
-          pThis->handle_msg(msg);
+          pThis->fwd_msg(msg);
           return msg.lresult;
         } else{
-          pThis->handle_msg(msg);
+          pThis->fwd_msg(msg);
           return msg.lresult;
         }
       }
@@ -102,7 +101,7 @@ namespace wtf{
       }
     }
 
-    using window_class_type = _::window_class_ex<_ImplT, &window_impl<_ImplT, _Policies...>::window_proc>;
+    using window_class_type = wtf::_::window_class_ex<_impl_t, &window_impl<_impl_t, _policy_ts...>::window_proc>;
   };
 
 }
