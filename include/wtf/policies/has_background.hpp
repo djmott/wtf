@@ -10,12 +10,12 @@ namespace wtf{
     template <typename _SuperT>
     struct has_background : _SuperT{
 
-      virtual const brush& background_brush() const{ return _background_brush; }
-      virtual void background_brush(brush&& newval){ _background_brush = std::move(newval); }
+      virtual const brush& background_brush() const noexcept { return _background_brush; }
+      virtual void background_brush(brush&& newval) noexcept { _background_brush = std::move(newval); }
 
     protected:
 
-      explicit has_background(window * pParent) : _SuperT(pParent){}
+      explicit has_background(window * pParent)  : _SuperT(pParent){}
 
       void on_wm_erasebkgnd(const wtf::_::device_context& dc, const rect<coord_frame::client>& client) override{
           dc.fill(client, background_brush());

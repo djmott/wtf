@@ -19,7 +19,7 @@ namespace wtf{
 
       virtual void on_wm_killfocus(HWND hwnd){ OnKillFocus(this, hwnd); }
 
-      explicit wm_killfocus(window * pParent) : _SuperT(pParent){}
+      explicit wm_killfocus(window * pParent) noexcept : _SuperT(pParent){}
     };
   }
 }

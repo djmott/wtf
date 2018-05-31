@@ -10,15 +10,15 @@ namespace wtf {
 
       using map = std::map<tstring, font>;
 
-      font(const font &src) { memcpy(this, &src, sizeof(LOGFONT)); }
+      font() = delete;
+      ~font() = default;
+      font(font&&) = default;
+      font& operator=(font&&) = default;
+      font& operator=(const font& src) = default;
 
-      font(const LOGFONT &src) { memcpy(this, &src, sizeof(LOGFONT)); }
+      font(const font &src) noexcept { memcpy(this, &src, sizeof(LOGFONT)); }
 
-      font &operator=(const font &src) {
-        if (&src == this) return *this;
-        memcpy(this, &src, sizeof(LOGFONT));
-        return *this;
-      }
+      font(const LOGFONT &src) noexcept { memcpy(this, &src, sizeof(LOGFONT)); }
 
       enum class weights{
         thin = FW_THIN,
@@ -32,84 +32,82 @@ namespace wtf {
         black = FW_BLACK,
       };
 
-      weights weight() const{ return static_cast<weights>(lfWeight); }
-      void weight(weights newval){ lfWeight = static_cast<LONG>(newval); }
+      weights weight() const noexcept { return static_cast<weights>(lfWeight); }
+      void weight(weights newval) noexcept { lfWeight = static_cast<LONG>(newval); }
 
-      bool italic() const{ return (lfItalic ? true : false); }
-      void italic(bool newval){ lfItalic = (newval ? 1 : 0); }
+      bool italic() const noexcept { return (lfItalic ? true : false); }
+      void italic(bool newval) noexcept { lfItalic = (newval ? 1 : 0); }
 
-      bool strikeout() const { return (lfStrikeOut ? true : false); }
-      void strikeout(bool newval) { lfStrikeOut = (newval ? 1 : 0); }
+      bool strikeout() const noexcept { return (lfStrikeOut ? true : false); }
+      void strikeout(bool newval) noexcept { lfStrikeOut = (newval ? 1 : 0); }
 
-      bool underline() const { return (lfUnderline ? true : false); }
-      void underline(bool newval) { lfUnderline = (newval ? 1 : 0); }
+      bool underline() const noexcept { return (lfUnderline ? true : false); }
+      void underline(bool newval) noexcept { lfUnderline = (newval ? 1 : 0); }
 
-      LONG height() const{ return lfHeight; }
-      void height(LONG newval){ lfHeight = newval; }
+      LONG height() const noexcept { return lfHeight; }
+      void height(LONG newval) noexcept { lfHeight = newval; }
 
-      LONG width() const{ return lfWidth; }
-      void width(LONG newval){ lfWidth = newval; }
+      LONG width() const noexcept { return lfWidth; }
+      void width(LONG newval) noexcept { lfWidth = newval; }
 
 
 
       struct handle : std::unique_ptr<HFONT__, void (*)(HFONT)> {
-        operator HFONT() const { return get(); }
+        operator HFONT() const noexcept { return get(); }
 
-        handle(handle &&src) : unique_ptr(std::move(src)) {}
+        ~handle() = default;
+        handle() = delete;
 
-        handle &operator=(handle &&src) {
-          unique_ptr::swap(src);
-          return *this;
-        }
-
+        handle(handle &&src) = default;
+        handle &operator=(handle &&) = default;
         handle(const handle&) = delete;
         handle &operator=(const handle &) = delete;
 
-        static handle ansi_fixed() {
+        static handle ansi_fixed()  {
           return handle(wtf::exception::throw_lasterr_if((HFONT)
-          ::GetStockObject(ANSI_FIXED_FONT), [](HFONT f) { return !f; }), [](HFONT) {});
+          ::GetStockObject(ANSI_FIXED_FONT), [](HFONT f) noexcept { return !f; }), [](HFONT) noexcept {});
         }
 
-        static handle ansi_variable() {
+        static handle ansi_variable()  {
           return handle(wtf::exception::throw_lasterr_if((HFONT)
-          ::GetStockObject(ANSI_VAR_FONT), [](HFONT f) { return !f; }), [](HFONT) {});
+          ::GetStockObject(ANSI_VAR_FONT), [](HFONT f) noexcept { return !f; }), [](HFONT) noexcept {});
         }
 
-        static handle device_default() {
+        static handle device_default()  {
           return handle(wtf::exception::throw_lasterr_if((HFONT)
-          ::GetStockObject(DEVICE_DEFAULT_FONT), [](HFONT f) { return !f; }), [](HFONT) {});
+          ::GetStockObject(DEVICE_DEFAULT_FONT), [](HFONT f) noexcept { return !f; }), [](HFONT) noexcept {});
         }
 
-        static handle gui_default() {
+        static handle gui_default()  {
           return handle(wtf::exception::throw_lasterr_if((HFONT)
-          ::GetStockObject(DEFAULT_GUI_FONT), [](HFONT f) { return !f; }), [](HFONT) {});
+          ::GetStockObject(DEFAULT_GUI_FONT), [](HFONT f) noexcept { return !f; }), [](HFONT) noexcept {});
         }
 
-        static handle oem_fixed() {
+        static handle oem_fixed()  {
           return handle(wtf::exception::throw_lasterr_if((HFONT)
-          ::GetStockObject(OEM_FIXED_FONT), [](HFONT f) { return !f; }), [](HFONT) {});
+          ::GetStockObject(OEM_FIXED_FONT), [](HFONT f) noexcept { return !f; }), [](HFONT) noexcept {});
         }
 
-        static handle system() {
+        static handle system()  {
           return handle(wtf::exception::throw_lasterr_if((HFONT)
-          ::GetStockObject(SYSTEM_FONT), [](HFONT f) { return !f; }), [](HFONT) {});
+          ::GetStockObject(SYSTEM_FONT), [](HFONT f) noexcept { return !f; }), [](HFONT) noexcept {});
         }
 
-        static handle system_fixed() {
+        static handle system_fixed()  {
           return handle(wtf::exception::throw_lasterr_if((HFONT)
-          ::GetStockObject(SYSTEM_FIXED_FONT), [](HFONT f) { return !f; }), [](HFONT) {});
+          ::GetStockObject(SYSTEM_FIXED_FONT), [](HFONT f) noexcept { return !f; }), [](HFONT) noexcept {});
         }
 
       protected:
         friend struct font;
 
         template<typename ... _ArgTs>
-        handle(_ArgTs &&...oArgs) : unique_ptr(std::forward<_ArgTs>(oArgs)...) {}
+        handle(_ArgTs &&...oArgs) noexcept : unique_ptr(std::forward<_ArgTs>(oArgs)...) {}
       };
 
-      handle open() const {
-        return handle(wtf::exception::throw_lasterr_if(::CreateFontIndirect(this), [](HFONT f) { return !f; }),
-                      [](HFONT f) { ::DeleteObject(f); });
+      handle open() const  {
+        return handle(wtf::exception::throw_lasterr_if(::CreateFontIndirect(this), [](HFONT f) noexcept { return !f; }),
+                      [](HFONT f) noexcept { ::DeleteObject(f); });
       }
 
 

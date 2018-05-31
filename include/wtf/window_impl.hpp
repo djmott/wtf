@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 namespace wtf{
 
@@ -11,7 +14,7 @@ namespace wtf{
 
   public:
 
-    template <typename ... _ParamTs> window_impl(_ParamTs&&...oParam) : __super_t(std::forward<_ParamTs>(oParam)...){}
+    template <typename ... _ParamTs> window_impl(_ParamTs&&...oParam) noexcept : __super_t(std::forward<_ParamTs>(oParam)...){}
 
   protected:
 
@@ -21,14 +24,14 @@ namespace wtf{
     template <typename> friend struct policy::isa_tab_container;
 
 
-    const std::type_info& type() const override{ return typeid(_impl_t); }
+    const std::type_info& type() const noexcept override{ return typeid(_impl_t); }
 
 
-    int run() override{
+    int run()  override{
       __super_t::_handle = wtf::exception::throw_lasterr_if(
         ::CreateWindowEx(_impl_t::ExStyle, window_class_type::get().name(), nullptr, _impl_t::Style,
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, (__super_t::_parent ? __super_t::_parent->_handle : nullptr),
-        nullptr, _::instance_handle(), this), [](HWND h){ return nullptr == h; });
+        nullptr, _::instance_handle(), this), [](HWND h)noexcept { return nullptr == h; });
       window::on_wm_created();
       return 0;
     }
@@ -41,7 +44,7 @@ namespace wtf{
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam){
 
     #if __WTF_DEBUG_MESSAGES__
-      std::cout << GetTickCount() << " " << typeid(_ImplT).name() << " " << _::msg_name(umsg) << '\n';
+      std::cout << GetTickCount() << " " << typeid(_impl_t).name() << " " << wtf::_::msg_name(umsg) << '\n';
     #endif
 
       try{

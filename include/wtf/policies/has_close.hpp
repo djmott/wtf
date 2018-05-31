@@ -12,11 +12,11 @@ namespace wtf{
     template <typename _SuperT>
     struct has_close :  _SuperT{
 
-      virtual void close(){ CloseWindow(*this); }
+      virtual void close() noexcept { CloseWindow(*this); }
 
     protected:
 
-      explicit has_close(window * pParent) : _SuperT(pParent){}
+      explicit has_close(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

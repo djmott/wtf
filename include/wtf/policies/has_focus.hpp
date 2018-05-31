@@ -12,13 +12,13 @@ namespace wtf{
     template <typename _SuperT>
     struct has_focus : _SuperT{
 
-      void set_focus() const{ wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h){ return !h; }); }
+      void set_focus() const  { wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h)noexcept { return !h; }); }
 
       bool got_focus() const{ return _SuperT::_handle == ::GetFocus(); }
 
     protected:
 
-      explicit has_focus(window * pParent) : _SuperT(pParent){}
+      explicit has_focus(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

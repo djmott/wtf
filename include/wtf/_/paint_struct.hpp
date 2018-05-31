@@ -6,16 +6,25 @@
 namespace wtf{
   namespace _{
     struct paint_struct : PAINTSTRUCT{
+      paint_struct() = default;
       ~paint_struct(){ ::EndPaint(_hwnd, this); }
 
-      explicit paint_struct(HWND hwnd) : _hwnd(hwnd){
-        wtf::exception::throw_lasterr_if(::BeginPaint(_hwnd, this), [](HDC dc){ return !dc; });
+      explicit paint_struct(HWND hwnd)  : _hwnd(hwnd){
+        wtf::exception::throw_lasterr_if(::BeginPaint(_hwnd, this), [](HDC dc)noexcept { return !dc; });
       }
 
       paint_struct(const wtf::_::paint_struct &) = delete;
+      paint_struct& operator=(const paint_struct&) = delete;
 
-      rect<coord_frame::client>& client(){ return *static_cast<rect<coord_frame::client>*>(&rcPaint); }
-      const rect<coord_frame::client>& client() const{ return *static_cast<const rect<coord_frame::client>*>(&rcPaint); }
+      paint_struct(wtf::_::paint_struct&& src) noexcept : _hwnd(nullptr) { std::swap(_hwnd, src._hwnd); }
+      paint_struct& operator=(paint_struct&& src) noexcept {
+        std::swap(_hwnd, src._hwnd);
+        return *this;
+      }
+
+
+      rect<coord_frame::client>& client() noexcept { return *static_cast<rect<coord_frame::client>*>(&rcPaint); }
+      const rect<coord_frame::client>& client() const noexcept { return *static_cast<const rect<coord_frame::client>*>(&rcPaint); }
 
     protected:
       HWND _hwnd;

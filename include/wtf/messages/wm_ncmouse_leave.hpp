@@ -14,7 +14,7 @@ namespace wtf{
 
       callback<void(window * sender)> OnNCMouseLeave;
 
-      void handle_msg(wtf::window_message& msg) override {
+      void handle_msg(wtf::window_message& msg)  override {
         if (WM_CREATE == msg.umsg) {
           TRACKMOUSEEVENT oEvent;
           memset(&oEvent, 0, sizeof(TRACKMOUSEEVENT));

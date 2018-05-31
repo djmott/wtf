@@ -20,7 +20,7 @@ namespace wtf{
 
     protected:
       template <typename> friend struct isa_tab_container;
-      isa_tab_page(window * pParent) : _SuperT(pParent){}
+      isa_tab_page(window * pParent) noexcept : _SuperT(pParent){}
     };
   }
 
@@ -32,7 +32,7 @@ namespace wtf{
 
   class tab_page : public window_impl<tab_page, policy::isa_tab_page>{
    public:
-    tab_page(window * pParent) : window_impl(pParent){}
+     tab_page(window * pParent) noexcept : window_impl(pParent){}
   };
 
   namespace policy{
@@ -134,6 +134,8 @@ namespace wtf{
         virtual tab_page& page() = 0;
         virtual const tab_page& page() const = 0;
 
+        virtual ~ipage_info() = default;
+
         virtual void run() {
           button.run();
         }
@@ -222,7 +224,7 @@ namespace wtf{
       class scrollbar_t : public window_impl<scrollbar_t, policy::isa_scroll_bar>{
         using __super_t = window_impl<scrollbar_t, policy::isa_scroll_bar>;
       public:
-        scrollbar_t(window*pParent) : __super_t(pParent) {}
+        scrollbar_t(window*pParent) noexcept : __super_t(pParent) {}
       };
 
       size_t _active_page = 0;
@@ -246,7 +248,7 @@ namespace wtf{
 
 
   struct tab_container : window_impl<tab_container, policy::isa_tab_container>{
-    explicit tab_container(window * pParent) : window_impl(pParent){}
+    explicit tab_container(window * pParent) noexcept : window_impl(pParent){}
   };
 
 }

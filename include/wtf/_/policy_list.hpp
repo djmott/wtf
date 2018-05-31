@@ -138,14 +138,14 @@ namespace wtf{
 
     template <class _impl_t, class _policy_list_t> struct _;
     template <class _impl_t> struct _<_impl_t, policy_list<>> : wtf::window {
-      template <typename ... _ParamTs> _(_ParamTs&&...oParam) : wtf::window(std::forward<_ParamTs>(oParam)...) {}
+      template <typename ... _ParamTs> _(_ParamTs&&...oParam) noexcept : wtf::window(std::forward<_ParamTs>(oParam)...) {}
       void fwd_msg(wtf::window_message& oMsg) { wtf::window::handle_msg(oMsg); }
     };
     template <class _impl_t, template <class> class _head_t, template <class> class ... _tail_t>  
     struct _<_impl_t, policy_list<_head_t, _tail_t...>> : _head_t<_<_impl_t, policy_list<_tail_t...>>> {
       using _super_t = _head_t<_<_impl_t, policy_list<_tail_t...>>>;
       using _next_t = _<_impl_t, policy_list<_tail_t...>>;
-      template <typename ... _ParamTs> _(_ParamTs&&...oParam) : _super_t(std::forward<_ParamTs>(oParam)...) {}
+      template <typename ... _ParamTs> _(_ParamTs&&...oParam)  : _super_t(std::forward<_ParamTs>(oParam)...) {}
       void fwd_msg(wtf::window_message& oMsg) {
         _super_t::handle_msg(oMsg);
         if (oMsg.bhandled) return;

@@ -19,7 +19,7 @@ namespace wtf{
 
       virtual void on_wm_destroy(){ OnDestroy(this); }
 
-      explicit wm_destroy(window * pParent) : _SuperT(pParent){}
+      explicit wm_destroy(window * pParent) noexcept : _SuperT(pParent){}
 
     };
 

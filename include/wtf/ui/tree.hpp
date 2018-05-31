@@ -10,8 +10,8 @@ namespace wtf{
     template <typename _SuperT>
     struct isa_tree : _SuperT{
 
-      bool full_row_select() const { return _full_row_select; }
-      void full_row_select(bool newval) { _full_row_select = newval; }
+      bool full_row_select() const noexcept { return _full_row_select; }
+      void full_row_select(bool newval) noexcept { _full_row_select = newval; }
 
       enum class select_modes {
         single,
@@ -48,39 +48,39 @@ namespace wtf{
           with_children,
         };
 
-        expander_display_policies expander_display_policy() const { return _expander_display_policy; }
-        void expander_display_policy(expander_display_policies newval) { _expander_display_policy = newval; }
+        expander_display_policies expander_display_policy() const noexcept { return _expander_display_policy; }
+        void expander_display_policy(expander_display_policies newval) noexcept { _expander_display_policy = newval; }
 
-        const tstring& text() const { return _text; }
-        void text(const tstring& newval) { _text = newval; }
+        const tstring& text() const noexcept { return _text; }
+        void text(const tstring& newval) noexcept { _text = newval; }
 
-        bool expanded() const { return _expanded; }
-        void expanded(bool newval) { _expanded = newval; }
+        bool expanded() const noexcept { return _expanded; }
+        void expanded(bool newval) noexcept { _expanded = newval; }
 
         bool selected() const {
           const auto & oSelectedNodes = get_tree()._selected_items;
           return oSelectedNodes.cend() != std::find_if(oSelectedNodes.cbegin(), oSelectedNodes.cend(),
-            [this](const item::pointer& oNode) { return oNode.get() == this;  });
+            [this](const item::pointer& oNode) noexcept { return oNode.get() == this;  });
         }
 
         void selected(bool newval) {
           auto & oSelectedNodes = get_tree()._selected_items;
           if (newval) {
             if (oSelectedNodes.cend() == std::find_if(oSelectedNodes.cbegin(), oSelectedNodes.cend(),
-              [this](const item::pointer& oNode) { return oNode.get() == this;  })) {
+              [this](const item::pointer& oNode) noexcept { return oNode.get() == this;  })) {
               oSelectedNodes.push_back(__super_t::shared_from_this());
             }
           }
           else {
             auto oItem = std::find_if(oSelectedNodes.cbegin(), oSelectedNodes.cend(),
-              [this](const item::pointer& oNode) { return oNode.get() == this;  });
+              [this](const item::pointer& oNode) noexcept { return oNode.get() == this;  });
             oSelectedNodes.erase(oItem);
           }
         }
 
-        pointer parent() const { return _parent.lock(); }
+        pointer parent() const noexcept { return _parent.lock(); }
 
-        const vector& children() const { return _children; }
+        const vector& children() const noexcept { return _children; }
 
         pointer add_item(const tstring& Text) {
           _children.push_back(pointer(new item(__super_t::shared_from_this(), Text)));
@@ -200,7 +200,7 @@ namespace wtf{
         if (!oClickedNode){ return _SuperT::on_wm_click(m); }
         if (select_modes::single == _select_mode){
           bool bExists = (_selected_items.end() != std::find_if(_selected_items.begin(), _selected_items.end(), 
-                                [oClickedNode](typename item::pointer oNode){ return oClickedNode.get() != oNode.get(); }));
+                                [oClickedNode](typename item::pointer oNode)noexcept { return oClickedNode.get() != oNode.get(); }));
           _selected_items.clear();
           _selected_items.push_back(oClickedNode);
           if (!bExists) OnItemSelected(oClickedNode);
@@ -355,7 +355,7 @@ namespace wtf{
 
       struct vscroll : window_impl<vscroll, policy::isa_scroll_bar>{
         using __super_t = window_impl<vscroll, policy::isa_scroll_bar>;
-        vscroll(isa_tree * parent) : __super_t(parent), _parent(parent){}
+        vscroll(isa_tree * parent) noexcept : __super_t(parent), _parent(parent){}
 
         void on_value_changed(int prev_val) override{
           for (int i=prev_val ; i<__super_t::value() ; ++i){ _parent->ScrollNext(); }
@@ -367,7 +367,7 @@ namespace wtf{
 
       struct hscroll : window_impl<hscroll, policy::isa_scroll_bar>{
         using __super_t = window_impl<hscroll, policy::isa_scroll_bar>;
-        hscroll(isa_tree * parent) : __super_t(parent), _parent(parent){}
+        hscroll(isa_tree * parent) noexcept : __super_t(parent), _parent(parent){}
         isa_tree * _parent;
       }_hscroll;
 
@@ -402,7 +402,7 @@ namespace wtf{
   }
 
   struct tree : window_impl<tree, policy::isa_tree>{
-    explicit tree(window * pParent) : window_impl(pParent){}
+    explicit tree(window * pParent) noexcept : window_impl(pParent){}
   };
 
 }

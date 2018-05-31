@@ -10,7 +10,7 @@ namespace wtf{
     struct isa_label : _SuperT{
 
     protected:
-      explicit isa_label(window * pParent) : _SuperT(pParent){}
+      explicit isa_label(window * pParent) noexcept : _SuperT(pParent){}
     };
   }
 
@@ -23,7 +23,7 @@ namespace wtf{
   }
 
   struct label : window_impl<label, policy::isa_label >{
-    explicit label(window * pParent) : window_impl(pParent){}
+    explicit label(window * pParent) noexcept : window_impl(pParent){}
   };
 
 }

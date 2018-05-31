@@ -12,22 +12,22 @@ namespace wtf{
     template <typename _SuperT>
     struct has_icon : _SuperT{
 
-      virtual icon &big_icon(){ return _big_icon; }
+      virtual icon &big_icon()noexcept { return _big_icon; }
 
-      virtual const icon &big_icon() const{ return _big_icon; }
+      virtual const icon &big_icon() const noexcept { return _big_icon; }
 
-      virtual void big_icon(icon &&src){ _big_icon = std::move(src); }
+      virtual void big_icon(icon &&src)noexcept { _big_icon = std::move(src); }
 
-      virtual icon &small_icon(){ return _small_icon; }
+      virtual icon &small_icon()noexcept { return _small_icon; }
 
-      virtual const icon &small_icon() const{ return _small_icon; }
+      virtual const icon &small_icon() const noexcept { return _small_icon; }
 
-      virtual void small_icon(icon &&src){ _small_icon = std::move(src); }
+      virtual void small_icon(icon &&src)noexcept { _small_icon = std::move(src); }
 
     protected:
-      explicit has_icon(window * pParent) : _SuperT(pParent){}
+      explicit has_icon(window * pParent)  : _SuperT(pParent){}
 
-      HICON on_wm_geticon(icon_type ico) override{
+      HICON on_wm_geticon(icon_type ico) noexcept override {
         if (icon_type::big_icon == ico) return big_icon();
         else return small_icon();
       }

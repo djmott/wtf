@@ -17,9 +17,9 @@ namespace wtf{
         restored = SIZE_RESTORED,
       };
 
-      void move(int x, int y, int width, int height, bool repaint = true){
+      void move(int x, int y, int width, int height, bool repaint = true)  {
         wtf::exception::throw_lasterr_if(::MoveWindow(*this, x, y, width, height, repaint ? TRUE : FALSE),
-                                         [](BOOL b){ return !b; });
+                                         [](BOOL b)noexcept { return !b; });
       }
 
       virtual int left() const{
@@ -36,19 +36,19 @@ namespace wtf{
       }
 
 
-      virtual void left(int newval){
+      virtual void left(int newval)  {
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, 0, newval, top(), 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOREPOSITION),
-                                         [](BOOL b){ return !b; });
+                                         [](BOOL b)noexcept { return !b; });
       }
 
-      virtual void top(int newval){
+      virtual void top(int newval)  {
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, 0, left(), newval, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOREPOSITION),
-                                         [](BOOL b){ return !b; });
+                                         [](BOOL b)noexcept { return !b; });
       }
 
     protected:
 
-      explicit has_move(window * pParent) : _SuperT(pParent){}
+      explicit has_move(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

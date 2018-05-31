@@ -18,7 +18,7 @@ namespace wtf{
 
       virtual void on_wm_char(UINT char_code, keyboard_msg_param param){ OnChar(this, char_code, param); }
 
-      wm_char(window * pParent) : _SuperT(pParent){}
+      wm_char(window * pParent) noexcept : _SuperT(pParent){}
 
 
     };

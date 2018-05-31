@@ -44,7 +44,7 @@ namespace wtf{
   }
 
   struct button : window_impl<button, policy::isa_button>{
-    explicit button(window * pParent) : window_impl(pParent){}
+    explicit button(window * pParent) noexcept : window_impl(pParent){}
   };
 
 }

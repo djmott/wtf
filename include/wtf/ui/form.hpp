@@ -8,11 +8,11 @@ namespace wtf{
     template <typename _SuperT>
     struct isa_form : _SuperT{
 
-      explicit isa_form(window * pParent) : _SuperT(pParent){}
+      explicit isa_form(window * pParent) noexcept : _SuperT(pParent){}
 
       isa_form() : isa_form(nullptr){}
 
-      void show() override{
+      void show()  override{
         if (!_SuperT::_handle) _SuperT::run();
         _SuperT::show();
       }
@@ -35,7 +35,7 @@ namespace wtf{
         return r.bottom - r.top;
       }
 
-       void close() override { ::DestroyWindow(*this); }
+       void close() noexcept override { ::DestroyWindow(*this); }
 
     protected:
 
@@ -80,7 +80,7 @@ namespace wtf{
   private:
     using _SuperT = window_impl<form_impl<_ExStyle, _Style>, policy::isa_form>;
   public:
-    explicit form_impl(window * pParent) : _SuperT(pParent){}
+    explicit form_impl(window * pParent) noexcept : _SuperT(pParent){}
     form_impl() : form_impl(nullptr){}
 
     int run() override{
@@ -96,8 +96,8 @@ namespace wtf{
   private:
     using _SuperT = form_impl<WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW>;
   public:
-    explicit form(window * pParent) : _SuperT(pParent) {}
-    form() : form(nullptr) {}
+    explicit form(window * pParent) noexcept : _SuperT(pParent) {}
+    form() noexcept : form(nullptr) {}
 
   };
 
@@ -105,8 +105,8 @@ namespace wtf{
   private:
     using _SuperT = form_impl<WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE >;
   public:
-    explicit dialog(window * pParent) : _SuperT(pParent) {}
-    dialog() : dialog(nullptr) {}
+    explicit dialog(window * pParent) noexcept : _SuperT(pParent) {}
+    dialog() noexcept : dialog(nullptr) {}
 
   };
 
@@ -114,8 +114,8 @@ namespace wtf{
   private:
     using _SuperT = form_impl<WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW>;
   public:
-    explicit tool_window(window * pParent) : _SuperT(pParent) {}
-    tool_window() : tool_window(nullptr) {}
+    explicit tool_window(window * pParent) noexcept : _SuperT(pParent) {}
+    tool_window() noexcept : tool_window(nullptr) {}
 
   };
 

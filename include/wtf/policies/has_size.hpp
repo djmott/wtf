@@ -24,19 +24,19 @@ namespace wtf{
       }
 
 
-      virtual void width(int newval){
+      virtual void width(int newval)  {
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, 0, 0, 0, newval, height(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOREPOSITION),
-                                         [](BOOL b){ return !b; });
+                                         [](BOOL b)noexcept { return !b; });
       }
 
-      virtual void height(int newval){
+      virtual void height(int newval)  {
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, 0, 0, 0, width(), newval, SWP_NOMOVE | SWP_NOZORDER | SWP_NOREPOSITION),
-                                         [](BOOL b){ return !b; });
+                                         [](BOOL b)noexcept { return !b; });
       }
 
     protected:
 
-      explicit has_size(window * pParent) : _SuperT(pParent){}
+      explicit has_size(window * pParent) noexcept : _SuperT(pParent){}
     };
   }
 }

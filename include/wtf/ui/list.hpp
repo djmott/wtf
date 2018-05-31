@@ -31,7 +31,7 @@ namespace wtf {
       };
 
     protected:
-      isa_list(window * pParent) : _SuperT(pParent){}
+      isa_list(window * pParent) noexcept : _SuperT(pParent){}
     };
 
   }
@@ -45,7 +45,7 @@ namespace wtf {
   class list : public window_impl<list, policy::isa_list> {
     using __super_t = window_impl<list, policy::isa_list>;
   public:
-    explicit list(window * pParent) : __super_t(pParent){}
+    explicit list(window * pParent) noexcept : __super_t(pParent){}
   };
 
 }

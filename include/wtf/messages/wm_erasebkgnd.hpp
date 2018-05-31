@@ -24,7 +24,7 @@ namespace wtf{
         OnEraseBackground(this, dc, rc);
       }
 
-      explicit wm_erasebkgnd(window * pParent) : _SuperT(pParent){}
+      explicit wm_erasebkgnd(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

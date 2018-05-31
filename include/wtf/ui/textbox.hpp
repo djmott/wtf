@@ -13,7 +13,7 @@ namespace wtf{
 
     protected:
       
-      explicit isa_textbox(window * pParent) : _SuperT(pParent){}
+      explicit isa_textbox(window * pParent) noexcept : _SuperT(pParent){}
 
       void on_wm_create() override{
         _SuperT::background_brush(brush::system_brush(system_colors::window));
@@ -155,7 +155,7 @@ namespace wtf{
   }
 
   struct textbox : window_impl<textbox, policy::isa_textbox>{
-    explicit textbox(window * pParent) : window_impl(pParent){}
+    explicit textbox(window * pParent) noexcept : window_impl(pParent){}
   };
 
 }

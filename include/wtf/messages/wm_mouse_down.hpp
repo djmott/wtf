@@ -22,7 +22,7 @@ namespace wtf{
 
       virtual void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& param){ OnMouseDown(this, param); }
 
-      explicit wm_mouse_down(window * pParent) : _SuperT(pParent){}
+      explicit wm_mouse_down(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

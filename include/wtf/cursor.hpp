@@ -23,44 +23,41 @@ namespace wtf {
         help = 32651,
       };
 
-      operator HCURSOR() const { return get(); }
+      operator HCURSOR() const noexcept { return get(); }
 
-      static cursor system(style Style) {
+      static cursor system(style Style)  {
         return cursor(
-          wtf::exception::throw_lasterr_if(::LoadCursor(nullptr, MAKEINTRESOURCE(Style)), [](HCURSOR h) { return !h; }),
-          [](HCURSOR) {});
+          wtf::exception::throw_lasterr_if(::LoadCursor(nullptr, MAKEINTRESOURCE(Style)), [](HCURSOR h) noexcept { return !h; }),
+          [](HCURSOR) noexcept {});
       }
 
-      cursor(cursor &&src) : shared_ptr(std::move(src)) {}
-
-      cursor &operator=(cursor &&src) {
-        shared_ptr::swap(src);
-        return *this;
-      }
-
+      cursor() = delete;
+      ~cursor() = default;
+      cursor(cursor &&src) = default;
+      cursor &operator=(cursor&& src) = default;
       cursor(const cursor&) = delete;
       cursor &operator=(const cursor &) = delete;
 
 
-      static int show() { return ::ShowCursor(TRUE); }
+      static int show() noexcept { return ::ShowCursor(TRUE); }
 
-      static int hide() { return ::ShowCursor(FALSE); }
+      static int hide() noexcept { return ::ShowCursor(FALSE); }
 
-      static void position(const point<coord_frame::screen> &p) {
-        wtf::exception::throw_lasterr_if(::SetCursorPos(p.x, p.y), [](BOOL b) { return !b; });
+      static void position(const point<coord_frame::screen> &p)  {
+        wtf::exception::throw_lasterr_if(::SetCursorPos(p.x, p.y), [](BOOL b) noexcept { return !b; });
       }
 
-      static point<coord_frame::screen> position() {
+      static point<coord_frame::screen> position()  {
         point<coord_frame::screen> oRet;
-        wtf::exception::throw_lasterr_if(::GetCursorPos(&oRet), [](BOOL b) { return !b; });
+        wtf::exception::throw_lasterr_if(::GetCursorPos(&oRet), [](BOOL b) noexcept { return !b; });
         return oRet;
       }
 
-      static void clip(const rect<coord_frame::screen> &area) {
-        wtf::exception::throw_lasterr_if(::ClipCursor(&area), [](BOOL b) { return !b; });
+      static void clip(const rect<coord_frame::screen> &area)  {
+        wtf::exception::throw_lasterr_if(::ClipCursor(&area), [](BOOL b) noexcept { return !b; });
       }
 
-      static void unclip() { wtf::exception::throw_lasterr_if(::ClipCursor(nullptr), [](BOOL b) { return !b; }); }
+      static void unclip()  { wtf::exception::throw_lasterr_if(::ClipCursor(nullptr), [](BOOL b) noexcept { return !b; }); }
 
       static const cursor &global(style Style) {
         static auto _arrow = system(style::arrow);
@@ -112,7 +109,7 @@ namespace wtf {
 
     protected:
       template<typename ... _ArgTs>
-      cursor(_ArgTs &&...oArgs) : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
+      cursor(_ArgTs &&...oArgs)  : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
     };
   }
 

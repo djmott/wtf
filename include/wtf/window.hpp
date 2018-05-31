@@ -21,29 +21,29 @@ namespace wtf{
 
     virtual ~window(){ if (_handle) ::DestroyWindow(_handle); }
 
-    window() : _parent(nullptr), _handle(nullptr){}
+    window() noexcept : _parent(nullptr), _handle(nullptr){}
 
-    window& operator=(window&& src){
+    window& operator=(window&& src) noexcept {
       std::swap(_parent, src._parent);
       std::swap(_handle, src._handle);
       std::swap(_children, src._children);
       return *this;
     }
 
-    window(window&& src){ *this = std::move(src); }
+    window(window&& src) noexcept { *this = std::move(src); }
 
-    explicit window(window * Parent) : _parent(Parent), _handle(nullptr){
+    explicit window(window * Parent)  : _parent(Parent), _handle(nullptr){
       if (Parent) Parent->_children.push_back(this);
     }
 
-    const window * const parent() const{ return _parent; }
+    const window * const parent() const noexcept { return _parent; }
 
-    const std::vector<window*>& children() const{ return _children; }
+    const std::vector<window*>& children() const noexcept { return _children; }
 
-    virtual const std::type_info& type() const = 0;
+    virtual const std::type_info& type() const noexcept = 0;
 
-    HWND operator*() const{ return _handle; }
-    operator HWND() const{ return _handle; }
+    HWND operator*() const noexcept { return _handle; }
+    operator HWND() const noexcept { return _handle; }
 
     void add(window*pChild){
       assert(pChild && !pChild->_handle);
@@ -57,7 +57,7 @@ namespace wtf{
       }
     }
 
-    virtual void handle_msg(wtf::window_message& msg) {
+    virtual void handle_msg(wtf::window_message& msg)  {
       if (msg.bhandled) return;
       if (msg.umsg == WM_CLOSE) {
         DestroyWindow(msg.hwnd);
@@ -77,7 +77,7 @@ namespace wtf{
     HWND _handle;
     std::vector<window*> _children;
 
-    virtual int run() { return  0; }
+    virtual int run()  { return  0; }
 
     //this is different than WM_CREATE, its not part of windows and called by exec after CreateWindow returns
     virtual void on_wm_created(){ OnCreated(this); }

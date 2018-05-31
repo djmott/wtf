@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 namespace wtf{
 
@@ -24,7 +27,7 @@ namespace wtf{
         value(value());
       }
 
-      int value() const{ return _value; }
+      int value() const noexcept { return _value; }
 
       void value(int newval){
         if (newval < _min) newval = _min;
@@ -132,7 +135,7 @@ namespace wtf{
         _SuperT::on_wm_paint(dc, ps);
       }
 
-      void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& param){
+      void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& param) override{
         if (mouse_buttons::left != param.button) return _SuperT::on_wm_mouse_down(param);
         ::SetCapture(*this);
         _down = button_down_on::none;
@@ -204,7 +207,7 @@ namespace wtf{
 
 
   struct scroll_bar : window_impl<scroll_bar, policy::isa_scroll_bar>{
-    explicit scroll_bar(window * pParent) : window_impl(pParent){}
+    explicit scroll_bar(window * pParent) noexcept : window_impl(pParent){}
   };
 
 }

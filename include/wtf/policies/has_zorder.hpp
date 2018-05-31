@@ -16,14 +16,14 @@ namespace wtf{
     template <typename _SuperT>
     struct has_zorder : _SuperT{
 
-      void zorder(zorders pos){
-        wtf::exception::throw_lasterr_if(::SetWindowPos(*this, reinterpret_cast<HWND>(pos), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b){ return !b; });
+      void zorder(zorders pos)  {
+        wtf::exception::throw_lasterr_if(::SetWindowPos(*this, reinterpret_cast<HWND>(pos), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b)noexcept { return !b; });
       }
-      void zorder(HWND insert_after){
-        wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b){ return !b; });
+      void zorder(HWND insert_after)  {
+        wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b)noexcept { return !b; });
       }
     protected:
-      explicit has_zorder(window * pParent) : _SuperT(pParent){}
+      explicit has_zorder(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

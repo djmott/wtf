@@ -20,7 +20,7 @@ namespace wtf{
     protected:
       virtual void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& param){ OnMouseUp(this, param); }
 
-      explicit wm_mouse_up(window * pParent) : _SuperT(pParent){}
+      explicit wm_mouse_up(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

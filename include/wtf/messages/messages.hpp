@@ -33,13 +33,18 @@ namespace wtf{
 
     point<_frame> position;
 
-    mouse_msg_param(WPARAM wparam, LPARAM lparam, mouse_buttons oButton = mouse_buttons::unspecified)
+    mouse_msg_param() = delete;
+    ~mouse_msg_param() = default;
+    mouse_msg_param(mouse_msg_param&&) = default;
+    mouse_msg_param& operator=(mouse_msg_param&&) = default;
+
+    mouse_msg_param(WPARAM wparam, LPARAM lparam, mouse_buttons oButton = mouse_buttons::unspecified)noexcept
       : button(oButton), key_state(static_cast<mouse_key_states>(LOWORD(wparam))), position(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)) {}
 
     mouse_msg_param(LPARAM lparam, mouse_buttons oButton = mouse_buttons::unspecified)
       : button(oButton), key_state(mouse_key_states::unspecified), position(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)) {}
 
-    mouse_msg_param(const mouse_msg_param& src)
+    mouse_msg_param(const mouse_msg_param& src) noexcept
       : button(src.button), key_state(src.key_state), position(src.position){}
 
     mouse_msg_param& operator=(const mouse_msg_param& src){

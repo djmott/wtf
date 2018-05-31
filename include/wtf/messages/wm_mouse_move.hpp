@@ -21,7 +21,7 @@ namespace wtf{
 
       virtual void on_wm_mouse_move(const mouse_msg_param<coord_frame::client>& param){ OnMouseMove(this, param); }
 
-      explicit wm_mouse_move(window * pParent) : _SuperT(pParent){}
+      explicit wm_mouse_move(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

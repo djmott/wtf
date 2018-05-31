@@ -13,7 +13,7 @@ namespace wtf {
 
 		protected:
 
-			explicit isa_inputbox(window * pParent) : _SuperT(pParent) {}
+			explicit isa_inputbox(window * pParent) noexcept : _SuperT(pParent) {}
 
 /*
 			void on_wm_create() override {
@@ -171,7 +171,7 @@ namespace wtf {
 	}
 
 	struct inputbox : window_impl<inputbox, policy::isa_inputbox> {
-		explicit inputbox(window * pParent) : window_impl(pParent) {}
+		explicit inputbox(window * pParent) noexcept : window_impl(pParent) {}
 	};
 
 }

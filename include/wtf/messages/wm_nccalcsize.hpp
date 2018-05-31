@@ -25,9 +25,9 @@ namespace wtf{
     protected:
 
       virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *) = 0;
-      virtual LRESULT on_wm_nccalcsize(RECT *){ return 0; }
+      virtual LRESULT on_wm_nccalcsize(RECT *) noexcept { return 0; }
 
-      explicit wm_nccalcsize(window * pParent) : _SuperT(pParent){}
+      explicit wm_nccalcsize(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

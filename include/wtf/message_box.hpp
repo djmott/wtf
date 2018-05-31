@@ -57,13 +57,13 @@ namespace wtf {
       static response exec(HWND parent, const tstring &message, const tstring &caption = _T(""),
                            buttons oButtons = buttons::ok, icons oIcon = icons::none,
                            default_button oDefault = default_button::button1,
-                           modality oModal = modality::application) {
+                           modality oModal = modality::application)  {
         auto flags = static_cast<UINT>(oButtons);
         flags |= static_cast<UINT>(oIcon);
         flags |= static_cast<UINT>(oDefault);
         flags |= static_cast<UINT>(oModal);
         return static_cast<response>(wtf::exception::throw_lasterr_if(
-          MessageBoxEx(parent, message.c_str(), caption.c_str(), flags, 0), [](int i) { return !i; }));
+          MessageBoxEx(parent, message.c_str(), caption.c_str(), flags, 0), [](int i) noexcept { return !i; }));
       }
     };
   }

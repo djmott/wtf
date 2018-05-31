@@ -20,7 +20,7 @@ namespace wtf{
 
       virtual void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param<coord_frame::client>& param){ OnMouseWheel(this, delta, param); }
 
-      explicit wm_mouse_wheel(window * pParent) : _SuperT(pParent){}
+      explicit wm_mouse_wheel(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

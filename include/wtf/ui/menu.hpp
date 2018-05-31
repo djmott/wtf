@@ -36,7 +36,7 @@ namespace wtf{
 
 
   struct menu : window_impl<menu, policy::isa_menu>{
-    explicit menu(window * pParent) : window_impl(pParent){}
+    explicit menu(window * pParent) noexcept : window_impl(pParent){}
   };
 
 }

@@ -19,9 +19,9 @@ namespace wtf{
       }
     protected:
 
-      virtual void on_wm_setcursor(wm_nchittest_flags){}
+      virtual void on_wm_setcursor(wm_nchittest_flags)  {}
 
-      explicit wm_setcursor(window * pParent) : _SuperT(pParent){}
+      explicit wm_setcursor(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

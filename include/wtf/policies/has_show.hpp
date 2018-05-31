@@ -12,28 +12,24 @@ namespace wtf{
     template <typename _SuperT>
     struct has_show :  _SuperT{
 
-      virtual void show(){
-        ::ShowWindow(*this, SW_SHOW);
+      virtual void show()  { ::ShowWindow(*this, SW_SHOW); }
+
+      virtual void hide()  { ::ShowWindow(*this, SW_HIDE); }
+
+      virtual bool visible() const  {
+        return (wtf::exception::throw_lasterr_if(
+          ::GetWindowLong(*this, GWL_STYLE), [](LONG l)noexcept { return !l; })
+          & WS_VISIBLE) ? true : false; 
       }
 
-      virtual void hide(){
-        ::ShowWindow(*this, SW_HIDE);
-      }
-
-      virtual bool visible() const{ 
-        return wtf::exception::throw_lasterr_if(
-          ::GetWindowLong(*this, GWL_STYLE), [](LONG l){ return !l; })
-          & WS_VISIBLE ? true : false; 
-      }
-
-      virtual void visible(bool newval) { 
+      virtual void visible(bool newval)  {
         if (newval) show();
         else hide();
       }
 
     protected:
 
-      explicit has_show(window * pParent) : _SuperT(pParent){}
+      explicit has_show(window * pParent) noexcept : _SuperT(pParent){}
 
     };
 

@@ -18,7 +18,7 @@ namespace wtf{
 
       virtual void on_wm_create(){ OnCreate(this); }
 
-      explicit wm_create(window * pParent) : _SuperT(pParent){}
+      explicit wm_create(window * pParent) noexcept : _SuperT(pParent){}
 
 
     };

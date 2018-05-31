@@ -47,7 +47,7 @@ namespace wtf{
       }
     protected:
 
-      explicit isa_progressbar(window * hParent) : _SuperT(hParent){}
+      explicit isa_progressbar(window * hParent) noexcept : _SuperT(hParent){}
 
       void on_wm_create() override{
         _SuperT::border_style(border_styles::lowered);
@@ -105,7 +105,7 @@ namespace wtf{
   }
 
   struct progress_bar : window_impl<progress_bar, policy::isa_progressbar>{
-    explicit progress_bar(window * pParent) : window_impl(pParent){}
+    explicit progress_bar(window * pParent) noexcept : window_impl(pParent){}
   };
 
 

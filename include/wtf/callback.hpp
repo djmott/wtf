@@ -144,6 +144,11 @@ namespace wtf {
         using vector = std::vector<ptr>;
 
         virtual ~invoker() = default;
+        invoker() = default;
+        invoker(const invoker&) = default;
+        invoker& operator=(const invoker&) = default;
+        invoker(invoker&&) = default;
+        invoker& operator=(invoker&&) = default;
 
         virtual _ReturnT invoke(_Args...) const = 0;
       };
@@ -159,17 +164,17 @@ namespace wtf {
       template<typename _LambdaT>
       class lamdba_invoker : public invoker {
       public:
-        ~lamdba_invoker() override = default;
+        ~lamdba_invoker() = default;
 
         _ReturnT invoke(_Args...oArgs) const override { _Lambda(std::forward<_Args>(oArgs)...); }
 
-        explicit lamdba_invoker(_LambdaT oLambda) : _Lambda(oLambda) {}
+        explicit lamdba_invoker(_LambdaT oLambda) noexcept : _Lambda(oLambda) {}
 
-        lamdba_invoker(lamdba_invoker &&src) : _Lambda(std::move(src._Lambda)) {}
+        lamdba_invoker(lamdba_invoker &&src) noexcept : _Lambda(std::move(src._Lambda)) {}
 
-        lamdba_invoker(const lamdba_invoker &src) : _Lambda(src._Lambda) {}
+        lamdba_invoker(const lamdba_invoker &src) noexcept : _Lambda(src._Lambda) {}
 
-        lamdba_invoker &operator=(const lamdba_invoker &src) {
+        lamdba_invoker &operator=(const lamdba_invoker &src) noexcept {
           if (this != &src) {
             _Lambda = src._Lambda;
           }
@@ -190,11 +195,11 @@ namespace wtf {
 
         member_invoker &operator=(const member_invoker &) = delete;
 
-        member_invoker(member_invoker &&oSrc) : _dest(oSrc._dest) {}
+        member_invoker(member_invoker &&oSrc) noexcept : _dest(oSrc._dest) {}
 
-        member_invoker(const member_invoker &oSrc) : _dest(oSrc._dest) {}
+        member_invoker(const member_invoker &oSrc) noexcept : _dest(oSrc._dest) {}
 
-        explicit member_invoker(_DestT *dest) : _dest(dest) {}
+        explicit member_invoker(_DestT *dest) noexcept : _dest(dest) {}
 
         _ReturnT invoke(_Args...oArgs) const override { (_dest->*_member)(oArgs...); }
 
@@ -210,9 +215,14 @@ namespace wtf {
 
       callback(const callback &) = delete;
 
-      callback(callback &&src) : _Invokers(std::move(src._Invokers)) {}
+      callback(callback &&src) noexcept : _Invokers(std::move(src._Invokers)) {}
 
       callback &operator=(const callback &) = delete;
+
+      callback &operator=(callback&& src) noexcept {
+        std::swap(_Invokers, src._Invokers);
+        return *this;
+      }
 
       void operator()(_Args...oArgs) const {
         for (auto &oInvoker : _Invokers) {
@@ -221,10 +231,10 @@ namespace wtf {
       }
 
       template<typename _ClassT, _ReturnT(_ClassT::*_MemberT)(_Args...)>
-      void connect(_ClassT *pClass) { _Invokers.emplace_back(new member_invoker<_ClassT, _MemberT>(pClass)); }
+      void connect(_ClassT *pClass) { _Invokers.emplace_back(std::make_unique<member_invoker<_ClassT, _MemberT>>(pClass)); }
 
       template<typename method>
-      void connect(method oMethod) { _Invokers.emplace_back(new lamdba_invoker<method>(oMethod)); }
+      void connect(method oMethod) { _Invokers.emplace_back(std::make_unique<lamdba_invoker<method>>(oMethod)); }
 
       template<_ReturnT(*method)(_Args...)>
       void connect() { _Invokers.emplace_back(new method_invoker<void(_Args...), method>()); }

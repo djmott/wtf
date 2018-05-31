@@ -15,7 +15,7 @@ namespace wtf{
 
       }
     protected:
-      explicit wm_timer(window * pParent) : _SuperT(pParent){}
+      explicit wm_timer(window * pParent) noexcept : _SuperT(pParent){}
 
       virtual void on_wm_timer(UINT_PTR timer_id){ OnTimer(this, timer_id); }
 

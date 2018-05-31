@@ -11,7 +11,7 @@ namespace wtf{
       using _SuperT = std::runtime_error;
 
       template<typename _TestT, typename _ExprT>
-      static _TestT _throw_lasterr_if(_TestT test, const char *sfile, int line, const char *sTest, _ExprT expr){
+      static _TestT _throw_lasterr_if(_TestT test, const char *sfile, int line, const char *sTest, _ExprT expr) noexcept(false) {
         if (!expr(test)) return test; 
         throw exception(sfile, line, sTest, GetLastError());        
       }
@@ -34,7 +34,7 @@ namespace wtf{
 
       exception(const exception& src) 
         : runtime_error(src), _file(src._file), _code(src._code), _what(src._what), _line(src._line){}
-      exception(exception&& src) 
+      exception(exception&& src) noexcept
         : runtime_error(std::move(src)), _file(std::move(src._file)), _code(std::move(src._code)), 
         _what(std::move(src._what)), _line(src._line){}
 
@@ -48,7 +48,7 @@ namespace wtf{
         return *this;
       }
 
-      exception& operator=(exception&& src){
+      exception& operator=(exception&& src) noexcept {
         if (&src == this) return *this;
         runtime_error::operator=(std::move(src));
         _file = std::move(src._file);
@@ -58,16 +58,16 @@ namespace wtf{
         return *this;
       }
 
-      const char *file() const{ return _file.c_str(); }
+      const char *file() const noexcept { return _file.c_str(); }
 
-      int line() const{ return _line; }
+      int line() const noexcept { return _line; }
 
-      const char *code() const{ return _code.c_str(); }
+      const char *code() const noexcept { return _code.c_str(); }
 
     #if defined(__MINGW)
-      virtual char const* what() const noexcept{ return _what.c_str(); }
+      char const* what() const noexcept{ return _what.c_str(); }
     #elif defined(_MSC_VER)
-      virtual char const* what() const{ return _what.c_str(); }
+      char const* what() const override { return _what.c_str(); }
     #endif
 
     private:

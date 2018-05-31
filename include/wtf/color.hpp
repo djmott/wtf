@@ -39,23 +39,27 @@ namespace wtf {
     };
 
     struct rgb {
-      COLORREF operator*() const { return _colorref; }
+      COLORREF operator*() const noexcept { return _colorref; }
 
-      operator COLORREF() const { return _colorref; }
+      operator COLORREF() const noexcept { return _colorref; }
 
-      uint8_t red() const { return static_cast<uint8_t>(_colorref & 0xff); }
+      uint8_t red() const noexcept { return static_cast<uint8_t>(_colorref & 0xff); }
 
-      uint8_t green() const { return static_cast<uint8_t>((_colorref & 0xff00) >> 8); }
+      uint8_t green() const noexcept { return static_cast<uint8_t>((_colorref & 0xff00) >> 8); }
 
-      uint8_t blue() const { return static_cast<uint8_t>((_colorref & 0xff0000) >> 16); }
+      uint8_t blue() const noexcept { return static_cast<uint8_t>((_colorref & 0xff0000) >> 16); }
 
-      rgb(uint8_t r, uint8_t g, uint8_t b) : _colorref(RGB(r, g, b)) {}
+      rgb() = default;
+      ~rgb() = default;
+      rgb& operator=(rgb&&) = default;
+      rgb(rgb&&) = default;
+      rgb(uint8_t r, uint8_t g, uint8_t b) noexcept : _colorref(RGB(r, g, b)) {}
 
-      explicit rgb(COLORREF newval) : _colorref(newval) {}
+      explicit rgb(COLORREF newval) noexcept : _colorref(newval) {}
 
-      rgb(const rgb &src) : _colorref(src._colorref) {}
+      rgb(const rgb &src) noexcept : _colorref(src._colorref) {}
 
-      rgb &operator=(const rgb &src) {
+      rgb &operator=(const rgb &src) noexcept {
         _colorref = src._colorref;
         return *this;
       }
@@ -66,16 +70,16 @@ namespace wtf {
 
     template<system_colors _id>
     struct system_rgb : rgb {
-      system_rgb() : rgb(GetSysColor(static_cast<int>(_id))) {}
+      system_rgb() noexcept : rgb(GetSysColor(static_cast<int>(_id))) {}
     };
 
     template<uint8_t _r, uint8_t _g, uint8_t _b>
     struct static_rgb : rgb {
-      static_rgb() : rgb(RGB(_r, _g, _b)) {}
+      static_rgb() noexcept : rgb(RGB(_r, _g, _b)) {}
     };
 
     struct dynamic_rgb : rgb {
-      dynamic_rgb(uint8_t _r, uint8_t _g, uint8_t _b) : rgb(RGB(_r, _g, _b)) {}
+      dynamic_rgb(uint8_t _r, uint8_t _g, uint8_t _b) noexcept : rgb(RGB(_r, _g, _b)) {}
     };
 
   }

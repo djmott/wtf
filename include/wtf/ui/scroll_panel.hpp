@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 
 namespace wtf{
@@ -20,7 +23,7 @@ namespace wtf{
 
       static const int scrollbar_size = 20;
 
-      explicit isa_scroll_panel(window * pParent) : _SuperT(pParent), _client(this), _hscroll(this), _vscroll(this){
+      explicit isa_scroll_panel(window * pParent)  noexcept : _SuperT(pParent), _client(this), _hscroll(this), _vscroll(this){
         _hscroll.orientation(orientations::horizontal);
         _vscroll.orientation(orientations::vertical);
       }
@@ -60,7 +63,7 @@ namespace wtf{
   class vscroll_panel : public window_impl<vscroll_panel, policy::isa_scroll_panel> {
     using __super_t = window_impl<vscroll_panel, policy::isa_scroll_panel>;
   public:
-    vscroll_panel(window * parent) : __super_t(parent) {}
+    vscroll_panel(window * parent) noexcept : __super_t(parent) {}
 
   };
 

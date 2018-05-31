@@ -13,7 +13,7 @@ namespace wtf{
     template <typename _SuperT>
     struct has_border :  _SuperT{
 
-      virtual int border_width() const{
+      virtual int border_width() const noexcept {
         switch (_border_style){
           case border_styles::none: return 0;
           case border_styles::flat:
@@ -22,37 +22,37 @@ namespace wtf{
           default: return 2;
         }
       }
-      virtual const rgb& border_highlight() const{ return _border_highlight; }
-      virtual void border_highlight(const rgb& newval){
+      virtual const rgb& border_highlight() const noexcept { return _border_highlight; }
+      virtual void border_highlight(const rgb& newval) {
         _border_highlight = newval;
         refresh_border();
       }
 
-      virtual const rgb& border_shadow() const{ return _border_shadow; }
-      virtual void border_shadow(const rgb& newval){
+      virtual const rgb& border_shadow() const noexcept { return _border_shadow; }
+      virtual void border_shadow(const rgb& newval) {
         _border_shadow = newval;
         refresh_border();
       }
 
-      virtual border_styles border_style() const{ return _border_style; }
-      virtual void border_style(border_styles newval){
+      virtual border_styles border_style() const noexcept { return _border_style; }
+      virtual void border_style(border_styles newval) {
         _border_style = newval;
         refresh_border();
       }
 
-      virtual void enable_border_elements(bool top, bool right, bool bottom, bool left){
+      virtual void enable_border_elements(bool top, bool right, bool bottom, bool left) noexcept {
         _draw_top = top; _draw_left = left; _draw_right = right; _draw_bottom = bottom;
       }
 
     protected:
 
-      explicit has_border(window * pParent) : _SuperT(pParent){}
+      explicit has_border(window * pParent) noexcept : _SuperT(pParent){}
 
-      void refresh_border(){
+      void refresh_border()  {
         if (!_SuperT::_handle) return;
         wtf::exception::throw_lasterr_if(
           ::RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_NOCHILDREN),
-          [](BOOL b){ return !b; }
+          [](BOOL b)noexcept { return !b; }
         );
       }
 
@@ -68,7 +68,7 @@ namespace wtf{
         return _SuperT::on_wm_ncpaint(dc, oClient);
       }
 
-      LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS * pSizes) override{
+      LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS * pSizes) noexcept override {
         pSizes->rgrc[0].top += border_width();
         pSizes->rgrc[0].left += border_width();
         pSizes->rgrc[0].bottom -= border_width();

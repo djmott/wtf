@@ -10,7 +10,7 @@ namespace wtf{
     template <typename _SuperT>
     struct isa_toggle_button : _SuperT{
 
-      bool value() const{ return _value; }
+      bool value() const noexcept { return _value; }
       void value(bool newval){
         if (newval == _value) return;
         _value = newval;
@@ -20,7 +20,7 @@ namespace wtf{
 
     protected:
 
-      explicit isa_toggle_button(window * pParent) : _SuperT(pParent){}
+      explicit isa_toggle_button(window * pParent) noexcept : _SuperT(pParent){}
       
       void on_wm_create() override{
         _SuperT::border_style(border_styles::raised);
@@ -50,7 +50,7 @@ namespace wtf{
 
 
   struct toggle_button : window_impl<toggle_button, policy::isa_toggle_button>{
-    explicit toggle_button(window * pParent) : window_impl(pParent){}
+    explicit toggle_button(window * pParent) noexcept : window_impl(pParent){}
   };
 
 }

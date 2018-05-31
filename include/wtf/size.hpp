@@ -6,9 +6,9 @@
 namespace wtf {
 
     struct size : SIZE {
-      size() { cx = cy = 0; }
+      size() noexcept { cx = cy = 0; }
 
-      size(int x, int y) {
+      size(int x, int y) noexcept {
         cx = x;
         cy = y;
       }

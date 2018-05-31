@@ -16,35 +16,38 @@ namespace wtf{
     template<typename _Ty>
     struct weak_enum{
 
-      explicit weak_enum(_Ty init) : value(init){}
+      ~weak_enum() = default;
+      weak_enum(weak_enum&&) = default;
+      weak_enum& operator=(weak_enum&&) = default;
+      explicit weak_enum(_Ty init) noexcept : value(init){}
 
-      weak_enum(const weak_enum &src) : value(src.value){}
+      weak_enum(const weak_enum &src) noexcept : value(src.value){}
 
-      weak_enum() : value(static_cast<_Ty>(0)){}
+      weak_enum() noexcept : value(static_cast<_Ty>(0)){}
 
-      operator _Ty() const{ return value; }
+      operator _Ty() const noexcept { return value; }
 
-      _Ty operator()() const{ return value; }
+      _Ty operator()() const noexcept { return value; }
 
-      operator _Ty &(){ return value; }
+      operator _Ty &() noexcept { return value; }
 
-      operator const _Ty &() const{ return value; }
+      operator const _Ty &() const noexcept { return value; }
 
-      _Ty &operator*(){ return value; }
+      _Ty &operator*() noexcept { return value; }
 
-      const _Ty &operator*() const{ return value; }
+      const _Ty &operator*() const noexcept { return value; }
 
-      weak_enum &operator=(_Ty newval){
+      weak_enum &operator=(_Ty newval) noexcept {
         value = newval;
         return *this;
       }
 
-      weak_enum &operator=(const weak_enum &src){
+      weak_enum &operator=(const weak_enum &src) noexcept {
         value = src.value;
         return *this;
       }
 
-      weak_enum &operator|=(_Ty newval){
+      weak_enum &operator|=(_Ty newval) noexcept {
         value = static_cast<_Ty>(
           static_cast<uint64_t>(value) |
           static_cast<uint64_t>(newval)
@@ -52,20 +55,20 @@ namespace wtf{
         return *this;
       }
 
-      bool operator&(_Ty val) const{
+      bool operator&(_Ty val) const noexcept {
         return (static_cast<uint64_t>(value) & static_cast<uint64_t>(val)) ? true : false;
       }
 
-      static _Ty set_flags(){ return static_cast<_Ty>(0); }
+      static _Ty set_flags() noexcept { return static_cast<_Ty>(0); }
 
       template<typename..._TailT>
-      static _Ty set_flags(_Ty head, _TailT &&...tail){
+      static _Ty set_flags(_Ty head, _TailT &&...tail) noexcept {
         auto vhead = static_cast<uint64_t>(head);
         auto vtail = static_cast<uint64_t>(set_flags(std::forward<_TailT>(tail)...));
         return static_cast<_Ty>(vhead | vtail);
       }
 
-      template <typename _OtherT> _OtherT as() const{ return static_cast<_OtherT>(value); }
+      template <typename _OtherT> _OtherT as() const noexcept { return static_cast<_OtherT>(value); }
 
     private:
       _Ty value;

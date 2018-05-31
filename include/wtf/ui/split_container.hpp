@@ -12,7 +12,7 @@ namespace wtf{
 
     public:
 
-      splitter(window * pParent) : _SuperT(pParent){}
+      splitter(window * pParent) noexcept : _SuperT(pParent){}
 
       callback<void(const point<coord_frame::client>&)> OnMoved;
 
@@ -77,7 +77,7 @@ namespace wtf{
         _SuperT::move(oSize.left, oSize.top, oSize.right, oSize.bottom);
       }
 
-      void orientation(orientations newval) override{
+      void orientation(orientations newval) noexcept override{
         _splitter.orientation(newval);
         _SuperT::orientation(newval);
       }
@@ -118,7 +118,7 @@ namespace wtf{
 
       class size_bar : public splitter{
       public:
-        size_bar(isa_split_container * pParent) : splitter(pParent), _parent(pParent) {}
+        size_bar(isa_split_container * pParent)  noexcept : splitter(pParent), _parent(pParent) {}
 
         void size_bar_moved(const point<coord_frame::client>& pos) override{
           _parent->size_bar_moved(pos);
@@ -146,7 +146,7 @@ namespace wtf{
   }
 
   struct split_container : window_impl<split_container, policy::isa_split_container>{
-    explicit split_container(window * pParent) : window_impl(pParent){}
+    explicit split_container(window * pParent) noexcept : window_impl(pParent){}
   };
 
 

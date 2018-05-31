@@ -6,20 +6,20 @@
 namespace wtf{
   namespace _{
     struct message : MSG{
-      bool get(HWND hWnd = 0, UINT msgmin = 0, UINT msgmax = 0){
+      bool get(HWND hWnd = 0, UINT msgmin = 0, UINT msgmax = 0)  {
         return (exception::throw_lasterr_if(
-          ::GetMessage(this, hWnd, msgmin, msgmax), [](BOOL b){ return -1 == b; }
+          ::GetMessage(this, hWnd, msgmin, msgmax), [](BOOL b)noexcept { return -1 == b; }
         ) ? true : false);
       }
 
-      void translate() const{ ::TranslateMessage(this); }
+      void translate() const noexcept { ::TranslateMessage(this); }
 
-      void dispatch() const{ ::DispatchMessage(this); }
+      void dispatch() const noexcept { ::DispatchMessage(this); }
 
-      bool peek(HWND hWnd = 0, UINT msgmin = 0, UINT msgmax = 0, UINT remove = PM_NOREMOVE){
+      bool peek(HWND hWnd = 0, UINT msgmin = 0, UINT msgmax = 0, UINT remove = PM_NOREMOVE) noexcept {
         return ::PeekMessage(this, hWnd, msgmin, msgmax, remove) ? true : false;
       }
-      bool peek(HWND hwnd, UINT msg, bool remove){
+      bool peek(HWND hwnd, UINT msg, bool remove) noexcept {
         return ::PeekMessage(this, hwnd, msg, msg, remove ? PM_REMOVE : PM_NOREMOVE) ? true : false;
       }
 

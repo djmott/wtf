@@ -17,7 +17,7 @@ namespace wtf{
         return _titlebar;
       }
 
-      void titlebar(const tstring& newval){
+      void titlebar(const tstring& newval)  {
         wtf::exception::throw_lasterr_if(::SetWindowText(*this, newval.c_str()), [](BOOL b){ return !b; });
         _titlebar = newval;
       }

@@ -1,3 +1,6 @@
+/** @file
+@copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
+*/
 #pragma once
 namespace wtf{
 
@@ -23,7 +26,7 @@ namespace wtf{
 
     struct effects{
 
-      static void draw_arrow(const wtf::_::device_context& dc, const rect<coord_frame::client>& oclient, quadrants direction, pen& outline, brush& fill){
+      static void draw_arrow(const wtf::_::device_context& dc, const rect<coord_frame::client>& oclient, quadrants direction, pen& outline, brush& fill) {
         point<coord_frame::client>::vector arrow(3);
 
         switch (direction){

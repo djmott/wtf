@@ -1,4 +1,3 @@
-
 /** @file
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
@@ -18,7 +17,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_click(window * pParent) : _SuperT(pParent){}
+      explicit has_click(window * pParent) noexcept : _SuperT(pParent){}
 
       virtual void on_wm_click(const mouse_msg_param<coord_frame::client>& p){ OnClick(this, p); }
 

@@ -9,16 +9,16 @@ namespace wtf{
     template <typename _SuperT>
     struct has_invalidate : _SuperT{
       
-      void invalidate(bool EraseBackground = true){
+      void invalidate(bool EraseBackground = true)  {
         if (_SuperT::_handle) {
           wtf::exception::throw_lasterr_if(
             ::InvalidateRect(_SuperT::_handle, nullptr, (EraseBackground ? TRUE : FALSE)),
-                                           [](BOOL b){ return !b; });
+                                           [](BOOL b)noexcept { return !b; });
         }
       }
 
     protected:
-      explicit has_invalidate(window * pParent) : _SuperT(pParent){}
+      explicit has_invalidate(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

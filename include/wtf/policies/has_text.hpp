@@ -25,32 +25,32 @@ namespace wtf{
     template <typename _SuperT>
     struct has_text : _SuperT{
 
-      virtual bool multiline() const{ return _multiline; }
+      virtual bool multiline() const noexcept { return _multiline; }
       virtual void multiline(bool newval){ 
         _multiline = newval; 
         if (_auto_draw_text) _SuperT::invalidate();
       }
 
-      bool word_wrap() const{ return _word_wrap; }
+      bool word_wrap() const noexcept { return _word_wrap; }
       void word_wrap(bool newval){ 
         _word_wrap = newval; 
         if (_auto_draw_text) _SuperT::invalidate();
       }
 
-      virtual const tstring &text() const { return _text; }
-      virtual tstring &text() { return _text; }
+      virtual const tstring &text() const noexcept { return _text; }
+      virtual tstring &text() noexcept { return _text; }
       virtual void text(const tstring &newval){
         _text = newval;
         if (_auto_draw_text) _SuperT::invalidate();
       }
 
-      virtual text_vertical_alignments text_vertical_alignment() const{ return _text_vertical_alignment; }
+      virtual text_vertical_alignments text_vertical_alignment() const noexcept { return _text_vertical_alignment; }
       virtual void text_vertical_alignment(text_vertical_alignments newval){ 
         _text_vertical_alignment = newval; 
         if (_auto_draw_text) _SuperT::invalidate();
       }
 
-      virtual text_horizontal_alignments text_horizontal_alignment() const{ return _text_horizontal_alignment; }
+      virtual text_horizontal_alignments text_horizontal_alignment() const noexcept { return _text_horizontal_alignment; }
       virtual void text_horizontal_alignment(text_horizontal_alignments newval){ 
         _text_horizontal_alignment = newval; 
         if (_auto_draw_text) _SuperT::invalidate();
@@ -67,13 +67,13 @@ namespace wtf{
 
       explicit has_text(window * pParent) : _SuperT(pParent){}
 
-      virtual bool auto_draw_text() const{ return _auto_draw_text; }
-      virtual void auto_draw_text(bool newval){ _auto_draw_text = newval; }
+      virtual bool auto_draw_text() const noexcept { return _auto_draw_text; }
+      virtual void auto_draw_text(bool newval) noexcept { _auto_draw_text = newval; }
 
-      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client, const tstring& str, int length){
+      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client, const tstring& str, int length)  {
         if (!length) return;
         wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
-                                         [](UINT i){ return GDI_ERROR == i; });
+                                         [](UINT i)noexcept { return GDI_ERROR == i; });
 
         UINT format = (multiline() ? 0 : DT_SINGLELINE) | (word_wrap() ? DT_WORDBREAK : 0);
         switch (text_vertical_alignment()){
@@ -95,18 +95,18 @@ namespace wtf{
 
         rect<coord_frame::client> oClient = client;
 
-        wtf::exception::throw_lasterr_if(::DrawText(dc, str.c_str(), length, &oClient, format), [](int i){ return 0==i; });
+        wtf::exception::throw_lasterr_if(::DrawText(dc, str.c_str(), length, &oClient, format), [](int i)noexcept { return 0==i; });
       }
 
-      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client, const tstring& str) {
+      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client, const tstring& str)  {
         draw_text(dc, client, str, static_cast<int>(str.size()));
       }
 
-      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client){
+      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client)  {
         draw_text(dc, client, text());
       }
 
-      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
+      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps)  override{
         if (_auto_draw_text) draw_text(dc, ps.client(), text());
         _SuperT::on_wm_paint(dc, ps);
       }

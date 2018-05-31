@@ -23,9 +23,9 @@ namespace wtf{
 
     protected:
 
-      virtual void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps){ }
+      virtual void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps)  { }
 
-      explicit wm_paint(window * pParent) : _SuperT(pParent){}
+      explicit wm_paint(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

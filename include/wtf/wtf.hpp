@@ -9,9 +9,9 @@
   #define __WTF_DEBUG_MESSAGES__ 0
 #endif
 
+#include <tchar.h>
 #include <Windows.h>
 #include <windowsx.h>
-#include <tchar.h>
 
 #include <algorithm>
 #include <stdexcept>
@@ -57,18 +57,18 @@ namespace wtf {
   Hidden namespace for internal structures and algorithms not for external consumption
   */
   namespace _ {
-    static std::mutex& _active_forms_lock() {
+    static std::mutex& _active_forms_lock() noexcept {
       static std::mutex _forms_lock;
       return _forms_lock;
     }
 
-    static std::vector<const window*>& _active_forms() {
+    static std::vector<const window*>& _active_forms() noexcept {
       static std::vector<const window*> _forms;
       return _forms;
     }
 
     extern "C" HINSTANCE__ __ImageBase;
-    inline static HINSTANCE instance_handle(){ return &__ImageBase; }
+    inline static constexpr HINSTANCE instance_handle() noexcept { return &__ImageBase; }
 
     template <typename, int> struct to_tstring_impl;
 
@@ -95,7 +95,7 @@ namespace wtf {
   */
   namespace policy{}
 
-  static const std::vector<const window*>& active_forms() { return _::_active_forms(); }
+  static const std::vector<const window*>& active_forms()  noexcept { return _::_active_forms(); }
 
 
 }

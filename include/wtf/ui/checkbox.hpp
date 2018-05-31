@@ -67,7 +67,7 @@ namespace wtf{
           __super_t::on_wm_paint(dc, ps);
         }
 
-        bool value() const{ return _value; }
+        bool value() const noexcept { return _value; }
         void value(bool newval){
           _value = newval;
           __super_t::border_style(newval ? border_styles::lowered : border_styles::raised);
@@ -89,7 +89,7 @@ namespace wtf{
   }
 
   struct checkbox : window_impl<checkbox, policy::isa_checkbox>{
-    explicit checkbox(window * pParent) : window_impl(pParent){}
+    explicit checkbox(window * pParent) noexcept : window_impl(pParent){}
   };
 
 }

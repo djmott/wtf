@@ -16,23 +16,26 @@ namespace wtf {
         inside_frame = PS_INSIDEFRAME,
       };
 
-      static pen create(style Style, int width, COLORREF color) {
+      static pen create(style Style, int width, COLORREF color)  {
         return pen(
-          wtf::exception::throw_lasterr_if(CreatePen(static_cast<int>(Style), width, color), [](HPEN p) { return !p; }),
-          [](HPEN p) { ::DeleteObject(p); });
+          wtf::exception::throw_lasterr_if(CreatePen(static_cast<int>(Style), width, color), [](HPEN p) noexcept { return !p; }),
+          [](HPEN p) noexcept { ::DeleteObject(p); });
       }
 
-      static pen create(style Style, int width, system_colors color) {
+      static pen create(style Style, int width, system_colors color)  {
         return pen(wtf::exception::throw_lasterr_if(
-          CreatePen(static_cast<int>(Style), width, GetSysColor(static_cast<int>(color))), [](HPEN p) { return !p; }),
-                   [](HPEN p) { ::DeleteObject(p); });
+          CreatePen(static_cast<int>(Style), width, GetSysColor(static_cast<int>(color))), [](HPEN p) noexcept { return !p; }),
+                   [](HPEN p) noexcept { ::DeleteObject(p); });
       }
 
-      pen(pen &&src) : shared_ptr(std::move(src)) {}
+      pen() = delete;
+      ~pen() = default;
 
-      operator HPEN() const { return get(); }
+      pen(pen &&src) noexcept : shared_ptr(std::move(src)) {}
 
-      pen &operator=(pen &&src) {
+      operator HPEN() const noexcept { return get(); }
+
+      pen &operator=(pen &&src) noexcept {
         shared_ptr::swap(src);
         return *this;
       }
@@ -42,7 +45,7 @@ namespace wtf {
 
     protected:
       template<typename ... _ArgTs>
-      pen(_ArgTs...oArgs) : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
+      pen(_ArgTs...oArgs)  : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
     };
   }
 

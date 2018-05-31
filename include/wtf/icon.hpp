@@ -16,38 +16,41 @@ namespace wtf {
         shield = 32518,
       };
 
-      static icon from_system(system_icons Style) {
+      static icon from_system(system_icons Style)  {
         return icon(
-          wtf::exception::throw_lasterr_if(::LoadIcon(nullptr, MAKEINTRESOURCE(Style)), [](HICON h) { return !h; }),
-          [](HICON) {});
+          wtf::exception::throw_lasterr_if(::LoadIcon(nullptr, MAKEINTRESOURCE(Style)), [](HICON h) noexcept { return !h; }),
+          [](HICON) noexcept {});
       }
 
-      static icon from_resource(LPCTSTR ResourceName){
+      static icon from_resource(LPCTSTR ResourceName)  {
         return icon(
-          wtf::exception::throw_lasterr_if(::LoadIcon(_::instance_handle(), ResourceName), [](HICON h){ return !h; }),
-          [](HICON){});
+          wtf::exception::throw_lasterr_if(::LoadIcon(_::instance_handle(), ResourceName), [](HICON h) noexcept { return !h; }),
+          [](HICON)noexcept {});
       }
-      static icon from_resource(int ResourceID){
+      static icon from_resource(int ResourceID)  {
         return icon(
-          wtf::exception::throw_lasterr_if(::LoadIcon(_::instance_handle(), MAKEINTRESOURCE(ResourceID)), [](HICON h){ return !h; }),
-          [](HICON){});
+          wtf::exception::throw_lasterr_if(::LoadIcon(_::instance_handle(), MAKEINTRESOURCE(ResourceID)), [](HICON h) noexcept { return !h; }),
+          [](HICON)noexcept {});
       }
+
+      icon() = delete;
+      ~icon() = default;
 
       icon(const icon&) = delete;
       icon &operator=(const icon &) = delete;
 
-      icon(icon &&src) : shared_ptr(std::move(src)) {}
+      icon(icon &&src) noexcept : shared_ptr(std::move(src)) {}
 
-      icon &operator=(icon &&src) {
+      icon &operator=(icon &&src) noexcept {
         shared_ptr::swap(src);
         return *this;
       }
 
-      operator HICON() const { return get(); }
+      operator HICON() const noexcept { return get(); }
 
     protected:
       template<typename ... _ArgTs>
-      icon(_ArgTs &&...oArgs) : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
+      icon(_ArgTs &&...oArgs)  : shared_ptr(std::forward<_ArgTs>(oArgs)...) {}
     };
   }
 

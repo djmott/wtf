@@ -25,7 +25,7 @@ namespace wtf{
         else OnDisable(this);
       }
 
-      explicit wm_enable(window * pParent) : _SuperT(pParent){}
+      explicit wm_enable(window * pParent) noexcept : _SuperT(pParent){}
 
 
     };

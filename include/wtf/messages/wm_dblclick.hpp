@@ -25,7 +25,7 @@ namespace wtf{
     protected:
       virtual void on_wm_dblclick(const mouse_msg_param<coord_frame::client>& p){ OnDblClick(this, p); }
 
-      explicit wm_dblclick(window * pParent) : _SuperT(pParent){}
+      explicit wm_dblclick(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

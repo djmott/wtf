@@ -24,9 +24,9 @@ namespace wtf{
 
     protected:
 
-      explicit has_cursor(window * pParent) : _SuperT(pParent){}
+      explicit has_cursor(window * pParent) noexcept : _SuperT(pParent){}
 
-      void on_wm_setcursor(wm_nchittest_flags flags) override{
+      void on_wm_setcursor(wm_nchittest_flags flags)  override{
         switch (flags){
           case wm_nchittest_flags::top:
           case wm_nchittest_flags::bottom:
