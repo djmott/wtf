@@ -24,12 +24,12 @@ namespace wtf {
 
       static icon from_resource(LPCTSTR ResourceName)  {
         return icon(
-          wtf::exception::throw_lasterr_if(::LoadIcon(_::instance_handle(), ResourceName), [](HICON h) noexcept { return !h; }),
+          wtf::exception::throw_lasterr_if(::LoadIcon(instance_handle(), ResourceName), [](HICON h) noexcept { return !h; }),
           [](HICON)noexcept {});
       }
       static icon from_resource(int ResourceID)  {
         return icon(
-          wtf::exception::throw_lasterr_if(::LoadIcon(_::instance_handle(), MAKEINTRESOURCE(ResourceID)), [](HICON h) noexcept { return !h; }),
+          wtf::exception::throw_lasterr_if(::LoadIcon(instance_handle(), MAKEINTRESOURCE(ResourceID)), [](HICON h) noexcept { return !h; }),
           [](HICON)noexcept {});
       }
 

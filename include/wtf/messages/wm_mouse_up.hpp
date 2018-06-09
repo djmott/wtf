@@ -6,21 +6,23 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT>
-    struct wm_mouse_up : _SuperT{
+    template <typename _super_t>
+    struct wm_mouse_up : _super_t{
 
       callback<void(window *, const mouse_msg_param<coord_frame::client>&)> OnMouseUp;
+
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+
+      virtual void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& param){ OnMouseUp(this, param); }
+
+      explicit wm_mouse_up(window * pParent) noexcept : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_LBUTTONUP == msg.umsg) on_wm_mouse_up(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::left));
         else if (WM_MBUTTONUP == msg.umsg) on_wm_mouse_up(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::middle));
         else if (WM_RBUTTONUP == msg.umsg) on_wm_mouse_up(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::right));
       }
-
-    protected:
-      virtual void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& param){ OnMouseUp(this, param); }
-
-      explicit wm_mouse_up(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

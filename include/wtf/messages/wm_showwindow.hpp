@@ -6,8 +6,8 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT>
-    struct wm_showwindow : _SuperT{
+    template <typename _super_t>
+    struct wm_showwindow : _super_t{
 
       enum class visibility_change_flag{
         show_window = 0,
@@ -19,15 +19,17 @@ namespace wtf{
 
       callback<void(window * sender, visibility_change_flag)> OnShow;
 
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+
+      explicit wm_showwindow(window * pParent) : _super_t(pParent){}
+
+      virtual void on_wm_showwindow(visibility_change_flag f){ OnShow(this, f); }
+
       void handle_msg(wtf::window_message& msg) override {
         if (WM_SHOWWINDOW == msg.umsg) on_wm_showwindow(static_cast<visibility_change_flag>(msg.lparam));
 
       }
-    protected:
-
-      explicit wm_showwindow(window * pParent) : _SuperT(pParent){}
-
-      virtual void on_wm_showwindow(visibility_change_flag f){ OnShow(this, f); }
 
     };
 

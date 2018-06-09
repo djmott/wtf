@@ -3,6 +3,7 @@
 using namespace wtf;
 
 struct frmMain : form {
+#if 0
   void ShowValues(int) {
     tstring sCaption = std::to_string(_hscroll.value()) + ":" + std::to_string(_vscroll.value());
     titlebar(sCaption);
@@ -20,8 +21,13 @@ struct frmMain : form {
     };
   }
   scroll_bar _hscroll, _vscroll;
+#endif
 };
 
+#if defined(__WTF_DEBUG_MESSAGES__)
+int main() {
+#else
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+#endif
   return frmMain().run();
 }

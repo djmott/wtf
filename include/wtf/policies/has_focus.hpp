@@ -9,16 +9,16 @@ namespace wtf{
     /** has_focus
     * Provides set_focus and got_focus
     */
-    template <typename _SuperT>
-    struct has_focus : _SuperT{
+    template <typename _super_t>
+    struct has_focus : _super_t{
 
       void set_focus() const  { wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h)noexcept { return !h; }); }
 
-      bool got_focus() const{ return _SuperT::_handle == ::GetFocus(); }
+      bool got_focus() const{ return _super_t::_handle == ::GetFocus(); }
 
     protected:
 
-      explicit has_focus(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_focus(window * pParent) noexcept : _super_t(pParent){}
 
     };
   }

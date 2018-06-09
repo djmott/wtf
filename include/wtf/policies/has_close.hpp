@@ -9,14 +9,14 @@ namespace wtf{
     /** has_close
     * Add close method
     */
-    template <typename _SuperT>
-    struct has_close :  _SuperT{
+    template <typename _super_t>
+    struct has_close :  _super_t{
 
       virtual void close() noexcept { CloseWindow(*this); }
 
     protected:
 
-      explicit has_close(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_close(window * pParent) noexcept : _super_t(pParent){}
 
     };
   }

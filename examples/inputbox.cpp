@@ -3,6 +3,7 @@
 using namespace wtf;
 
 struct frmMain : form {
+#if 0
 	frmMain() : form(), _inputbox(this) {
 		OnCreate += [this](...) {
 			_inputbox.text("Enter text here");
@@ -14,9 +15,13 @@ struct frmMain : form {
 	}
 
 	inputbox _inputbox;
-
+#endif
 };
 
+#if defined(__WTF_DEBUG_MESSAGES__)
+int main() {
+#else
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-	return frmMain().run();
+#endif
+  return frmMain().run();
 }

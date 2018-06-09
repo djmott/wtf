@@ -14,7 +14,7 @@ using namespace wtf;
 
 struct main_form : form {
   main_form(){}
-  void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override {
+  void on_wm_paint(const device_context& dc, const paint_struct& ps) override {
     tstring sTemp = "this\nis\na\ntest";
     RECT rc = ps.rcPaint;
     ::DrawText(dc, sTemp.c_str(), -1, &rc, DT_LEFT | DT_TOP);
@@ -415,14 +415,20 @@ struct main_form : form{
 
 #endif
 
-int main(){
-  try{
-    return main_form().exec();
+#if defined(__WTF_DEBUG_MESSAGES__)
+int main() {
+#else
+int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+#endif
+  try {
+    return main_form().run();
   }
-  catch (const wtf::exception& ex){
+  catch (const wtf::exception& ex) {
     std::cerr << ex.what() << std::endl << std::endl;
     std::cerr << ex.file() << "(" << ex.line() << ")" << std::endl << std::endl;
     std::cerr << ex.code();
     return -1;
   }
 }
+
+

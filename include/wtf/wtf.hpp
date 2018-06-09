@@ -12,6 +12,7 @@
 #include <tchar.h>
 #include <Windows.h>
 #include <windowsx.h>
+#include <CommCtrl.h>
 
 #include <algorithm>
 #include <stdexcept>
@@ -26,6 +27,7 @@
 #include <sstream>
 #include <mutex>
 #include <locale>
+#include <codecvt>
 #if (__WTF_DEBUG_MESSAGES__)
 #include <iostream>
 #endif
@@ -46,12 +48,13 @@ namespace wtf {
 
   struct window;
   
-
   /** @typedef tstring
-  Primary string representation based on stl. Can be either MULTIBYTE or UNICODE depending on compilation mode.
+  Primary string representation. Can be either MULTIBYTE or UNICODE depending on compilation mode.
   */
   using tstring = std::basic_string<TCHAR>;
 
+  extern "C" HINSTANCE__ __ImageBase;
+  inline static constexpr HINSTANCE instance_handle() noexcept { return &__ImageBase; }
 
   /** @namespace wtf::_
   Hidden namespace for internal structures and algorithms not for external consumption
@@ -67,16 +70,17 @@ namespace wtf {
       return _forms;
     }
 
-    extern "C" HINSTANCE__ __ImageBase;
-    inline static constexpr HINSTANCE instance_handle() noexcept { return &__ImageBase; }
 
-    template <typename, int> struct to_tstring_impl;
+    template <typename, typename> struct to_tstring_impl;
 
-    template <typename _Ty> struct to_tstring_impl<_Ty, sizeof(wchar_t)>{
+    template <typename _Ty> struct to_tstring_impl<_Ty, wchar_t>{
       static tstring get(const _Ty& value){ return std::to_wstring(value); }
     };
-    template <typename _Ty> struct to_tstring_impl<_Ty, sizeof(char)>{
-      static tstring get(const _Ty& value){ return std::to_string(value); }
+    template <typename _Ty> struct to_tstring_impl<_Ty, char> {
+      static tstring get(const _Ty& value) { return std::to_string(value); }
+    };
+    template <> struct to_tstring_impl<const char *, char> {
+      static tstring get(const char * value) { return tstring(value); }
     };
 
     template <template <class> class ... _policy_ts> struct policy_list;
@@ -88,7 +92,7 @@ namespace wtf {
   }
 
 
-  template <typename _Ty> static tstring to_tstring(_Ty value){ return _::to_tstring_impl<_Ty, sizeof(TCHAR)>::get(value); }
+  template <typename _Ty> static tstring to_tstring(_Ty value){ return _::to_tstring_impl<_Ty, TCHAR>::get(value); }
 
   /** @namespace wtf::policy
   Contains the behavioral policies
@@ -99,6 +103,8 @@ namespace wtf {
 
 
 }
+
+#define TODO(...)
 
 /**
 @defgroup UI Widgets
@@ -118,27 +124,27 @@ namespace wtf {
 #include "region.hpp"
 #include "font.hpp"
 
-#include "window_message.hpp"
-#include "window.hpp"
-
-#include "_/window_class_ex.hpp"
-#include "_/device_context.hpp"
+#include "window_class_ex.hpp"
+#include "device_context.hpp"
 #include "_/msg_names.hpp"
 #include "_/weak_enum.hpp"
 #include "_/text_metrics.hpp"
-#include "_/paint_struct.hpp"
+#include "paint_struct.hpp"
 #include "_/SystemParameters.hpp"
-#include "_/message.hpp"
-#include "_/policy_list.hpp"
+#include "message.hpp"
+//#include "_/policy_list.hpp"
 #include "_/effects.hpp"
 
+#include "window_message.hpp"
+#include "window.hpp"
 
-#include "window_impl.hpp"
+
 
 #include "messages/messages.hpp"
 #include "messages/wm_activate.hpp"
 #include "messages/wm_char.hpp"
 #include "messages/wm_close.hpp"
+#include "messages/wm_command.hpp"
 #include "messages/wm_create.hpp"
 #include "messages/wm_dblclick.hpp"
 #include "messages/wm_destroy.hpp"
@@ -208,3 +214,9 @@ namespace wtf {
 #include "ui/textbox.hpp"
 #include "ui/toggle_button.hpp"
 #include "ui/tree.hpp"
+
+#include "controls/policy/has_text.hpp"
+#include "controls/policy/has_font.hpp"
+#include "controls/button.hpp"
+#include "controls/combobox.hpp"
+

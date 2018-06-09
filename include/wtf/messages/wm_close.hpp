@@ -5,10 +5,17 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT>
-    struct wm_close : _SuperT{
+    template <typename _super_t>
+    struct wm_close : _super_t{
 
       callback<void(window * sender, bool& cancel)> OnClose;
+
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+
+      virtual void on_wm_close(bool& cancel){ OnClose(this, cancel); }
+
+      explicit wm_close(window * pParent) : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         bool cancel = false;
@@ -17,11 +24,6 @@ namespace wtf{
         if (cancel) msg.bhandled = true;
       }
 
-    protected:
-
-      virtual void on_wm_close(bool& cancel){ OnClose(this, cancel); }
-
-      explicit wm_close(window * pParent) : _SuperT(pParent){}
 
 
     };

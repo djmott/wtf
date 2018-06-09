@@ -3,6 +3,7 @@
 using namespace wtf;
 
 struct frmMain : form {
+#if 0
   frmMain() : form(), _tree(this){
 
     _tree.OnItemSelected += [this](tree::item::pointer oItem) {
@@ -28,8 +29,13 @@ struct frmMain : form {
     };
   }
   tree _tree;
+#endif
 };
 
+#if defined(__WTF_DEBUG_MESSAGES__)
+int main() {
+#else
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+#endif
   return frmMain().run();
 }

@@ -22,55 +22,55 @@ namespace wtf{
     /** has_text
     * provides members to draw text on UI elements
     */
-    template <typename _SuperT>
-    struct has_text : _SuperT{
+    template <typename _super_t>
+    struct has_text : _super_t{
 
       virtual bool multiline() const noexcept { return _multiline; }
       virtual void multiline(bool newval){ 
         _multiline = newval; 
-        if (_auto_draw_text) _SuperT::invalidate();
+        if (_auto_draw_text) _super_t::invalidate();
       }
 
       bool word_wrap() const noexcept { return _word_wrap; }
       void word_wrap(bool newval){ 
         _word_wrap = newval; 
-        if (_auto_draw_text) _SuperT::invalidate();
+        if (_auto_draw_text) _super_t::invalidate();
       }
 
       virtual const tstring &text() const noexcept { return _text; }
       virtual tstring &text() noexcept { return _text; }
       virtual void text(const tstring &newval){
         _text = newval;
-        if (_auto_draw_text) _SuperT::invalidate();
+        if (_auto_draw_text) _super_t::invalidate();
       }
 
       virtual text_vertical_alignments text_vertical_alignment() const noexcept { return _text_vertical_alignment; }
       virtual void text_vertical_alignment(text_vertical_alignments newval){ 
         _text_vertical_alignment = newval; 
-        if (_auto_draw_text) _SuperT::invalidate();
+        if (_auto_draw_text) _super_t::invalidate();
       }
 
       virtual text_horizontal_alignments text_horizontal_alignment() const noexcept { return _text_horizontal_alignment; }
       virtual void text_horizontal_alignment(text_horizontal_alignments newval){ 
         _text_horizontal_alignment = newval; 
-        if (_auto_draw_text) _SuperT::invalidate();
+        if (_auto_draw_text) _super_t::invalidate();
       }
 
 
       virtual size prefered_text_size() const{
-        auto dc = wtf::_::device_context::get_client(*this);
-        auto hFont = _SuperT::font().open();
+        auto dc = device_context::get_client(*this);
+        auto hFont = _super_t::font().open();
         dc.select_object(hFont);
         return dc.get_text_extent(_text);
       }
     protected:
 
-      explicit has_text(window * pParent) : _SuperT(pParent){}
+      explicit has_text(window * pParent) : _super_t(pParent){}
 
       virtual bool auto_draw_text() const noexcept { return _auto_draw_text; }
       virtual void auto_draw_text(bool newval) noexcept { _auto_draw_text = newval; }
 
-      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client, const tstring& str, int length)  {
+      virtual void draw_text(const device_context& dc, const rect<coord_frame::client>& client, const tstring& str, int length)  {
         if (!length) return;
         wtf::exception::throw_lasterr_if(::SetTextAlign(dc, TA_LEFT | TA_TOP | TA_NOUPDATECP),
                                          [](UINT i)noexcept { return GDI_ERROR == i; });
@@ -98,17 +98,17 @@ namespace wtf{
         wtf::exception::throw_lasterr_if(::DrawText(dc, str.c_str(), length, &oClient, format), [](int i)noexcept { return 0==i; });
       }
 
-      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client, const tstring& str)  {
+      virtual void draw_text(const device_context& dc, const rect<coord_frame::client>& client, const tstring& str)  {
         draw_text(dc, client, str, static_cast<int>(str.size()));
       }
 
-      virtual void draw_text(const wtf::_::device_context& dc, const rect<coord_frame::client>& client)  {
+      virtual void draw_text(const device_context& dc, const rect<coord_frame::client>& client)  {
         draw_text(dc, client, text());
       }
 
-      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps)  override{
+      void on_wm_paint(const device_context& dc, const paint_struct& ps)  override{
         if (_auto_draw_text) draw_text(dc, ps.client(), text());
-        _SuperT::on_wm_paint(dc, ps);
+        _super_t::on_wm_paint(dc, ps);
       }
 
 

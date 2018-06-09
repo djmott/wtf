@@ -10,8 +10,8 @@ namespace wtf{
     /** has_titlebar
     * Adds titlebar text features to windows
     */
-    template <typename _SuperT>
-    struct has_titlebar : _SuperT{
+    template <typename _super_t>
+    struct has_titlebar : _super_t{
 
       const tstring &titlebar() const{
         return _titlebar;
@@ -23,7 +23,7 @@ namespace wtf{
       }
 
     protected:
-      explicit has_titlebar(window * pParent) : _SuperT(pParent){}
+      explicit has_titlebar(window * pParent) : _super_t(pParent){}
     private:
       tstring _titlebar = _T("");
     };

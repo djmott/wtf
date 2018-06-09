@@ -9,11 +9,19 @@ namespace wtf{
   namespace policy{
     /** produces OnMouseLeave event 
     */
-    template <typename _SuperT>
-    struct wm_ncmouse_leave : _SuperT{
+    template <typename _super_t>
+    struct wm_ncmouse_leave : _super_t{
 
       callback<void(window * sender)> OnNCMouseLeave;
 
+
+
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+
+      virtual void on_wm_ncmouse_leave(){ OnNCMouseLeave(this); }
+
+      explicit wm_ncmouse_leave(window * pParent) : _super_t(pParent){}
       void handle_msg(wtf::window_message& msg)  override {
         if (WM_CREATE == msg.umsg) {
           TRACKMOUSEEVENT oEvent;
@@ -28,13 +36,6 @@ namespace wtf{
         }
 
       }
-
-    protected:
-
-      virtual void on_wm_ncmouse_leave(){ OnNCMouseLeave(this); }
-
-      explicit wm_ncmouse_leave(window * pParent) : _SuperT(pParent){}
-
     };
   }
 }

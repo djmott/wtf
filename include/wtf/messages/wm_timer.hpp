@@ -5,22 +5,19 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT>
-    struct wm_timer : _SuperT{
+    template <typename _super_t> struct wm_timer : _super_t{
 
       callback<void(window * sender, UINT_PTR timer_id)> OnTimer;
 
-      void handle_msg(wtf::window_message& msg) override {
-        if (WM_TIMER == msg.umsg) on_wm_timer(static_cast<UINT_PTR>(msg.wparam));
-
-      }
     protected:
-      explicit wm_timer(window * pParent) noexcept : _SuperT(pParent){}
+      template <typename, template <typename> typename...> friend struct window_impl;
+      explicit wm_timer(window * pParent) noexcept : _super_t(pParent) {}
 
       virtual void on_wm_timer(UINT_PTR timer_id){ OnTimer(this, timer_id); }
 
-
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_TIMER == msg.umsg) on_wm_timer(static_cast<UINT_PTR>(msg.wparam));
+      }
     };
-
   }
 }

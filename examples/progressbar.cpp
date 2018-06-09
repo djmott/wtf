@@ -1,8 +1,8 @@
 #include "wtf/wtf.hpp"
-
 using namespace wtf;
 
 struct frmMain : form {
+#if 0
   frmMain() : form(), _hprogressbar(this), _vprogressbar(this){
     OnCreate += [this](...) {
       _hprogressbar.orientation(orientations::horizontal);
@@ -16,8 +16,13 @@ struct frmMain : form {
     };
   }
   progress_bar _hprogressbar, _vprogressbar;
+#endif
 };
 
+#if defined(__WTF_DEBUG_MESSAGES__)
+int main() {
+#else
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+#endif
   return frmMain().run();
 }

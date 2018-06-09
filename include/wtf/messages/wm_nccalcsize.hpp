@@ -6,14 +6,22 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT>
-    struct wm_nccalcsize : _SuperT{
+    template <typename _super_t>
+    struct wm_nccalcsize : _super_t{
 
       enum class activate_mode{
         active = WA_ACTIVE,
         click_active = WA_CLICKACTIVE,
         inactive = WA_INACTIVE,
       };
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+
+      virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *) = 0;
+      virtual LRESULT on_wm_nccalcsize(RECT *) = 0;
+
+      explicit wm_nccalcsize(window * pParent) noexcept : _super_t(pParent){}
+
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_NCCALCSIZE != msg.umsg) return;
@@ -21,13 +29,6 @@ namespace wtf{
         if (msg.wparam) msg.lresult = on_wm_nccalcsize(reinterpret_cast<NCCALCSIZE_PARAMS*>(msg.lparam));
         else  msg.lresult = on_wm_nccalcsize(reinterpret_cast<RECT*>(msg.lparam));
       }
-
-    protected:
-
-      virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *) = 0;
-      virtual LRESULT on_wm_nccalcsize(RECT *) = 0;
-
-      explicit wm_nccalcsize(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

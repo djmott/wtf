@@ -9,8 +9,8 @@ namespace wtf{
     /** has_timer
     * Adds timer creation and produces timer events
     */
-    template <typename _SuperT>
-    struct has_timer : _SuperT{
+    template <typename _super_t>
+    struct has_timer : _super_t{
 
       UINT_PTR set_timer(UINT elapse)  {
         _next_timer_id++;
@@ -29,7 +29,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_timer(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_timer(window * pParent) noexcept : _super_t(pParent){}
     private:
       UINT_PTR _next_timer_id = 1;
     };

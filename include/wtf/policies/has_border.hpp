@@ -10,8 +10,8 @@ namespace wtf{
     /**
      * @brief Creates a border
      */
-    template <typename _SuperT>
-    struct has_border :  _SuperT{
+    template <typename _super_t>
+    struct has_border :  _super_t{
 
     /**
      * @brief Gets the border width
@@ -93,13 +93,13 @@ namespace wtf{
        * 
        * @param pParent parent window
        */
-      explicit has_border(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_border(window * pParent) noexcept : _super_t(pParent){}
 
       /**
        * @brief Invalidates the non-client area forcing a border redraw
        */
       void refresh_border()  {
-        if (!_SuperT::_handle) return;
+        if (!_super_t::_handle) return;
         wtf::exception::throw_lasterr_if(
           ::RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_NOCHILDREN),
           [](BOOL b)noexcept { return !b; }
@@ -112,7 +112,7 @@ namespace wtf{
        * @param dc device contact of the non-client area
        * @param oClient drawing rect
        */
-      void on_wm_ncpaint(const wtf::_::device_context& dc, const rect<coord_frame::client>& oClient) override {
+      void on_wm_ncpaint(const device_context& dc, const rect<coord_frame::client>& oClient) override {
 
         auto highlight = pen::create(pen::style::solid, 1, border_highlight());
         auto shadow = pen::create(pen::style::solid, 1, border_shadow());
@@ -121,7 +121,7 @@ namespace wtf{
         client.bottom--;
         wtf::_::effects::draw_border(dc, client, border_style(), highlight, shadow, _draw_left, _draw_top, _draw_right, _draw_bottom);
 
-        return _SuperT::on_wm_ncpaint(dc, oClient);
+        return _super_t::on_wm_ncpaint(dc, oClient);
       }
 
       /**
@@ -143,7 +143,7 @@ namespace wtf{
        * 
        * @return LRESULT - 0 
        */
-      LRESULT on_wm_nccalcsize(RECT *) override{ return 0; }
+      LRESULT on_wm_nccalcsize(RECT *) override { return 0; }
 
     private:
       border_styles _border_style = border_styles::none;

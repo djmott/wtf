@@ -2,13 +2,13 @@
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
-
+#if 0
 namespace wtf{
 
   namespace policy{
 
-    template <typename _SuperT>
-    struct isa_tree : _SuperT{
+    template <typename _tree_super_t>
+    struct isa_tree : _tree_super_t {
 
       bool full_row_select() const noexcept { return _full_row_select; }
       void full_row_select(bool newval) noexcept { _full_row_select = newval; }
@@ -31,7 +31,7 @@ namespace wtf{
       void edit_mode(edit_modes newval) { _edit_mode = newval; }
 
       class item : public std::enable_shared_from_this<item> {
-        using __super_t = std::enable_shared_from_this<item>;
+        using _super_t = std::enable_shared_from_this<item>;
       public:
         using pointer = std::shared_ptr<item>;
         using weak_ptr = std::weak_ptr<item>;
@@ -68,7 +68,7 @@ namespace wtf{
           if (newval) {
             if (oSelectedNodes.cend() == std::find_if(oSelectedNodes.cbegin(), oSelectedNodes.cend(),
               [this](const item::pointer& oNode) noexcept { return oNode.get() == this;  })) {
-              oSelectedNodes.push_back(__super_t::shared_from_this());
+              oSelectedNodes.push_back(_super_t::shared_from_this());
             }
           }
           else {
@@ -83,12 +83,12 @@ namespace wtf{
         const vector& children() const noexcept { return _children; }
 
         pointer add_item(const tstring& Text) {
-          _children.push_back(pointer(new item(__super_t::shared_from_this(), Text)));
+          _children.push_back(pointer(new item(_super_t::shared_from_this(), Text)));
           return _children.back();
         }
 
         void add_item(pointer oChild) {
-          oChild->_parent = __super_t::shared_from_this();
+          oChild->_parent = _super_t::shared_from_this();
           _children.push_back(oChild);
         }
 
@@ -108,7 +108,7 @@ namespace wtf{
         }
 
         pointer get_last() {
-          if (!children().size() || !expanded()) return __super_t::shared_from_this();
+          if (!children().size() || !expanded()) return _super_t::shared_from_this();
           return children().back()->get_last();
         }
 
@@ -153,7 +153,7 @@ namespace wtf{
         auto oNode = _root->add_item(Text);
         if (!_top) _top = oNode;
         if (!_bottom) _bottom = oNode;
-        _SuperT::invalidate();
+        _tree_super_t::invalidate();
         return oNode;
       }
 
@@ -161,7 +161,7 @@ namespace wtf{
         _root->add_item(oNode);
         if (!_top) _top = oNode;
         if (!_bottom) _bottom = oNode;
-        _SuperT::invalidate();
+        _tree_super_t::invalidate();
       }
 
       const typename item::vector& selected_items() const { return _selected_items; }
@@ -170,34 +170,36 @@ namespace wtf{
 
     protected:
 
-      explicit isa_tree(window * pParent) : _SuperT(pParent), _root(new item(this)), _vscroll(this), _hscroll(this){
-        _SuperT::background_brush(brush::system_brush(system_colors::window));
+      explicit isa_tree(window * pParent) : _tree_super_t(pParent), _root(new item(this)), _vscroll(this), _hscroll(this){
+        _tree_super_t::background_brush(brush::system_brush(system_colors::window));
       }
       
+      TODO("Fix me");
+      /*
       void on_wm_create() override{
         _vscroll.orientation(orientations::vertical);
         _hscroll.orientation(orientations::horizontal);
-        _SuperT::auto_draw_text(false);
-        _SuperT::text_vertical_alignment(text_vertical_alignments::center);
-        _SuperT::text_horizontal_alignment(text_horizontal_alignments::left);
+        _tree_super_t::auto_draw_text(false);
+        _tree_super_t::text_vertical_alignment(text_vertical_alignments::center);
+        _tree_super_t::text_horizontal_alignment(text_horizontal_alignments::left);
         full_row_select(false);
-        _SuperT::on_wm_create();
+        _tree_super_t::on_wm_create();
       };
 
       void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
-        if (mouse_buttons::left != m.button){ return _SuperT::on_wm_click(m); }
+        if (mouse_buttons::left != m.button){ return _tree_super_t::on_wm_click(m); }
         typename item::pointer oClickedNode;
         for (size_t i = 0; i < _row_rects.size(); ++i){
           if (_expander_rects[i].is_in(m.position)){
             _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
-            _SuperT::invalidate();
-            return _SuperT::on_wm_click(m);
+            _tree_super_t::invalidate();
+            return _tree_super_t::on_wm_click(m);
           } else if (_item_rects[i].is_in(m.position) || (_full_row_select && _row_rects[i].is_in(m.position))){
             oClickedNode = _displayed_nodes[i];
             break;
           }
         }
-        if (!oClickedNode){ return _SuperT::on_wm_click(m); }
+        if (!oClickedNode){ return _tree_super_t::on_wm_click(m); }
         if (select_modes::single == _select_mode){
           bool bExists = (_selected_items.end() != std::find_if(_selected_items.begin(), _selected_items.end(), 
                                 [oClickedNode](typename item::pointer oNode)noexcept { return oClickedNode.get() != oNode.get(); }));
@@ -216,26 +218,26 @@ namespace wtf{
           oClickedNode->selected(bSelected);
           if (bSelected) OnItemSelected(oClickedNode);
         }
-        _SuperT::invalidate();
-        return _SuperT::on_wm_click(m);
+        _tree_super_t::invalidate();
+        return _tree_super_t::on_wm_click(m);
       };
 
       void on_wm_dblclick(const mouse_msg_param<coord_frame::client>& m) override{
-        if (mouse_buttons::left != m.button) return _SuperT::on_wm_dblclick(m);
+        if (mouse_buttons::left != m.button) return _tree_super_t::on_wm_dblclick(m);
         for (size_t i = 0; i < _row_rects.size(); ++i){
           if (_item_rects[i].is_in(m.position)){
             _displayed_nodes[i]->expanded(!_displayed_nodes[i]->expanded());
           } else{
             continue;
           }
-          _SuperT::invalidate();
+          _tree_super_t::invalidate();
           break;
         }
-        return _SuperT::on_wm_dblclick(m);
+        return _tree_super_t::on_wm_dblclick(m);
       };
 
-      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
-        if (!_root->children().size()) return _SuperT::on_wm_paint(dc, ps);
+      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
+        if (!_root->children().size()) return _tree_super_t::on_wm_paint(dc, ps);
         auto client = ps.client();
         _item_rects.clear();
         _expander_rects.clear();
@@ -245,7 +247,7 @@ namespace wtf{
         for (auto oNode = _top; oNode; oNode = oNode->get_next(false)){
           if (!print_node(oNode, dc, oTextMetrics, client)) break;
         }
-        return _SuperT::on_wm_paint(dc, ps);
+        return _tree_super_t::on_wm_paint(dc, ps);
       };
 
       void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param<coord_frame::client>& m) override{
@@ -257,16 +259,16 @@ namespace wtf{
             ScrollNext();
           }
         }
-        return _SuperT::on_wm_mouse_wheel(delta, m);
+        return _tree_super_t::on_wm_mouse_wheel(delta, m);
       };
 
       void on_wm_size(const point<coord_frame::client>& p) override{
-        _vscroll.move(p.x - scroll_width - _SuperT::border_width(), _SuperT::border_width(), scroll_width, p.y - (_SuperT::border_width() * 2) - scroll_width);
-        _hscroll.move(_SuperT::border_width(), p.y - _SuperT::border_width() - scroll_width, p.x - scroll_width - (_SuperT::border_width() * 2), scroll_width);
-        return _SuperT::on_wm_size(p);
+        _vscroll.move(p.x - scroll_width - _tree_super_t::border_width(), _tree_super_t::border_width(), scroll_width, p.y - (_tree_super_t::border_width() * 2) - scroll_width);
+        _hscroll.move(_tree_super_t::border_width(), p.y - _tree_super_t::border_width() - scroll_width, p.x - scroll_width - (_tree_super_t::border_width() * 2), scroll_width);
+        return _tree_super_t::on_wm_size(p);
       };
 
-
+      */
 
     private:
       
@@ -280,7 +282,7 @@ namespace wtf{
         return 1 + get_item_depth(oItem->parent());
       }
 
-      bool print_node(const typename item::pointer& oItem, const wtf::_::device_context& dc, const wtf::_::text_metrics& oTextMetrics, rect<coord_frame::client>& oClient){
+      bool print_node(const typename item::pointer& oItem, const device_context& dc, const wtf::_::text_metrics& oTextMetrics, rect<coord_frame::client>& oClient){
         if (oClient.top >= oClient.bottom - scroll_width) return false;
         _bottom = oItem;
         bool PrintExpander = false;
@@ -310,9 +312,9 @@ namespace wtf{
           dc.text_color(system_rgb<system_colors::button_text>());
         }
 
-        _SuperT::text(oItem->text());
+        _tree_super_t::text(oItem->text());
 
-        _SuperT::draw_text(dc, _item_rects.back());
+        _tree_super_t::draw_text(dc, _item_rects.back());
         if (PrintExpander){
           const auto & oExpander = _expander_rects.back();
 
@@ -339,7 +341,7 @@ namespace wtf{
         if (!oTopPrev || !oBottomPrev) return;
         _top = oTopPrev;
         _bottom = oBottomPrev;
-        _SuperT::invalidate();
+        _tree_super_t::invalidate();
       }
 
       void ScrollNext(){
@@ -349,25 +351,25 @@ namespace wtf{
         if (!oTopNext || !oBottomNext) return;
         _top = oTopNext;
         _bottom = oBottomNext;
-        _SuperT::invalidate();
+        _tree_super_t::invalidate();
       }
 
 
       struct vscroll : window_impl<vscroll, policy::isa_scroll_bar>{
-        using __super_t = window_impl<vscroll, policy::isa_scroll_bar>;
-        vscroll(isa_tree * parent) noexcept : __super_t(parent), _parent(parent){}
+        using _vscroll_super_t = window_impl<vscroll, policy::isa_scroll_bar>;
+        vscroll(isa_tree * parent) noexcept : _vscroll_super_t(parent), _parent(parent){}
 
         void on_value_changed(int prev_val) override{
-          for (int i=prev_val ; i<__super_t::value() ; ++i){ _parent->ScrollNext(); }
-          for (int i=__super_t::value() ; i<prev_val ; ++i){ _parent->ScrollPrev(); }
+          for (int i=prev_val ; i<_vscroll_super_t::value() ; ++i){ _parent->ScrollNext(); }
+          for (int i= _vscroll_super_t::value() ; i<prev_val ; ++i){ _parent->ScrollPrev(); }
         }
 
         isa_tree * _parent;
       }_vscroll;
 
       struct hscroll : window_impl<hscroll, policy::isa_scroll_bar>{
-        using __super_t = window_impl<hscroll, policy::isa_scroll_bar>;
-        hscroll(isa_tree * parent) noexcept : __super_t(parent), _parent(parent){}
+        using _hscroll_super_t = window_impl<hscroll, policy::isa_scroll_bar>;
+        hscroll(isa_tree * parent) noexcept : _hscroll_super_t(parent), _parent(parent){}
         isa_tree * _parent;
       }_hscroll;
 
@@ -406,3 +408,4 @@ namespace wtf{
   };
 
 }
+#endif

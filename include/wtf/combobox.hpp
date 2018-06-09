@@ -18,9 +18,9 @@ namespace wtf{
 
   struct combobox : window_impl<combobox, policy::isa_combobox>{
   private:
-    using __super_t = window_impl<combobox, policy::isa_combobox>;
+    using _super_t = window_impl<combobox, policy::isa_combobox>;
   public:
-    combobox(window * parent) : __super_t(parent){}
+    combobox(window * parent) : _super_t(parent){}
   };
 
 }

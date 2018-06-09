@@ -9,8 +9,8 @@ namespace wtf{
     /** has_icon
     * Provides an icon associated with the window
     */
-    template <typename _SuperT>
-    struct has_icon : _SuperT{
+    template <typename _super_t>
+    struct has_icon : _super_t{
 
       virtual icon &big_icon()noexcept { return _big_icon; }
 
@@ -25,9 +25,9 @@ namespace wtf{
       virtual void small_icon(icon &&src)noexcept { _small_icon = std::move(src); }
 
     protected:
-      explicit has_icon(window * pParent)  : _SuperT(pParent){}
+      explicit has_icon(window * pParent)  : _super_t(pParent){}
 
-      HICON on_wm_geticon(icon_type ico) noexcept override {
+      HICON on_wm_geticon(icon_type ico) noexcept {
         if (icon_type::big_icon == ico) return big_icon();
         else return small_icon();
       }

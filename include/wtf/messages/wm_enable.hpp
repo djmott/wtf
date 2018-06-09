@@ -6,26 +6,27 @@
 namespace wtf{
   namespace policy{
 
-    template <typename _SuperT>
-    struct wm_enable : _SuperT{
+    template <typename _super_t>
+    struct wm_enable : _super_t{
 
       callback<void(window * sender)> OnEnable;
       callback<void(window * sender)> OnDisable;
 
-      void handle_msg(wtf::window_message& msg) override {
-        if (WM_ENABLE != msg.umsg) return;
-        if (msg.wparam) on_wm_enable(true);
-        else on_wm_enable(false);
-      }
-
     protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_enable(bool bEnable){ 
         if (bEnable) OnEnable(this);
         else OnDisable(this);
       }
 
-      explicit wm_enable(window * pParent) noexcept : _SuperT(pParent){}
+      explicit wm_enable(window * pParent) noexcept : _super_t(pParent){}
+
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_ENABLE != msg.umsg) return;
+        if (msg.wparam) on_wm_enable(true);
+        else on_wm_enable(false);
+      }
 
 
     };

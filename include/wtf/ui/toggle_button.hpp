@@ -3,36 +3,33 @@
 */
 #pragma once
 
-
 namespace wtf{
   namespace policy{
 
-    template <typename _SuperT>
-    struct isa_toggle_button : _SuperT{
+    template <typename _super_t>
+    struct isa_toggle_button : _super_t{
 
       bool value() const noexcept { return _value; }
       void value(bool newval){
         if (newval == _value) return;
         _value = newval;
-        _SuperT::border_style((_value ? border_styles::lowered : border_styles::raised));
-        _SuperT::invalidate();
+        _super_t::border_style((_value ? border_styles::lowered : border_styles::raised));
       }
 
-    protected:
+      explicit isa_toggle_button(window * pParent) noexcept : _super_t(pParent) {}
 
-      explicit isa_toggle_button(window * pParent) noexcept : _SuperT(pParent){}
+    protected:
       
       void on_wm_create() override{
-        _SuperT::border_style(border_styles::raised);
-        _SuperT::on_wm_create();
+        _super_t::border_style(border_styles::raised);
+        _super_t::on_wm_create();
       };
 
-      void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& m) override{
-        if (mouse_buttons::left != m.button) return _SuperT::on_wm_mouse_up(m);
-        _SuperT::on_wm_mouse_up(m);
-        value(!_value);
+      void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
+        if (mouse_buttons::left == m.button) value(!_value);
+        _super_t::on_wm_click(m);
       };
-
+      
     private:
 
       bool _value = false;
@@ -40,16 +37,28 @@ namespace wtf{
   }
 
 
-  namespace _{
-
-    template <> struct policy_traits<policy::isa_toggle_button>{
-      using requires = policy_list<policy::isa_button>;
-    };
-
-  }
 
 
-  struct toggle_button : window_impl<toggle_button, policy::isa_toggle_button>{
+  struct toggle_button : window_impl<toggle_button, 
+    policy::isa_toggle_button,
+    policy::isa_label,
+    policy::has_border,
+    policy::has_invalidate,
+    policy::has_text,
+    policy::has_move,
+    policy::has_invalidate,
+    policy::has_click,
+    policy::has_font,
+    policy::has_invalidate,
+    policy::has_background,
+    policy::wm_erasebkgnd,
+    policy::wm_mouse_down,
+    policy::wm_mouse_up,
+    policy::wm_paint,
+    policy::wm_ncpaint,
+    policy::wm_nccalcsize,
+    policy::wm_create
+  >{
     explicit toggle_button(window * pParent) noexcept : window_impl(pParent){}
   };
 

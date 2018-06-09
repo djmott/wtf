@@ -9,8 +9,8 @@ namespace wtf{
     /** has_cursor
     * Provides mouse pointer customization
     */
-    template <typename _SuperT>
-    struct has_cursor : _SuperT{
+    template <typename _super_t>
+    struct has_cursor : _super_t{
 
       virtual const wtf::cursor &cursor_pointer() const{ return cursor::global(cursor::style::arrow); }
 
@@ -24,7 +24,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_cursor(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_cursor(window * pParent) noexcept : _super_t(pParent){}
 
       void on_wm_setcursor(wm_nchittest_flags flags)  override{
         switch (flags){

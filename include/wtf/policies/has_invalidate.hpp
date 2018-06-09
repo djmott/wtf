@@ -6,19 +6,19 @@
 namespace wtf{
   namespace policy{
 
-    template <typename _SuperT>
-    struct has_invalidate : _SuperT{
+    template <typename _super_t>
+    struct has_invalidate : _super_t{
       
       void invalidate(bool EraseBackground = true)  {
-        if (_SuperT::_handle) {
+        if (_super_t::_handle) {
           wtf::exception::throw_lasterr_if(
-            ::InvalidateRect(_SuperT::_handle, nullptr, (EraseBackground ? TRUE : FALSE)),
+            ::InvalidateRect(_super_t::_handle, nullptr, (EraseBackground ? TRUE : FALSE)),
                                            [](BOOL b)noexcept { return !b; });
         }
       }
 
     protected:
-      explicit has_invalidate(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_invalidate(window * pParent) noexcept : _super_t(pParent){}
 
     };
   }

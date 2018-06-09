@@ -9,8 +9,8 @@ namespace wtf{
     /** has_show
     * Adds show/hide/visible members
     */
-    template <typename _SuperT>
-    struct has_show :  _SuperT{
+    template <typename _super_t>
+    struct has_show :  _super_t{
 
       virtual void show()  { ::ShowWindow(*this, SW_SHOW); }
 
@@ -29,7 +29,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_show(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_show(window * pParent) noexcept : _super_t(pParent){}
 
     };
 

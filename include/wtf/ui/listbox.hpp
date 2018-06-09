@@ -2,7 +2,7 @@
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
-
+#if 0
 namespace wtf {
 
   enum class item_selection_modes {
@@ -103,11 +103,11 @@ namespace wtf {
             sList += oItem;
             sList += _T('\n');
           }
-          auto oDC = wtf::_::device_context::get_client(*this);
+          auto oDC = device_context::get_client(*this);
           return oDC.get_text_extent(sList);
         }
 
-        void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override {
+        void on_wm_paint(const device_context& dc, const paint_struct& ps) override {
           tstring sList = _T("");
           for (const auto & oItem : _parent._items) {
             sList += oItem;
@@ -174,7 +174,7 @@ namespace wtf{
         _SuperT::on_wm_create();
       };
 
-      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
+      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         if (!_Items.size()) return _SuperT::on_wm_paint(dc, ps);
         auto client = ps.client();
         auto oTextSize = dc.get_text_extent(_Items[0]);
@@ -297,7 +297,7 @@ namespace wtf{
         _SuperT::on_wm_size(p);
       };
 
-      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
+      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         if (!_Items.size()) return _SuperT::on_wm_paint(dc, ps);
         auto client = ps.client();
         auto oTextSize = dc.get_text_extent(_Items[0]);
@@ -350,30 +350,30 @@ namespace wtf{
       void invalidate(){ _SuperT::invalidate(); }
 
       class vscroll : public scroll_bar{
-        using __super_t = scroll_bar;
+        using _super_t = scroll_bar;
       public:
 
         vscroll(isa_listbox * pParent)
-          : __super_t(pParent)
+          : _super_t(pParent)
           , _Parent(pParent) {}
 
         void on_wm_create() override{
-          __super_t::orientation(orientations::vertical);
-          __super_t::on_wm_create();
+          _super_t::orientation(orientations::vertical);
+          _super_t::on_wm_create();
         }
 
         void on_value_changed(int prev_val) override{
-          if (prev_val < __super_t::value()){
-            for (int i = prev_val; i < __super_t::value(); ++i){
+          if (prev_val < _super_t::value()){
+            for (int i = prev_val; i < _super_t::value(); ++i){
               if ((_Parent->_TopIndex + _Parent->_ItemRects.size()) < _Parent->_Items.size()) _Parent->_TopIndex++;
             }
           } else{
-            for (int i = __super_t::value(); i < prev_val; ++i){
+            for (int i = _super_t::value(); i < prev_val; ++i){
               if (_Parent->_TopIndex) --_Parent->_TopIndex;
             }
           }
           _Parent->invalidate();
-          __super_t::on_value_changed(prev_val);
+          _super_t::on_value_changed(prev_val);
         }
 
 
@@ -408,4 +408,5 @@ namespace wtf{
     explicit listbox(window * pParent) : window_impl(pParent){}
   };
 }
+#endif
 #endif

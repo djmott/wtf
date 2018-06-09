@@ -6,11 +6,11 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT>
-    struct isa_label : _SuperT{
+    template <typename _super_t>
+    struct isa_label : _super_t{
 
     protected:
-      explicit isa_label(window * pParent) noexcept : _SuperT(pParent){}
+      explicit isa_label(window * pParent) noexcept : _super_t(pParent){}
     };
   }
 

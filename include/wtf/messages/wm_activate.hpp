@@ -6,8 +6,8 @@
 namespace wtf{
   namespace policy{
 
-    template <typename _SuperT>
-    struct wm_activate : _SuperT{
+    template <typename _super_t>
+    struct wm_activate : _super_t{
 
       enum class activate_mode{
         active = WA_ACTIVE,
@@ -18,20 +18,20 @@ namespace wtf{
       callback<void(window * sender)> OnActivate;
       callback<void(window * sender)> OnDeactivate;
 
-      void handle_msg(wtf::window_message& msg) override {
-        if (WM_ACTIVATE == msg.umsg) on_wm_activate(static_cast<activate_mode>(LOWORD(msg.wparam)), HIWORD(msg.wparam) ? true : false, reinterpret_cast<HWND>(msg.lparam));
-      }
 
     protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_activate(activate_mode mode, bool minimized, HWND target){
         if (activate_mode::inactive == mode) OnDeactivate(this);
         else OnActivate(this);
       }
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_ACTIVATE == msg.umsg) on_wm_activate(static_cast<activate_mode>(LOWORD(msg.wparam)), HIWORD(msg.wparam) ? true : false, reinterpret_cast<HWND>(msg.lparam));
+      }
 
-
-      explicit wm_activate(window * pParent) noexcept : _SuperT(pParent){}
+      explicit wm_activate(window * pParent) noexcept : _super_t(pParent){}
 
     };
 

@@ -6,8 +6,8 @@ namespace wtf{
 
   namespace policy{
 
-    template <typename _SuperT>
-    struct has_repeat_click : _SuperT{
+    template <typename _super_t>
+    struct has_repeat_click : _super_t{
       
       int repeat_delay() const{ return _repeat_delay; }
       void repeat_delay(int newval){ _repeat_delay = newval; }
@@ -16,41 +16,41 @@ namespace wtf{
       void repeat_rate(int newval){ _repeat_rate = newval; }
 
     protected:
-      explicit has_repeat_click(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_repeat_click(window * pParent) noexcept : _super_t(pParent){}
 
       void on_wm_click(const mouse_msg_param<coord_frame::client>& p) override {
-        _SuperT::on_wm_click(p);
+        _super_t::on_wm_click(p);
       }
       
       void on_wm_timer(UINT_PTR iTimer) override{
         if (iTimer == _timerid){
           on_wm_click(mouse_msg_param<coord_frame::client>((WPARAM)0, (LPARAM)0, mouse_buttons::left));
-          _SuperT::set_timer(_repeat_rate, iTimer);
+          _super_t::set_timer(_repeat_rate, iTimer);
         }
-        _SuperT::on_wm_timer(iTimer);
+        _super_t::on_wm_timer(iTimer);
       }
 
       void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& m) override{
         if (mouse_buttons::left != m.button) return;
         _down = true;
-        _timerid = _SuperT::set_timer(_repeat_delay);
-        _SuperT::on_wm_mouse_down(m);
+        _timerid = _super_t::set_timer(_repeat_delay);
+        _super_t::on_wm_mouse_down(m);
       }
 
       void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& m) override{
         if (_down && _timerid){
-          if (_timerid) _SuperT::kill_timer(_timerid);
+          if (_timerid) _super_t::kill_timer(_timerid);
           _timerid = 0;
           _down = false;
         }
-        _SuperT::on_wm_mouse_up(m);
+        _super_t::on_wm_mouse_up(m);
       };
 
       void on_wm_mouse_leave() override{ 
-        if (_timerid) _SuperT::kill_timer(_timerid);
+        if (_timerid) _super_t::kill_timer(_timerid);
         _timerid = 0;
         _down = false;
-        _SuperT::on_wm_mouse_leave();
+        _super_t::on_wm_mouse_leave();
       }
 
 

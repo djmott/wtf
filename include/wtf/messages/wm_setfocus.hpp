@@ -5,23 +5,26 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT>
-    struct wm_setfocus : _SuperT{
+    template <typename _super_t>
+    struct wm_setfocus : _super_t{
 
       callback<void(window * sender, HWND)> OnSetFocus;
+
+
+    protected:
+
+      template <typename, template <typename> typename...> friend struct window_impl;
+
+      virtual void on_wm_setfocus(HWND hwnd){ OnSetFocus(this, hwnd); }
+
+      explicit wm_setfocus(window * pParent) : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_SETFOCUS == msg.umsg) {
           on_wm_setfocus(reinterpret_cast<HWND>(msg.wparam));
         }
-
       }
-    protected:
-
-      virtual void on_wm_setfocus(HWND hwnd){ OnSetFocus(this, hwnd); }
-
-      explicit wm_setfocus(window * pParent) : _SuperT(pParent){}
-
+    
     };
   }
 }

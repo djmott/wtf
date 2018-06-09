@@ -9,8 +9,8 @@ namespace wtf{
     /** has_enable
     * Add enable/disable/enabled method
     */
-    template <typename _SuperT>
-    struct has_enable : _SuperT{
+    template <typename _super_t>
+    struct has_enable : _super_t{
   
       virtual void enable()  {
         wtf::exception::throw_lasterr_if(::EnableWindow(*this, TRUE), [](BOOL b)noexcept { return !b; });
@@ -31,7 +31,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_enable(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_enable(window * pParent) noexcept : _super_t(pParent){}
 
     };
   }

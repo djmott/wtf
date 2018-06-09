@@ -10,26 +10,26 @@ namespace wtf{
     /** has_click
     * produces click events
     */
-    template <typename _SuperT>
-    struct has_click : _SuperT{
+    template <typename _super_t>
+    struct has_click : _super_t{
 
       callback<void(window *, mouse_msg_param<coord_frame::client>)> OnClick;
 
     protected:
 
-      explicit has_click(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_click(window * pParent) noexcept : _super_t(pParent){}
 
       virtual void on_wm_click(const mouse_msg_param<coord_frame::client>& p){ OnClick(this, p); }
 
       void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& oParam) override{
         _Down = oParam.button;
-        _SuperT::on_wm_mouse_down(oParam);
+        _super_t::on_wm_mouse_down(oParam);
       }
 
       void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& oParam) override{
         if (rect<coord_frame::client>::get(*this).is_in(oParam.position) && _Down == oParam.button){
           on_wm_click(oParam);
-          _SuperT::on_wm_mouse_up(oParam);
+          _super_t::on_wm_mouse_up(oParam);
           _Down = mouse_buttons::unspecified;
         }
       }

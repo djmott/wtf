@@ -3,23 +3,25 @@
 */
 #pragma once
 
+#if 0
+
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT>
-    struct isa_menu : _SuperT{
+    template <typename _super_t>
+    struct isa_menu : _super_t{
 
       static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
       static const DWORD Style = WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
       void popup(int x, int y){
-        _SuperT::move(x, y, 100, 100);
+        _super_t::move(x, y, 100, 100);
       }
 
     protected:
 
-      explicit isa_menu(window * pParent) : _SuperT(pParent){
-        _SuperT::border_style(border_styles::double_raised);
+      explicit isa_menu(window * pParent) : _super_t(pParent){
+        _super_t::border_style(border_styles::double_raised);
       }
       
 //       void exec() override{ return 0; }
@@ -40,3 +42,4 @@ namespace wtf{
   };
 
 }
+#endif

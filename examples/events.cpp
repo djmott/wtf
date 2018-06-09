@@ -54,9 +54,15 @@ void MemberExample() {
   oForm.run();
 }
 
+
+#if defined(__WTF_DEBUG_MESSAGES__)
+int main() {
+#else
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+#endif
   LambdaExample();
   StaticExample();
   MemberExample();
   return 0;
 }
+

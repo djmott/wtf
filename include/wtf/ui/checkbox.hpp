@@ -5,54 +5,65 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT>
-    struct isa_checkbox : _SuperT{
 
-
+    template <typename _checkbox_super_t>
+    struct isa_checkbox : _checkbox_super_t {
     protected:
 
-      explicit isa_checkbox(window * pParent) : _SuperT(pParent), _check(this){
-        _SuperT::auto_draw_text(false);
-        _SuperT::border_style(border_styles::none);
+      explicit isa_checkbox(window * pParent) : _checkbox_super_t(pParent), _check(this){
+        _checkbox_super_t::auto_draw_text(false);
+        _checkbox_super_t::border_style(border_styles::none);
       }
 
       void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
         if (mouse_buttons::left == m.button){
           _check.value(!_check.value());
         }
-        _SuperT::on_wm_click(m);
+        _checkbox_super_t::on_wm_click(m);
       };
 
-      void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
+      void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
         auto client = ps.client();
-        auto TextSize = _SuperT::prefered_text_size();
-        if (text_horizontal_alignments::left == _SuperT::text_horizontal_alignment()){
+        auto TextSize = _checkbox_super_t::prefered_text_size();
+        if (text_horizontal_alignments::left == _checkbox_super_t::text_horizontal_alignment()){
           _check.move(0, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
-          _SuperT::draw_text(dc, rect<coord_frame::client>(checkbox_size, 0, client.right - checkbox_size, client.bottom));
+          _checkbox_super_t::draw_text(dc, rect<coord_frame::client>(checkbox_size, 0, client.right - checkbox_size, client.bottom));
         } else{
           _check.move(client.right - checkbox_size, (client.bottom - checkbox_size) / 2, checkbox_size, checkbox_size);
-          _SuperT::draw_text(dc, rect<coord_frame::client>(0, 0, client.right - checkbox_size, client.bottom));
+          _checkbox_super_t::draw_text(dc, rect<coord_frame::client>(0, 0, client.right - checkbox_size, client.bottom));
         }
-        _SuperT::on_wm_paint(dc, ps);
+        _checkbox_super_t::on_wm_paint(dc, ps);
       };
-
+      
       static const int checkbox_size = 15;
 
+      template <typename _check_t> using _check_super_t = window_impl<_check_t,
+        policy::isa_panel,
+        policy::has_click,
+        policy::has_move,
+        policy::has_border,
+        policy::has_invalidate,
+        policy::wm_paint,
+        policy::wm_mouse_down,
+        policy::wm_mouse_up,
+        policy::wm_paint,
+        policy::wm_ncpaint,
+        policy::wm_nccalcsize
+      >;
 
-      struct _check : window_impl<_check, policy::isa_panel>{
+      struct _check : _check_super_t<_check>
+      {
 
-        using __super_t = window_impl<_check, policy::isa_panel>;
-
-        _check(isa_checkbox * pParent) : __super_t(pParent),_parent(pParent){
-          __super_t::border_style(border_styles::raised);
+        _check(isa_checkbox * pParent) : _check_super_t<_check>(pParent),_parent(pParent){
+          _check_super_t<_check>::border_style(border_styles::raised);
         }
 
         void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
           if (mouse_buttons::left == m.button) value(!_value);
-          __super_t::on_wm_click(m);
+          _check_super_t<_check>::on_wm_click(m);
         }
 
-        void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps) override{
+        void on_wm_paint(const device_context& dc, const paint_struct& ps) override{
           auto client = ps.client();
           dc.fill(client, brush::solid_brush(rgb(255, 255, 255)));
           if (_value){
@@ -64,14 +75,15 @@ namespace wtf{
             dc.line(black, client.left, client.top, client.right, client.bottom);
             dc.line(black, client.right, client.top, client.left, client.bottom);
           }
-          __super_t::on_wm_paint(dc, ps);
+          _check_super_t<_check>::on_wm_paint(dc, ps);
         }
+        
 
         bool value() const noexcept { return _value; }
         void value(bool newval){
           _value = newval;
-          __super_t::border_style(newval ? border_styles::lowered : border_styles::raised);
-          __super_t::invalidate();
+          _check_super_t<_check>::border_style(newval ? border_styles::lowered : border_styles::raised);
+          _check_super_t<_check>::invalidate();
         }
 
       private:
@@ -82,13 +94,24 @@ namespace wtf{
     };
   }
 
-  namespace _{
-    template <> struct policy_traits<policy::isa_checkbox>{
-      using requires = policy_list< policy::isa_label>;
-    };
-  }
 
-  struct checkbox : window_impl<checkbox, policy::isa_checkbox>{
+
+  struct checkbox : window_impl<checkbox,
+    policy::isa_checkbox, 
+    policy::isa_label,
+    policy::has_click,
+    policy::has_text,
+    policy::has_move,
+    policy::has_border,
+    policy::has_font,
+    policy::has_invalidate,
+    policy::wm_ncpaint,
+    policy::wm_nccalcsize,
+    policy::wm_erasebkgnd,
+    policy::wm_mouse_down,
+    policy::wm_mouse_up,
+    policy::wm_paint
+  >{
     explicit checkbox(window * pParent) noexcept : window_impl(pParent){}
   };
 

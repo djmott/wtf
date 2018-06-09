@@ -10,8 +10,8 @@ namespace wtf{
     Adds members to reposition/resize
     @addtogroup Policy
     */
-    template <typename _SuperT>
-    struct has_size : _SuperT{
+    template <typename _super_t>
+    struct has_size : _super_t{
 
       virtual int width() const{
         auto r = rect<coord_frame::screen>::get(*this);
@@ -36,7 +36,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_size(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_size(window * pParent) noexcept : _super_t(pParent){}
     };
   }
 }

@@ -6,8 +6,8 @@
 namespace wtf{
   namespace policy{
 
-    template <typename _SuperT>
-    struct has_move : _SuperT{
+    template <typename _super_t>
+    struct has_move : _super_t{
       
       enum class wm_size_flags{
         hide = SIZE_MAXHIDE,
@@ -24,14 +24,14 @@ namespace wtf{
 
       virtual int left() const{
         auto rc = rect<coord_frame::client>::get(*this);
-        MapWindowPoints(*this, *_SuperT::_parent, reinterpret_cast<LPPOINT>(&rc), 2);
+        MapWindowPoints(*this, *_super_t::_parent, reinterpret_cast<LPPOINT>(&rc), 2);
         return rc.left;
       }
 
       virtual int top() const{
         auto rc = rect<coord_frame::client>::get(*this);
         SetLastError(ERROR_INVALID_PARAMETER);
-        MapWindowPoints(*this, *_SuperT::_parent, reinterpret_cast<LPPOINT>(&rc), 2);
+        MapWindowPoints(*this, *_super_t::_parent, reinterpret_cast<LPPOINT>(&rc), 2);
         return rc.top;
       }
 
@@ -48,7 +48,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_move(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_move(window * pParent) noexcept : _super_t(pParent){}
 
     };
   }

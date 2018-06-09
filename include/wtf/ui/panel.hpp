@@ -6,27 +6,40 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT>
-    struct isa_panel : _SuperT{
+    template <typename _super_t>
+    struct isa_panel : _super_t{
 
     protected:
 
-      explicit isa_panel(window * pParent) noexcept : _SuperT(pParent){}
+      explicit isa_panel(window * pParent) noexcept : _super_t(pParent){}
 
     };
   }
 
-  namespace _{
 
-    template <> struct policy_traits<policy::isa_panel>{
-      using requires = policy_list<policy::has_enable, policy::has_border, policy::has_click, policy::has_show, policy::has_text,
-        policy::has_size, policy::has_move, policy::has_invalidate, policy::has_background, policy::has_zorder, 
-        policy::wm_enable, policy::wm_size, policy::wm_paint, policy::wm_create>;
-    };
-
-  }
-
-  struct panel : window_impl<panel, policy::isa_panel>{
+  struct panel : window_impl<panel, 
+    policy::isa_panel,
+    policy::has_enable, 
+    policy::has_border,
+    policy::has_click,
+    policy::has_show,
+    policy::has_text,
+    policy::has_size, 
+    policy::has_move, 
+    policy::has_font,
+    policy::has_background,
+    policy::has_invalidate,
+    policy::has_zorder,
+    policy::wm_erasebkgnd,
+    policy::wm_enable, 
+    policy::wm_size,
+    policy::wm_paint,
+    policy::wm_create,
+    policy::wm_mouse_down,
+    policy::wm_mouse_up,
+    policy::wm_ncpaint,
+    policy::wm_nccalcsize
+  >{
     explicit panel(window * pParent) noexcept : window_impl(pParent){}
   };
 

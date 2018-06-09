@@ -7,26 +7,28 @@ namespace wtf{
 
   namespace policy{
 
-    template <typename _SuperT>
-    struct wm_paint : _SuperT{
+    template <typename _super_t>
+    struct wm_paint : _super_t{
 
-      void handle_msg(wtf::window_message& msg) override {
-        if (WM_PAINT == msg.umsg) {
-          msg.lresult = 0;
-          msg.bhandled = true;
-          auto & dc = *reinterpret_cast<const wtf::_::device_context *>(msg.wparam);
-          auto & ps = *reinterpret_cast<const wtf::_::paint_struct *>(msg.lparam);
-          on_wm_paint(dc, ps);
-        }
-
-      }
+      callback<void(const device_context&, const paint_struct&)> OnPaint;
 
     protected:
 
-      virtual void on_wm_paint(const wtf::_::device_context& dc, const wtf::_::paint_struct& ps)  { }
+      template <typename, template <typename> typename...> friend struct window_impl;
+      
+      virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) { OnPaint(dc, ps); }
 
-      explicit wm_paint(window * pParent) noexcept : _SuperT(pParent){}
+      explicit wm_paint(window * pParent) noexcept : _super_t(pParent){}
 
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_PAINT != msg.umsg) return;
+        msg.lresult = 0;
+        msg.bhandled = true;
+        RECT r;
+        if (0 == ::GetUpdateRect(*this, &r, FALSE)) return;
+        on_wm_paint(device_context::get_client(*this), paint_struct(*this));
+      }
+    
     };
   }
 }

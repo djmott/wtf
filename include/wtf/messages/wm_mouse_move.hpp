@@ -6,22 +6,23 @@
 namespace wtf{
 
   namespace policy{
-    template <typename _SuperT>
-    struct wm_mouse_move : _SuperT{
+    template <typename _super_t>
+    struct wm_mouse_move : _super_t{
 
       callback<void(window * sender, const mouse_msg_param<coord_frame::client>&)> OnMouseMove;
+
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+
+      virtual void on_wm_mouse_move(const mouse_msg_param<coord_frame::client>& param){ OnMouseMove(this, param); }
+
+      explicit wm_mouse_move(window * pParent) noexcept : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_MOUSEMOVE == msg.umsg) {
           on_wm_mouse_move(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::unspecified));
         }
       }
-
-    protected:
-
-      virtual void on_wm_mouse_move(const mouse_msg_param<coord_frame::client>& param){ OnMouseMove(this, param); }
-
-      explicit wm_mouse_move(window * pParent) noexcept : _SuperT(pParent){}
 
     };
   }

@@ -2,7 +2,7 @@
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
-
+#if 0
 
 namespace wtf{
 
@@ -15,12 +15,12 @@ namespace wtf{
 
   namespace policy{
 
-    template <typename _SuperT>
-    struct isa_tab_page :  _SuperT{
+    template <typename _super_t>
+    struct isa_tab_page :  _super_t{
 
     protected:
       template <typename> friend struct isa_tab_container;
-      isa_tab_page(window * pParent) noexcept : _SuperT(pParent){}
+      isa_tab_page(window * pParent) noexcept : _super_t(pParent){}
     };
   }
 
@@ -37,11 +37,11 @@ namespace wtf{
 
   namespace policy{
 
-    template <typename _SuperT>
-    struct isa_tab_container : _SuperT{
+    template <typename _tab_container_super_t>
+    struct isa_tab_container : _tab_container_super_t{
 
-      explicit isa_tab_container(window * pParent) : _SuperT(pParent), _button_bar_slider(this){
-        _SuperT::border_style(border_styles::none);
+      explicit isa_tab_container(window * pParent) : _tab_container_super_t(pParent), _button_bar_slider(this){
+        _tab_container_super_t::border_style(border_styles::none);
       }
 
       template <typename _Ty>
@@ -50,7 +50,7 @@ namespace wtf{
         _pages.push_back(oRet);
         oRet->page().border_style(border_styles::raised);
         oRet->button.border_style(border_styles::flat);
-        if (_SuperT::_handle) {
+        if (_tab_container_super_t::_handle) {
           oRet->exec();
           active_page(_active_page);
         }
@@ -84,17 +84,19 @@ namespace wtf{
 
       
       int run() override{
-        _SuperT::run();
+        _tab_container_super_t::run();
         for (auto & oPage : _pages){
           oPage->run();
         }
         return 0;
       }
+      TODO("Fix me");
+      /*
 
       void on_wm_create() override{
         _button_bar_slider.orientation(orientations::horizontal);
         _button_bar_slider.hide();
-        _SuperT::on_wm_create();
+        _tab_container_super_t::on_wm_create();
       };
 
       void on_wm_size(const point<coord_frame::client>& newsize) override{
@@ -111,8 +113,9 @@ namespace wtf{
           iBtnPos--;
           oPageInfo->page().move(0, _tab_height - 1, p.x, p.y - _tab_height);
         }
-        _SuperT::on_wm_size(newsize);
+        _tab_container_super_t::on_wm_size(newsize);
       };
+      */
 
       size_t active_page() const{ return _active_page; }
       void active_page(size_t newval){
@@ -141,39 +144,41 @@ namespace wtf{
         }
 
         class button : public window_impl<button, policy::isa_button>{
-          using __super_t = window_impl<button, policy::isa_button>;
+          using _super_t = window_impl<button, policy::isa_button>;
           template <typename> friend struct isa_tab_container;
         public:
 
           button(isa_tab_container * pParent, size_t PageIndex, const tstring& stitle)
-            : __super_t(pParent), _parent(pParent), _PageIndex(PageIndex), _title(stitle)
+            : _super_t(pParent), _parent(pParent), _PageIndex(PageIndex), _title(stitle)
           {
-            __super_t::text(_title);
-            __super_t::enable_border_elements(true, true, false, true);
+            _super_t::text(_title);
+            _super_t::enable_border_elements(true, true, false, true);
           }
 
+          TODO("Fix me");
+          /*
           void on_wm_create() override{
             deactivate();
-            __super_t::on_wm_create();
+            _super_t::on_wm_create();
           };
 
           void on_wm_click(const mouse_msg_param<coord_frame::client>& m) override{
             if (mouse_buttons::left == m.button) _parent->active_page(_PageIndex);
-            __super_t::on_wm_click(m);
+            _super_t::on_wm_click(m);
           };
-
+          */
           void deactivate(){
-            __super_t::border_style(border_styles::flat);
-            __super_t::fore_color(wtf::system_rgb<system_colors::gray_text>());
-            __super_t::font().weight(font::weights::normal);
-            __super_t::zorder(zorders::bottom);
+            _super_t::border_style(border_styles::flat);
+            _super_t::fore_color(wtf::system_rgb<system_colors::gray_text>());
+            _super_t::font().weight(font::weights::normal);
+            _super_t::zorder(zorders::bottom);
           }
 
           void activate(){
-            __super_t::border_style(border_styles::raised);
-            __super_t::fore_color(wtf::system_rgb<system_colors::button_text>());
-            __super_t::font().weight(font::weights::bold);
-            __super_t::zorder(zorders::top_most);
+            _super_t::border_style(border_styles::raised);
+            _super_t::fore_color(wtf::system_rgb<system_colors::button_text>());
+            _super_t::font().weight(font::weights::bold);
+            _super_t::zorder(zorders::top_most);
           }
 
 
@@ -222,9 +227,9 @@ namespace wtf{
 
 
       class scrollbar_t : public window_impl<scrollbar_t, policy::isa_scroll_bar>{
-        using __super_t = window_impl<scrollbar_t, policy::isa_scroll_bar>;
+        using _super_t = window_impl<scrollbar_t, policy::isa_scroll_bar>;
       public:
-        scrollbar_t(window*pParent) noexcept : __super_t(pParent) {}
+        scrollbar_t(window*pParent) noexcept : _super_t(pParent) {}
       };
 
       size_t _active_page = 0;
@@ -252,3 +257,4 @@ namespace wtf{
   };
 
 }
+#endif

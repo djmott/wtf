@@ -11,20 +11,22 @@ namespace wtf{
   };
 
   namespace policy{
-    template <typename _SuperT>
-    struct wm_geticon : _SuperT{
+    template <typename _super_t>
+    struct wm_geticon : _super_t{
 
+    protected:
+
+      template <typename, template <typename> typename...> friend struct window_impl;
+      
+      virtual HICON on_wm_geticon(icon_type) = 0;
+
+      explicit wm_geticon(window * pParent) : _super_t(pParent){}
       void handle_msg(wtf::window_message& msg) override {
         if (WM_GETICON != msg.umsg) return;
         msg.lresult = reinterpret_cast<LRESULT>(on_wm_geticon(static_cast<icon_type>(msg.wparam)));
         msg.bhandled = true;
       }
 
-    protected:
-
-      virtual HICON on_wm_geticon(icon_type) = 0;
-
-      explicit wm_geticon(window * pParent) : _SuperT(pParent){}
     };
   }
 }

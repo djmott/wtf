@@ -9,8 +9,8 @@ namespace wtf{
     /** has_caret
     * Controls the caret of text/input elements
     */
-    template <typename _SuperT>
-    struct has_caret : _SuperT{
+    template <typename _super_t>
+    struct has_caret : _super_t{
       
       virtual int caret_width() const noexcept { return _width; }
       virtual void caret_width(int newval) noexcept { _width = newval; }
@@ -55,7 +55,7 @@ namespace wtf{
 
       virtual point<coord_frame::client> caret_position() const noexcept { return _pos; }
 
-      explicit has_caret(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_caret(window * pParent) noexcept : _super_t(pParent){}
 
       void on_wm_setfocus(HWND hwnd) override{
         _has_focus = true;
@@ -63,13 +63,13 @@ namespace wtf{
         caret_position(_pos);
         caret_visible(true);
         caret_blink_rate(_blink_rate);
-        _SuperT::on_wm_setfocus(hwnd);
+        _super_t::on_wm_setfocus(hwnd);
       }
 
       void on_wm_killfocus(HWND hwnd) override{
         _has_focus = false;
         destroy_caret();
-        _SuperT::on_wm_killfocus(hwnd);
+        _super_t::on_wm_killfocus(hwnd);
       }
 
     private:
@@ -80,12 +80,6 @@ namespace wtf{
       int _width = 1;
       int _height = 1;
       bool _has_focus = false;
-    };
-  }
-
-  namespace _{
-    template <> struct policy_traits<policy::has_caret>{
-      using requires = policy_list<policy::wm_setfocus, policy::wm_killfocus>;
     };
   }
 

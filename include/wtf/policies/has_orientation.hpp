@@ -11,14 +11,14 @@ namespace wtf{
 
   namespace policy{
 
-    template <typename _SuperT>
-    struct has_orientation : _SuperT{
+    template <typename _super_t>
+    struct has_orientation : _super_t{
       
       virtual orientations orientation() const noexcept { return _orientation; }
       virtual void orientation(orientations newval) noexcept { _orientation = newval; }
 
     protected:
-      explicit has_orientation(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_orientation(window * pParent) noexcept : _super_t(pParent){}
       orientations _orientation = orientations::horizontal;
     };
   }

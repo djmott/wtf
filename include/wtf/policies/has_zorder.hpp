@@ -13,8 +13,8 @@ namespace wtf{
 
   namespace policy{
 
-    template <typename _SuperT>
-    struct has_zorder : _SuperT{
+    template <typename _super_t>
+    struct has_zorder : _super_t{
 
       void zorder(zorders pos)  {
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, reinterpret_cast<HWND>(pos), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b)noexcept { return !b; });
@@ -23,7 +23,7 @@ namespace wtf{
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b)noexcept { return !b; });
       }
     protected:
-      explicit has_zorder(window * pParent) noexcept : _SuperT(pParent){}
+      explicit has_zorder(window * pParent) noexcept : _super_t(pParent){}
 
     };
   }

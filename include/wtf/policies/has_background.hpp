@@ -7,19 +7,19 @@ namespace wtf{
 
   namespace policy{
 
-    template <typename _SuperT>
-    struct has_background : _SuperT{
+    template <typename _super_t>
+    struct has_background : _super_t{
 
       virtual const brush& background_brush() const noexcept { return _background_brush; }
       virtual void background_brush(brush&& newval) noexcept { _background_brush = std::move(newval); }
 
     protected:
 
-      explicit has_background(window * pParent)  : _SuperT(pParent){}
+      explicit has_background(window * pParent)  : _super_t(pParent){}
 
-      void on_wm_erasebkgnd(const wtf::_::device_context& dc, const rect<coord_frame::client>& client) override{
+      void on_wm_erasebkgnd(const device_context& dc, const rect<coord_frame::client>& client) {
           dc.fill(client, background_brush());
-        _SuperT::on_wm_erasebkgnd(dc, client);
+        _super_t::on_wm_erasebkgnd(dc, client);
       }
 
     private:

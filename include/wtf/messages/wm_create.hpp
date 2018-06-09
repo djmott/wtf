@@ -5,21 +5,21 @@
 
 namespace wtf{
   namespace policy{
-    template <typename _SuperT>
-    struct wm_create : _SuperT{
+    template <typename _super_t>
+    struct wm_create : _super_t{
 
       callback<void(window * sender)> OnCreate;
+
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+
+      virtual void on_wm_create(){ OnCreate(this); }
+
+      explicit wm_create(window * pParent) noexcept : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_CREATE == msg.umsg) on_wm_create();
       }
-
-    protected:
-
-      virtual void on_wm_create(){ OnCreate(this); }
-
-      explicit wm_create(window * pParent) noexcept : _SuperT(pParent){}
-
 
     };
 

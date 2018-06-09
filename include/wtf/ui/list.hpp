@@ -2,11 +2,12 @@
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
+#if 0
 namespace wtf {
   namespace policy {
 
-    template <typename _SuperT>
-    struct isa_list : _SuperT {
+    template <typename _super_t>
+    struct isa_list : _super_t {
       struct item {
         item() : _text({ _T("") }) {}
         using pointer = std::shared_ptr<item>;
@@ -31,7 +32,7 @@ namespace wtf {
       };
 
     protected:
-      isa_list(window * pParent) noexcept : _SuperT(pParent){}
+      isa_list(window * pParent) noexcept : _super_t(pParent){}
     };
 
   }
@@ -43,9 +44,10 @@ namespace wtf {
   }
 
   class list : public window_impl<list, policy::isa_list> {
-    using __super_t = window_impl<list, policy::isa_list>;
+    using _super_t = window_impl<list, policy::isa_list>;
   public:
-    explicit list(window * pParent) noexcept : __super_t(pParent){}
+    explicit list(window * pParent) noexcept : _super_t(pParent){}
   };
 
 }
+#endif

@@ -5,16 +5,13 @@
 
 namespace wtf{
 
-  namespace _ {
-    template <class, class> struct _;
-  }
-  
+ 
   /** @class window base class of all windows
   */
   struct window{
     /// an implementation may use different window styles 
-    static const DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
-    static const DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
+    static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
+    static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
     window(const window&) = delete;
     window& operator=(const window&) = delete;
@@ -57,34 +54,148 @@ namespace wtf{
       }
     }
 
-    virtual void handle_msg(wtf::window_message& msg)  {
+    callback<void(window *)> OnCreated;
+
+    //this is different than WM_CREATE, its not part of windows and called by run after CreateWindow returns
+    //virtual void on_wm_created(){ OnCreated(this); }
+    virtual int run() = 0;
+
+  protected:
+
+    template <typename, template <typename> typename...> friend struct window_impl;
+
+    window * _parent;
+    HWND _handle;
+    std::vector<window*> _children;
+
+    virtual void on_created() { OnCreated(this); }
+
+    virtual void fwd_msg(wtf::window_message& msg, const std::type_info&) {
+      handle_msg(msg);
+    }
+
+    virtual void handle_msg(wtf::window_message& msg) {
       if (msg.bhandled) return;
       if (msg.umsg == WM_CLOSE) {
         DestroyWindow(msg.hwnd);
         _handle = nullptr;
       }
       msg.lresult = DefWindowProc(msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
+      msg.bhandled = true;
     }
-
-    callback<void(window *)> OnCreated;
-
-  protected:
-
-    template <typename, template <typename> typename...> friend class window_impl;
-    template <class, class> friend struct _::_;
-
-    window * _parent;
-    HWND _handle;
-    std::vector<window*> _children;
-
-    virtual int run()  { return  0; }
-
-    //this is different than WM_CREATE, its not part of windows and called by exec after CreateWindow returns
-    virtual void on_wm_created(){ OnCreated(this); }
-
 
   };
   
+
+
+
+  template <typename _impl_t, template <typename> typename..._policy_ts> struct window_impl;
+
+
+  template <typename _impl_t, template <typename> typename _head_t, template <typename> typename..._tail_t>
+  struct window_impl<_impl_t, _head_t, _tail_t...> :  _head_t<window_impl<_impl_t, _tail_t...>> {
+
+    template <typename ... _arg_ts> window_impl(_arg_ts&&...args) noexcept : _head_t<window_impl<_impl_t, _tail_t...>>(std::forward<_arg_ts>(args)...) {}
+
+  private:
+    template <typename, template <typename> typename...> friend struct window_impl;
+
+    void fwd_msg(wtf::window_message& msg, const std::type_info& last_handler) {
+      using super = _head_t<window_impl<_impl_t, _tail_t...>>;
+      if (msg.bhandled) return;
+      if (last_handler == typeid(&super::handle_msg)){
+        super::fwd_msg(msg, last_handler);
+      }else{
+        super::handle_msg(msg);
+        super::fwd_msg(msg, typeid(&super::handle_msg));
+      }
+    }
+
+  };
+
+  template <typename _impl_t> struct window_impl<_impl_t> : window {
+
+    const std::type_info& type() const noexcept final { return typeid(_impl_t); }
+
+    template <typename ... _arg_ts> window_impl(_arg_ts&&...args) : window(std::forward<_arg_ts>(args)...) {}
+
+    int run() override {
+      window::_handle = wtf::exception::throw_lasterr_if(
+        ::CreateWindowEx(_impl_t::ExStyle, window_class_type::get().name(), nullptr, _impl_t::Style,
+          CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, (window::_parent ? window::_parent->_handle : nullptr),
+          nullptr, instance_handle(), this), [](HWND h)noexcept { return nullptr == h; });
+      this->on_created();
+      return 0;
+    }
+
+  private:
+    template <typename, template <typename> typename...> friend struct window_impl;
+
+    void fwd_msg(wtf::window_message& msg, const std::type_info&) {
+      window::handle_msg(msg);
+    }
+
+    /* messages arrive here from windows then are propagated from the implementation, through the
+    * inheritance chain and back through all the handle_message overrides in order from the
+    * bottom most inherited (_ImplT::handle_message) to top most parent (this class::handle_message)
+    */
+    static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
+
+#if __WTF_DEBUG_MESSAGES__
+      auto sMsg = std::to_string(GetTickCount()) + " ";
+      sMsg += typeid(_impl_t).name();
+      sMsg += " " + wtf::_::msg_name(umsg) + "\n";
+      OutputDebugStringA(sMsg.c_str());
+      std::cout << sMsg;
+#endif
+
+      try {
+        _impl_t * pThis = nullptr;
+
+        if (WM_NCCREATE == umsg) {
+          auto pCreate = reinterpret_cast<CREATESTRUCT*>(lparam);
+          assert(pCreate);
+          pThis = reinterpret_cast<_impl_t*>(pCreate->lpCreateParams);
+          assert(pThis);
+          pThis->_handle = hwnd;
+          SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
+          for (auto pChild : pThis->children()) {
+            pChild->run();
+          }
+        }
+        else {
+          pThis = reinterpret_cast<_impl_t*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+        }
+
+        if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
+
+        wtf::window_message msg{ hwnd, umsg, wparam, lparam, false, 0 };
+
+        if (WM_COMMAND == umsg && lparam) {
+          //legacy control notification messages sent to parent window. Forward them back to the originating control
+          for (auto pChild : pThis->children()) {
+            if (pChild->_handle != reinterpret_cast<HWND>(lparam)) continue;
+            pChild->fwd_msg(msg, typeid(bool));
+            break;
+          }
+        }
+        if (!msg.bhandled) pThis->fwd_msg(msg, typeid(bool));
+        return msg.lresult;
+      }
+      catch (const wtf::exception& ex) {
+        tstring sMsg = to_tstring(ex.what());
+        sMsg += _T("\n");
+        sMsg += to_tstring(ex.code());
+        auto iRet = message_box::exec(hwnd, sMsg.c_str(), _T("An exception occurred."), message_box::buttons::cancel_retry_continue, message_box::icons::stop);
+        if (message_box::response::cancel == iRet) abort();
+        if (message_box::response::retry == iRet) return -1;
+        throw;
+      }
+    }
+
+    using window_class_type = window_class_ex<_impl_t, &window_impl<_impl_t>::window_proc>;
+
+  };
 
 
 }

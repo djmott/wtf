@@ -4,6 +4,11 @@ project(wtf)
 
 find_package(Doxygen)
 
+option(WTF_DEBUG_MESSAGES "Debug windows messages" FALSE)
+mark_as_advanced(WTF_DEBUG_MESSAGES)
+if(WTF_DEBUG_MESSAGES)
+	add_definitions(-D__WTF_DEBUG_MESSAGES__=1)
+endif()
 
 file(GLOB_RECURSE HEADERS include/*.hpp)
 
