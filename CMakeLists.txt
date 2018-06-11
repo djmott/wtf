@@ -46,23 +46,6 @@ add_executable(wtf WIN32
 	include/wtf/controls/tree.hpp
 	include/wtf/controls/policies/has_font.hpp
 	include/wtf/controls/policies/has_text.hpp
-	include/wtf/custom/button.hpp
-	include/wtf/custom/checkbox.hpp
-	include/wtf/custom/combobox.hpp
-	include/wtf/custom/inputbox.hpp
-	include/wtf/custom/label.hpp
-	include/wtf/custom/list.hpp
-	include/wtf/custom/listbox.hpp
-	include/wtf/custom/menu.hpp
-	include/wtf/custom/panel.hpp
-	include/wtf/custom/progress_bar.hpp
-	include/wtf/custom/scroll_bar.hpp
-	include/wtf/custom/scroll_panel.hpp
-	include/wtf/custom/split_container.hpp
-	include/wtf/custom/tab_container.hpp
-	include/wtf/custom/textbox.hpp
-	include/wtf/custom/toggle_button.hpp
-	include/wtf/custom/tree.hpp
 	include/wtf/messages/messages.hpp
 	include/wtf/messages/wm_activate.hpp
 	include/wtf/messages/wm_char.hpp

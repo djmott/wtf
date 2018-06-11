@@ -116,6 +116,10 @@ namespace wtf {
 */
 
 #include "_/meta.hpp"
+#include "_/init_common_controls.hpp"
+#include "_/msg_names.hpp"
+#include "_/weak_enum.hpp"
+
 #include "exception.hpp"
 #include "message_box.hpp"
 #include "callback.hpp"
@@ -131,16 +135,15 @@ namespace wtf {
 #include "font.hpp"
 #include "window_class.hpp"
 #include "device_context.hpp"
-#include "_/init_common_controls.hpp"
-#include "_/msg_names.hpp"
-#include "_/weak_enum.hpp"
-#include "_/text_metrics.hpp"
 #include "paint_struct.hpp"
-#include "_/SystemParameters.hpp"
 #include "message.hpp"
-#include "_/effects.hpp"
 #include "window_message.hpp"
 #include "window.hpp"
+
+#include "_/effects.hpp"
+#include "_/text_metrics.hpp"
+#include "_/SystemParameters.hpp"
+
 #include "messages/messages.hpp"
 #include "messages/wm_activate.hpp"
 #include "messages/wm_char.hpp"
@@ -197,24 +200,7 @@ namespace wtf {
 #include "policies/has_titlebar.hpp"
 #include "policies/has_zorder.hpp"
 
-
 #include "form.hpp"
-
-#include "custom/panel.hpp"
-#include "custom/label.hpp"
-#include "custom/button.hpp"
-#include "custom/scroll_bar.hpp"
-#include "custom/checkbox.hpp"
-#include "custom/scroll_panel.hpp"
-#include "custom/inputbox.hpp"
-#include "custom/list.hpp"
-#include "custom/menu.hpp"
-#include "custom/progress_bar.hpp"
-#include "custom/split_container.hpp"
-#include "custom/tab_container.hpp"
-#include "custom/textbox.hpp"
-#include "custom/toggle_button.hpp"
-#include "custom/tree.hpp"
 
 #include "controls/policies/has_font.hpp"
 #include "controls/policies/has_text.hpp"
