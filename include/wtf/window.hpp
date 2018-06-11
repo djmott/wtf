@@ -94,6 +94,10 @@ namespace wtf{
       if (last_handler == typeid(&super::handle_msg)){
         super::fwd_msg(msg, last_handler);
       }else{
+#if _DEBUG
+        tstring sMsg = _T("Forwarding message to ") + to_tstring(typeid(super).name()) + _T("\n");
+        OutputDebugString(sMsg.c_str());
+#endif
         super::handle_msg(msg);
         super::fwd_msg(msg, typeid(&super::handle_msg));
       }
@@ -111,7 +115,7 @@ namespace wtf{
       window::_handle = wtf::exception::throw_lasterr_if(
         ::CreateWindowEx(_impl_t::ExStyle, window_class_type::get().name(), nullptr, _impl_t::Style,
           CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, (window::_parent ? window::_parent->_handle : nullptr),
-          nullptr, instance_handle(), this), [](HWND h)noexcept { return nullptr == h; });
+          nullptr, instance_handle(), this), [](HWND h) noexcept { return nullptr == h; });
       this->on_created();
       return 0;
     }
@@ -119,13 +123,10 @@ namespace wtf{
   private:
     template <typename, template <typename> typename...> friend struct window_impl;
 
-    void handle_msg(wtf::window_message& msg) override {
-      msg.lresult = CallWindowProc(window_class_type::get().default_window_proc(), msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
-    }
-
+    void handle_msg(wtf::window_message& msg) override {}
 
     void fwd_msg(wtf::window_message& msg, const std::type_info&) override {
-      window::handle_msg(msg);
+      msg.lresult = CallWindowProc(window_class_type::get().default_window_proc(), msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
     }
 
     /* messages arrive here from windows then are propagated from the implementation, through the
@@ -134,13 +135,12 @@ namespace wtf{
     */
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
 
-#if __WTF_DEBUG_MESSAGES__
-      auto sMsg = std::to_string(GetTickCount()) + " ";
-      sMsg += std::to_string(reinterpret_cast<size_t>(hwnd)) + " ";
-      sMsg += typeid(_impl_t).name();
-      sMsg += " " + wtf::_::msg_name(umsg) + "\n";
-      OutputDebugStringA(sMsg.c_str());
-      std::cout << sMsg;
+#if defined(_DEBUG)
+      auto sMsg = to_tstring(GetTickCount()) + _T(" ");
+      sMsg += to_tstring(reinterpret_cast<size_t>(hwnd)) + _T(" ");
+      sMsg += to_tstring(typeid(_impl_t).name());
+      sMsg += _T(" ") + wtf::_::msg_name(umsg) + _T("\n");
+      OutputDebugString(sMsg.c_str());
 #endif
 
       try {

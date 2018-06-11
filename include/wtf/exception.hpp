@@ -29,6 +29,11 @@ namespace wtf{
           _what = sBuff;
         }
         if (sBuff) ::LocalFree(sBuff);
+#if _DEBUG
+        auto sMsg = "Exception " + to_tstring(last_error) + " at: " + to_tstring(sfile) + "(" + to_tstring(line) + ")\n";
+        sMsg += to_tstring(code) + "\n" + _what + "\n";
+        OutputDebugString(sMsg.c_str());
+#endif
         assert(false);
       }
 

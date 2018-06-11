@@ -21,12 +21,11 @@ namespace wtf {
   }
 
 
-  template <WNDPROC window_proc> struct window_class<controls::edit, window_proc> {   
-      constexpr LPCTSTR name() const noexcept { return WC_EDIT; }  
-      static window_class& get() {      
-        static window_class _window_class_ex;  
-        return _window_class_ex;  
-    }
+  namespace _ {
+      TCHAR sWC_EDIT[] = _T(WC_EDIT);
+  }
+
+  template <WNDPROC window_proc> struct window_class<controls::edit, window_proc> : super_window_class<_::sWC_EDIT, controls::edit, window_proc> {
   };
 
 }

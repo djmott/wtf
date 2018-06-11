@@ -5,10 +5,6 @@
 
 #define NOMINMAX 1
 
-#if !defined(__WTF_DEBUG_MESSAGES__)
-  #define __WTF_DEBUG_MESSAGES__ 0
-#endif
-
 #include <tchar.h>
 #include <Windows.h>
 #include <windowsx.h>
@@ -28,9 +24,7 @@
 #include <mutex>
 #include <locale>
 #include <codecvt>
-#if (__WTF_DEBUG_MESSAGES__)
-#include <iostream>
-#endif
+
 
 /** @namespace wtf
 Primary namespace
@@ -126,7 +120,7 @@ namespace wtf {
 #include "region.hpp"
 #include "font.hpp"
 
-#include "window_class_ex.hpp"
+#include "window_class.hpp"
 #include "device_context.hpp"
 #include "_/init_common_controls.hpp"
 #include "_/msg_names.hpp"

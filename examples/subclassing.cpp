@@ -1,4 +1,3 @@
-#define __WTF_DEBUG_MESSAGES__ 1
 
 #include "wtf/wtf.hpp"
 

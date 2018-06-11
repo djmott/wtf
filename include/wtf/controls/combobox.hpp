@@ -19,7 +19,7 @@ namespace wtf {
           using pointer = std::shared_ptr<item>;
           using vector = std::vector<pointer>;
           virtual ~item() = default;
-          explicit item(const tstring& val) : _text(val){}
+          explicit item(const tstring& val) : _text(val) {}
           item() = default;
           item(const item&) = default;
           item(item&&) = default;
@@ -59,20 +59,19 @@ namespace wtf {
       private:
         void on_wm_command(WPARAM wparam, LPARAM lparam) override {
           switch (HIWORD(wparam)) {
-            case CBN_CLOSEUP: OnCloseUp(this); break;
-            case CBN_DBLCLK: OnDblClick(this); break;
-            case CBN_DROPDOWN: OnDropDown(this); break;
-            case CBN_EDITCHANGE: OnEditChange(this); break;
-            case CBN_EDITUPDATE: OnEditUpdate(this); break;
-            case CBN_KILLFOCUS: OnKillFocus(this); break;
-            case CBN_SETFOCUS: OnSelChange(this); break;
+          case CBN_CLOSEUP: OnCloseUp(this); break;
+          case CBN_DBLCLK: OnDblClick(this); break;
+          case CBN_DROPDOWN: OnDropDown(this); break;
+          case CBN_EDITCHANGE: OnEditChange(this); break;
+          case CBN_EDITUPDATE: OnEditUpdate(this); break;
+          case CBN_KILLFOCUS: OnKillFocus(this); break;
+          case CBN_SETFOCUS: OnSelChange(this); break;
           }
           _super_t::on_wm_command(wparam, lparam);
         }
 
         typename item::vector _items;
       };
-
 
       template <typename _impl_t> using combobox_super_t = window_impl<_impl_t,
         policy::isa_combobox,
@@ -81,7 +80,6 @@ namespace wtf {
         wtf::policy::has_move,
         wtf::policy::wm_command
       >;
-
     }
 
     enum class combobox_styles {
@@ -102,29 +100,12 @@ namespace wtf {
     };
   }
 
-  template <bool _sorted, controls::combobox_styles _style, WNDPROC window_proc> 
-  struct window_class<controls::combobox<_sorted, _style>, window_proc> {
-      constexpr LPCTSTR name() const noexcept { return WC_COMBOBOX; } 
-      static window_class& get() {
-        static window_class _window_class_ex; 
-        return _window_class_ex; 
-    }
-  };
 
-  /*
-#define _DEFINE_COMBO_WND_CLASS(_class) \
-    template <WNDPROC window_proc> struct window_class<_class, window_proc> { \
-      constexpr LPCTSTR name() const noexcept { return WC_COMBOBOX; }  \
-      static window_class& get() {  \
-        static window_class _window_class_ex;  \
-        return _window_class_ex;  \
-      }};
+  namespace _ {
+    char sWC_COMBOBOX[] = _T(WC_COMBOBOX);
+  }
 
-  _DEFINE_COMBO_WND_CLASS(controls::simple_combobox<true>);
-  _DEFINE_COMBO_WND_CLASS(controls::simple_combobox<false>);
-  _DEFINE_COMBO_WND_CLASS(controls::edit_combobox<true>);
-  _DEFINE_COMBO_WND_CLASS(controls::edit_combobox<false>);
-  _DEFINE_COMBO_WND_CLASS(controls::static_combobox<true>);
-  _DEFINE_COMBO_WND_CLASS(controls::static_combobox<false>);
-  */
+  template <bool _sorted, controls::combobox_styles _style, WNDPROC window_proc>
+  struct window_class<controls::combobox<_sorted, _style>, window_proc> : super_window_class<_::sWC_COMBOBOX, controls::combobox<_sorted, _style>, window_proc> {};
+
 }

@@ -60,12 +60,12 @@ namespace wtf {
 
     LPCTSTR name() const noexcept { return _class_name.c_str(); }
 
-    constexpr WNDPROC default_window_proc() { return _original_proc; }
+    WNDPROC default_window_proc() { return _original_proc; }
 
     super_window_class() {
       memset(this, 0, sizeof(WNDCLASSEX));
       cbSize = sizeof(WNDCLASSEX);
-      exception::_throw_lasterr_if(GetClassInfoEx(instance_handle(), _original_class_name, this), [](BOOL b) { return 0 == b; });
+      exception::throw_lasterr_if(GetClassInfoEx(instance_handle(), _original_class_name, this), [](BOOL b) { return 0 == b; });
       _original_proc = lpfnWndProc;
       _class_name = _T("wtf:");
 #if defined(UNICODE)

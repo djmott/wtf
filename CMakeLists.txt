@@ -4,16 +4,17 @@ project(wtf)
 
 find_package(Doxygen)
 
-option(WTF_DEBUG_MESSAGES "Debug windows messages" FALSE)
-mark_as_advanced(WTF_DEBUG_MESSAGES)
-if(WTF_DEBUG_MESSAGES)
-	add_definitions(-D__WTF_DEBUG_MESSAGES__=1)
+if("Debug" STREQUAL "${CMAKE_BUILD_TYPE}"  OR "RelWithDebInfo" STREQUAL "${CMAKE_BUILD_TYPE}")
+	add_definitions(-DDEBUG -D_DEBUG)
+else()
+	add_definitions(-DNDEBUG)
 endif()
+
 
 include_directories(include)
 
 add_executable(wtf WIN32
-	examples/tabs.cpp
+	examples/edit.cpp
 	include/wtf/brush.hpp
 	include/wtf/callback.hpp
 	include/wtf/color.hpp
@@ -112,7 +113,7 @@ add_executable(wtf WIN32
 	include/wtf/ui/toggle_button.hpp
 	include/wtf/ui/tree.hpp
 	include/wtf/window.hpp
-	include/wtf/window_class_ex.hpp
+        include/wtf/window_class.hpp
 	include/wtf/window_message.hpp
 	include/wtf/wtf.hpp
 	include/wtf/_/effects.hpp
@@ -122,12 +123,6 @@ add_executable(wtf WIN32
 	include/wtf/_/text_metrics.hpp
 	include/wtf/_/weak_enum.hpp
 )
-
-
-
-
-#add_subdirectory(examples)
-
 
 if(DOXYGEN_FOUND)
   option(BUILD_DOCS "Build doxygen documentation" NO)
