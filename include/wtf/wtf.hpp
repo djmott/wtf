@@ -41,7 +41,8 @@ namespace wtf {
   };
 
   struct window;
-  
+  template <typename, template <typename> typename...>  struct window_impl;
+
   /** @typedef tstring
   Primary string representation. Can be either MULTIBYTE or UNICODE depending on compilation mode.
   */
@@ -197,27 +198,31 @@ namespace wtf {
 #include "policies/has_zorder.hpp"
 
 
-#include "ui/panel.hpp"
-#include "ui/label.hpp"
-#include "ui/button.hpp"
-#include "ui/scroll_bar.hpp"
-#include "ui/checkbox.hpp"
-#include "ui/form.hpp"
-#include "ui/scroll_panel.hpp"
-#include "ui/inputbox.hpp"
-#include "ui/list.hpp"
-#include "ui/menu.hpp"
-#include "ui/progress_bar.hpp"
-#include "ui/split_container.hpp"
-#include "ui/tab_container.hpp"
-#include "ui/textbox.hpp"
-#include "ui/toggle_button.hpp"
-#include "ui/tree.hpp"
+#include "form.hpp"
+
+#include "custom/panel.hpp"
+#include "custom/label.hpp"
+#include "custom/button.hpp"
+#include "custom/scroll_bar.hpp"
+#include "custom/checkbox.hpp"
+#include "custom/scroll_panel.hpp"
+#include "custom/inputbox.hpp"
+#include "custom/list.hpp"
+#include "custom/menu.hpp"
+#include "custom/progress_bar.hpp"
+#include "custom/split_container.hpp"
+#include "custom/tab_container.hpp"
+#include "custom/textbox.hpp"
+#include "custom/toggle_button.hpp"
+#include "custom/tree.hpp"
 
 #include "controls/policies/has_font.hpp"
 #include "controls/policies/has_text.hpp"
+
 #include "controls/button.hpp"
 #include "controls/combobox.hpp"
 #include "controls/edit.hpp"
+#include "controls/label.hpp"
 #include "controls/tab.hpp"
 #include "controls/tree.hpp"
+

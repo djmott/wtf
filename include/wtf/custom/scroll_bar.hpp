@@ -4,7 +4,7 @@
 #pragma once
 #if 0
 namespace wtf{
-
+  namespace custom{
   enum class scroll_visibilities{
     on,
     off,
@@ -84,4 +84,5 @@ namespace wtf{
   };
 
 }
+  }
 #endif

@@ -5,6 +5,7 @@
 
 #if 0
 namespace wtf{
+  namespace custom{
   namespace policy{
 
     class splitter : public window_impl<splitter, policy::has_cursor, policy::wm_mouse_move, policy::isa_panel, policy::has_orientation>{
@@ -151,5 +152,6 @@ namespace wtf{
   };
 
 
+}
 }
 #endif

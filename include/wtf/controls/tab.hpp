@@ -97,7 +97,6 @@ namespace wtf {
       }
 
     protected:
-      template <typename, template <typename> typename...> friend struct window_impl;
 
       typename item::vector _items;
 

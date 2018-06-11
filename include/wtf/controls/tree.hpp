@@ -18,7 +18,6 @@ namespace wtf {
 
     }
 
-
     struct tree : _::tree_impl<tree> {
       tree(window * parent) : _::tree_impl<tree>(parent) {
         wtf::_::init_common_controls::get();

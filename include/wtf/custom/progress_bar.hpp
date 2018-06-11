@@ -5,6 +5,7 @@
 #if 0
 
 namespace wtf{
+  namespace custom{
   namespace policy{
     template <typename _super_t>
     struct isa_progressbar :  _super_t{
@@ -114,5 +115,6 @@ namespace wtf{
   };
 
 
+}
 }
 #endif

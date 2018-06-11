@@ -8,7 +8,7 @@ namespace wtf {
   namespace policy {
 
     template <typename _super_t>
-    struct wm_notify: _super_t {
+    struct wm_notify : _super_t {
 
     protected:
 

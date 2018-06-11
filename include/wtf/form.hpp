@@ -4,6 +4,7 @@
 #pragma once
 
 namespace wtf{
+  
   namespace policy{
     template <typename _super_t>
     struct isa_form : _super_t{
@@ -104,9 +105,8 @@ namespace wtf{
     }
 
   };
-  /**
-   * @
-   */
+
+
   struct form : form_impl<WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE|WS_OVERLAPPEDWINDOW> {
   private:
     using _super_t = form_impl<WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW>;

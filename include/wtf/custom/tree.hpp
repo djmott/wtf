@@ -4,7 +4,7 @@
 #pragma once
 #if 0
 namespace wtf{
-
+  namespace custom{
   namespace policy{
 
     template <typename _tree_super_t>
@@ -402,5 +402,6 @@ namespace wtf{
     explicit tree(window * pParent)  : window_impl(pParent){}
   };
 
+}
 }
 #endif

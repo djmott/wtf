@@ -5,7 +5,7 @@
 #if 0
 
 namespace wtf{
-
+  namespace custom{
   enum class tab_orientations{
     top,
     left,
@@ -244,5 +244,6 @@ namespace wtf{
     explicit tab_container(window * pParent)  : window_impl(pParent){}
   };
 
+}
 }
 #endif

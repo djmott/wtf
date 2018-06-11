@@ -5,7 +5,7 @@
 #if 0
 
 namespace wtf{
-
+  namespace custom{
   namespace policy{
 
     template <typename _super_t>
@@ -169,5 +169,6 @@ namespace wtf{
     explicit textbox(window * pParent)  : window_impl(pParent){}
   };
 
+}
 }
 #endif

@@ -78,10 +78,6 @@ namespace wtf{
 
 
 
-  template <typename _impl_t, template <typename> typename..._policy_ts> struct window_impl;
-
-
-
   template <typename _impl_t, template <typename> typename _head_t, template <typename> typename..._tail_t>
   struct window_impl<_impl_t, _head_t, _tail_t...> :  _head_t<window_impl<_impl_t, _tail_t...>> {
     template <typename, template <typename> typename...> friend struct window_impl;

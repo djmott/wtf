@@ -8,11 +8,11 @@ struct frmMain : form {
 
     _edit.OnCreated += [this](...) {
       _edit.text(_T("This is an edit box"));
-      _tab.add(_T("author"), &_edit);
+      _tab.add_item(_T("author"), &_edit);
     };
     _button.OnCreated += [this](...){
       _button.text(_T("Clicky Clicky"));
-      _tab.add(_T("clicky"), &_button);
+      _tab.add_item(_T("clicky"), &_button);
     };
     OnSize += [this](...) {
       _tab.move(50, 50, width() - 70, height() - 70);
