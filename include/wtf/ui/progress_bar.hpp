@@ -47,7 +47,7 @@ namespace wtf{
       }
     protected:
 
-      explicit isa_progressbar(window * hParent) noexcept : _super_t(hParent){}
+      explicit isa_progressbar(window * hParent)  : _super_t(hParent){}
 
       void on_wm_create() override{
         _super_t::border_style(border_styles::lowered);
@@ -110,7 +110,7 @@ namespace wtf{
     policy::wm_nccalcsize,
     policy::wm_ncpaint
   >{
-    explicit progress_bar(window * pParent) noexcept : window_impl(pParent){}
+    explicit progress_bar(window * pParent)  : window_impl(pParent){}
   };
 
 

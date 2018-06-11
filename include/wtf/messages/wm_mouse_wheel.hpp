@@ -16,7 +16,7 @@ namespace wtf{
 
       virtual void on_wm_mouse_wheel(int16_t delta, const mouse_msg_param<coord_frame::client>& param){ OnMouseWheel(this, delta, param); }
 
-      explicit wm_mouse_wheel(window * pParent) noexcept : _super_t(pParent){}
+      explicit wm_mouse_wheel(window * pParent)  : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_MOUSEWHEEL != msg.umsg) return

@@ -23,7 +23,7 @@ namespace wtf{
 
       virtual void on_wm_ncpaint(const device_context& dc, const rect<coord_frame::client>& rc){ OnNCPaint(this, dc, rc); }
 
-      explicit wm_ncpaint(window * pParent) noexcept : _super_t(pParent){}
+      explicit wm_ncpaint(window * pParent)  : _super_t(pParent){}
 
 
 

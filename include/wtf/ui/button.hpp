@@ -55,7 +55,7 @@ namespace wtf{
     policy::wm_nccalcsize,
     policy::wm_paint
   >{
-    explicit button(window * pParent) noexcept : window_impl(pParent){}
+    explicit button(window * pParent) : window_impl(pParent){}
   };
 
 }

@@ -53,10 +53,10 @@ namespace wtf {
   }
 
 #define _DEFINE_BUTTON_WND_CLASS(_class) \
-  template <WNDPROC window_proc> struct window_class_ex<_class, window_proc> { \
+  template <WNDPROC window_proc> struct window_class<_class, window_proc> { \
     constexpr LPCTSTR name() const noexcept { return WC_BUTTON; } \
-    static window_class_ex& get() { \
-      static window_class_ex _window_class_ex; \
+    static window_class& get() { \
+      static window_class _window_class_ex; \
       return _window_class_ex; \
     }};
 

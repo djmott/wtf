@@ -29,7 +29,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_timer(window * pParent) noexcept : _super_t(pParent){}
+      explicit has_timer(window * pParent)  : _super_t(pParent){}
     private:
       UINT_PTR _next_timer_id = 1;
     };

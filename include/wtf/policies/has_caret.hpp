@@ -55,7 +55,7 @@ namespace wtf{
 
       virtual point<coord_frame::client> caret_position() const noexcept { return _pos; }
 
-      explicit has_caret(window * pParent) noexcept : _super_t(pParent){}
+      explicit has_caret(window * pParent)  : _super_t(pParent){}
 
       void on_wm_setfocus(HWND hwnd) override{
         _has_focus = true;

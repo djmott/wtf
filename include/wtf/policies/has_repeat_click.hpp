@@ -16,7 +16,7 @@ namespace wtf{
       void repeat_rate(int newval){ _repeat_rate = newval; }
 
     protected:
-      explicit has_repeat_click(window * pParent) noexcept : _super_t(pParent){}
+      explicit has_repeat_click(window * pParent)  : _super_t(pParent){}
 
       void on_wm_click(const mouse_msg_param<coord_frame::client>& p) override {
         _super_t::on_wm_click(p);

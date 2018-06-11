@@ -24,7 +24,7 @@ namespace wtf{
 
       static const int scrollbar_size = 20;
 
-      explicit isa_scroll_panel(window * pParent)  noexcept : _super_t(pParent), _client(this), _hscroll(this), _vscroll(this){
+      explicit isa_scroll_panel(window * pParent)   : _super_t(pParent), _client(this), _hscroll(this), _vscroll(this){
         _hscroll.orientation(orientations::horizontal);
         _vscroll.orientation(orientations::vertical);
       }

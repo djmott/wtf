@@ -29,7 +29,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_show(window * pParent) noexcept : _super_t(pParent){}
+      explicit has_show(window * pParent)  : _super_t(pParent){}
 
     };
 

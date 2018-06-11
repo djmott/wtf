@@ -415,11 +415,7 @@ struct main_form : form{
 
 #endif
 
-#if defined(__WTF_DEBUG_MESSAGES__)
-int main() {
-#else
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-#endif
   try {
     return main_form().run();
   }

@@ -23,13 +23,14 @@ namespace wtf{
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
-      explicit wm_size(window * pParent) noexcept : _super_t(pParent){}
+      explicit wm_size(window * pParent)  : _super_t(pParent){}
 
-      virtual void on_wm_size(const point<coord_frame::client>& p){ OnSize(this, p); }
+      virtual void on_wm_size(const point<coord_frame::client>& p){ 
+        OnSize(this, p);
+      }
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_SIZE == msg.umsg) on_wm_size(point<coord_frame::client>(LOWORD(msg.lparam), HIWORD(msg.lparam)));
-
       }
 
     };

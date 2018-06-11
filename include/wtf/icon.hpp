@@ -39,7 +39,7 @@ namespace wtf {
       icon(const icon&) = delete;
       icon &operator=(const icon &) = delete;
 
-      icon(icon &&src) noexcept : shared_ptr(std::move(src)) {}
+      icon(icon &&src) : shared_ptr(std::move(src)) {}
 
       icon &operator=(icon &&src) noexcept {
         shared_ptr::swap(src);

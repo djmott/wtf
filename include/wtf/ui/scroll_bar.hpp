@@ -80,7 +80,7 @@ namespace wtf{
     policy::wm_paint,
     policy::wm_timer
   >{
-    explicit scroll_bar(window * pParent) noexcept : window_impl(pParent){}
+    explicit scroll_bar(window * pParent)  : window_impl(pParent){}
   };
 
 }

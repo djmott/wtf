@@ -16,7 +16,7 @@ namespace wtf{
 
       virtual void on_wm_mouse_up(const mouse_msg_param<coord_frame::client>& param){ OnMouseUp(this, param); }
 
-      explicit wm_mouse_up(window * pParent) noexcept : _super_t(pParent){}
+      explicit wm_mouse_up(window * pParent)  : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_LBUTTONUP == msg.umsg) on_wm_mouse_up(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::left));

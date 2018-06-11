@@ -16,7 +16,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_close(window * pParent) noexcept : _super_t(pParent){}
+      explicit has_close(window * pParent)  : _super_t(pParent){}
 
     };
   }

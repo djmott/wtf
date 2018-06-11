@@ -18,7 +18,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_focus(window * pParent) noexcept : _super_t(pParent){}
+      explicit has_focus(window * pParent)  : _super_t(pParent){}
 
     };
   }

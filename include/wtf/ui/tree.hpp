@@ -404,7 +404,7 @@ namespace wtf{
   }
 
   struct tree : window_impl<tree, policy::isa_tree>{
-    explicit tree(window * pParent) noexcept : window_impl(pParent){}
+    explicit tree(window * pParent)  : window_impl(pParent){}
   };
 
 }

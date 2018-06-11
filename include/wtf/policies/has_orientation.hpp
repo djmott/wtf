@@ -18,7 +18,7 @@ namespace wtf{
       virtual void orientation(orientations newval) noexcept { _orientation = newval; }
 
     protected:
-      explicit has_orientation(window * pParent) noexcept : _super_t(pParent){}
+      explicit has_orientation(window * pParent)  : _super_t(pParent){}
       orientations _orientation = orientations::horizontal;
     };
   }

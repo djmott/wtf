@@ -31,7 +31,7 @@ namespace wtf{
         if (WM_ACTIVATE == msg.umsg) on_wm_activate(static_cast<activate_mode>(LOWORD(msg.wparam)), HIWORD(msg.wparam) ? true : false, reinterpret_cast<HWND>(msg.lparam));
       }
 
-      explicit wm_activate(window * pParent) noexcept : _super_t(pParent){}
+      explicit wm_activate(window * pParent)  : _super_t(pParent){}
 
     };
 

@@ -12,17 +12,11 @@ namespace wtf{
     template <typename _super_t>
     struct has_enable : _super_t{
   
-      virtual void enable()  {
-        wtf::exception::throw_lasterr_if(::EnableWindow(*this, TRUE), [](BOOL b)noexcept { return !b; });
-      }
+      virtual void enable() noexcept { ::EnableWindow(*this, TRUE); }
       
-      virtual void disable()  {
-        wtf::exception::throw_lasterr_if(::EnableWindow(*this, FALSE), [](BOOL b)noexcept { return !b; });
-      }
+      virtual void disable()  noexcept { ::EnableWindow(*this, FALSE); }
       
-      virtual bool enabled() const  {
-        return ((wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l)noexcept {return !l; }) & WS_DISABLED)) ? false : true;
-      }
+      virtual bool enabled() const  { return ((wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) noexcept {return !l; }) & WS_DISABLED)) ? false : true; }
 
       virtual void enabled(bool newval){
         if (newval) enable();
@@ -31,7 +25,7 @@ namespace wtf{
 
     protected:
 
-      explicit has_enable(window * pParent) noexcept : _super_t(pParent){}
+      explicit has_enable(window * pParent) : _super_t(pParent){}
 
     };
   }

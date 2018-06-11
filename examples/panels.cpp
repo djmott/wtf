@@ -32,10 +32,6 @@ struct frmMain : wtf::form {
   panel _none, _raised, _lowered, _etched, _bumped, _double_raised, _double_lowered;
 };
 
-#if defined(__WTF_DEBUG_MESSAGES__)
-int main() {
-#else
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-#endif
   return frmMain().run();
 }

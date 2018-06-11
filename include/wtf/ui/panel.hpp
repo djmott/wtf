@@ -11,7 +11,7 @@ namespace wtf{
 
     protected:
 
-      explicit isa_panel(window * pParent) noexcept : _super_t(pParent){}
+      explicit isa_panel(window * pParent)  : _super_t(pParent){}
 
     };
   }
@@ -40,7 +40,7 @@ namespace wtf{
     policy::wm_ncpaint,
     policy::wm_nccalcsize
   >{
-    explicit panel(window * pParent) noexcept : window_impl(pParent){}
+    explicit panel(window * pParent)  : window_impl(pParent){}
   };
 
 }

@@ -112,7 +112,7 @@ namespace wtf{
     policy::wm_mouse_up,
     policy::wm_paint
   >{
-    explicit checkbox(window * pParent) noexcept : window_impl(pParent){}
+    explicit checkbox(window * pParent) : window_impl(pParent){}
   };
 
 }

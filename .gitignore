@@ -35,3 +35,4 @@ CodeDB
 *.vgdbsettings
 **/*.VC.db
 /docs/Doxyfile
+/CMakeSettings.json

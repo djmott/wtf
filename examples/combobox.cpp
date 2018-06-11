@@ -7,21 +7,28 @@ struct frmMain : form {
   frmMain() : form(), _simple(this), _edit(this), _static(this) {
 
     OnCreated += [this](...) {
-      _simple.text("Push Me");
-      _simple.move(10, 10, 70, 25);
+      _simple.move(10, 10, 100, 100);
+      _edit.move(120, 10, 100, 100);
+      _static.move(240, 10, 100, 100);
+      for (char x = 'z'; x >= 'a'; --x) {
+        tstring str = "Item ";
+        str += x;
+        _simple.add_item(str);
+        _edit.add_item(str);
+        _static.add_item(str);
+      }
+      _static.OnSelChange += [this](...) {
+        if (_static.selected_item()) this->titlebar(_static.selected_item()->text());
+      };
     };
 
   }
 
-  controls::sorted_simple_combobox _simple;
-  controls::sorted_edit_combobox _edit;
-  controls::sorted_static_combobox _static;
+  controls::combobox<true, controls::combobox_styles::simple> _simple;
+  controls::combobox<false, controls::combobox_styles::drop_down> _edit;
+  controls::combobox<true, controls::combobox_styles::drop_down_list> _static;
 };
 
-#if defined(__WTF_DEBUG_MESSAGES__)
-int main() {
-#else
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-#endif
   return frmMain().run();
 }

@@ -42,8 +42,7 @@ namespace wtf{
     HWND operator*() const noexcept { return _handle; }
     operator HWND() const noexcept { return _handle; }
 
-    void add(window*pChild){
-      assert(pChild && !pChild->_handle);
+    virtual void add(window*pChild){
       _children.push_back(pChild);
       if (_handle){
         if (pChild->_handle){
@@ -54,42 +53,31 @@ namespace wtf{
       }
     }
 
-    callback<void(window *)> OnCreated;
-
     //this is different than WM_CREATE, its not part of windows and called by run after CreateWindow returns
     //virtual void on_wm_created(){ OnCreated(this); }
+    callback<void(window *)> OnCreated;
+
     virtual int run() = 0;
 
   protected:
 
     template <typename, template <typename> typename...> friend struct window_impl;
 
-    window * _parent;
-    HWND _handle;
+    window * _parent = nullptr;
+    HWND _handle = nullptr;
     std::vector<window*> _children;
 
     virtual void on_created() { OnCreated(this); }
-
-    virtual void fwd_msg(wtf::window_message& msg, const std::type_info&) {
-      handle_msg(msg);
-    }
-
-    virtual void handle_msg(wtf::window_message& msg) {
-      if (msg.bhandled) return;
-      if (msg.umsg == WM_CLOSE) {
-        DestroyWindow(msg.hwnd);
-        _handle = nullptr;
-      }
-      msg.lresult = DefWindowProc(msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
-      msg.bhandled = true;
-    }
-
+    
+    virtual void handle_msg(wtf::window_message& ) = 0;
+    virtual void fwd_msg(wtf::window_message&, const std::type_info&) = 0;
   };
   
 
 
 
   template <typename _impl_t, template <typename> typename..._policy_ts> struct window_impl;
+
 
 
   template <typename _impl_t, template <typename> typename _head_t, template <typename> typename..._tail_t>
@@ -100,7 +88,7 @@ namespace wtf{
   private:
     template <typename, template <typename> typename...> friend struct window_impl;
 
-    void fwd_msg(wtf::window_message& msg, const std::type_info& last_handler) {
+    void fwd_msg(wtf::window_message& msg, const std::type_info& last_handler) override {
       using super = _head_t<window_impl<_impl_t, _tail_t...>>;
       if (msg.bhandled) return;
       if (last_handler == typeid(&super::handle_msg)){
@@ -131,7 +119,12 @@ namespace wtf{
   private:
     template <typename, template <typename> typename...> friend struct window_impl;
 
-    void fwd_msg(wtf::window_message& msg, const std::type_info&) {
+    void handle_msg(wtf::window_message& msg) override {
+      msg.lresult = CallWindowProc(window_class_type::get().default_window_proc(), msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
+    }
+
+
+    void fwd_msg(wtf::window_message& msg, const std::type_info&) override {
       window::handle_msg(msg);
     }
 
@@ -143,6 +136,7 @@ namespace wtf{
 
 #if __WTF_DEBUG_MESSAGES__
       auto sMsg = std::to_string(GetTickCount()) + " ";
+      sMsg += std::to_string(reinterpret_cast<size_t>(hwnd)) + " ";
       sMsg += typeid(_impl_t).name();
       sMsg += " " + wtf::_::msg_name(umsg) + "\n";
       OutputDebugStringA(sMsg.c_str());
@@ -152,18 +146,19 @@ namespace wtf{
       try {
         _impl_t * pThis = nullptr;
 
-        if (WM_NCCREATE == umsg) {
+        if (WM_NCCREATE == umsg || WM_CREATE == umsg) {
           auto pCreate = reinterpret_cast<CREATESTRUCT*>(lparam);
           assert(pCreate);
           pThis = reinterpret_cast<_impl_t*>(pCreate->lpCreateParams);
           assert(pThis);
           pThis->_handle = hwnd;
           SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
-          for (auto pChild : pThis->children()) {
-            pChild->run();
+          if (WM_CREATE == umsg) {
+            for (auto pChild : pThis->children()) {
+              pChild->run();
+            }
           }
-        }
-        else {
+        } else {
           pThis = reinterpret_cast<_impl_t*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
         }
 
@@ -171,14 +166,15 @@ namespace wtf{
 
         wtf::window_message msg{ hwnd, umsg, wparam, lparam, false, 0 };
 
-        if (WM_COMMAND == umsg && lparam) {
+        if ((WM_COMMAND == umsg && lparam) || (WM_NOTIFY == umsg)) {
           //legacy control notification messages sent to parent window. Forward them back to the originating control
-          for (auto pChild : pThis->children()) {
-            if (pChild->_handle != reinterpret_cast<HWND>(lparam)) continue;
+          const HWND hTarget = (WM_NOTIFY == umsg ? reinterpret_cast<const NMHDR*>(lparam)->hwndFrom : reinterpret_cast<HWND>(lparam));
+          for (const auto & pChild : pThis->children()) {
+            if (hTarget != pChild->_handle) continue;
             pChild->fwd_msg(msg, typeid(bool));
             break;
           }
-        }
+        };
         if (!msg.bhandled) pThis->fwd_msg(msg, typeid(bool));
         return msg.lresult;
       }
@@ -193,7 +189,7 @@ namespace wtf{
       }
     }
 
-    using window_class_type = window_class_ex<_impl_t, &window_impl<_impl_t>::window_proc>;
+    using window_class_type = window_class<_impl_t, &window_impl<_impl_t>::window_proc>;
 
   };
 

@@ -3,19 +3,15 @@
 using namespace wtf;
 
 struct frmMain : form {
-#if 0
-  frmMain() : form(), _textbox(this) {
-    OnCreate += [this](...) {
-      _textbox.text("Enter text here");
-    };
-    OnSize += [this](...) {
-		_textbox.move(15, 15, this->width() - 30, 20);
-    };
 
+  frmMain() : form(), _edit(this) {
+
+    OnSize += [this](...) {
+      _edit.move(10, 10, width() - 20, height() - 20);
+    };
   }
 
-  textbox _textbox;
-#endif
+  controls::edit _edit;
 };
 
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {

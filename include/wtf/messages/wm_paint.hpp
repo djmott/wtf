@@ -18,7 +18,7 @@ namespace wtf{
       
       virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) { OnPaint(dc, ps); }
 
-      explicit wm_paint(window * pParent) noexcept : _super_t(pParent){}
+      explicit wm_paint(window * pParent)  : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_PAINT != msg.umsg) return;

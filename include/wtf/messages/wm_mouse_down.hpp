@@ -17,7 +17,7 @@ namespace wtf{
 
       virtual void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& param){ OnMouseDown(this, param); }
 
-      explicit wm_mouse_down(window * pParent) noexcept : _super_t(pParent){}
+      explicit wm_mouse_down(window * pParent)  : _super_t(pParent){}
 
 
       void handle_msg(wtf::window_message& msg) override {

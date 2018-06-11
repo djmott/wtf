@@ -8,7 +8,7 @@ namespace wtf{
     template <typename _super_t>
     struct isa_form : _super_t{
 
-      explicit isa_form(window * pParent) noexcept : _super_t(pParent){}
+      explicit isa_form(window * pParent)  : _super_t(pParent){}
 
       isa_form() : isa_form(nullptr){}
 
@@ -75,6 +75,7 @@ namespace wtf{
       policy::has_move,
       policy::has_show, 
       policy::has_close, 
+      policy::has_invalidate,
       policy::wm_destroy, 
       policy::wm_create, 
       policy::wm_size,
@@ -92,7 +93,7 @@ namespace wtf{
     static const DWORD ExStyle = _ExStyle;
     static const DWORD Style = _Style;
 
-    explicit form_impl(window *parent) noexcept : window_impl(parent) {}
+    explicit form_impl(window *parent)  : window_impl(parent) {}
     form_impl() : window_impl(nullptr){}
 
     int run() override final{
@@ -108,7 +109,7 @@ namespace wtf{
   private:
     using _super_t = form_impl<WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW>;
   public:
-    explicit form(window * pParent) noexcept : _super_t(pParent) {}
+    explicit form(window * pParent)  : _super_t(pParent) {}
     form() noexcept : form(nullptr) {}
 
   };
@@ -117,7 +118,7 @@ namespace wtf{
   private:
     using _super_t = form_impl<WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE >;
   public:
-    explicit dialog(window * pParent) noexcept : _super_t(pParent) {}
+    explicit dialog(window * pParent)  : _super_t(pParent) {}
     dialog() noexcept : dialog(nullptr) {}
 
   };
@@ -126,7 +127,7 @@ namespace wtf{
   private:
     using _super_t = form_impl<WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW>;
   public:
-    explicit tool_window(window * pParent) noexcept : _super_t(pParent) {}
+    explicit tool_window(window * pParent)  : _super_t(pParent) {}
     tool_window() noexcept : tool_window(nullptr) {}
 
   };

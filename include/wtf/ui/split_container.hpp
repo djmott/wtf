@@ -153,7 +153,7 @@ namespace wtf{
   }
 
   struct split_container : window_impl<split_container, policy::isa_split_container>{
-    explicit split_container(window * pParent) noexcept : window_impl(pParent){}
+    explicit split_container(window * pParent)  : window_impl(pParent){}
   };
 
 

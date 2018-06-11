@@ -6,28 +6,30 @@ namespace wtf {
 
 
   template <typename _impl_t, WNDPROC window_proc>
-  struct window_class_ex : WNDCLASSEX {
+  struct __declspec(novtable) window_class : WNDCLASSEX {
 
-    static window_class_ex& get() {
-      static window_class_ex _window_class_ex;
+    static window_class& get() {
+      static window_class _window_class_ex;
       return _window_class_ex;
     }
 
     LPCTSTR name() const noexcept { return _class_name.c_str(); }
 
-    ~window_class_ex() { UnregisterClass(_class_name.c_str(), instance_handle()); }
-    window_class_ex& operator=(const window_class_ex& src) {
+    WNDPROC default_window_proc() const noexcept { return DefWindowProc; }
+
+    ~window_class() { UnregisterClass(_class_name.c_str(), instance_handle()); }
+    window_class& operator=(const window_class& src) {
       _class_name = src._class_name;
       return *this;
     }
-    window_class_ex(const window_class_ex& src) noexcept : _class_name(src._class_name) {}
-    window_class_ex(window_class_ex&& src) noexcept : _class_name(std::move(src._class_name)) {}
-    window_class_ex& operator=(window_class_ex&& src) noexcept {
+    window_class(const window_class& src) noexcept : _class_name(src._class_name) {}
+    window_class(window_class&& src) noexcept : _class_name(std::move(src._class_name)) {}
+    window_class& operator=(window_class&& src) noexcept {
       std::swap(_class_name, src._class_name);
       return *this;
     }
   protected:
-    window_class_ex() {
+    window_class() {
       std::basic_string<TCHAR> asdf;
       memset(this, 0, sizeof(WNDCLASSEX));
       _class_name = _T("wtf:");
@@ -45,6 +47,41 @@ namespace wtf {
       exception::throw_lasterr_if(RegisterClassEx(this), [](ATOM x) noexcept { return 0 == x; });
     }
 
+    tstring _class_name;
+  };
+
+  template <const char * _original_class_name, typename _impl_t, WNDPROC window_proc> 
+  struct __declspec(novtable) super_window_class : WNDCLASSEX {
+    
+    static super_window_class& get() {
+      static super_window_class _window_class_ex;
+      return _window_class_ex;
+    }
+
+    LPCTSTR name() const noexcept { return _class_name.c_str(); }
+
+    constexpr WNDPROC default_window_proc() { return _original_proc; }
+
+    super_window_class() {
+      memset(this, 0, sizeof(WNDCLASSEX));
+      cbSize = sizeof(WNDCLASSEX);
+      exception::_throw_lasterr_if(GetClassInfoEx(instance_handle(), _original_class_name, this), [](BOOL b) { return 0 == b; });
+      _original_proc = lpfnWndProc;
+      _class_name = _T("wtf:");
+#if defined(UNICODE)
+      _class_name += std::to_wstring(typeid(_impl_t).hash_code());
+#else
+      _class_name += std::to_string(typeid(_impl_t).hash_code());
+#endif
+      lpfnWndProc = window_proc;
+      hInstance = instance_handle();
+      lpszClassName = name();
+      exception::throw_lasterr_if(RegisterClassEx(this), [](ATOM x) noexcept { return 0 == x; });
+
+    }
+
+  private:
+    WNDPROC _original_proc;
     tstring _class_name;
   };
 

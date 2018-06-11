@@ -10,7 +10,7 @@ namespace wtf {
       template <typename _super_t>
       struct has_font : _super_t {
 
-        template <typename ... _arg_ts> has_font(_arg_ts&&...args) noexcept : _super_t(std::forward<_arg_ts>(args)...),
+        template <typename ... _arg_ts> has_font(_arg_ts&&...args)  : _super_t(std::forward<_arg_ts>(args)...),
           _font(wtf::_::non_client_metrics::get().lfMessageFont), _hfont(_font.open()){}
 
         virtual const wtf::font& font() const noexcept { return _font; }

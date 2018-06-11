@@ -3,27 +3,26 @@
 */
 #pragma once
 
-namespace wtf{
+namespace wtf {
 
-  namespace policy{
+  namespace policy {
+
     template <typename _super_t>
-    struct wm_destroy : _super_t{
-
-      callback<void(window * sender)> OnDestroy;
-
+    struct wm_notify: _super_t {
 
     protected:
+
       template <typename, template <typename> typename...> friend struct window_impl;
 
-      virtual void on_wm_destroy(){ OnDestroy(this); }
+      virtual void on_wm_notify(NMHDR * notification) { }
 
-      explicit wm_destroy(window * pParent)  : _super_t(pParent){}
+      explicit wm_notify(window * pParent) : _super_t(pParent) {}
 
       void handle_msg(wtf::window_message& msg) override {
-        if (WM_DESTROY == msg.umsg) on_wm_destroy();
+        if (WM_NOTIFY != msg.umsg) return;
+        on_wm_notify(reinterpret_cast<NMHDR*>(msg.lparam));
       }
 
     };
-
   }
 }

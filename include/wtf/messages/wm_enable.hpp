@@ -20,7 +20,7 @@ namespace wtf{
         else OnDisable(this);
       }
 
-      explicit wm_enable(window * pParent) noexcept : _super_t(pParent){}
+      explicit wm_enable(window * pParent)  : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_ENABLE != msg.umsg) return;

@@ -110,6 +110,8 @@ namespace wtf {
 @defgroup UI Widgets
 */
 
+#include "_/meta.hpp"
+
 #include "exception.hpp"
 #include "message_box.hpp"
 #include "callback.hpp"
@@ -126,6 +128,7 @@ namespace wtf {
 
 #include "window_class_ex.hpp"
 #include "device_context.hpp"
+#include "_/init_common_controls.hpp"
 #include "_/msg_names.hpp"
 #include "_/weak_enum.hpp"
 #include "_/text_metrics.hpp"
@@ -166,6 +169,7 @@ namespace wtf {
 #include "messages/wm_ncmouse_move.hpp"
 #include "messages/wm_ncmouse_up.hpp"
 #include "messages/wm_ncpaint.hpp"
+#include "messages/wm_notify.hpp"
 #include "messages/wm_paint.hpp"
 #include "messages/wm_setcursor.hpp"
 #include "messages/wm_setfocus.hpp"
@@ -215,8 +219,10 @@ namespace wtf {
 #include "ui/toggle_button.hpp"
 #include "ui/tree.hpp"
 
-#include "controls/policy/has_text.hpp"
-#include "controls/policy/has_font.hpp"
+#include "controls/policies/has_font.hpp"
+#include "controls/policies/has_text.hpp"
 #include "controls/button.hpp"
 #include "controls/combobox.hpp"
+#include "controls/edit.hpp"
+#include "controls/tab.hpp"
 

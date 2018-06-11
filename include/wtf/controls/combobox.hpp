@@ -9,94 +9,122 @@ namespace wtf {
     namespace policy {
 
       template <typename _super_t> struct isa_combobox : _super_t {
+
+        static constexpr DWORD ExStyle = 0;
+
         explicit isa_combobox(window * pParent) : window_impl(pParent) {}
-        template <typename ... _arg_ts> isa_combobox(_arg_ts&&...args) noexcept : _super_t(std::forward<_arg_ts>(args)...) {}
+        template <typename ... _arg_ts> isa_combobox(_arg_ts&&...args) : _super_t(std::forward<_arg_ts>(args)...) {}
 
         struct item {
-          using vector = std::vector<item>;
+          using pointer = std::shared_ptr<item>;
+          using vector = std::vector<pointer>;
           virtual ~item() = default;
+          explicit item(const tstring& val) : _text(val){}
           item() = default;
           item(const item&) = default;
-          item(item&&) = defaultl;
+          item(item&&) = default;
           item& operator=(const item&) = default;
           item& operator=(item&&) = default;
           const tstring& text() const noexcept { return _text; }
           void text(const tstring& newval) { _text = newval; }
+          bool operator<(const item& rhs) const noexcept { return std::less<tstring>()(_text, rhs._text); }
         private:
           tstring _text;
         };
 
-        void clear() { ::SendMessage(*this, CB_RESETCONTENT, 0, 0); }
+        void clear() noexcept { _items.clear(); ::SendMessage(*this, CB_RESETCONTENT, 0, 0); }
 
-        const item * selected_item() const {
-          iSelected = ::SendMessage(*this, CB_GETCURSEL, 0, 0);
-          return (-1 == iSelected) ? nullptr : _items[iSelected];
+        const typename item::pointer selected_item() const noexcept {
+          auto i = ::SendMessage(*this, CB_GETCURSEL, 0, 0);
+          return (-1 == i) ? item::pointer() : _items[i];
         }
 
-        void add(const item& newval) {
-          _items.push_back(newval);
-          if (!_sorted) {
-            ::SendMessage(*this, CB_ADDSTRING, 0, _items.back().c_str());
-            return;
-          }
-          size_t x
-          vector::iterator it
-          auto pSelected = selected_item();
-          clear();
-          std::sort(_items.begin(), _items.end());
-          size_t x = -1;
-          for (size_t i = 0; i < _items.size(); ++i) {
-            if ( _items[i]  )
-            ::SendMessage(*this, CB_ADDSTRING, 0, _items[i]->text().c_str());
-          }
+        void add_item(const item& newval) {
+          _items.push_back(std::make_shared<item>(newval));
+          wtf::exception::throw_lasterr_if(::SendMessage(*this, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(_items.back()->text().c_str())), [](LRESULT l) { return CB_ERR == l || CB_ERRSPACE == l; });
         }
 
-        bool sorted() const { return _sorted; }
-        void sorted(bool newval) { _sorted = newval; if (newval) sort(); }
+        void add_item(const tstring& newval) { add_item(item(newval)); }
 
-        
+
+        callback<void(window*)> OnCloseUp;
+        callback<void(window*)> OnDblClick;
+        callback<void(window*)> OnDropDown;
+        callback<void(window*)> OnEditChange;
+        callback<void(window*)> OnEditUpdate;
+        callback<void(window*)> OnKillFocus;
+        callback<void(window*)> OnSelChange;
+        callback<void(window*)> OnSetFocus;
 
       private:
+        void on_wm_command(WPARAM wparam, LPARAM lparam) override {
+          switch (HIWORD(wparam)) {
+            case CBN_CLOSEUP: OnCloseUp(this); break;
+            case CBN_DBLCLK: OnDblClick(this); break;
+            case CBN_DROPDOWN: OnDropDown(this); break;
+            case CBN_EDITCHANGE: OnEditChange(this); break;
+            case CBN_EDITUPDATE: OnEditUpdate(this); break;
+            case CBN_KILLFOCUS: OnKillFocus(this); break;
+            case CBN_SETFOCUS: OnSelChange(this); break;
+          }
+          _super_t::on_wm_command(wparam, lparam);
+        }
 
-        item::vector _items;
-        bool _sorted = true;
+        typename item::vector _items;
       };
 
 
       template <typename _impl_t> using combobox_super_t = window_impl<_impl_t,
         policy::isa_combobox,
-        policy::has_text
+        policy::has_font,
+        wtf::policy::has_enable,
+        wtf::policy::has_move,
+        wtf::policy::wm_command
       >;
 
     }
 
-
-    struct simple_combobox : policy::combobox_super_t<simple_combobox> {
-      static constexpr DWORD Style = policy::combobox_super_t<simple_combobox>::Style | CBS_SIMPLE;
-      simple_combobox(window * parent) : policy::combobox_super_t<simple_combobox>(parent) {}
+    enum class combobox_styles {
+      simple,
+      drop_down,
+      drop_down_list
     };
 
-    struct edit_combobox : policy::combobox_super_t<edit_combobox> {
-      static constexpr DWORD Style = policy::combobox_super_t<simple_combobox>::Style | CBS_DROPDOWN;
-      edit_combobox(window * parent) : policy::combobox_super_t<edit_combobox>(parent) {}
+    template <bool _sorted, combobox_styles _style>
+    struct combobox : policy::combobox_super_t<combobox<_sorted, _style>> {
+      static constexpr bool sorted = _sorted;
+      static constexpr DWORD Style = window::Style | WS_VSCROLL | CBS_AUTOHSCROLL |
+        (_sorted ? CBS_SORT : 0) |
+        (combobox_styles::simple == _style ? CBS_SIMPLE : 0) |
+        (combobox_styles::drop_down == _style ? CBS_DROPDOWN : 0) |
+        (combobox_styles::drop_down_list == _style ? CBS_DROPDOWNLIST : 0);
+      combobox(window * parent) : policy::combobox_super_t<combobox<_sorted, _style>>(parent) {}
     };
-
-    struct static_combobox : policy::combobox_super_t<static_combobox> {
-      static constexpr DWORD Style = policy::combobox_super_t<static_combobox>::Style | CBS_DROPDOWNLIST;
-      static_combobox(window * parent) : policy::combobox_super_t<static_combobox>(parent) {}
-    };
-
-
   }
+
+  template <bool _sorted, controls::combobox_styles _style, WNDPROC window_proc> 
+  struct window_class<controls::combobox<_sorted, _style>, window_proc> {
+      constexpr LPCTSTR name() const noexcept { return WC_COMBOBOX; } 
+      static window_class& get() {
+        static window_class _window_class_ex; 
+        return _window_class_ex; 
+    }
+  };
+
+  /*
 #define _DEFINE_COMBO_WND_CLASS(_class) \
-    template <WNDPROC window_proc> struct window_class_ex<_class, window_proc> { \
+    template <WNDPROC window_proc> struct window_class<_class, window_proc> { \
       constexpr LPCTSTR name() const noexcept { return WC_COMBOBOX; }  \
-      static window_class_ex& get() {  \
-        static window_class_ex _window_class_ex;  \
+      static window_class& get() {  \
+        static window_class _window_class_ex;  \
         return _window_class_ex;  \
       }};
 
-  _DEFINE_COMBO_WND_CLASS(controls::simple_combobox);
-  _DEFINE_COMBO_WND_CLASS(controls::edit_combobox);
-  _DEFINE_COMBO_WND_CLASS(controls::static_combobox);
+  _DEFINE_COMBO_WND_CLASS(controls::simple_combobox<true>);
+  _DEFINE_COMBO_WND_CLASS(controls::simple_combobox<false>);
+  _DEFINE_COMBO_WND_CLASS(controls::edit_combobox<true>);
+  _DEFINE_COMBO_WND_CLASS(controls::edit_combobox<false>);
+  _DEFINE_COMBO_WND_CLASS(controls::static_combobox<true>);
+  _DEFINE_COMBO_WND_CLASS(controls::static_combobox<false>);
+  */
 }

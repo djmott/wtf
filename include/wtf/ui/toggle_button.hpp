@@ -16,7 +16,7 @@ namespace wtf{
         _super_t::border_style((_value ? border_styles::lowered : border_styles::raised));
       }
 
-      explicit isa_toggle_button(window * pParent) noexcept : _super_t(pParent) {}
+      explicit isa_toggle_button(window * pParent)  : _super_t(pParent) {}
 
     protected:
       
@@ -59,7 +59,7 @@ namespace wtf{
     policy::wm_nccalcsize,
     policy::wm_create
   >{
-    explicit toggle_button(window * pParent) noexcept : window_impl(pParent){}
+    explicit toggle_button(window * pParent)  : window_impl(pParent){}
   };
 
 }

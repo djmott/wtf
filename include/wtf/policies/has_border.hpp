@@ -93,7 +93,7 @@ namespace wtf{
        * 
        * @param pParent parent window
        */
-      explicit has_border(window * pParent) noexcept : _super_t(pParent){}
+      explicit has_border(window * pParent)  : _super_t(pParent){}
 
       /**
        * @brief Invalidates the non-client area forcing a border redraw

@@ -20,7 +20,7 @@ namespace wtf{
       virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *) = 0;
       virtual LRESULT on_wm_nccalcsize(RECT *) = 0;
 
-      explicit wm_nccalcsize(window * pParent) noexcept : _super_t(pParent){}
+      explicit wm_nccalcsize(window * pParent)  : _super_t(pParent){}
 
 
       void handle_msg(wtf::window_message& msg) override {

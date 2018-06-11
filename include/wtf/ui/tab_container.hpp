@@ -253,7 +253,7 @@ namespace wtf{
 
 
   struct tab_container : window_impl<tab_container, policy::isa_tab_container>{
-    explicit tab_container(window * pParent) noexcept : window_impl(pParent){}
+    explicit tab_container(window * pParent)  : window_impl(pParent){}
   };
 
 }
