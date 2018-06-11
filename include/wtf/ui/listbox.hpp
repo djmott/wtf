@@ -125,13 +125,6 @@ namespace wtf {
   }
 
 
-  namespace _ {
-
-    template <> struct policy_traits<policy::isa_listbox> {
-      using requires = policy_list<policy::isa_scroll_panel>;
-    };
-
-  }
 
   struct listbox : window_impl<listbox, policy::isa_listbox> {
     explicit listbox(window * pParent) : window_impl(pParent) {}
@@ -236,13 +229,7 @@ namespace wtf{
     };
   }
 
-  namespace _{
 
-    template <> struct policy_traits<policy::isa_listbox>{
-      using requires = policy_list<policy::isa_label, policy::wm_mouse_wheel>;
-    };
-
-  }
 
   struct listbox : window_impl<listbox, policy::isa_listbox>{
     explicit listbox(window * pParent) : window_impl(pParent){}
@@ -396,13 +383,6 @@ namespace wtf{
     };
   }
 
-  namespace _{
-
-    template <> struct policy_traits<policy::isa_listbox>{
-      using requires = policy_list<policy::isa_label, policy::isa_scroll_window, policy::wm_mouse_wheel>;
-    };
-
-  }
 
   struct listbox : window_impl<listbox, policy::isa_listbox>{
     explicit listbox(window * pParent) : window_impl(pParent){}

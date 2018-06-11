@@ -7,11 +7,15 @@ namespace wtf {
   namespace controls {
 
     namespace _ {
+
+      TCHAR sWC_EDIT[] = _T(WC_EDIT);
+
       template <typename _impl_t> using edit_impl = window_impl<_impl_t,
         policy::has_font,
         policy::has_text,
         wtf::policy::has_move
       >;
+
     }
 
     struct edit : _::edit_impl<edit> {
@@ -19,13 +23,7 @@ namespace wtf {
     };
 
   }
-
-
-  namespace _ {
-      TCHAR sWC_EDIT[] = _T(WC_EDIT);
-  }
-
-  template <WNDPROC window_proc> struct window_class<controls::edit, window_proc> : super_window_class<_::sWC_EDIT, controls::edit, window_proc> {
-  };
+  
+  template <WNDPROC window_proc> struct window_class<controls::edit, window_proc> : super_window_class<controls::_::sWC_EDIT, controls::edit, window_proc> {};
 
 }

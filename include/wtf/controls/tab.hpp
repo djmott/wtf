@@ -7,16 +7,20 @@ namespace wtf {
   namespace controls {
 
     namespace _ {
+      
+      TCHAR sWC_TABCONTROL[] = _T(WC_TABCONTROL);
+
       template <typename _impl_t> using tab_impl = window_impl<_impl_t,
         policy::has_font,
         wtf::policy::has_move,
         wtf::policy::wm_notify,
         wtf::policy::wm_size
       >;
+
     }
 
     struct tab : _::tab_impl<tab> {
-      //static constexpr DWORD ExStyle = 0;
+
       tab(window * parent) : _::tab_impl<tab>(parent) {
         wtf::_::init_common_controls::get();
       }
@@ -51,6 +55,8 @@ namespace wtf {
         const tstring& text() const noexcept { return _text; }
         wtf::window * window() const noexcept { return _window; }
       protected:
+        template <typename, template <typename> typename...> friend struct window_impl;
+
         int _index;
         tstring _text;
         wtf::window * _window;
@@ -73,7 +79,7 @@ namespace wtf {
         return get_item(current_index());
       }
 
-      virtual item::pointer add(typename item::pointer Item) {
+      item::pointer add_item(typename item::pointer Item) {
         TCITEM oTCItem;
         assert(Item->window());
         _items.push_back(Item);
@@ -86,11 +92,13 @@ namespace wtf {
         return Item;
       }
 
-      virtual item::pointer add(const tstring& text, window * child) {
-        return add(std::make_shared<item>(text, child));
+      item::pointer add_item(const tstring& text, window * child) {
+        return add_item(std::make_shared<item>(text, child));
       }
 
     protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+
       typename item::vector _items;
 
       void on_wm_size(const point<coord_frame::client>& p) override {
@@ -108,17 +116,17 @@ namespace wtf {
         auto r = wtf::rect<coord_frame::client>::get(*this);
         ::SendMessage(*this, TCM_ADJUSTRECT, FALSE, reinterpret_cast<LPARAM>(&r));
         auto Item = get_item(i);
-        ::MoveWindow(*Item->window(), r.left, r.top, r.right-r.left, r.bottom-r.top, FALSE);
+        wtf::exception::throw_lasterr_if(::MoveWindow(*Item->window(), r.left, r.top, r.right - r.left, r.bottom - r.top, FALSE), [](BOOL b) { return 0 == b; });
         ::ShowWindow(*Item->window(), SW_SHOW);
       }
 
       void on_wm_notify(NMHDR * notification) override {
         resize_children();
         switch (notification->code) {
-        case NM_CLICK: OnClick(this); current_item()->OnClick(current_item()); break;
-        case NM_DBLCLK: OnDblClick(this); current_item()->OnDblClick(current_item()); break;
-        case TCN_SELCHANGE: OnChanged(this); current_item()->OnChanged(current_item());  break;
-        case TCN_SELCHANGING: OnChanging(this); current_item()->OnChanging(current_item());  break;
+          case NM_CLICK: OnClick(this); current_item()->OnClick(current_item()); break;
+          case NM_DBLCLK: OnDblClick(this); current_item()->OnDblClick(current_item()); break;
+          case TCN_SELCHANGE: OnChanged(this); current_item()->OnChanged(current_item());  break;
+          case TCN_SELCHANGING: OnChanging(this); current_item()->OnChanging(current_item());  break;
         }
         _::tab_impl<tab>::on_wm_notify(notification);
       }
@@ -126,11 +134,6 @@ namespace wtf {
 
   }
 
-  namespace _ {
-    TCHAR sWC_TABCONTROL[] = _T(WC_TABCONTROL);
-  }
-
-  template <WNDPROC window_proc> struct window_class<controls::tab, window_proc> : super_window_class<_::sWC_TABCONTROL, controls::tab, window_proc> {
-  };
+  template <WNDPROC window_proc> struct window_class<controls::tab, window_proc> : super_window_class<controls::_::sWC_TABCONTROL, controls::tab, window_proc> {};
 
 }

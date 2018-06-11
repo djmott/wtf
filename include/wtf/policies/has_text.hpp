@@ -125,9 +125,5 @@ namespace wtf{
     };
   }
 
-  namespace _{
-    template <> struct policy_traits<policy::has_text>{
-      using requires = policy_list<policy::has_font, policy::wm_paint>;
-    };
-  }
+
 }

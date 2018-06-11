@@ -62,11 +62,4 @@ namespace wtf{
     };
   }
 
-
-  namespace _{
-    template <> struct policy_traits<policy::has_repeat_click>{
-      using requires = policy_list<policy::has_click, policy::has_timer, policy::wm_mouse_leave>;
-    };
-  }
-
 }

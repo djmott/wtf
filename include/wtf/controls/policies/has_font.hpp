@@ -21,6 +21,7 @@ namespace wtf {
         }
 
       protected:
+        template <typename, template <typename> typename...> friend struct window_impl;
 
         void on_created() override {
           ::SendMessage(*this, WM_SETFONT, reinterpret_cast<WPARAM>(static_cast<HFONT>(_hfont)), TRUE);

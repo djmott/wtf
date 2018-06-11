@@ -53,9 +53,5 @@ namespace wtf{
     };
   }
 
-  namespace _{
-    template <> struct policy_traits<policy::has_cursor>{
-      using requires = policy_list<policy::wm_setcursor>;
-    };
-  }
+
 }

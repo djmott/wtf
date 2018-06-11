@@ -36,3 +36,5 @@ CodeDB
 **/*.VC.db
 /docs/Doxyfile
 /CMakeSettings.json
+/docs/html
+/doxygen_sqlite3.db

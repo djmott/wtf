@@ -51,9 +51,7 @@ namespace wtf {
     };
 
   }
-  namespace _ {
-    TCHAR sWC_BUTTON[] = _T(WC_BUTTON);
-  }
+  namespace _ { TCHAR sWC_BUTTON[] = _T(WC_BUTTON); }
 
   template <WNDPROC window_proc> struct window_class<controls::button, window_proc> : super_window_class<_::sWC_BUTTON, controls::button, window_proc> {};
   template <WNDPROC window_proc> struct window_class<controls::checkbox, window_proc> : super_window_class<_::sWC_BUTTON, controls::checkbox, window_proc> {};
@@ -61,19 +59,4 @@ namespace wtf {
   template <WNDPROC window_proc> struct window_class<controls::radio_group, window_proc> : super_window_class<_::sWC_BUTTON, controls::radio_group, window_proc> {};
   template <WNDPROC window_proc> struct window_class<controls::tristate, window_proc> : super_window_class<_::sWC_BUTTON, controls::tristate, window_proc> {};
 
-  /*
-#define _DEFINE_BUTTON_WND_CLASS(_class) \
-  template <WNDPROC window_proc> struct window_class<_class, window_proc> { \
-    constexpr LPCTSTR name() const noexcept { return WC_BUTTON; } \
-    static window_class& get() { \
-      static window_class _window_class_ex; \
-      return _window_class_ex; \
-    }};
-
-  _DEFINE_BUTTON_WND_CLASS(controls::button);
-  _DEFINE_BUTTON_WND_CLASS(controls::checkbox);
-  _DEFINE_BUTTON_WND_CLASS(controls::radio_button);
-  _DEFINE_BUTTON_WND_CLASS(controls::radio_group);
-  _DEFINE_BUTTON_WND_CLASS(controls::tristate);
-*/
 }

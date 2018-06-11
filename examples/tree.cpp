@@ -3,9 +3,31 @@
 using namespace wtf;
 
 struct frmMain : form {
-#if 0
-  frmMain() : form(), _tree(this){
 
+  frmMain() : form(), _tree(this) {
+
+    OnSize += [this](...) {
+      _tree.move(10, 10, width() - 20, height() - 20);
+    };
+    OnCreate += [this](...) {
+      auto oColors = _tree.add_item(_T("Colors"));
+      _tree.add_item(oColors, "Red");
+      _tree.add_item(oColors, "Orange");
+      _tree.add_item(oColors, "Yellow");
+      _tree.add_item(oColors, "Green");
+      _tree.add_item(oColors, "Blue");
+      _tree.add_item(oColors, "Purple");
+      _tree.add_item(oColors, "White");
+      auto oNumbers = _tree.add_item(_T("Numbers"));
+      _tree.add_item(oNumbers, "1");
+      _tree.add_item(oNumbers, "2");
+      _tree.add_item(oNumbers, "3");
+      _tree.add_item(oNumbers, "4");
+      _tree.add_item(oNumbers, "5");
+    };
+    
+  }
+#if 0
     _tree.OnItemSelected += [this](tree::item::pointer oItem) {
       titlebar(oItem->text());
     };
@@ -27,9 +49,11 @@ struct frmMain : form {
       oBlackish->add_item("Black");
       oBlackish->add_item("Brown");
     };
-  }
-  tree _tree;
 #endif
+ 
+  wtf::controls::tree _tree;
+
+
 };
 
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {

@@ -6,8 +6,8 @@
 namespace wtf{
 
  
-  /** @class window base class of all windows
-  */
+  /** @class window super class of all windows
+  */ 
   struct window{
     /// an implementation may use different window styles 
     static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
@@ -59,9 +59,9 @@ namespace wtf{
 
     virtual int run() = 0;
 
-  protected:
-
     template <typename, template <typename> typename...> friend struct window_impl;
+
+  protected:
 
     window * _parent = nullptr;
     HWND _handle = nullptr;
@@ -69,6 +69,8 @@ namespace wtf{
 
     virtual void on_created() { OnCreated(this); }
     
+  private:
+
     virtual void handle_msg(wtf::window_message& ) = 0;
     virtual void fwd_msg(wtf::window_message&, const std::type_info&) = 0;
   };
@@ -82,11 +84,11 @@ namespace wtf{
 
   template <typename _impl_t, template <typename> typename _head_t, template <typename> typename..._tail_t>
   struct window_impl<_impl_t, _head_t, _tail_t...> :  _head_t<window_impl<_impl_t, _tail_t...>> {
+    template <typename, template <typename> typename...> friend struct window_impl;
 
     template <typename ... _arg_ts> window_impl(_arg_ts&&...args) noexcept : _head_t<window_impl<_impl_t, _tail_t...>>(std::forward<_arg_ts>(args)...) {}
 
   private:
-    template <typename, template <typename> typename...> friend struct window_impl;
 
     void fwd_msg(wtf::window_message& msg, const std::type_info& last_handler) override {
       using super = _head_t<window_impl<_impl_t, _tail_t...>>;
@@ -95,14 +97,15 @@ namespace wtf{
         super::fwd_msg(msg, last_handler);
       }else{
 #if _DEBUG
-        tstring sMsg = _T("Forwarding message to ") + to_tstring(typeid(super).name()) + _T("\n");
-        OutputDebugString(sMsg.c_str());
+        if (WM_CREATE == msg.umsg) {
+          tstring sMsg = _T("Forwarding message to ") + to_tstring(typeid(super).name()) + _T("\n");
+          OutputDebugString(sMsg.c_str());
+        }
 #endif
         super::handle_msg(msg);
         super::fwd_msg(msg, typeid(&super::handle_msg));
       }
     }
-
   };
 
   template <typename _impl_t> struct window_impl<_impl_t> : window {

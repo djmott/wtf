@@ -47,6 +47,7 @@ namespace wtf{
       }
 
     protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
 
       explicit has_move(window * pParent)  : _super_t(pParent){}
 

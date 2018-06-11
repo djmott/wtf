@@ -29,12 +29,7 @@ namespace wtf{
     };
   }
 
-  namespace _{
-    template <> struct policy_traits<policy::isa_menu>{
-      using requires = policy_list<policy::isa_panel>;
-    };
 
-  }
 
 
   struct menu : window_impl<menu, policy::isa_menu>{

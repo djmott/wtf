@@ -24,11 +24,6 @@ namespace wtf{
     };
   }
 
-  namespace _{
-    template <> struct policy_traits<policy::isa_tab_page>{
-      using requires = policy_list<policy::isa_panel>;
-    };
-  }
 
   class tab_page : public window_impl<tab_page, policy::isa_tab_page>{
    public:
@@ -243,13 +238,6 @@ namespace wtf{
     };
   }
 
-  namespace _{
-
-    template <> struct policy_traits<policy::isa_tab_container>{
-      using requires = policy_list<policy::isa_panel>;
-    };
-
-  }
 
 
   struct tab_container : window_impl<tab_container, policy::isa_tab_container>{

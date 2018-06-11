@@ -14,15 +14,15 @@ endif()
 include_directories(include)
 
 add_executable(wtf WIN32
-	examples/edit.cpp
+	examples/tree.cpp
 	include/wtf/brush.hpp
 	include/wtf/callback.hpp
 	include/wtf/color.hpp
-	include/wtf/combobox.hpp
 	include/wtf/controls/button.hpp
 	include/wtf/controls/combobox.hpp
 	include/wtf/controls/edit.hpp
 	include/wtf/controls/tab.hpp
+	include/wtf/controls/tree.hpp
 	include/wtf/controls/policies/has_font.hpp
 	include/wtf/controls/policies/has_text.hpp
 	include/wtf/cursor.hpp
@@ -97,6 +97,7 @@ add_executable(wtf WIN32
 	include/wtf/size.hpp
 	include/wtf/ui/button.hpp
 	include/wtf/ui/checkbox.hpp
+	include/wtf/ui/combobox.hpp
 	include/wtf/ui/form.hpp
 	include/wtf/ui/inputbox.hpp
 	include/wtf/ui/label.hpp
@@ -113,10 +114,11 @@ add_executable(wtf WIN32
 	include/wtf/ui/toggle_button.hpp
 	include/wtf/ui/tree.hpp
 	include/wtf/window.hpp
-        include/wtf/window_class.hpp
+	include/wtf/window_class.hpp
 	include/wtf/window_message.hpp
 	include/wtf/wtf.hpp
 	include/wtf/_/effects.hpp
+	include/wtf/_/meta.hpp
 	include/wtf/_/init_common_controls.hpp
 	include/wtf/_/msg_names.hpp
 	include/wtf/_/SystemParameters.hpp
@@ -134,7 +136,17 @@ if(BUILD_DOCS AND DOXYGEN_FOUND)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile)
   add_custom_target(
     docs COMMAND "${DOXYGEN_EXECUTABLE}" Doxyfile
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile
     COMMENT "Generating Doxygen API Documentation" VERBATIM
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/docs"
+	SOURCES
+		LICENSE.md
+		README.md
+		docs/using_wtf.md
+		docs/hierarchy_gen.md
+		docs/message_handling.md
+		docs/Doxyfile.in
+		docs/footer.html
+		docs/Doxyfile
   )
 endif()

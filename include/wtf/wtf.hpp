@@ -77,12 +77,6 @@ namespace wtf {
       static tstring get(const char * value) { return tstring(value); }
     };
 
-    template <template <class> class ... _policy_ts> struct policy_list;
-
-    template <template <class> class> struct policy_traits{
-      using requires = policy_list<>;
-    };
-
   }
 
 
@@ -98,14 +92,29 @@ namespace wtf {
 
 }
 
-#define TODO(...)
+#if defined(_MSC_VER)
+  #define PRAGMA_(x) __pragma(x)
+  #define NOVTABLE __declspec(novtable)
+#else
+  #define PRAGMA_(x) _Pragma( #x )
+  #define NOVTABLE
+#endif
 
+#define TODO( x ) PRAGMA_(message ( __FILE__ ":" QUOTE(__LINE__) " : TODO : " x ))
+#define NOTE( x ) PRAGMA_(message ( __FILE__ ":" QUOTE(__LINE__) " : NOTE : " x ))
+
+#if defined(_DEBUG)
+  #define D_(...) __VA_ARGS__
+  #define R_(...)
+#else
+  #define D_(...)
+  #define R_(...) __VA_ARGS__
+#endif
 /**
 @defgroup UI Widgets
 */
 
 #include "_/meta.hpp"
-
 #include "exception.hpp"
 #include "message_box.hpp"
 #include "callback.hpp"
@@ -119,7 +128,6 @@ namespace wtf {
 #include "pen.hpp"
 #include "region.hpp"
 #include "font.hpp"
-
 #include "window_class.hpp"
 #include "device_context.hpp"
 #include "_/init_common_controls.hpp"
@@ -129,14 +137,9 @@ namespace wtf {
 #include "paint_struct.hpp"
 #include "_/SystemParameters.hpp"
 #include "message.hpp"
-//#include "_/policy_list.hpp"
 #include "_/effects.hpp"
-
 #include "window_message.hpp"
 #include "window.hpp"
-
-
-
 #include "messages/messages.hpp"
 #include "messages/wm_activate.hpp"
 #include "messages/wm_char.hpp"
@@ -171,8 +174,6 @@ namespace wtf {
 #include "messages/wm_size.hpp"
 #include "messages/wm_sizing.hpp"
 #include "messages/wm_timer.hpp"
-
-
 
 #include "policies/has_background.hpp"
 #include "policies/has_border.hpp"
@@ -219,4 +220,4 @@ namespace wtf {
 #include "controls/combobox.hpp"
 #include "controls/edit.hpp"
 #include "controls/tab.hpp"
-
+#include "controls/tree.hpp"

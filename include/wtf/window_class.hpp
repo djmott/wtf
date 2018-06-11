@@ -6,7 +6,7 @@ namespace wtf {
 
 
   template <typename _impl_t, WNDPROC window_proc>
-  struct __declspec(novtable) window_class : WNDCLASSEX {
+  struct NOVTABLE window_class : WNDCLASSEX {
 
     static window_class& get() {
       static window_class _window_class_ex;
@@ -51,7 +51,7 @@ namespace wtf {
   };
 
   template <const char * _original_class_name, typename _impl_t, WNDPROC window_proc> 
-  struct __declspec(novtable) super_window_class : WNDCLASSEX {
+  struct NOVTABLE super_window_class : WNDCLASSEX {
     
     static super_window_class& get() {
       static super_window_class _window_class_ex;

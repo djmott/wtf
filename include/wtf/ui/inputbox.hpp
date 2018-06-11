@@ -162,13 +162,6 @@ namespace wtf {
 		};
 	}
 
-	namespace _ {
-		template <> struct policy_traits<policy::isa_inputbox> {
-			using requires = policy_list<policy::isa_label, policy::has_cursor, policy::has_caret,
-				policy::has_focus, policy::wm_keydown, policy::wm_char>;
-		};
-
-	}
 
 	struct inputbox : window_impl<inputbox, policy::isa_inputbox> {
 		explicit inputbox(window * pParent)  : window_impl(pParent) {}

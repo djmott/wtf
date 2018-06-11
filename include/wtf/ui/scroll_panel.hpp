@@ -56,11 +56,7 @@ namespace wtf{
     };
   }
 
-  namespace _{
-    template <> struct policy_traits<policy::isa_scroll_panel>{
-      using requires = policy_list<policy::isa_panel>;
-    };
-  }
+
 
 
   class vscroll_panel : public window_impl<vscroll_panel, policy::isa_scroll_panel> {

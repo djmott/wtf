@@ -90,11 +90,11 @@ namespace wtf{
   template <DWORD _ExStyle, DWORD _Style>
   struct form_impl : _::form_impl_super_t<form_impl<_ExStyle, _Style>> 
   {
-    static const DWORD ExStyle = _ExStyle;
-    static const DWORD Style = _Style;
+    static constexpr DWORD ExStyle = _ExStyle;
+    static constexpr DWORD Style = _Style;
 
-    explicit form_impl(window *parent)  : window_impl(parent) {}
-    form_impl() : window_impl(nullptr){}
+    explicit form_impl(window *parent)  : _::form_impl_super_t<form_impl<_ExStyle, _Style>> (parent) {}
+    form_impl() : _::form_impl_super_t<form_impl<_ExStyle, _Style>> (nullptr){}
 
     int run() override final{
       message oMsg;
@@ -104,7 +104,9 @@ namespace wtf{
     }
 
   };
-
+  /**
+   * @
+   */
   struct form : form_impl<WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE|WS_OVERLAPPEDWINDOW> {
   private:
     using _super_t = form_impl<WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW>;

@@ -89,7 +89,7 @@ namespace wtf{
     protected:
 
       /**
-       * @brief Construct a new has border object
+       * @brief Construct a new has_border object
        * 
        * @param pParent parent window
        */
@@ -157,9 +157,5 @@ namespace wtf{
 
   }
 
-  namespace _{
-    template <> struct policy_traits<policy::has_border>{
-      using requires = policy_list<policy::wm_ncpaint, policy::wm_nccalcsize>;
-    };
-  }
+
 }

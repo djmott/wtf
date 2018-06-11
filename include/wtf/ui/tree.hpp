@@ -397,11 +397,6 @@ namespace wtf{
     };
   }
 
-  namespace _{
-    template <> struct policy_traits<policy::isa_tree>{
-      using requires = policy_list<policy::isa_label, policy::wm_mouse_wheel, policy::wm_dblclick>;
-    };
-  }
 
   struct tree : window_impl<tree, policy::isa_tree>{
     explicit tree(window * pParent)  : window_impl(pParent){}

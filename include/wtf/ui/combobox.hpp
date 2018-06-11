@@ -10,11 +10,6 @@ namespace wtf{
 
   }
 
-  namespace _{
-    template <> struct policy_traits<policy::isa_combobox>{
-      using requires = policy_list<>;
-    };
-  }
 
   struct combobox : window_impl<combobox, policy::isa_combobox>{
   private:

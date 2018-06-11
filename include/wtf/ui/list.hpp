@@ -37,11 +37,6 @@ namespace wtf {
 
   }
 
-  namespace _ {
-    template <> struct policy_traits<policy::isa_list> {
-      using requires = policy_list<policy::isa_panel>;
-    };
-  }
 
   class list : public window_impl<list, policy::isa_list> {
     using _super_t = window_impl<list, policy::isa_list>;

@@ -38,9 +38,5 @@ namespace wtf{
     };
   }
 
-  namespace _{
-    template <> struct policy_traits<policy::has_click>{
-      using requires = policy_list<policy::wm_mouse_down, policy::wm_mouse_up>;
-    };
-  }
+
 }
