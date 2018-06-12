@@ -85,7 +85,8 @@ namespace wtf{
       policy::wm_activate, 
       policy::wm_paint,
       policy::wm_erasebkgnd,
-      policy::wm_setcursor>;
+      policy::wm_setcursor,
+      policy::wm_notifyformat>;
   }
 
   template <DWORD _ExStyle, DWORD _Style>
@@ -95,7 +96,10 @@ namespace wtf{
     static constexpr DWORD Style = _Style;
 
     explicit form_impl(window *parent)  : _::form_impl_super_t<form_impl<_ExStyle, _Style>> (parent) {}
-    form_impl() : _::form_impl_super_t<form_impl<_ExStyle, _Style>> (nullptr){}
+    form_impl() : _::form_impl_super_t<form_impl<_ExStyle, _Style>> (nullptr){
+      coinitialize::get();
+      wtf::_::init_common_controls::get();
+    }
 
     int run() override final{
       message oMsg;

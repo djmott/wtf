@@ -20,21 +20,16 @@ namespace wtf {
     }
 
     struct tab : _::tab_impl<tab> {
+      static constexpr DWORD ExStyle = WS_EX_CONTROLPARENT;
+      static constexpr DWORD Style = TCS_FOCUSNEVER | WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN;
 
       tab(window * parent) : _::tab_impl<tab>(parent) {
-        wtf::_::init_common_controls::get();
       }
 
       callback<void(window*)> OnClick;
       callback<void(window*)> OnDblClick;
       callback<void(window*)> OnChanging;
       callback<void(window*)> OnChanged;
-
-      int run() override {
-        auto ret = _::tab_impl<tab>::run();
-        wtf::exception::throw_lasterr_if(::SendMessage(*this, TCM_SETITEMEXTRA, sizeof(void*), 0), [](LRESULT l) { return FALSE == l; });
-        return ret;
-      }
 
       struct item {
         using pointer = std::shared_ptr<item>;
@@ -45,50 +40,35 @@ namespace wtf {
         item(item&&) = default;
         item& operator=(const item&) = default;
         item& operator=(item&&) = default;
-        item(const tstring& Text, window * ChildWindow) : _index(-1), _text(Text), _window(ChildWindow){}
-
-        callback<void(item*)> OnClick;
-        callback<void(item*)> OnDblClick;
-        callback<void(item*)> OnChanged;
-        callback<void(item*)> OnChanging;
+        item(const tstring& Text, window * ChildWindow) : _text(Text), _window(ChildWindow){}
 
         const tstring& text() const noexcept { return _text; }
         wtf::window * window() const noexcept { return _window; }
       protected:
         template <typename, template <typename> typename...> friend struct window_impl;
 
-        int _index;
         tstring _text;
         wtf::window * _window;
       };
 
 
-      item * get_item(int index) const {
-        TCITEM oTCItem;
-        oTCItem.lParam = 0;
-        oTCItem.mask = TCIF_PARAM;
-        wtf::exception::throw_lasterr_if(::SendMessage(*this, TCM_GETITEM, index, reinterpret_cast<LPARAM>(&oTCItem)), [](LRESULT l) { return FALSE == l; });
-        return reinterpret_cast<item*>(oTCItem.lParam);
-      }
+      item * get_item(int index) const { return _items[index].get(); }
 
       int current_index() const {
         return static_cast<int>(::SendMessage(*this, TCM_GETCURSEL, 0, 0));
       }
 
-      item * current_item() const {
-        return get_item(current_index());
-      }
+      item * current_item() const { return get_item(current_index()); }
 
       item::pointer add_item(typename item::pointer Item) {
         TCITEM oTCItem;
         assert(Item->window());
+        oTCItem.pszText = const_cast<LPTSTR>(Item->text().c_str());
+        oTCItem.mask = TCIF_TEXT;
+        wtf::exception::throw_lasterr_if(::SendMessage(*this, TCM_INSERTITEM, _items.size(), reinterpret_cast<LPARAM>(&oTCItem)), [](LRESULT l) { return -1 == l; });
         _items.push_back(Item);
         window::add(Item->window());
         resize_children();
-        oTCItem.pszText = const_cast<LPTSTR>(Item->text().c_str());
-        oTCItem.lParam = reinterpret_cast<LPARAM>(Item.get());
-        oTCItem.mask = TCIF_PARAM | TCIF_TEXT;
-        wtf::exception::throw_lasterr_if(::SendMessage(*this, TCM_INSERTITEM, _items.size(), reinterpret_cast<LPARAM>(&oTCItem)), [](LRESULT l) { return -1 == l; });
         return Item;
       }
 
@@ -120,12 +100,11 @@ namespace wtf {
       }
 
       void on_wm_notify(NMHDR * notification) override {
-        resize_children();
         switch (notification->code) {
-          case NM_CLICK: OnClick(this); current_item()->OnClick(current_item()); break;
-          case NM_DBLCLK: OnDblClick(this); current_item()->OnDblClick(current_item()); break;
-          case TCN_SELCHANGE: OnChanged(this); current_item()->OnChanged(current_item());  break;
-          case TCN_SELCHANGING: OnChanging(this); current_item()->OnChanging(current_item());  break;
+          case NM_CLICK: OnClick(this); resize_children(); break;
+          case NM_DBLCLK: OnDblClick(this); resize_children(); break;
+          case TCN_SELCHANGE: OnChanged(this); resize_children();  break;
+          case TCN_SELCHANGING: OnChanging(this); resize_children();  break;
         }
         _::tab_impl<tab>::on_wm_notify(notification);
       }

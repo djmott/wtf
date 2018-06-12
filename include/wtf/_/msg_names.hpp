@@ -5,7 +5,7 @@
 
 namespace wtf {
   namespace _ {
-    static const std::string &msg_name(UINT msg) {
+    static const tstring msg_name(UINT msg) {
       static std::map <UINT, tstring> names = {
       #if defined(WM_MOUSEHWHEEL)
         {  WM_MOUSEHWHEEL, _T("WM_MOUSEHWHEEL") },
@@ -271,6 +271,7 @@ namespace wtf {
         { WM_APP,  _T("WM_APP") },
         {WM_USER, _T("WM_USER")}
       };
+      if (names.cend() == names.find(msg)) return to_tstring(msg);
       return names[msg];
     }
   }

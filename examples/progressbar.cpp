@@ -2,21 +2,25 @@
 using namespace wtf;
 
 struct frmMain : form {
-#if 0
-  frmMain() : form(), _hprogressbar(this), _vprogressbar(this){
+
+  frmMain() : form(), _hprogressbar(this), _vprogressbar(this), _hmarquee(this){
     OnCreate += [this](...) {
-      _hprogressbar.orientation(orientations::horizontal);
+      _hprogressbar.set_range(0, 100);
       _hprogressbar.value(50);
-      _vprogressbar.orientation(orientations::vertical);
+      _vprogressbar.set_range(0, 100);
       _vprogressbar.value(50);
+      _hmarquee.set_marque(true);
     };
     OnSize += [this](...) {
       _hprogressbar.move(10, 10, this->width() - 20, 25);
-      _vprogressbar.move(10, 40, 20, this->height() - 60);
+      _vprogressbar.move(10, 40, 200, this->height() - 60);
+      _hmarquee.move(220, 40, this->width() - 230, 25);
     };
   }
-  progress_bar _hprogressbar, _vprogressbar;
-#endif
+  controls::progressbar<orientations::horizontal, false> _hprogressbar;
+  controls::progressbar<orientations::vertical, true> _vprogressbar;
+  controls::marquee<orientations::horizontal, true> _hmarquee;
+
 };
 
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {

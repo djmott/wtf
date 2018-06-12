@@ -5,6 +5,10 @@
 
 #define NOMINMAX 1
 
+#if !defined(_WIN32_IE)
+#define _WIN32_IE 0x600
+#endif
+
 #include <tchar.h>
 #include <Windows.h>
 #include <windowsx.h>
@@ -25,6 +29,15 @@
 #include <locale>
 #include <codecvt>
 
+#if !defined(WTF_USE_VISUAL_STYLES)
+  #define WTF_USE_VISUAL_STYLES 0
+#endif
+
+#if WTF_USE_VISUAL_STYLES
+#include <Uxtheme.h>
+#pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#pragma comment(lib, "uxtheme.lib")
+#endif
 
 /** @namespace wtf
 Primary namespace
@@ -116,7 +129,6 @@ namespace wtf {
 */
 
 #include "_/meta.hpp"
-#include "_/init_common_controls.hpp"
 #include "_/msg_names.hpp"
 #include "_/weak_enum.hpp"
 
@@ -143,6 +155,8 @@ namespace wtf {
 #include "_/effects.hpp"
 #include "_/text_metrics.hpp"
 #include "_/SystemParameters.hpp"
+#include "_/coinitialize.hpp"
+#include "_/init_common_controls.hpp"
 
 #include "messages/messages.hpp"
 #include "messages/wm_activate.hpp"
@@ -171,6 +185,7 @@ namespace wtf {
 #include "messages/wm_ncmouse_up.hpp"
 #include "messages/wm_ncpaint.hpp"
 #include "messages/wm_notify.hpp"
+#include "messages/wm_notifyformat.hpp"
 #include "messages/wm_paint.hpp"
 #include "messages/wm_setcursor.hpp"
 #include "messages/wm_setfocus.hpp"
@@ -209,6 +224,7 @@ namespace wtf {
 #include "controls/combobox.hpp"
 #include "controls/edit.hpp"
 #include "controls/label.hpp"
+#include "controls/progressbar.hpp"
 #include "controls/tab.hpp"
 #include "controls/tree.hpp"
 

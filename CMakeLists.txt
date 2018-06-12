@@ -10,11 +10,25 @@ else()
 	add_definitions(-DNDEBUG)
 endif()
 
+option(BUILD_UNICODE "Build UNICODE" TRUE)
+if(BUILD_UNICODE)
+	add_definitions(-DUNICODE -D_UNICODE)
+else()
+	add_definitions(-DMBCS -D_MBCS)
+endif()
 
 include_directories(include)
 
 add_executable(wtf WIN32
 	examples/tabs.cpp
+	include/wtf/_/coinitialize.hpp
+	include/wtf/_/effects.hpp
+	include/wtf/_/init_common_controls.hpp
+	include/wtf/_/meta.hpp
+	include/wtf/_/msg_names.hpp
+	include/wtf/_/SystemParameters.hpp
+	include/wtf/_/text_metrics.hpp
+	include/wtf/_/weak_enum.hpp
 	include/wtf/brush.hpp
 	include/wtf/callback.hpp
 	include/wtf/color.hpp
@@ -41,7 +55,7 @@ add_executable(wtf WIN32
 	include/wtf/controls/combobox.hpp
 	include/wtf/controls/edit.hpp
 	include/wtf/controls/label.hpp
-	include/wtf/controls/policies/
+	include/wtf/controls/progressbar.hpp
 	include/wtf/controls/tab.hpp
 	include/wtf/controls/tree.hpp
 	include/wtf/controls/policies/has_font.hpp
@@ -74,6 +88,7 @@ add_executable(wtf WIN32
 	include/wtf/messages/wm_ncmouse_up.hpp
 	include/wtf/messages/wm_ncpaint.hpp
 	include/wtf/messages/wm_notify.hpp
+	include/wtf/messages/wm_notifyformat.hpp
 	include/wtf/messages/wm_paint.hpp
 	include/wtf/messages/wm_setcursor.hpp
 	include/wtf/messages/wm_setfocus.hpp

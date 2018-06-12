@@ -14,8 +14,8 @@ namespace wtf{
     template <typename _super_t>
     struct has_orientation : _super_t{
       
-      virtual orientations orientation() const noexcept { return _orientation; }
-      virtual void orientation(orientations newval) noexcept { _orientation = newval; }
+      virtual orientations orientation() const { return _orientation; }
+      virtual void orientation(orientations newval) { _orientation = newval; }
 
     protected:
       explicit has_orientation(window * pParent)  : _super_t(pParent){}

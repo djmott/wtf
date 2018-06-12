@@ -119,7 +119,7 @@ namespace wtf{
       return 0;
     }
 
-  private:
+  protected:
     template <typename, template <typename> typename...> friend struct window_impl;
 
     void handle_msg(wtf::window_message& msg) override {}
@@ -161,7 +161,7 @@ namespace wtf{
           pThis = reinterpret_cast<_impl_t*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
         }
 
-        if (!pThis) return DefWindowProc(hwnd, umsg, wparam, lparam);
+        if (!pThis) return CallWindowProc(window_class_type::get().default_window_proc(), hwnd, umsg, wparam, lparam);
 
         wtf::window_message msg{ hwnd, umsg, wparam, lparam, false, 0 };
 
@@ -172,6 +172,9 @@ namespace wtf{
             if (hTarget != pChild->_handle) continue;
             pChild->fwd_msg(msg, typeid(bool));
             break;
+          }
+          if (WM_NOTIFY == umsg) {
+            msg.bhandled = false;
           }
         };
         if (!msg.bhandled) pThis->fwd_msg(msg, typeid(bool));

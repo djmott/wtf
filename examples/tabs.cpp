@@ -4,17 +4,16 @@ using namespace wtf;
 
 struct frmMain : form {
 
-  frmMain() : form(), _tab(this), _button(this), _edit(this){
+  frmMain() : form(), _tab(this), _button(&_tab), _edit(&_tab){
 
-    _edit.OnCreated += [this](...) {
-      _edit.text(_T("This is an edit box"));
+    _tab.OnCreated += [this](...) {
       _tab.add_item(_T("author"), &_edit);
-    };
-    _button.OnCreated += [this](...){
-      _button.text(_T("Clicky Clicky"));
       _tab.add_item(_T("clicky"), &_button);
+      _edit.text(_T("This is an edit box"));
+      _button.text(_T("Clicky Clicky"));
     };
     OnSize += [this](...) {
+
       _tab.move(50, 50, width() - 70, height() - 70);
     };
   }

@@ -29,7 +29,7 @@ namespace wtf {
           ICC_NATIVEFNTCTL_CLASS |
           ICC_STANDARD_CLASSES |
           ICC_LINK_CLASS;
-
+        wtf::exception::throw_lasterr_if(InitCommonControlsEx(this), [](BOOL b) { return !b; });
       }
     };
   }
