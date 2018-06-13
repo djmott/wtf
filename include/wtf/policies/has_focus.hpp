@@ -16,9 +16,8 @@ namespace wtf{
 
       bool got_focus() const{ return _super_t::_handle == ::GetFocus(); }
 
-    protected:
+      has_focus() : _super_t() {}
 
-      explicit has_focus(window * pParent)  : _super_t(pParent){}
 
     };
   }

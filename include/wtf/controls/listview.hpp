@@ -18,7 +18,7 @@ namespace wtf {
     }
 
     struct listview : policy::listview_super_t<listview> {
-      explicit listview(window * pParent) : policy::listview_super_t<listview>(pParent) {
+      explicit listview() : policy::listview_super_t<listview>() {
         wtf::_::init_common_controls<wtf::_::listview_classes>::get();
       }
     };

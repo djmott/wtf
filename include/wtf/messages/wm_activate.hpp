@@ -18,6 +18,7 @@ namespace wtf{
       callback<void(window * sender)> OnActivate;
       callback<void(window * sender)> OnDeactivate;
 
+      wm_activate() : _super_t() {}
 
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
@@ -31,7 +32,6 @@ namespace wtf{
         if (WM_ACTIVATE == msg.umsg) on_wm_activate(static_cast<activate_mode>(LOWORD(msg.wparam)), HIWORD(msg.wparam) ? true : false, reinterpret_cast<HWND>(msg.lparam));
       }
 
-      explicit wm_activate(window * pParent)  : _super_t(pParent){}
 
     };
 

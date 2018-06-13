@@ -11,12 +11,13 @@ namespace wtf {
 
       callback<void(window * sender, WPARAM, LPARAM)> OnCommand;
 
+      wm_command() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_command(WPARAM wparam,LPARAM lparam) { OnCommand(this, wparam, lparam); }
 
-      explicit wm_command(window * pParent)  : _super_t(pParent) {}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_COMMAND != msg.umsg) return;

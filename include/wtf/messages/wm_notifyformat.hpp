@@ -10,11 +10,12 @@ namespace wtf {
     template <typename _super_t>
     struct wm_notifyformat : _super_t {
 
+      wm_notifyformat() : _super_t() {}
+
     protected:
 
       template <typename, template <typename> typename...> friend struct window_impl;
 
-      explicit wm_notifyformat(window * pParent) : _super_t(pParent) {}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_NOTIFYFORMAT != msg.umsg) return;

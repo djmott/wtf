@@ -22,9 +22,9 @@ namespace wtf{
 
       virtual const wtf::cursor &cursor_size_nesw() const{ return cursor::global(cursor::style::size_nesw); }
 
-    protected:
+      has_cursor() : _super_t() {}
 
-      explicit has_cursor(window * pParent)  : _super_t(pParent){}
+    protected:
 
       void on_wm_setcursor(wm_nchittest_flags flags)  override{
         switch (flags){

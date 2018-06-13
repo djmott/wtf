@@ -9,9 +9,10 @@ namespace wtf{
 
       callback<void(window * sender, UINT_PTR timer_id)> OnTimer;
 
+      wm_timer() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
-      explicit wm_timer(window * pParent)  : _super_t(pParent) {}
 
       virtual void on_wm_timer(UINT_PTR timer_id){ OnTimer(this, timer_id); }
 

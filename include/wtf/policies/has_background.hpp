@@ -13,9 +13,9 @@ namespace wtf{
       virtual const brush& background_brush() const noexcept { return _background_brush; }
       virtual void background_brush(brush&& newval) noexcept { _background_brush = std::move(newval); }
 
-    protected:
+      has_background() = default;
 
-      explicit has_background(window * pParent)  : _super_t(pParent){}
+    protected:
 
       void on_wm_erasebkgnd(const device_context& dc, const rect<coord_frame::client>& client) {
           dc.fill(client, background_brush());

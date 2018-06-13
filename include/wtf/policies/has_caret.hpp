@@ -12,6 +12,8 @@ namespace wtf{
     template <typename _super_t>
     struct has_caret : _super_t{
       
+      has_caret() = default;
+
       virtual int caret_width() const noexcept { return _width; }
       virtual void caret_width(int newval) noexcept { _width = newval; }
 
@@ -55,7 +57,6 @@ namespace wtf{
 
       virtual point<coord_frame::client> caret_position() const noexcept { return _pos; }
 
-      explicit has_caret(window * pParent)  : _super_t(pParent){}
 
       void on_wm_setfocus(HWND hwnd) override{
         _has_focus = true;

@@ -7,9 +7,9 @@
 using namespace wtf;
 
 struct frmMain : form {
-  frmMain() : form(), _ctl(this){
-    OnCreated += [this](...) {
-    };
+
+  frmMain() : form(){
+//    add(_ctl);
     OnSize += [this](...){
       _ctl.move(10, 10, 200, 30);
     };

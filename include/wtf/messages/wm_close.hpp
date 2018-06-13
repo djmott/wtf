@@ -10,12 +10,13 @@ namespace wtf{
 
       callback<void(window * sender, bool& cancel)> OnClose;
 
+      wm_close() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_close(bool& cancel){ OnClose(this, cancel); }
 
-      explicit wm_close(window * pParent) : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         bool cancel = false;

@@ -28,7 +28,7 @@ namespace wtf {
         ext = HOTKEYF_EXT,
       };
 
-      hotkey(window * parent) : _::hotkey_impl<hotkey>(parent) {
+      hotkey() : _::hotkey_impl<hotkey>() {
         wtf::_::init_common_controls<wtf::_::hotkey_classes>::get();
       }
 

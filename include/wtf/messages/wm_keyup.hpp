@@ -11,6 +11,8 @@ namespace wtf{
 
       callback<void(window * sender, UINT char_code, keyboard_msg_param param)> OnKeyUp;
 
+      wm_keyup() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
@@ -18,7 +20,6 @@ namespace wtf{
         OnKeyUp(this, char_code, param);
       }
 
-      explicit wm_keyup(window * pParent) : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_KEYUP == msg.umsg) on_wm_keyup(static_cast<UINT>(msg.wparam), *reinterpret_cast<keyboard_msg_param*>(&msg.lparam));

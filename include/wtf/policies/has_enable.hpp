@@ -23,9 +23,9 @@ namespace wtf{
         else disable();        
       }
 
-    protected:
+      has_enable() : _super_t() {}
 
-      explicit has_enable(window * pParent) : _super_t(pParent){}
+    protected:
 
     };
   }

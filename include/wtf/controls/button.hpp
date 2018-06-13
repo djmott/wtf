@@ -28,30 +28,25 @@ namespace wtf {
 
 
     struct button : policy::button_super_t<button> {
-      explicit button(window * pParent) : policy::button_super_t<button>(pParent) {}
     };
   
 
     struct checkbox : policy::button_super_t<checkbox> {
       static constexpr DWORD Style = window::Style | BS_AUTOCHECKBOX;
-      explicit checkbox(window * pParent) : policy::button_super_t<checkbox>(pParent) {}
     };
 
 
     struct radio_button : policy::button_super_t<radio_button> {
       static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON;
-      explicit radio_button(window * pParent) : policy::button_super_t<radio_button>(pParent) {}
     };
 
 
     struct radio_group : policy::button_super_t<radio_group> {
       static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON | WS_GROUP;
-      explicit radio_group(window * pParent) : policy::button_super_t<radio_group>(pParent) {}
     };
 
     struct tristate : policy::button_super_t<tristate> {
       static constexpr DWORD Style = window::Style | BS_AUTO3STATE;
-      explicit tristate(window * pParent) : policy::button_super_t<tristate>(pParent) {}
     };
 
   }

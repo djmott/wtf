@@ -86,6 +86,8 @@ namespace wtf{
       _draw_top = top; _draw_left = left; _draw_right = right; _draw_bottom = bottom;
     }
 
+    has_border() = default;
+
     protected:
 
       /**
@@ -93,7 +95,6 @@ namespace wtf{
        * 
        * @param pParent parent window
        */
-      explicit has_border(window * pParent)  : _super_t(pParent){}
 
       /**
        * @brief Invalidates the non-client area forcing a border redraw

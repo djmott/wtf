@@ -10,13 +10,14 @@ namespace wtf{
 
       callback<void(window * sender, const mouse_msg_param<coord_frame::client>&)> OnDblClick;
       
+      wm_dblclick() : _super_t() {}
+
     protected:
 
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_dblclick(const mouse_msg_param<coord_frame::client>& p){ OnDblClick(this, p); }
 
-      explicit wm_dblclick(window * pParent)  : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_LBUTTONDBLCLK == msg.umsg) {

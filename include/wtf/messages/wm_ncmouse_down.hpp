@@ -12,12 +12,14 @@ namespace wtf{
 
       callback<void(window * sender, const mouse_msg_param<coord_frame::screen>&)> OnNCMouseDown;
 
+      wm_ncmouse_down() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_ncmouse_down(const mouse_msg_param<coord_frame::screen>& param){ OnNCMouseDown(this, param); }
 
-      explicit wm_ncmouse_down(window * pParent) : _super_t(pParent){}
+
       void handle_msg(wtf::window_message& msg) override {
         if (WM_NCLBUTTONDOWN == msg.umsg) on_wm_ncmouse_down(mouse_msg_param<coord_frame::screen>(msg.lparam, mouse_buttons::left));
         else if (WM_NCMBUTTONDOWN == msg.umsg) on_wm_ncmouse_down(mouse_msg_param<coord_frame::screen>(msg.lparam, mouse_buttons::middle));

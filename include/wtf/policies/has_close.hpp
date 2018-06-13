@@ -14,9 +14,10 @@ namespace wtf{
 
       virtual void close() noexcept { CloseWindow(*this); }
 
+      has_close() : _super_t() {}
+
     protected:
 
-      explicit has_close(window * pParent)  : _super_t(pParent){}
 
     };
   }

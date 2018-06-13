@@ -28,10 +28,9 @@ namespace wtf{
       virtual rgb back_color() const noexcept { return _back_color; }
       virtual void back_color(rgb newval) noexcept { _back_color = newval; _super_t::invalidate(); }
 
+      has_font() : _super_t() {}
+
     protected:
-
-      explicit has_font(window * pParent)  : _super_t(pParent){}
-
       
       void on_wm_erasebkgnd(const device_context& dc, const rect<coord_frame::client>& client) override {
         apply_font(dc);

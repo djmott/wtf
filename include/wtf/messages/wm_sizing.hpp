@@ -10,11 +10,12 @@ namespace wtf{
 
       callback<void(window * sender, rect<coord_frame::screen>&)> OnSizing;
 
+      wm_sizing() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
       virtual void on_wm_sizing(rect<coord_frame::screen>& param) { OnSizing(this, param); }
 
-      explicit wm_sizing(window * pParent) : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_SIZING == msg.umsg) on_wm_sizing(*reinterpret_cast<rect<coord_frame::screen>*>(msg.lparam));

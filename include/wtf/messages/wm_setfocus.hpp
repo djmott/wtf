@@ -10,6 +10,7 @@ namespace wtf{
 
       callback<void(window * sender, HWND)> OnSetFocus;
 
+      wm_setfocus() : _super_t() {}
 
     protected:
 
@@ -17,7 +18,6 @@ namespace wtf{
 
       virtual void on_wm_setfocus(HWND hwnd){ OnSetFocus(this, hwnd); }
 
-      explicit wm_setfocus(window * pParent) : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_SETFOCUS == msg.umsg) {

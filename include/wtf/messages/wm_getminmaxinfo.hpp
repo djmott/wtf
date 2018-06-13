@@ -11,10 +11,11 @@ namespace wtf{
 
       callback<void(window * sender, MINMAXINFO * param)> OnGetMinMaxInfo;
 
+      wm_getminmaxinfo() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
-      explicit wm_getminmaxinfo(window * pParent) : _super_t(pParent) {}
 
       virtual void on_wm_getminmaxinfo(MINMAXINFO * param){
         OnGetMinMaxInfo(this, param);

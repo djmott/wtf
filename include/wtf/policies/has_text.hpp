@@ -63,9 +63,10 @@ namespace wtf{
         dc.select_object(hFont);
         return dc.get_text_extent(_text);
       }
-    protected:
 
-      explicit has_text(window * pParent) : _super_t(pParent){}
+      has_text() : _super_t() {}
+
+    protected:
 
       virtual bool auto_draw_text() const noexcept { return _auto_draw_text; }
       virtual void auto_draw_text(bool newval) noexcept { _auto_draw_text = newval; }

@@ -35,7 +35,6 @@ namespace wtf{
         return rc.top;
       }
 
-
       virtual void left(int newval)  {
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, 0, newval, top(), 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOREPOSITION),
                                          [](BOOL b)noexcept { return !b; });
@@ -46,10 +45,10 @@ namespace wtf{
                                          [](BOOL b)noexcept { return !b; });
       }
 
+      has_move() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
-
-      explicit has_move(window * pParent)  : _super_t(pParent){}
 
     };
   }

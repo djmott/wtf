@@ -11,12 +11,12 @@ namespace wtf{
 
       callback<void(window * sender, const mouse_msg_param<coord_frame::screen>&)> OnNCMouseMove;
 
+      wm_ncmouse_move() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_ncmouse_move(const mouse_msg_param<coord_frame::screen>& param){ OnNCMouseMove(this, param); }
-
-      explicit wm_ncmouse_move(window * pParent) : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_NCMOUSEMOVE == msg.umsg) {

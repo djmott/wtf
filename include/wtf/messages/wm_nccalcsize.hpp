@@ -14,13 +14,15 @@ namespace wtf{
         click_active = WA_CLICKACTIVE,
         inactive = WA_INACTIVE,
       };
+
+      wm_nccalcsize() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual LRESULT on_wm_nccalcsize(NCCALCSIZE_PARAMS *) = 0;
       virtual LRESULT on_wm_nccalcsize(RECT *) = 0;
 
-      explicit wm_nccalcsize(window * pParent)  : _super_t(pParent){}
 
 
       void handle_msg(wtf::window_message& msg) override {

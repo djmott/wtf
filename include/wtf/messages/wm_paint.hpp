@@ -12,13 +12,14 @@ namespace wtf{
 
       callback<void(const device_context&, const paint_struct&)> OnPaint;
 
+      wm_paint() : _super_t() {}
+
     protected:
 
       template <typename, template <typename> typename...> friend struct window_impl;
       
       virtual void on_wm_paint(const device_context& dc, const paint_struct& ps) { OnPaint(dc, ps); }
 
-      explicit wm_paint(window * pParent)  : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_PAINT != msg.umsg) return;

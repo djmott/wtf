@@ -20,7 +20,7 @@ namespace wtf {
 
     struct ip_address : _::ip_address_impl<ip_address> {
 
-      ip_address(window * parent) : _::ip_address_impl<ip_address>(parent) {
+      ip_address() : _::ip_address_impl<ip_address>() {
         wtf::_::init_common_controls<wtf::_::internet_classes>::get();
       }
 

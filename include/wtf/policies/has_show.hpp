@@ -27,9 +27,7 @@ namespace wtf{
         else hide();
       }
 
-    protected:
-
-      explicit has_show(window * pParent)  : _super_t(pParent){}
+      has_show()  : _super_t(){}
 
     };
 

@@ -14,13 +14,13 @@ namespace wtf{
 
       callback<void(window * sender)> OnMouseLeave;
 
+      wm_mouse_leave() : _super_t() {}
 
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_mouse_leave(){ OnMouseLeave(this); }
 
-      explicit wm_mouse_leave(window * pParent)  : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg)  override {
         if (WM_CREATE == msg.umsg) {

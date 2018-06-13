@@ -9,16 +9,18 @@ namespace wtf{
   /** @class window super class of all windows
   */ 
   struct window{
+    template <typename, template <typename> typename...> friend struct window_impl;
+
     /// an implementation may use different window styles 
     static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
     static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
+    virtual ~window() { if (_handle) ::DestroyWindow(_handle); }
     window(const window&) = delete;
     window& operator=(const window&) = delete;
 
-    virtual ~window(){ if (_handle) ::DestroyWindow(_handle); }
+    window() = default;
 
-    window() noexcept : _parent(nullptr), _handle(nullptr){}
 
     window& operator=(window&& src) noexcept {
       std::swap(_parent, src._parent);
@@ -29,10 +31,6 @@ namespace wtf{
 
     window(window&& src) noexcept { *this = std::move(src); }
 
-    explicit window(window * Parent)  : _parent(Parent), _handle(nullptr){
-      if (Parent) Parent->_children.push_back(this);
-    }
-
     const window * const parent() const noexcept { return _parent; }
 
     const std::vector<window*>& children() const noexcept { return _children; }
@@ -40,26 +38,26 @@ namespace wtf{
     virtual const std::type_info& type() const noexcept = 0;
 
     HWND operator*() const noexcept { return _handle; }
+
     operator HWND() const noexcept { return _handle; }
 
-    virtual void add(window*pChild){
-      _children.push_back(pChild);
+    template <typename _child_t>
+    void add(_child_t& oChild){
+      _children.push_back(static_cast<window*>(&oChild));
+      oChild._parent = this;
       if (_handle){
-        if (pChild->_handle){
-          ::SetParent(*pChild, *this);
+        _children.push_back(static_cast<window*>(&oChild));
+        if (oChild._handle) {
+          ::SetParent(*oChild, *this);
         } else{
-          pChild->run();
+          oChild.run();
         }
       }
     }
 
-    //this is different than WM_CREATE, its not part of windows and called by run after CreateWindow returns
-    //virtual void on_wm_created(){ OnCreated(this); }
     callback<void(window *)> OnCreated;
 
     virtual int run() = 0;
-
-    template <typename, template <typename> typename...> friend struct window_impl;
 
   protected:
 
@@ -71,6 +69,7 @@ namespace wtf{
     
   private:
 
+
     virtual void handle_msg(wtf::window_message& ) = 0;
     virtual void fwd_msg(wtf::window_message&, const std::type_info&) = 0;
   };
@@ -80,11 +79,11 @@ namespace wtf{
 
   template <typename _impl_t, template <typename> typename _head_t, template <typename> typename..._tail_t>
   struct window_impl<_impl_t, _head_t, _tail_t...> :  _head_t<window_impl<_impl_t, _tail_t...>> {
+    
+    window_impl() : _head_t<window_impl<_impl_t, _tail_t...>>(){}
+
+  protected:
     template <typename, template <typename> typename...> friend struct window_impl;
-
-    template <typename ... _arg_ts> window_impl(_arg_ts&&...args) noexcept : _head_t<window_impl<_impl_t, _tail_t...>>(std::forward<_arg_ts>(args)...) {}
-
-  private:
 
     void fwd_msg(wtf::window_message& msg, const std::type_info& last_handler) override {
       using super = _head_t<window_impl<_impl_t, _tail_t...>>;
@@ -105,11 +104,13 @@ namespace wtf{
     }
   };
 
+
+
   template <typename _impl_t> struct window_impl<_impl_t> : window {
 
-    const std::type_info& type() const noexcept final { return typeid(_impl_t); }
+    window_impl() : window(){}
 
-    template <typename ... _arg_ts> window_impl(_arg_ts&&...args) : window(std::forward<_arg_ts>(args)...) {}
+    const std::type_info& type() const noexcept final { return typeid(_impl_t); }
 
     int run() override {
       window::_handle = wtf::exception::throw_lasterr_if(

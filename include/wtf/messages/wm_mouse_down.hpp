@@ -12,12 +12,13 @@ namespace wtf{
 
       callback<void(window * sender, const mouse_msg_param<coord_frame::client>&)> OnMouseDown;
 
+      wm_mouse_down() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_mouse_down(const mouse_msg_param<coord_frame::client>& param){ OnMouseDown(this, param); }
 
-      explicit wm_mouse_down(window * pParent)  : _super_t(pParent){}
 
 
       void handle_msg(wtf::window_message& msg) override {

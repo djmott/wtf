@@ -17,12 +17,13 @@ namespace wtf{
       };
 
       callback<void(window * sender, const point<coord_frame::client>&)> OnMove;
+
+      wm_move() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_move(const point<coord_frame::client>& param){ OnMove(this, param); }
-
-      explicit wm_move(window * pParent) : _super_t(pParent){}
 
 
       void handle_msg(wtf::window_message& msg) override {

@@ -32,7 +32,6 @@ namespace wtf {
     }
   protected:
     window_class() {
-      std::basic_string<TCHAR> asdf;
       memset(this, 0, sizeof(WNDCLASSEX));
       _class_name = _T("wtf:");
 #if defined(UNICODE)
@@ -41,9 +40,9 @@ namespace wtf {
       _class_name += std::to_string(typeid(_impl_t).hash_code());
 #endif
       cbSize = sizeof(WNDCLASSEX);
-      style = CS_OWNDC | CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+      style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
       lpfnWndProc = window_proc;
-      cbWndExtra = sizeof(void*);
+      cbWndExtra = sizeof(_impl_t*);
       hInstance = instance_handle();
       lpszClassName = name();
       exception::throw_lasterr_if(RegisterClassEx(this), [](ATOM x) noexcept { return 0 == x; });

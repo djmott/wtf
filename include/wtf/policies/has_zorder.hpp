@@ -22,8 +22,8 @@ namespace wtf{
       void zorder(HWND insert_after)  {
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b)noexcept { return !b; });
       }
-    protected:
-      explicit has_zorder(window * pParent)  : _super_t(pParent){}
+
+      has_zorder()  : _super_t(){}
 
     };
   }

@@ -11,6 +11,8 @@ namespace wtf{
       
       callback<void(window * sender, const device_context&, const rect<coord_frame::client>&)> OnEraseBackground;
 
+      wm_erasebkgnd() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
@@ -18,7 +20,6 @@ namespace wtf{
         OnEraseBackground(this, dc, rc);
       }
 
-      explicit wm_erasebkgnd(window * pParent)  : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_ERASEBKGND != msg.umsg) return;

@@ -23,7 +23,7 @@ namespace wtf {
       static constexpr DWORD ExStyle = WS_EX_CONTROLPARENT;
       static constexpr DWORD Style = TCS_FOCUSNEVER | WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN;
 
-      tab(window * parent) : _::tab_impl<tab>(parent) {
+      tab() : _::tab_impl<tab>() {
         wtf::_::init_common_controls<wtf::_::tab_classes>::get();
 
       }
@@ -42,15 +42,13 @@ namespace wtf {
         item(item&&) = default;
         item& operator=(const item&) = default;
         item& operator=(item&&) = default;
-        item(const tstring& Text, window * ChildWindow) : _text(Text), _window(ChildWindow){}
+        item(const tstring& Text) : _text(Text){}
 
         const tstring& text() const noexcept { return _text; }
-        wtf::window * window() const noexcept { return _window; }
       protected:
         template <typename, template <typename> typename...> friend struct window_impl;
 
         tstring _text;
-        wtf::window * _window;
       };
 
 
@@ -64,18 +62,16 @@ namespace wtf {
 
       item::pointer add_item(typename item::pointer Item) {
         TCITEM oTCItem;
-        assert(Item->window());
         oTCItem.pszText = const_cast<LPTSTR>(Item->text().c_str());
         oTCItem.mask = TCIF_TEXT;
         wtf::exception::throw_lasterr_if(::SendMessage(*this, TCM_INSERTITEM, _items.size(), reinterpret_cast<LPARAM>(&oTCItem)), [](LRESULT l) { return -1 == l; });
         _items.push_back(Item);
-        window::add(Item->window());
         resize_children();
         return Item;
       }
 
-      item::pointer add_item(const tstring& text, window * child) {
-        return add_item(std::make_shared<item>(text, child));
+      item::pointer add_item(const tstring& text) {
+        return add_item(std::make_shared<item>(text));
       }
 
     protected:
@@ -91,14 +87,16 @@ namespace wtf {
         if (!_items.size()) return;
         const auto i = current_index();
         if (-1 == i) return;
+/*
         for (const auto & Item : _items) {
           ::ShowWindow(*Item->window(), SW_HIDE);
         }
+*/
         auto r = wtf::rect<coord_frame::client>::get(*this);
         ::SendMessage(*this, TCM_ADJUSTRECT, FALSE, reinterpret_cast<LPARAM>(&r));
         auto Item = get_item(i);
-        wtf::exception::throw_lasterr_if(::MoveWindow(*Item->window(), r.left, r.top, r.right - r.left, r.bottom - r.top, FALSE), [](BOOL b) { return 0 == b; });
-        ::ShowWindow(*Item->window(), SW_SHOW);
+//         wtf::exception::throw_lasterr_if(::MoveWindow(*Item->window(), r.left, r.top, r.right - r.left, r.bottom - r.top, FALSE), [](BOOL b) { return 0 == b; });
+//         ::ShowWindow(*Item->window(), SW_SHOW);
       }
 
       void on_wm_notify(NMHDR * notification) override {

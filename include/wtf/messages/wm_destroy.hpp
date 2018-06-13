@@ -12,12 +12,12 @@ namespace wtf{
       callback<void(window * sender)> OnDestroy;
 
 
+      wm_destroy() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_destroy(){ OnDestroy(this); }
-
-      explicit wm_destroy(window * pParent)  : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_DESTROY == msg.umsg) on_wm_destroy();

@@ -21,7 +21,7 @@ namespace wtf {
     struct date_time : _::date_time_impl<date_time> {
 
       
-      date_time(window * parent) : _::date_time_impl<date_time>(parent) {
+      date_time() : _::date_time_impl<date_time>() {
         wtf::_::init_common_controls<wtf::_::date_classes>::get();
       }
 

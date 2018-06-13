@@ -11,12 +11,12 @@ namespace wtf{
 
       callback<void(window *, const mouse_msg_param<coord_frame::screen>&)> OnNCMouseUp;
 
+      wm_ncmouse_up() : _super_t() {}
 
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
       virtual void on_wm_ncmouse_up(const mouse_msg_param<coord_frame::screen>& param){ OnNCMouseUp(this, param); }
 
-      explicit wm_ncmouse_up(window * pParent) : _super_t(pParent){}
       void handle_msg(wtf::window_message& msg) override {
         if (WM_NCLBUTTONUP == msg.umsg) on_wm_ncmouse_up(mouse_msg_param<coord_frame::screen>(msg.lparam, mouse_buttons::left));
         else if (WM_NCMBUTTONUP == msg.umsg) on_wm_ncmouse_up(mouse_msg_param<coord_frame::screen>(msg.lparam, mouse_buttons::middle));

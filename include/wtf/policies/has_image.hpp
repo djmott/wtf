@@ -8,9 +8,7 @@ namespace wtf{
 
     template <typename _SuperT>
     struct has_image : _SuperT{
-
-    protected:
-      explicit has_image(window * pParent) : _SuperT(pParent){}
+      has_image() : _SuperT(){}
     };
 
   }

@@ -10,12 +10,13 @@ namespace wtf{
 
       callback<void(window * sender)> OnCreate;
 
+      wm_create() : _super_t() {}
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_create(){ OnCreate(this); }
 
-      explicit wm_create(window * pParent)  : _super_t(pParent){}
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_CREATE == msg.umsg) on_wm_create();

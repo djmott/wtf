@@ -22,7 +22,7 @@ namespace wtf {
     struct avi_player : _::avi_player_impl<avi_player> {
 
 
-      avi_player(window * parent) : _::avi_player_impl<avi_player>(parent) {
+      avi_player() : _::avi_player_impl<avi_player>() {
         wtf::_::init_common_controls<wtf::_::animate_classes>::get();
       }
 

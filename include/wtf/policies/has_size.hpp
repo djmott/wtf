@@ -34,9 +34,7 @@ namespace wtf{
                                          [](BOOL b)noexcept { return !b; });
       }
 
-    protected:
-
-      explicit has_size(window * pParent)  : _super_t(pParent){}
+      has_size()  : _super_t(){}
     };
   }
 }
