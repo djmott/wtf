@@ -15,6 +15,8 @@ namespace wtf {
 
     LPCTSTR name() const noexcept { return _class_name.c_str(); }
 
+    int window_extra_offset() const { return 0; }
+
     WNDPROC default_window_proc() const noexcept { return DefWindowProc; }
 
     ~window_class() { UnregisterClass(_class_name.c_str(), instance_handle()); }
@@ -41,7 +43,7 @@ namespace wtf {
       cbSize = sizeof(WNDCLASSEX);
       style = CS_OWNDC | CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
       lpfnWndProc = window_proc;
-      cbClsExtra = sizeof(void*);
+      cbWndExtra = sizeof(void*);
       hInstance = instance_handle();
       lpszClassName = name();
       exception::throw_lasterr_if(RegisterClassEx(this), [](ATOM x) noexcept { return 0 == x; });
@@ -50,7 +52,7 @@ namespace wtf {
     tstring _class_name;
   };
 
-  template <const char * _original_class_name, typename _impl_t, WNDPROC window_proc> 
+  template <const TCHAR * _original_class_name, typename _impl_t, WNDPROC window_proc> 
   struct NOVTABLE super_window_class : WNDCLASSEX {
     
     static super_window_class& get() {
@@ -62,11 +64,16 @@ namespace wtf {
 
     WNDPROC default_window_proc() { return _original_proc; }
 
+    int window_extra_offset() const { return _window_extra_offset; }
+
     super_window_class() {
       memset(this, 0, sizeof(WNDCLASSEX));
       cbSize = sizeof(WNDCLASSEX);
       exception::throw_lasterr_if(GetClassInfoEx(instance_handle(), _original_class_name, this), [](BOOL b) { return 0 == b; });
+      style &= ~CS_GLOBALCLASS;
       _original_proc = lpfnWndProc;
+      _window_extra_offset = cbWndExtra;
+      cbWndExtra += sizeof(_impl_t*);
       _class_name = _T("wtf:");
 #if defined(UNICODE)
       _class_name += std::to_wstring(typeid(_impl_t).hash_code());
@@ -83,6 +90,7 @@ namespace wtf {
   private:
     WNDPROC _original_proc;
     tstring _class_name;
+    int _window_extra_offset = 0;
   };
 
 }

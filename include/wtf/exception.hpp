@@ -30,8 +30,8 @@ namespace wtf{
         }
         if (sBuff) ::LocalFree(sBuff);
 #if _DEBUG
-        auto sMsg = "Exception " + to_tstring(last_error) + " at: " + to_tstring(sfile) + "(" + to_tstring(line) + ")\n";
-        sMsg += to_tstring(code) + "\n" + _what + "\n";
+        tstring sMsg = _T("Exception ") + to_tstring(last_error) + _T(" at: ") + to_tstring(sfile) + _T("(") + to_tstring(line) + _T(")\n");
+        sMsg += to_tstring(code) + _T("\n") + to_tstring(_what) + _T("\n");
         OutputDebugString(sMsg.c_str());
 #endif
         assert(false);

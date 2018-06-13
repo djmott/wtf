@@ -12,7 +12,9 @@ namespace wtf {
 
         static constexpr DWORD ExStyle = 0;
 
-        explicit isa_combobox(window * pParent) : _super_t(pParent) {}
+        explicit isa_combobox(window * pParent) : _super_t(pParent) {
+          wtf::_::init_common_controls<wtf::_::standard_classes>::get();
+        }
 
         template <typename ... _arg_ts> isa_combobox(_arg_ts&&...args) : _super_t(std::forward<_arg_ts>(args)...) {}
 
@@ -102,7 +104,7 @@ namespace wtf {
   }
 
 
-  namespace _ { char sWC_COMBOBOX[] = _T(WC_COMBOBOX); }
+  namespace _ { TCHAR sWC_COMBOBOX[] = WC_COMBOBOX; }
 
   template <bool _sorted, controls::combobox_styles _style, WNDPROC window_proc>
   struct window_class<controls::combobox<_sorted, _style>, window_proc> : super_window_class<_::sWC_COMBOBOX, controls::combobox<_sorted, _style>, window_proc> {};

@@ -86,7 +86,10 @@ namespace wtf{
       policy::wm_paint,
       policy::wm_erasebkgnd,
       policy::wm_setcursor,
-      policy::wm_notifyformat>;
+      policy::wm_notifyformat,
+      policy::wm_getminmaxinfo
+
+    >;
   }
 
   template <DWORD _ExStyle, DWORD _Style>

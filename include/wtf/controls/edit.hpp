@@ -8,7 +8,7 @@ namespace wtf {
 
     namespace _ {
 
-      TCHAR sWC_EDIT[] = _T(WC_EDIT);
+      TCHAR sWC_EDIT[] = WC_EDIT;
 
       template <typename _impl_t> using edit_impl = window_impl<_impl_t,
         policy::has_font,
@@ -18,12 +18,24 @@ namespace wtf {
 
     }
 
-    struct edit : _::edit_impl<edit> {
-      edit(window * parent) : _::edit_impl<edit>(parent){}
+    template <bool _multiline>
+    struct edit : _::edit_impl<edit<_multiline>> {
+
+      static constexpr DWORD Style = window::Style | (_multiline ? ES_MULTILINE : 0);
+      edit(window * parent) : _::edit_impl<edit<_multiline>>(parent){
+        wtf::_::init_common_controls<wtf::_::standard_classes>::get();
+      }
+
+      void readonly(bool newval) {
+        wtf::exception::throw_lasterr_if(::SendMessage(*this, EM_SETREADONLY, (newval ? TRUE : FALSE), 0), [](LRESULT l) { return 0 == l; });
+      }
+
     };
 
   }
   
-  template <WNDPROC window_proc> struct window_class<controls::edit, window_proc> : super_window_class<controls::_::sWC_EDIT, controls::edit, window_proc> {};
+  template <bool _multiline, WNDPROC window_proc> 
+  struct window_class<controls::edit<_multiline>, window_proc> :
+    super_window_class<controls::_::sWC_EDIT, controls::edit<_multiline>, window_proc> {};
 
 }

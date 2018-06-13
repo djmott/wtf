@@ -99,6 +99,7 @@ namespace wtf{
         }
 #endif
         super::handle_msg(msg);
+        if (msg.bhandled) return;
         super::fwd_msg(msg, typeid(&super::handle_msg));
       }
     }
@@ -125,6 +126,7 @@ namespace wtf{
     void handle_msg(wtf::window_message& msg) override {}
 
     void fwd_msg(wtf::window_message& msg, const std::type_info&) override {
+      if (msg.bhandled) return;
       msg.lresult = CallWindowProc(window_class_type::get().default_window_proc(), msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
     }
 
@@ -135,10 +137,10 @@ namespace wtf{
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
 
 #if defined(_DEBUG)
-      auto sMsg = to_tstring(GetTickCount()) + _T(" ");
-      sMsg += to_tstring(reinterpret_cast<size_t>(hwnd)) + _T(" ");
+      auto sMsg = to_tstring(reinterpret_cast<size_t>(hwnd)) + _T(" ");
       sMsg += to_tstring(typeid(_impl_t).name());
       sMsg += _T(" ") + wtf::_::msg_name(umsg) + _T("\n");
+      sMsg += _T("Extra bytes: ") + to_tstring(window_class_type::get().window_extra_offset()) + _T("\n");
       OutputDebugString(sMsg.c_str());
 #endif
 
@@ -151,14 +153,14 @@ namespace wtf{
           pThis = reinterpret_cast<_impl_t*>(pCreate->lpCreateParams);
           assert(pThis);
           pThis->_handle = hwnd;
-          SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
+          SetWindowLongPtr(hwnd, window_class_type::get().window_extra_offset(), reinterpret_cast<LONG_PTR>(pThis));
           if (WM_CREATE == umsg) {
             for (auto pChild : pThis->children()) {
               pChild->run();
             }
           }
         } else {
-          pThis = reinterpret_cast<_impl_t*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+          pThis = reinterpret_cast<_impl_t*>(GetWindowLongPtr(hwnd, window_class_type::get().window_extra_offset()));
         }
 
         if (!pThis) return CallWindowProc(window_class_type::get().default_window_proc(), hwnd, umsg, wparam, lparam);
@@ -170,6 +172,7 @@ namespace wtf{
           const HWND hTarget = (WM_NOTIFY == umsg ? reinterpret_cast<const NMHDR*>(lparam)->hwndFrom : reinterpret_cast<HWND>(lparam));
           for (const auto & pChild : pThis->children()) {
             if (hTarget != pChild->_handle) continue;
+            pChild->handle_msg(msg);
             pChild->fwd_msg(msg, typeid(bool));
             break;
           }

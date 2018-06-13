@@ -18,12 +18,14 @@ namespace wtf {
     }
     
     struct label : policy::label_super_t<label> {
-      explicit label(window * pParent) : policy::label_super_t<label>(pParent) {}
+      explicit label(window * pParent) : policy::label_super_t<label>(pParent) {
+        wtf::_::init_common_controls<wtf::_::standard_classes>::get();
+      }
     };
     
   }
 
-  namespace _ { TCHAR sWC_STATIC[] = _T(WC_STATIC); }
+  namespace _ { TCHAR sWC_STATIC[] = WC_STATIC; }
 
   template <WNDPROC window_proc> struct window_class<controls::label, window_proc> : super_window_class<_::sWC_STATIC, controls::label, window_proc> {};
 

@@ -4,6 +4,28 @@
 #pragma once
 namespace wtf {
   namespace _ {
+
+    enum init_common_controls_class_ids : DWORD {
+      listview_classes = ICC_LISTVIEW_CLASSES,
+      treeview_classes = ICC_TREEVIEW_CLASSES,
+      bar_classes = ICC_BAR_CLASSES,
+      tab_classes = ICC_TAB_CLASSES,
+      updown_classes = ICC_UPDOWN_CLASS,
+      progress_classes = ICC_PROGRESS_CLASS,
+      hotkey_classes = ICC_HOTKEY_CLASS,
+      animate_classes = ICC_ANIMATE_CLASS,
+      win95_classes = ICC_WIN95_CLASSES,
+      date_classes = ICC_DATE_CLASSES,
+      userex_classes = ICC_USEREX_CLASSES,
+      cool_classes = ICC_COOL_CLASSES,
+      internet_classes = ICC_INTERNET_CLASSES,
+      pagescroller_classes = ICC_PAGESCROLLER_CLASS,
+      nativefntctl_classes = ICC_NATIVEFNTCTL_CLASS,
+      standard_classes = ICC_STANDARD_CLASSES,
+      link_classes = ICC_LINK_CLASS,
+    };
+
+    template <init_common_controls_class_ids _class_id>
     struct init_common_controls : INITCOMMONCONTROLSEX {
       static init_common_controls& get() {
         static init_common_controls _init_common_controls;
@@ -12,24 +34,8 @@ namespace wtf {
     private:
       init_common_controls() {
         dwSize = sizeof(INITCOMMONCONTROLSEX);
-        dwICC = ICC_LISTVIEW_CLASSES |
-          ICC_TREEVIEW_CLASSES |
-          ICC_BAR_CLASSES |
-          ICC_TAB_CLASSES |
-          ICC_UPDOWN_CLASS |
-          ICC_PROGRESS_CLASS |
-          ICC_HOTKEY_CLASS |
-          ICC_ANIMATE_CLASS |
-          ICC_WIN95_CLASSES |
-          ICC_DATE_CLASSES |
-          ICC_USEREX_CLASSES |
-          ICC_COOL_CLASSES |
-          ICC_INTERNET_CLASSES |
-          ICC_PAGESCROLLER_CLASS |
-          ICC_NATIVEFNTCTL_CLASS |
-          ICC_STANDARD_CLASSES |
-          ICC_LINK_CLASS;
-        wtf::exception::throw_lasterr_if(InitCommonControlsEx(this), [](BOOL b) { return !b; });
+        dwICC = _class_id;
+        wtf::exception::throw_lasterr_if(InitCommonControlsEx(this), [](BOOL b) { return FALSE==b; });
       }
     };
   }

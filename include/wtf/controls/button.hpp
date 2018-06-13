@@ -9,7 +9,11 @@ namespace wtf {
     namespace policy {
 
       template <typename _super_t> struct isa_button : _super_t {
-        template <typename ... _arg_ts> isa_button(_arg_ts&&...args) noexcept : _super_t(std::forward<_arg_ts>(args)...) {}
+        template <typename ... _arg_ts> isa_button(_arg_ts&&...args) noexcept : 
+          _super_t(std::forward<_arg_ts>(args)...) 
+        {
+          wtf::_::init_common_controls<wtf::_::standard_classes>::get();
+        }
       };
 
       template <typename _impl_t> using button_super_t = window_impl<_impl_t,
@@ -51,7 +55,7 @@ namespace wtf {
     };
 
   }
-  namespace _ { TCHAR sWC_BUTTON[] = _T(WC_BUTTON); }
+  namespace _ { TCHAR sWC_BUTTON[] = WC_BUTTON; }
 
   template <WNDPROC window_proc> struct window_class<controls::button, window_proc> : super_window_class<_::sWC_BUTTON, controls::button, window_proc> {};
   template <WNDPROC window_proc> struct window_class<controls::checkbox, window_proc> : super_window_class<_::sWC_BUTTON, controls::checkbox, window_proc> {};

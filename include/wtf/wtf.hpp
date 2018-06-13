@@ -39,6 +39,8 @@
 #pragma comment(lib, "uxtheme.lib")
 #endif
 
+#pragma comment(lib, "comctl32.lib")
+
 /** @namespace wtf
 Primary namespace
 */
@@ -82,13 +84,28 @@ namespace wtf {
     template <typename, typename> struct to_tstring_impl;
 
     template <typename _Ty> struct to_tstring_impl<_Ty, wchar_t>{
-      static tstring get(const _Ty& value){ return std::to_wstring(value); }
+      static std::basic_string<wchar_t> get(const _Ty& value){ return std::to_wstring(value); }
     };
     template <typename _Ty> struct to_tstring_impl<_Ty, char> {
-      static tstring get(const _Ty& value) { return std::to_string(value); }
+      static std::basic_string<char> get(const _Ty& value) { return std::to_string(value); }
     };
     template <> struct to_tstring_impl<const char *, char> {
-      static tstring get(const char * value) { return tstring(value); }
+      static std::basic_string<char> get(const char * value) { return std::basic_string<char>(value); }
+    };
+    template <> struct to_tstring_impl<const char *, wchar_t> {
+      static std::basic_string<wchar_t> get(const char * value) {
+        return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(value);
+      }
+    };
+    template <> struct to_tstring_impl<std::string, char> {
+      static std::basic_string<char> get(std::string value) {
+        return std::basic_string<char>(value);
+      }
+    };
+    template <> struct to_tstring_impl<std::string, wchar_t> {
+      static std::basic_string<wchar_t> get(std::string value) {
+        return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(value);
+      }
     };
 
   }
@@ -150,6 +167,7 @@ namespace wtf {
 #include "paint_struct.hpp"
 #include "message.hpp"
 #include "window_message.hpp"
+#include "menu.hpp"
 #include "window.hpp"
 
 #include "_/effects.hpp"
@@ -169,6 +187,7 @@ namespace wtf {
 #include "messages/wm_enable.hpp"
 #include "messages/wm_erasebkgnd.hpp"
 #include "messages/wm_geticon.hpp"
+#include "messages/wm_getminmaxinfo.hpp"
 #include "messages/wm_keydown.hpp"
 #include "messages/wm_keyup.hpp"
 #include "messages/wm_killfocus.hpp"
@@ -220,11 +239,30 @@ namespace wtf {
 #include "controls/policies/has_font.hpp"
 #include "controls/policies/has_text.hpp"
 
+#include "controls/avi_player.hpp"
 #include "controls/button.hpp"
+#include "controls/calendar.hpp"
 #include "controls/combobox.hpp"
+#include "controls/date_time.hpp"
 #include "controls/edit.hpp"
+#include "controls/hotkey.hpp"
+#include "controls/image_list.hpp"
+#include "controls/ip_address.hpp"
 #include "controls/label.hpp"
+#include "controls/listbox.hpp"
+#include "controls/listview.hpp"
+#include "controls/pager.hpp"
 #include "controls/progressbar.hpp"
+#include "controls/property_sheet.hpp"
+#include "controls/rebar.hpp"
+#include "controls/richedit.hpp"
+#include "controls/statusbar.hpp"
+#include "controls/syslink.hpp"
 #include "controls/tab.hpp"
+#include "controls/task_dialog.hpp"
+#include "controls/tooltip.hpp"
+#include "controls/trackbar.hpp"
 #include "controls/tree.hpp"
+#include "controls/up_down.hpp"
+
 

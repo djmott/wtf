@@ -8,7 +8,7 @@ namespace wtf {
 
     namespace _ {
       
-      TCHAR sWC_TABCONTROL[] = _T(WC_TABCONTROL);
+      TCHAR sWC_TABCONTROL[] = WC_TABCONTROL;
 
       template <typename _impl_t> using tab_impl = window_impl<_impl_t,
         policy::has_font,
@@ -24,6 +24,8 @@ namespace wtf {
       static constexpr DWORD Style = TCS_FOCUSNEVER | WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN;
 
       tab(window * parent) : _::tab_impl<tab>(parent) {
+        wtf::_::init_common_controls<wtf::_::tab_classes>::get();
+
       }
 
       callback<void(window*)> OnClick;
