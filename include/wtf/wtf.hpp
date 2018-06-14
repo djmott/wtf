@@ -238,8 +238,14 @@ namespace wtf {
 
 #include "form.hpp"
 
+#include "controls/policies/has_style.hpp"
+#include "controls/policies/has_exstyle.hpp"
+#include "controls/policies/has_border.hpp"
+#include "controls/policies/has_enable.hpp"
 #include "controls/policies/has_font.hpp"
+#include "controls/policies/has_hscroll.hpp"
 #include "controls/policies/has_text.hpp"
+#include "controls/policies/has_vscroll.hpp"
 
 #include "controls/avi_player.hpp"
 #include "controls/button.hpp"

@@ -15,12 +15,13 @@ namespace wtf{
     static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
     static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
-    virtual ~window() { if (_handle) ::DestroyWindow(_handle); }
+    virtual ~window() { if (_handle) ::DestroyWindow(_handle); _handle = nullptr; }
+
     window(const window&) = delete;
+
     window& operator=(const window&) = delete;
 
     window() = default;
-
 
     window& operator=(window&& src) noexcept {
       std::swap(_parent, src._parent);
@@ -68,9 +69,9 @@ namespace wtf{
     virtual void on_created() { OnCreated(this); }
     
   private:
+    
+    virtual void handle_msg(wtf::window_message& msg) = 0;
 
-
-    virtual void handle_msg(wtf::window_message& ) = 0;
     virtual void fwd_msg(wtf::window_message&, const std::type_info&) = 0;
   };
   
@@ -129,6 +130,11 @@ namespace wtf{
     void fwd_msg(wtf::window_message& msg, const std::type_info&) override {
       if (msg.bhandled) return;
       msg.lresult = CallWindowProc(window_class_type::get().default_window_proc(), msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
+      if (WM_DESTROY == msg.umsg) {
+        SetWindowLongPtr(msg.hwnd, window_class_type::get().window_extra_offset(), 0);
+        _handle = nullptr;
+        _parent = nullptr;
+      }
     }
 
     /* messages arrive here from windows then are propagated from the implementation, through the
@@ -141,7 +147,6 @@ namespace wtf{
       auto sMsg = to_tstring(reinterpret_cast<size_t>(hwnd)) + _T(" ");
       sMsg += to_tstring(typeid(_impl_t).name());
       sMsg += _T(" ") + wtf::_::msg_name(umsg) + _T("\n");
-      sMsg += _T("Extra bytes: ") + to_tstring(window_class_type::get().window_extra_offset()) + _T("\n");
       OutputDebugString(sMsg.c_str());
 #endif
 

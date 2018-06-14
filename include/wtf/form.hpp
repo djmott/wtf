@@ -100,6 +100,9 @@ namespace wtf {
       return iRet;
     }
 
+  protected:
+
+
   };
 
   struct form : form_impl<form, WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW> {

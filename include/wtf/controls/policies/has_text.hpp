@@ -10,7 +10,7 @@ namespace wtf {
       template <typename _super_t>
       struct has_text : _super_t {
 
-        template <typename ... _arg_ts> has_text(_arg_ts&&...args) noexcept : _super_t(std::forward<_arg_ts>(args)...) {}
+        has_text() : _super_t() {}
 
         void text(const tstring& newval) {
           wtf::exception::throw_lasterr_if(SetWindowText(*this, newval.c_str()), [](BOOL b) { return !b; });

@@ -14,10 +14,11 @@ namespace wtf {
 
     protected:
 
-      template <typename, template <typename> typename...> friend struct window_impl;
-
       virtual void on_wm_notify(NMHDR * notification) { }
 
+    private:
+
+      template <typename, template <typename> typename...> friend struct window_impl;
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_NOTIFY != msg.umsg) return;

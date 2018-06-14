@@ -11,11 +11,21 @@ struct frmMain : form {
   frmMain() : form(){
     add(_ctl);
     OnSize += [this](...){
-      _ctl.move(10, 10, 200, 30);
+      _ctl.move(5, 5, width()-10, height()-10);
+    };
+    _ctl.OnCreated += [this](...) {
+      _ctl.border(controls::border_styles::thick);
+      _ctl.auto_hscroll(true);
+      _ctl.auto_vscroll(true);
+      _ctl.show_hscroll(true);
+      _ctl.show_vscroll(true);
+      _ctl.want_return(true);
+      _ctl.text(_T("This is a test"));
+      auto sTemp = _ctl.text();
     };
   }
 
-  wtf::controls::richedit _ctl;
+  wtf::controls::richedit<true> _ctl;
 };
 
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
