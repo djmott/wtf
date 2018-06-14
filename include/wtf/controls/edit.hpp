@@ -22,7 +22,7 @@ namespace wtf {
     struct edit : _::edit_impl<edit<_multiline>> {
 
       static constexpr DWORD Style = window::Style | (_multiline ? ES_MULTILINE : 0);
-      edit(window * parent) : _::edit_impl<edit<_multiline>>(parent){
+      edit() : _::edit_impl<edit<_multiline>>(){
         wtf::_::init_common_controls<wtf::_::standard_classes>::get();
       }
 

@@ -77,6 +77,7 @@ add_executable(wtf WIN32
     include/wtf/controls/trackbar.hpp
     include/wtf/controls/tree.hpp
     include/wtf/controls/up_down.hpp
+    include/wtf/controls/policies/has_border.hpp
     include/wtf/controls/policies/has_font.hpp
     include/wtf/controls/policies/has_text.hpp
     include/wtf/messages/messages.hpp

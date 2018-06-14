@@ -24,7 +24,7 @@ namespace wtf {
         (orientations::vertical == _orientation ? PBS_VERTICAL : 0) |
         (_smooth ? PBS_SMOOTH : 0);
 
-      explicit progressbar(window * pParent) : policy::progressbar_super_t<progressbar>(pParent) {}
+      progressbar() : policy::progressbar_super_t<progressbar>() {}
 
       void set_range(uint32_t min, uint32_t max) { ::SendMessage(*this, PBM_SETRANGE32, min, max); }
 

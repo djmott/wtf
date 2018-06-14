@@ -18,7 +18,7 @@ namespace wtf {
     }
     
     struct label : policy::label_super_t<label> {
-      explicit label() : policy::label_super_t<label>() {
+      label() : policy::label_super_t<label>() {
         wtf::_::init_common_controls<wtf::_::standard_classes>::get();
       }
     };

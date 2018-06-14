@@ -16,7 +16,7 @@ namespace wtf {
           wtf::_::init_common_controls<wtf::_::standard_classes>::get();
         }
 
-        template <typename ... _arg_ts> isa_combobox(_arg_ts&&...args) : _super_t(std::forward<_arg_ts>(args)...) {}
+        isa_combobox() : _super_t() {}
 
         struct item {
           using pointer = std::shared_ptr<item>;
@@ -99,7 +99,7 @@ namespace wtf {
         (combobox_styles::simple == _style ? CBS_SIMPLE : 0) |
         (combobox_styles::drop_down == _style ? CBS_DROPDOWN : 0) |
         (combobox_styles::drop_down_list == _style ? CBS_DROPDOWNLIST : 0);
-      combobox(window * parent) : policy::combobox_super_t<combobox<_sorted, _style>>(parent) {}
+      combobox() : policy::combobox_super_t<combobox<_sorted, _style>>() {}
     };
   }
 

@@ -9,13 +9,13 @@ using namespace wtf;
 struct frmMain : form {
 
   frmMain() : form(){
-//    add(_ctl);
+    add(_ctl);
     OnSize += [this](...){
       _ctl.move(10, 10, 200, 30);
     };
   }
 
-  wtf::controls::date_time _ctl;
+  wtf::controls::richedit _ctl;
 };
 
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {

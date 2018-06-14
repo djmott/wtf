@@ -13,6 +13,8 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include <CommCtrl.h>
+#include <richedit.h>
+
 
 #include <algorithm>
 #include <stdexcept>

@@ -12,7 +12,7 @@ namespace wtf {
         template <typename ... _arg_ts> isa_button(_arg_ts&&...args) noexcept : 
           _super_t(std::forward<_arg_ts>(args)...) 
         {
-          wtf::_::init_common_controls<wtf::_::standard_classes>::get();
+   //       wtf::_::init_common_controls<wtf::_::standard_classes>::get();
         }
       };
 
@@ -28,6 +28,7 @@ namespace wtf {
 
 
     struct button : policy::button_super_t<button> {
+      button() = default;
     };
   
 
