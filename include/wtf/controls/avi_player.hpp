@@ -1,4 +1,4 @@
-/** @file
+﻿/** @file
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
@@ -10,23 +10,27 @@ namespace wtf {
 
       TCHAR sANIMATE_CLASS[] = ANIMATE_CLASS;
 
-      template <typename _impl_t> using avi_player_impl = window_impl<_impl_t,
-        policy::has_font,
-        policy::has_text,
-        wtf::policy::wm_command,
-        wtf::policy::has_move
-      >;
-
     }
 
     /** @class avi_player
-    @ingroup Widgets
     @brief displays an Audio-Video Interleaved (AVI) clip
+    @implements wtf::controls::policy::has_enable
+    @implements wtf::controls::policy::has_border
+    @implements wtf::controls::policy::has_font
+    @implements wtf::controls::policy::has_text
+    @ingroup Widgets
     */
-    struct avi_player : _::avi_player_impl<avi_player> {
+    struct avi_player : window_impl<avi_player,
+      wtf::controls::policy::has_enable,
+      wtf::controls::policy::has_border,
+      wtf::controls::policy::has_font,
+      wtf::controls::policy::has_text,
+      wtf::policy::wm_command,
+      wtf::policy::has_move
+    >{
 
 
-      avi_player() : _::avi_player_impl<avi_player>() {
+      avi_player() : window_impl() {
         wtf::_::init_common_controls<wtf::_::animate_classes>::get();
       }
 

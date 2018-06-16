@@ -1,4 +1,4 @@
-/** @file
+﻿/** @file
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
@@ -14,11 +14,20 @@ namespace wtf {
     };
 
     namespace policy {
+      /**
+       * @class has_border
+       * Behavior policy of a widget or form with a border
+       * @ingroup Policies
+       */
       template <typename _super_t>
       struct has_border: _super_t {
 
         has_border() : _super_t(){}
 
+        /**
+         * @fn void border(border_styles newval)
+         * Sets the border style
+         */
         void border(border_styles newval) {
           auto style = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
           auto exstyle = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_EXSTYLE), [](LONG l) { return !l; });
@@ -36,6 +45,10 @@ namespace wtf {
           wtf::exception::throw_lasterr_if(::SetWindowLong(*this, GWL_EXSTYLE, exstyle), [](LONG l) { return !l; });
         }
 
+        /**
+         * @fn border_styles border()
+         * Gets the border style
+         */
         border_styles border() const {
           auto style = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
           auto exstyle = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_EXSTYLE), [](LONG l) { return !l; });

@@ -1,4 +1,4 @@
-/** @file
+﻿/** @file
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
@@ -42,40 +42,87 @@
 
 #pragma comment(lib, "comctl32.lib")
 
-/** @defgroup Widgets
+/** @defgroup Widgets Widgets
 WTF Visual components
+*/
+/** @defgroup Policies Policies
+Behavioral policies of widgets
+*/
+
+/** @defgroup Messages Messages
+Message processing policies of widgets
 */
 
 /** @namespace wtf
 Primary namespace
 */
 namespace wtf {
+  /**
+  * @cond PRIVATE
+  * @namespace wtf::_
+  * Hidden namespace for internal structures and algorithms not for external consumption
+  */
+  namespace _ {}
+  //!@endcond
 
   /** @namespace wtf::controls
   Native Windows controls
   */
+  namespace controls {
+    /** @cond PRIVATE
+     * @namespace _
+     * Internal namespace
+     */
+    namespace _{}
+    //! @endcond
+
+    /** @namespace policy
+     * Policies for Native controls
+     */
+    namespace policy{}
+  }
+
+  /**
+  @interface window window.hpp
+  @brief Base class of widgets and forms
+  This class is inherited as the super-most base class of widgets and forms via hierarchy generation.
+  */
+  struct window;
+  
+  /**
+  @class window_impl window.hpp
+  @brief Implements a widgets or form
+  This is the hierarchy generator that composes a list of behavior patterns into a concrete widget or form. 
+  Policies are combine in a linear hierarchy in the order listed with the window class being the super-most base class.
+  @tparam implementation_type The concrete implementation
+  @tparam policy_list The list of behavioral policies that the implementation will inherit.
+  */
+  template <typename implementation_type, template <typename> typename...policy_list> struct window_impl;
 
   /** @enum coord_frame
-  Distinguishes coordinate frame relative to the screen or window client area  
+  Distinguishes coordinate frame relative to the screen or window client area
   */
   enum class coord_frame {
     screen, /**< screen relative */
     client, /**< window client area relative */
   };
 
-  struct window;
-  template <typename, template <typename> typename...> struct window_impl;
-
   /** @typedef tstring
   Primary string representation. Can be either MULTIBYTE or UNICODE depending on compilation mode.
   */
   using tstring = std::basic_string<TCHAR>;
 
+  //!@cond PRIVATE
   extern "C" HINSTANCE__ __ImageBase;
+  //!@endcond
+
+  /** @fn HINSTANCE instance_handle()
+  Returns the instance handle of the current process.
+  */
   inline static constexpr HINSTANCE instance_handle() noexcept { return &__ImageBase; }
 
-  /** @namespace wtf::_
-  Hidden namespace for internal structures and algorithms not for external consumption  
+  /** 
+  @cond PRIVATE
   */
   namespace _ {
     static std::mutex& _active_forms_lock() noexcept {
@@ -116,19 +163,29 @@ namespace wtf {
     };
 
   }
+  //!@endcond
 
+  /**
+  @fn tstring to_tstring(_Ty value)
+  Constructs a tstring representation of a value
+  @param value value to convert
+  @return a tstring representation of the value
+  */
   template <typename _Ty> static tstring to_tstring(_Ty value){ return _::to_tstring_impl<_Ty, TCHAR>::get(value); }
 
   /** @namespace wtf::policy
   Behavioral policies
+  @ingroup Policies
   */
   namespace policy{
-    /** @internal
+    /**
+    @cond PRIVATE
     @namespace wtf::_
     Hidden namespace for internal structures and algorithms not for external consumption
-    @endinternal
     */
     namespace _{}
+    //!@endcond
+
   }
 
   static const std::vector<const window*>& active_forms()  noexcept { return _::_active_forms(); }

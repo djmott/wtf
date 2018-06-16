@@ -1,4 +1,4 @@
-/** @file
+﻿/** @file
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
@@ -8,6 +8,7 @@ namespace wtf{
   namespace policy{
 
     /**
+     * @class wtf::policy::has_border
      * @brief Creates a border
      */
     template <typename _super_t>
@@ -89,12 +90,7 @@ namespace wtf{
     has_border() = default;
 
     protected:
-
-      /**
-       * @brief Construct a new has_border object
-       * 
-       * @param pParent parent window
-       */
+      template <typename, template <typename> typename...> friend struct window_impl;
 
       /**
        * @brief Invalidates the non-client area forcing a border redraw
@@ -109,7 +105,6 @@ namespace wtf{
 
       /**
        * @brief handles WM_NCPAINT messages
-       * 
        * @param dc device contact of the non-client area
        * @param oClient drawing rect
        */

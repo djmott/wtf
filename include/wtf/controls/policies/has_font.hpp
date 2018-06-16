@@ -1,12 +1,16 @@
-/** @file
+﻿/** @file
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
 
 namespace wtf {
   namespace controls {
-
     namespace policy {
+
+      /** @class has_font
+      Behavior policy of font settings
+      @ingroup Policies
+      */
       template <typename _super_t>
       struct has_font : _super_t {
 

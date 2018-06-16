@@ -85,20 +85,24 @@ struct frmMain : form {
     add(_tab);
     _tab.add(_buttons);
     _tab.add(_comboboxes);
+    _tab.add(_avi);
 
     OnCreated += [this](...) {
 //      _tab.add(_buttons);
       _tab.items().add(_T("Buttons"), _buttons);
       _tab.items().add(_T("Comboboxes"), _comboboxes);
+      _tab.items().add(_T("AVI"), _avi);
     };
     OnSize += [this](...) {
       _tab.move(5, 5, width() - 10, height() - 10);
     };
   }
 
+
   wtf::controls::tab _tab;
   Buttons _buttons;
   ComboBoxes _comboboxes;
+  wtf::controls::avi_player _avi;
 };
 
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
