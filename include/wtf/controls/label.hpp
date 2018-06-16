@@ -13,13 +13,18 @@ namespace wtf {
         policy::has_font,
         wtf::policy::has_enable,
         wtf::policy::has_move,
+        wtf::policy::has_size,
+        wtf::policy::wm_size,
         wtf::policy::wm_command
       >;
     }
     
+    /** @class label
+    @ingroup Widgets
+    @brief A static control with text.
+    */
     struct label : policy::label_super_t<label> {
       label() : policy::label_super_t<label>() {
-        wtf::_::init_common_controls<wtf::_::standard_classes>::get();
       }
     };
     

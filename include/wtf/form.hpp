@@ -11,30 +11,25 @@ namespace wtf {
 
       isa_form() = default;
 
-      void show() {
-        if (!_super_t::_handle) _super_t::run();
-        _super_t::show();
-      }
-
-      int top() const {
+      int top() const override {
         return rect<coord_frame::screen>::get(*this).top;
       }
 
-      int left() const {
+      int left() const override {
         return rect<coord_frame::screen>::get(*this).left;
       }
 
-      int width() const {
+      int width() const override {
         auto r = rect<coord_frame::client>::get(*this);
         return r.right - r.left;
       }
 
-      int height() const {
+      int height() const override {
         auto r = rect<coord_frame::client>::get(*this);
         return r.bottom - r.top;
       }
 
-      void close() noexcept { ::DestroyWindow(*this); }
+      void close() noexcept override { ::DestroyWindow(*this); }
 
     protected:
 
@@ -91,7 +86,7 @@ namespace wtf {
     static constexpr DWORD ExStyle = _ExStyle;
     static constexpr DWORD Style = _Style;
 
-    form_impl() : window_impl() {}
+    form_impl() = default;
 
     int run() override final {
       message oMsg;
@@ -105,18 +100,30 @@ namespace wtf {
 
   };
 
+  /** @class form
+  @ingroup Widgets
+  @brief A parent window with a sizable border, title bar, control box, system menu, minimize and maximize
+  */
   struct form : form_impl<form, WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW> {
 
     form() : form_impl() {}
 
   };
 
+  /** @class dialog
+  @ingroup Widgets
+  @brief A parent window with a fixed border, title bar and system menu.
+  */
   struct dialog : form_impl<dialog, WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE> {
 
     dialog() : form_impl() {}
 
   };
 
+  /** @class tool_window
+  @ingroup Widgets
+  @brief A parent window with a sizable border and title bar.
+  */
   struct tool_window : form_impl<tool_window, WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW> {
 
     tool_window() : form_impl() {}

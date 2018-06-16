@@ -15,7 +15,6 @@
 #include <CommCtrl.h>
 #include <richedit.h>
 
-
 #include <algorithm>
 #include <stdexcept>
 #include <string>
@@ -43,11 +42,18 @@
 
 #pragma comment(lib, "comctl32.lib")
 
+/** @defgroup Widgets
+WTF Visual components
+*/
+
 /** @namespace wtf
 Primary namespace
 */
 namespace wtf {
 
+  /** @namespace wtf::controls
+  Native Windows controls
+  */
 
   /** @enum coord_frame
   Distinguishes coordinate frame relative to the screen or window client area  
@@ -58,7 +64,7 @@ namespace wtf {
   };
 
   struct window;
-  template <typename, template <typename> typename...>  struct window_impl;
+  template <typename, template <typename> typename...> struct window_impl;
 
   /** @typedef tstring
   Primary string representation. Can be either MULTIBYTE or UNICODE depending on compilation mode.
@@ -69,7 +75,7 @@ namespace wtf {
   inline static constexpr HINSTANCE instance_handle() noexcept { return &__ImageBase; }
 
   /** @namespace wtf::_
-  Hidden namespace for internal structures and algorithms not for external consumption
+  Hidden namespace for internal structures and algorithms not for external consumption  
   */
   namespace _ {
     static std::mutex& _active_forms_lock() noexcept {
@@ -81,7 +87,6 @@ namespace wtf {
       static std::vector<const window*> _forms;
       return _forms;
     }
-
 
     template <typename, typename> struct to_tstring_impl;
 
@@ -112,16 +117,21 @@ namespace wtf {
 
   }
 
-
   template <typename _Ty> static tstring to_tstring(_Ty value){ return _::to_tstring_impl<_Ty, TCHAR>::get(value); }
 
   /** @namespace wtf::policy
-  Contains the behavioral policies
+  Behavioral policies
   */
-  namespace policy{}
+  namespace policy{
+    /** @internal
+    @namespace wtf::_
+    Hidden namespace for internal structures and algorithms not for external consumption
+    @endinternal
+    */
+    namespace _{}
+  }
 
   static const std::vector<const window*>& active_forms()  noexcept { return _::_active_forms(); }
-
 
 }
 
@@ -143,9 +153,6 @@ namespace wtf {
   #define D_(...)
   #define R_(...) __VA_ARGS__
 #endif
-/**
-@defgroup UI Widgets
-*/
 
 #include "_/meta.hpp"
 #include "_/msg_names.hpp"
@@ -179,6 +186,8 @@ namespace wtf {
 #include "_/init_common_controls.hpp"
 
 #include "messages/messages.hpp"
+#include "messages/nm_killfocus.hpp"
+#include "messages/nm_setfocus.hpp"
 #include "messages/wm_activate.hpp"
 #include "messages/wm_char.hpp"
 #include "messages/wm_close.hpp"
@@ -272,5 +281,3 @@ namespace wtf {
 #include "controls/trackbar.hpp"
 #include "controls/tree.hpp"
 #include "controls/up_down.hpp"
-
-

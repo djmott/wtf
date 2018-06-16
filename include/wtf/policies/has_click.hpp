@@ -15,10 +15,9 @@ namespace wtf{
 
       callback<void(window *, mouse_msg_param<coord_frame::client>)> OnClick;
 
-      has_click() : _super_t(pParent) {}
+      has_click() : _super_t() {}
 
     protected:
-
       
 
       virtual void on_wm_click(const mouse_msg_param<coord_frame::client>& p){ OnClick(this, p); }

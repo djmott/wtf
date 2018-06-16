@@ -25,7 +25,6 @@ namespace wtf{
 
       virtual void on_wm_move(const point<coord_frame::client>& param){ OnMove(this, param); }
 
-
       void handle_msg(wtf::window_message& msg) override {
         if (WM_MOVE == msg.umsg) on_wm_move(point<coord_frame::client>(LOWORD(msg.lparam), HIWORD(msg.lparam)));
       }

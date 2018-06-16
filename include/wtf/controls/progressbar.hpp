@@ -17,6 +17,12 @@ namespace wtf {
       >;
     }
 
+    /** @class progressbar
+    @ingroup Widgets
+    @brief A progress bar is a window that an application can use to indicate the progress of a lengthy operation.
+    @tparam _orientation Indicates a vertical or horizontal progress bar
+    @tparam _smooth Indicates the progress bar should display a smooth or blocked progress.
+    */
     template <orientations _orientation, bool _smooth = true>
     struct progressbar : policy::progressbar_super_t<progressbar<_orientation, _smooth>> {
 

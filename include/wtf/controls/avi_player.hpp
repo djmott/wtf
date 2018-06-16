@@ -19,6 +19,10 @@ namespace wtf {
 
     }
 
+    /** @class avi_player
+    @ingroup Widgets
+    @brief displays an Audio-Video Interleaved (AVI) clip
+    */
     struct avi_player : _::avi_player_impl<avi_player> {
 
 

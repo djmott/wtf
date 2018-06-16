@@ -91,6 +91,12 @@ namespace wtf {
       drop_down_list
     };
 
+    /** @class combobox
+    @ingroup Widgets
+    @brief A list and a selection field. The list presents the options that a user can select, and the selection field displays the current selection.
+    @tparam _sorted Specifies that items in the list portion should be sorted alphabetically.
+    @tparam _style Specifies the style that the combobox should present.
+    */
     template <bool _sorted, combobox_styles _style>
     struct combobox : policy::combobox_super_t<combobox<_sorted, _style>> {
       static constexpr bool sorted = _sorted;

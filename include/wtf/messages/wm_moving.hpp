@@ -18,7 +18,6 @@ namespace wtf{
 
       virtual void on_wm_moving(rect<coord_frame::screen>& param){ OnMoving(this, param); }
 
-
       void handle_msg(wtf::window_message& msg) override {
         if (WM_MOVING == msg.umsg) on_wm_moving(*reinterpret_cast<rect<coord_frame::screen>*>(msg.lparam));
       }

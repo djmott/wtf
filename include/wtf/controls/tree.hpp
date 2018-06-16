@@ -18,6 +18,10 @@ namespace wtf {
 
     }
 
+    /** @class tree
+    @ingroup Widgets
+    @brief A tree-view control is a window that displays a hierarchical list of items, such as the headings in a document, the entries in an index, or the files and directories on a disk.
+    */
     struct tree : _::tree_impl<tree> {
       tree() : _::tree_impl<tree>() {
         wtf::_::init_common_controls<wtf::_::treeview_classes>::get();
@@ -85,7 +89,7 @@ namespace wtf {
       typename item::vector _items;
 
       void get_display_info(NMTVDISPINFO * pInfo){
-        auto & oItem = std::find_if(_items.cbegin(), _items.cend(), [&pInfo](const typename item::pointer& it)->bool { return pInfo->item.hItem == it->hItem; });
+        const auto & oItem = std::find_if(_items.cbegin(), _items.cend(), [&pInfo](const typename item::pointer& it)->bool { return pInfo->item.hItem == it->hItem; });
         if (_items.cend() == oItem) return;
         if (pInfo->item.mask & TVIF_CHILDREN) pInfo->item.cChildren = static_cast<int>((*oItem)->children().size());
         if (pInfo->item.mask & TVIF_HANDLE) pInfo->item.hItem = (*oItem)->hItem;

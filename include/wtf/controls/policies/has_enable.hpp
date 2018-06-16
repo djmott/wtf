@@ -10,9 +10,9 @@ namespace wtf {
       template <typename _super_t>
       struct has_enable: _super_t {
 
-        bool enabled() const { return !get_style<WS_DISABLED>(); }
+        bool enabled() const { return !_super_t::get_style<WS_DISABLED>(); }
 
-        void enabled(bool newval) { set_style<WS_DISABLED>(!newval); }
+        void enabled(bool newval) { _super_t::set_style<WS_DISABLED>(!newval); }
 
       };
     }

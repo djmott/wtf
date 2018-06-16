@@ -10,9 +10,9 @@ namespace wtf {
       template <typename _super_t>
       struct has_vscroll : _super_t {
 
-        bool vscroll() const { return get_style<WS_VSCROLL>(); }
+        bool vscroll() const { return _super_t::get_style<WS_VSCROLL>(); }
 
-        void vscroll(bool newval) { set_style<WS_VSCROLL>(newval); }
+        void vscroll(bool newval) { _super_t::set_style<WS_VSCROLL>(newval); }
 
       };
     }

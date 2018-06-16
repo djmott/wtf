@@ -18,13 +18,15 @@ namespace wtf {
 
     }
 
+    /** @class date_time
+    @ingroup Widgets
+    @brief A standard calendar to select a date and time
+    */
     struct date_time : _::date_time_impl<date_time> {
-
       
       date_time() : _::date_time_impl<date_time>() {
         wtf::_::init_common_controls<wtf::_::date_classes>::get();
       }
-
 
     };
 

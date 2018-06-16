@@ -18,7 +18,6 @@ namespace wtf{
 
       virtual void on_wm_dblclick(const mouse_msg_param<coord_frame::client>& p){ OnDblClick(this, p); }
 
-
       void handle_msg(wtf::window_message& msg) override {
         if (WM_LBUTTONDBLCLK == msg.umsg) {
           on_wm_dblclick(mouse_msg_param<coord_frame::client>(msg.wparam, msg.lparam, mouse_buttons::left));

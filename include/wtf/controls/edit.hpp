@@ -18,6 +18,11 @@ namespace wtf {
 
     }
 
+    /** @class edit
+    @ingroup Widgets
+    @brief An edit control is a rectangular control window typically used in a dialog box to permit the user to enter and edit text by typing on the keyboard.
+    @tparam _multiline Indicates that multiple lines of text are permitted.
+    */
     template <bool _multiline>
     struct edit : _::edit_impl<edit<_multiline>> {
 

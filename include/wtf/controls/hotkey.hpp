@@ -18,6 +18,10 @@ namespace wtf {
 
     }
 
+    /** @class hotkey
+    @ingroup Widgets
+    @brief A hot key control is a window that enables the user to enter a combination of keystrokes to be used as a hot key.
+    */
     struct hotkey : _::hotkey_impl<hotkey> {
 
       enum class modifiers : uint8_t{

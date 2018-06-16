@@ -19,13 +19,16 @@ namespace wtf {
 
     }
 
+    /** @class tab
+    @ingroup Widgets
+    @brief A tab control is analogous to the dividers in a notebook or the labels in a file cabinet. By using a tab control, an application can define multiple pages for the same area of a window or dialog box.
+    */
     struct tab : _::tab_impl<tab> {
       static constexpr DWORD ExStyle = WS_EX_CONTROLPARENT;
       static constexpr DWORD Style = TCS_FOCUSNEVER | WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN;
 
-      tab() : _::tab_impl<tab>() {
+      tab() : _::tab_impl<tab>(), _items(this){
         wtf::_::init_common_controls<wtf::_::tab_classes>::get();
-
       }
 
       callback<void(window*)> OnClick;
@@ -34,31 +37,48 @@ namespace wtf {
       callback<void(window*)> OnChanged;
 
       struct item {
-        using pointer = std::shared_ptr<item>;
-        using vector = std::vector<pointer>;
-        virtual ~item() = default;
-        item() = default;
-        item(const item&) = default;
-        item(item&&) = default;
-        item& operator=(const item&) = default;
-        item& operator=(item&&) = default;
-        item(const tstring& Text) : _text(Text){}
 
         const tstring& text() const noexcept { return _text; }
+        
+        struct collection {
+          size_t count() const { return _inner.size(); }
+          item& operator[](size_t index) { return *_inner[index]; }
+          const item& operator[](size_t index) const { return *_inner[index]; }
+          template <typename _ty>
+          void add(const tstring& text, _ty& newval) {
+            _inner.push_back(std::unique_ptr<item>(new item(text, &newval)));
+            TCITEM oTCItem;
+            oTCItem.pszText = const_cast<LPTSTR>(text.c_str());
+            oTCItem.mask = TCIF_TEXT;
+            wtf::exception::throw_lasterr_if(::SendMessage(*_parent, TCM_INSERTITEM, _inner.size(), reinterpret_cast<LPARAM>(&oTCItem)), [](LRESULT l) { return -1 == l; });
+            _parent->resize_children();
+          }
+        protected:
+          friend struct tab;
+          friend struct item;
+          collection(tab * parent) : _parent(parent){}
+          std::vector<std::unique_ptr<item>> _inner;
+          tab * _parent;
+        };
+
       protected:
         template <typename, template <typename> typename...> friend struct window_impl;
-
+        friend struct tab;
+        item(const tstring& stext, window * pwindow) : _text(stext), _window(pwindow){}
         tstring _text;
+        window * _window;
       };
 
 
-      item * get_item(int index) const { return _items[index].get(); }
-
-      int current_index() const {
-        return static_cast<int>(::SendMessage(*this, TCM_GETCURSEL, 0, 0));
+      size_t current_index() const {
+        return static_cast<size_t>(::SendMessage(*this, TCM_GETCURSEL, 0, 0));
       }
 
-      item * current_item() const { return get_item(current_index()); }
+      const item& current_item() const { return _items[current_index()]; }
+
+      /*
+      item * get_item(int index) const { return _items[index].get(); }
+
 
       item::pointer add_item(typename item::pointer Item) {
         TCITEM oTCItem;
@@ -70,13 +90,17 @@ namespace wtf {
         return Item;
       }
 
-      item::pointer add_item(const tstring& text) {
+      item::pointer add_item(const tstring& text, ) {
         return add_item(std::make_shared<item>(text));
       }
+      */
+
+      item::collection& items() { return _items; }
+      const item::collection& items() const { return _items; }
 
     protected:
 
-      typename item::vector _items;
+      item::collection _items;
 
       void on_wm_size(const point<coord_frame::client>& p) override {
         resize_children();
@@ -84,19 +108,19 @@ namespace wtf {
       }
 
       void resize_children() {
-        if (!_items.size()) return;
+        if (!_items._inner.size()) return;
         const auto i = current_index();
         if (-1 == i) return;
-/*
-        for (const auto & Item : _items) {
-          ::ShowWindow(*Item->window(), SW_HIDE);
+
+        for (const auto & Item : _items._inner) {
+          ::ShowWindow(*Item->_window, SW_HIDE);
         }
-*/
+
         auto r = wtf::rect<coord_frame::client>::get(*this);
         ::SendMessage(*this, TCM_ADJUSTRECT, FALSE, reinterpret_cast<LPARAM>(&r));
-        auto Item = get_item(i);
-//         wtf::exception::throw_lasterr_if(::MoveWindow(*Item->window(), r.left, r.top, r.right - r.left, r.bottom - r.top, FALSE), [](BOOL b) { return 0 == b; });
-//         ::ShowWindow(*Item->window(), SW_SHOW);
+        const auto & Item = _items[i];
+         wtf::exception::throw_lasterr_if(::MoveWindow(*Item._window, r.left, r.top, r.right - r.left, r.bottom - r.top, FALSE), [](BOOL b) { return 0 == b; });
+         ::ShowWindow(*Item._window, SW_SHOW);
       }
 
       void on_wm_notify(NMHDR * notification) override {

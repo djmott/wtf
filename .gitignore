@@ -38,3 +38,4 @@ CodeDB
 /CMakeSettings.json
 /docs/html
 /doxygen_sqlite3.db
+!.gitattributes

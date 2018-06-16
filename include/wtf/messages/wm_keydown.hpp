@@ -20,7 +20,6 @@ namespace wtf{
         OnKeyDown(this, char_code, param);
       }
 
-
       void handle_msg(wtf::window_message& msg) override {
         if (WM_KEYDOWN == msg.umsg) on_wm_keydown(static_cast<UINT>(msg.wparam), *reinterpret_cast<keyboard_msg_param*>(&msg.lparam));
       }

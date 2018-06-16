@@ -82,6 +82,8 @@ add_executable(wtf WIN32
     include/wtf/controls/policies/has_hscroll.hpp
     include/wtf/controls/policies/has_text.hpp
     include/wtf/messages/messages.hpp
+    include/wtf/messages/nm_killfocus.hpp
+    include/wtf/messages/nm_setfocus.hpp
     include/wtf/messages/wm_activate.hpp
     include/wtf/messages/wm_char.hpp
     include/wtf/messages/wm_close.hpp
@@ -150,7 +152,8 @@ endif()
 if(BUILD_DOCS AND DOXYGEN_FOUND)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile)
   add_custom_target(
-    docs COMMAND "${DOXYGEN_EXECUTABLE}" Doxyfile
+    docs ALL
+	COMMAND "${DOXYGEN_EXECUTABLE}" Doxyfile
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile
     COMMENT "Generating Doxygen API Documentation" VERBATIM
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/docs"

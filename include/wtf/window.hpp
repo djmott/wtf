@@ -67,9 +67,7 @@ namespace wtf{
     std::vector<window*> _children;
 
     virtual void on_created() { OnCreated(this); }
-    
-  private:
-    
+      
     virtual void handle_msg(wtf::window_message& msg) = 0;
 
     virtual void fwd_msg(wtf::window_message&, const std::type_info&) = 0;
