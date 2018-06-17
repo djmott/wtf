@@ -15,7 +15,7 @@ namespace wtf {
         dwSize = sizeof(INITCOMMONCONTROLSEX);
         dwICC = ICC_WIN95_CLASSES | ICC_DATE_CLASSES | ICC_USEREX_CLASSES | ICC_COOL_CLASSES | ICC_INTERNET_CLASSES
           | ICC_PAGESCROLLER_CLASS | ICC_NATIVEFNTCTL_CLASS | ICC_STANDARD_CLASSES | ICC_LINK_CLASS;
-        wtf::exception::throw_lasterr_if(InitCommonControlsEx(this), [](BOOL b) { return FALSE==b; });
+        InitCommonControlsEx(this);
       }
     };
   }

@@ -84,10 +84,6 @@ namespace wtf {
     namespace _{}
     //! @endcond
 
-    /** @namespace policy
-     * Policies for Native controls
-     */
-    namespace policy{}
   }
 
   /**
@@ -200,16 +196,12 @@ namespace wtf {
 
 }
 
-#if defined(_MSC_VER)
-  #define PRAGMA_(x) __pragma(x)
-  #define NOVTABLE __declspec(novtable)
-#else
-  #define PRAGMA_(x) _Pragma( #x )
-  #define NOVTABLE
-#endif
-
-#define TODO( x ) PRAGMA_(message ( __FILE__ ":" QUOTE(__LINE__) " : TODO : " x ))
-#define NOTE( x ) PRAGMA_(message ( __FILE__ ":" QUOTE(__LINE__) " : NOTE : " x ))
+#define PRAGMA_( ... ) __pragma( __VA_ARGS__ )
+#define NOVTABLE __declspec(novtable)
+#define _QUOTE( ... ) # __VA_ARGS__
+#define QUOTE( ... ) _QUOTE( __VA_ARGS__ )
+#define TODO( ... ) PRAGMA_(message ( __FILE__ "(" QUOTE(__LINE__) "): TODO : " __VA_ARGS__ ))
+#define NOTE( ... ) PRAGMA_(message ( __FILE__ "(" QUOTE(__LINE__) "): NOTE : " __VA_ARGS__ ))
 
 #if defined(_DEBUG)
   #define D_(...) __VA_ARGS__
@@ -291,8 +283,7 @@ namespace wtf {
 #include "messages/wm_timer.hpp"
 
 #include "policies/has_background.hpp"
-//#include "policies/has_border.hpp"
-#include "policies/has_border_style.hpp"
+#include "policies/has_border.hpp"
 #include "policies/has_caret.hpp"
 #include "policies/has_click.hpp"
 #include "policies/has_close.hpp"
@@ -301,25 +292,26 @@ namespace wtf {
 #include "policies/has_exstyle.hpp"
 #include "policies/has_focus.hpp"
 #include "policies/has_font.hpp"
+#include "policies/has_hscroll.hpp"
 #include "policies/has_icon.hpp"
+#include "policies/has_image.hpp"
 #include "policies/has_invalidate.hpp"
 #include "policies/has_move.hpp"
 #include "policies/has_orientation.hpp"
-#include "policies/has_timer.hpp"
+#include "policies/has_owner_drawn_border.hpp"
+#include "policies/has_owner_drawn_font.hpp"
+#include "policies/has_owner_drawn_text.hpp"
 #include "policies/has_repeat_click.hpp"
 #include "policies/has_show.hpp"
 #include "policies/has_size.hpp"
 #include "policies/has_style.hpp"
 #include "policies/has_text.hpp"
+#include "policies/has_timer.hpp"
 #include "policies/has_titlebar.hpp"
+#include "policies/has_vscroll.hpp"
 #include "policies/has_zorder.hpp"
 
 #include "form.hpp"
-
-#include "controls/policies/has_font.hpp"
-#include "controls/policies/has_hscroll.hpp"
-#include "controls/policies/has_text.hpp"
-#include "controls/policies/has_vscroll.hpp"
 
 #include "controls/avi_player.hpp"
 #include "controls/button.hpp"

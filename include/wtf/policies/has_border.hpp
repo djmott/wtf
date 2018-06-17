@@ -14,12 +14,12 @@ namespace wtf {
 
     namespace policy {
       /**
-       * @class has_border_style
+       * @class has_border
        * Behavior policy of a widget or form with a border
        * @ingroup Policies
        */
       template <typename _super_t>
-      struct has_border_style: _super_t {
+      struct has_border: _super_t {
 
         /**
          * @fn void border(border_styles newval)

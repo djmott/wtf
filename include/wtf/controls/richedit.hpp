@@ -19,16 +19,16 @@ namespace wtf {
     */
     template <bool _multiline>
     struct richedit : window_impl<richedit<_multiline>,
-      wtf::policy::has_border_style,
+      policy::has_border,
       policy::has_font,
       policy::has_text,
-      wtf::policy::has_enable,
-      wtf::policy::has_style,
-      wtf::policy::has_exstyle,
-      wtf::policy::has_move,
-      wtf::policy::nm_killfocus,
-      wtf::policy::nm_setfocus,
-      wtf::policy::wm_notify
+      policy::has_enable,
+      policy::has_style,
+      policy::has_exstyle,
+      policy::has_move,
+      policy::nm_killfocus,
+      policy::nm_setfocus,
+      policy::wm_notify
     > {
 
       using char_range = std::tuple<uint32_t, uint32_t>;

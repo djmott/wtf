@@ -2,20 +2,9 @@
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
-TODO("Review this");
+
 namespace wtf {
   namespace controls {
-
-    namespace policy {
-
-      template <typename _impl_t> using progressbar_super_t = window_impl<_impl_t,
-        policy::has_text,
-        policy::has_font,
-        wtf::policy::has_enable,
-        wtf::policy::has_move,
-        wtf::policy::wm_command
-      >;
-    }
 
     /** @class progressbar
     @ingroup Widgets
@@ -24,7 +13,13 @@ namespace wtf {
     @tparam _smooth Indicates the progress bar should display a smooth or blocked progress.
     */
     template <orientations _orientation, bool _smooth = true>
-    struct progressbar : policy::progressbar_super_t<progressbar<_orientation, _smooth>> {
+    struct progressbar : window_impl<progressbar<_orientation, _smooth>,
+      policy::has_text,
+      policy::has_font,
+      policy::has_enable,
+      policy::has_move,
+      policy::wm_command
+    > {
 
       static constexpr DWORD Style = window::Style |
         (orientations::vertical == _orientation ? PBS_VERTICAL : 0) |

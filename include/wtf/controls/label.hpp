@@ -6,19 +6,8 @@
 namespace wtf {
   namespace controls {
 
-    namespace policy {
-      
-      template <typename _impl_t> using label_super_t = window_impl<_impl_t,
-        policy::has_text,
-        policy::has_font,
-        wtf::policy::has_enable,
-        wtf::policy::has_move,
-        wtf::policy::has_size,
-        wtf::policy::wm_size,
-        wtf::policy::wm_command
-      >;
-    }
-    
+    namespace _ { TCHAR sWC_STATIC[] = WC_STATIC; }
+
     /** @class label
     @ingroup Widgets
     @brief A static control with text.
@@ -26,17 +15,16 @@ namespace wtf {
     struct label : window_impl<label,
       policy::has_text,
       policy::has_font,
-      wtf::policy::has_enable,
-      wtf::policy::has_move,
-      wtf::policy::has_size,
-      wtf::policy::wm_size,
-      wtf::policy::wm_command
+      policy::has_enable,
+      policy::has_move,
+      policy::has_size,
+      policy::wm_size,
+      policy::wm_command
     > {};
     
   }
 
-  namespace _ { TCHAR sWC_STATIC[] = WC_STATIC; }
 
-  template <WNDPROC window_proc> struct window_class<controls::label, window_proc> : super_window_class<_::sWC_STATIC, controls::label, window_proc> {};
+  template <WNDPROC window_proc> struct window_class<controls::label, window_proc> : super_window_class<controls::_::sWC_STATIC, controls::label, window_proc> {};
 
 }

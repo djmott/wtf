@@ -6,16 +6,16 @@
 namespace wtf {
   namespace controls {
 
-    namespace policy {
+    namespace _ {
 
 
       template <typename _impl_t> using button_super_t = window_impl<_impl_t,
         policy::has_text,
         policy::has_font,
-        wtf::policy::has_enable,
-        wtf::policy::has_invalidate,
-        wtf::policy::has_move,
-        wtf::policy::wm_command
+        policy::has_enable,
+        policy::has_invalidate,
+        policy::has_move,
+        policy::wm_command
       >;
     }
 
@@ -24,14 +24,14 @@ namespace wtf {
     @ingroup Widgets
     @brief A standard clickable push style button.
     */
-    struct button : policy::button_super_t<button> {};
+    struct button : _::button_super_t<button> {};
   
 
     /** @class checkbox
     @ingroup Widgets
     @brief A dual state (boolean) check box.
     */
-    struct checkbox : policy::button_super_t<checkbox> {
+    struct checkbox : _::button_super_t<checkbox> {
       static constexpr DWORD Style = window::Style | BS_AUTOCHECKBOX;
     };
 
@@ -40,7 +40,7 @@ namespace wtf {
     @ingroup Widgets
     @brief Starts a group of radio_button items.
     */
-    struct radio_group : policy::button_super_t<radio_group> {
+    struct radio_group : _::button_super_t<radio_group> {
       static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON | WS_GROUP;
     };
 
@@ -49,7 +49,7 @@ namespace wtf {
     @ingroup Widgets
     @brief An element in a radio_group. Only a single item in a radio_group can be selected at one time
     */
-    struct radio_button : policy::button_super_t<radio_button> {
+    struct radio_button : _::button_super_t<radio_button> {
       static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON;
     };
 
@@ -57,7 +57,7 @@ namespace wtf {
     @ingroup Widgets
     @brief A tri-state check box.
     */
-    struct tristate : policy::button_super_t<tristate> {
+    struct tristate : _::button_super_t<tristate> {
       static constexpr DWORD Style = window::Style | BS_AUTO3STATE;
     };
 

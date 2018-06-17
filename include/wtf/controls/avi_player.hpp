@@ -21,12 +21,12 @@ namespace wtf {
     @ingroup Widgets
     */
     struct avi_player : window_impl<avi_player,
-      wtf::policy::has_enable,
-      wtf::policy::has_border_style,
-      wtf::controls::policy::has_font,
-      wtf::controls::policy::has_text,
-      wtf::policy::wm_command,
-      wtf::policy::has_move
+      policy::has_enable,
+      policy::has_border,
+      policy::has_font,
+      policy::has_text,
+      policy::wm_command,
+      policy::has_move
     >{
 
 

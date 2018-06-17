@@ -12,7 +12,7 @@ namespace wtf {
        * @brief Creates a border
        */
       template <typename _super_t>
-      struct has_border : _super_t {
+      struct has_owner_drawn_border : _super_t {
 
         /**
          * @brief Gets the border width
@@ -86,8 +86,6 @@ namespace wtf {
         virtual void enable_border_edges(bool top, bool right, bool bottom, bool left) noexcept {
           _draw_top = top; _draw_left = left; _draw_right = right; _draw_bottom = bottom;
         }
-
-        has_border() = default;
 
       protected:
         template <typename, template <typename> typename...> friend struct window_impl;

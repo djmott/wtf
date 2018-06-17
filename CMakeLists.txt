@@ -77,10 +77,6 @@ add_executable(wtf WIN32
     include/wtf/controls/trackbar.hpp
     include/wtf/controls/tree.hpp
     include/wtf/controls/up_down.hpp
-    include/wtf/controls/policies/has_border.hpp
-    include/wtf/controls/policies/has_font.hpp
-    include/wtf/controls/policies/has_hscroll.hpp
-    include/wtf/controls/policies/has_text.hpp
     include/wtf/messages/messages.hpp
     include/wtf/messages/nm_killfocus.hpp
     include/wtf/messages/nm_setfocus.hpp
@@ -129,17 +125,22 @@ add_executable(wtf WIN32
     include/wtf/policies/has_enable.hpp
     include/wtf/policies/has_focus.hpp
     include/wtf/policies/has_font.hpp
+    include/wtf/policies/has_hscroll.hpp
     include/wtf/policies/has_icon.hpp
     include/wtf/policies/has_image.hpp
     include/wtf/policies/has_invalidate.hpp
     include/wtf/policies/has_move.hpp
     include/wtf/policies/has_orientation.hpp
+    include/wtf/policies/has_owner_drawn_border.hpp
+    include/wtf/policies/has_owner_drawn_font.hpp
+    include/wtf/policies/has_owner_drawn_text.hpp
     include/wtf/policies/has_repeat_click.hpp
     include/wtf/policies/has_show.hpp
     include/wtf/policies/has_size.hpp
     include/wtf/policies/has_text.hpp
     include/wtf/policies/has_timer.hpp
     include/wtf/policies/has_titlebar.hpp
+    include/wtf/policies/has_vscroll.hpp
     include/wtf/policies/has_zorder.hpp
 )
 
