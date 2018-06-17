@@ -24,8 +24,6 @@ namespace wtf{
 
       virtual void small_icon(icon &&src)noexcept { _small_icon = std::move(src); }
 
-      has_icon() : _super_t() {}
-
     protected:
 
       HICON on_wm_geticon(icon_type ico) noexcept {

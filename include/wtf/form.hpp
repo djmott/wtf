@@ -9,8 +9,6 @@ namespace wtf {
     template <typename _super_t>
     struct isa_form : _super_t {
 
-      isa_form() = default;
-
       int top() const override {
         return rect<coord_frame::screen>::get(*this).top;
       }
@@ -104,30 +102,18 @@ namespace wtf {
   @ingroup Widgets
   @brief A parent window with a sizable border, title bar, control box, system menu, minimize and maximize
   */
-  struct form : form_impl<form, WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW> {
-
-    form() : form_impl() {}
-
-  };
+  struct form : form_impl<form, WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW> {};
 
   /** @class dialog
   @ingroup Widgets
   @brief A parent window with a fixed border, title bar and system menu.
   */
-  struct dialog : form_impl<dialog, WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE> {
-
-    dialog() : form_impl() {}
-
-  };
+  struct dialog : form_impl<dialog, WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE> {};
 
   /** @class tool_window
   @ingroup Widgets
   @brief A parent window with a sizable border and title bar.
   */
-  struct tool_window : form_impl<tool_window, WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW> {
-
-    tool_window() : form_impl() {}
-
-  };
+  struct tool_window : form_impl<tool_window, WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW> {};
   
 }

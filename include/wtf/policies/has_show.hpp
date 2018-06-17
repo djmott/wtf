@@ -27,8 +27,6 @@ namespace wtf{
         else hide();
       }
 
-      has_show()  : _super_t(){}
-
     };
 
   }

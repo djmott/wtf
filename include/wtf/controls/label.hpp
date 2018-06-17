@@ -23,10 +23,15 @@ namespace wtf {
     @ingroup Widgets
     @brief A static control with text.
     */
-    struct label : policy::label_super_t<label> {
-      label() : policy::label_super_t<label>() {
-      }
-    };
+    struct label : window_impl<label,
+      policy::has_text,
+      policy::has_font,
+      wtf::policy::has_enable,
+      wtf::policy::has_move,
+      wtf::policy::has_size,
+      wtf::policy::wm_size,
+      wtf::policy::wm_command
+    > {};
     
   }
 

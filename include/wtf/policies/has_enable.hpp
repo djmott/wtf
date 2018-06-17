@@ -23,10 +23,6 @@ namespace wtf{
         else disable();        
       }
 
-      has_enable() : _super_t() {}
-
-    protected:
-
     };
   }
 

@@ -18,8 +18,6 @@ namespace wtf{
 
       callback<void(window * sender, const point<coord_frame::client>&)> OnMove;
 
-      wm_move() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

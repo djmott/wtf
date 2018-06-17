@@ -11,8 +11,6 @@ namespace wtf{
 
       callback<void(window *, const mouse_msg_param<coord_frame::screen>&)> OnNCMouseUp;
 
-      wm_ncmouse_up() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
       virtual void on_wm_ncmouse_up(const mouse_msg_param<coord_frame::screen>& param){ OnNCMouseUp(this, param); }

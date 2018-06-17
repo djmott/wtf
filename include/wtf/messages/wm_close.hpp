@@ -10,8 +10,6 @@ namespace wtf{
 
       callback<void(window * sender, bool& cancel)> OnClose;
 
-      wm_close() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

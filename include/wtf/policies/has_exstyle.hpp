@@ -9,7 +9,6 @@ namespace wtf {
     template <typename _super_t>
     struct has_exstyle : _super_t {
 
-
     protected:
       template <DWORD _style_flag>
       bool get_exstyle() const {

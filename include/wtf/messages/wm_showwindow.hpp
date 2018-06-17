@@ -19,7 +19,6 @@ namespace wtf{
 
       callback<void(window * sender, visibility_change_flag)> OnShow;
 
-      wm_showwindow() : _super_t() {}
 
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;

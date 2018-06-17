@@ -18,8 +18,6 @@ namespace wtf{
       callback<void(window * sender)> OnActivate;
       callback<void(window * sender)> OnDeactivate;
 
-      wm_activate() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

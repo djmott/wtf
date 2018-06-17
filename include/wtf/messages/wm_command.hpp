@@ -11,8 +11,6 @@ namespace wtf {
 
       callback<void(window * sender, WPARAM, LPARAM)> OnCommand;
 
-      wm_command() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

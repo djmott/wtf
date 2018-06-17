@@ -7,9 +7,7 @@ namespace wtf{
   namespace policy{
 
     template <typename _SuperT>
-    struct has_image : _SuperT{
-      has_image() : _SuperT(){}
-    };
+    struct has_image : _SuperT{ };
 
   }
 }

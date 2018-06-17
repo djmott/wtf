@@ -15,8 +15,6 @@ namespace wtf{
         inactive = WA_INACTIVE,
       };
 
-      wm_nccalcsize() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

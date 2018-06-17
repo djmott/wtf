@@ -30,10 +30,6 @@ namespace wtf {
     >{
 
 
-      avi_player() : window_impl() {
-        wtf::_::init_common_controls<wtf::_::animate_classes>::get();
-      }
-
       callback<void(window*)> OnStart;
       callback<void(window*)> OnStop;
 

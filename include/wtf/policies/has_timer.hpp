@@ -27,7 +27,6 @@ namespace wtf{
         wtf::exception::throw_lasterr_if(::KillTimer(*this, timer_id), [](BOOL x)noexcept { return !x; });
       }
 
-      has_timer()  : _super_t(){}
     private:
       UINT_PTR _next_timer_id = 1;
     };

@@ -14,8 +14,6 @@ namespace wtf{
 
       callback<void(window * sender)> OnNCMouseLeave;
 
-      wm_ncmouse_leave() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

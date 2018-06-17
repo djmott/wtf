@@ -17,8 +17,6 @@ namespace wtf{
       virtual orientations orientation() const { return _orientation; }
       virtual void orientation(orientations newval) { _orientation = newval; }
 
-      has_orientation() : _super_t() {}
-
     protected:
       orientations _orientation = orientations::horizontal;
     };

@@ -10,8 +10,6 @@ namespace wtf{
 
       callback<void(window * sender, UINT char_code, keyboard_msg_param)> OnChar;
 
-      wm_char() : _super_t() {}
-
     protected:
 
       template <typename, template <typename> typename...> friend struct window_impl;

@@ -11,8 +11,6 @@ namespace wtf{
       
       callback<void(window * sender, const device_context&, const rect<coord_frame::client>&)> OnEraseBackground;
 
-      wm_erasebkgnd() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

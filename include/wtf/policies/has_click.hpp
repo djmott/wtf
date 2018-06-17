@@ -15,8 +15,6 @@ namespace wtf{
 
       callback<void(window *, mouse_msg_param<coord_frame::client>)> OnClick;
 
-      has_click() : _super_t() {}
-
     protected:
       
 

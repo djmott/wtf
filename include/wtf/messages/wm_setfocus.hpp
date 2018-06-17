@@ -10,7 +10,6 @@ namespace wtf{
 
       callback<void(window * sender, HWND)> OnSetFocus;
 
-      wm_setfocus() : _super_t() {}
 
     protected:
 

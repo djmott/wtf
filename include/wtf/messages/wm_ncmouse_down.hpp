@@ -12,8 +12,6 @@ namespace wtf{
 
       callback<void(window * sender, const mouse_msg_param<coord_frame::screen>&)> OnNCMouseDown;
 
-      wm_ncmouse_down() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

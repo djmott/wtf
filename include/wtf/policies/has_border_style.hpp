@@ -21,8 +21,6 @@ namespace wtf {
       template <typename _super_t>
       struct has_border_style: _super_t {
 
-        has_border_style() : _super_t(){}
-
         /**
          * @fn void border(border_styles newval)
          * Sets the border style

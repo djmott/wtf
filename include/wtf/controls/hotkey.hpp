@@ -10,11 +10,6 @@ namespace wtf {
 
       TCHAR sHOTKEY_CLASS[] = HOTKEY_CLASS;
 
-      template <typename _impl_t> using hotkey_impl = window_impl<_impl_t,
-        policy::has_font,
-        policy::has_text,
-        wtf::policy::has_move
-      >;
 
     }
 
@@ -22,7 +17,11 @@ namespace wtf {
     @ingroup Widgets
     @brief A hot key control is a window that enables the user to enter a combination of keystrokes to be used as a hot key.
     */
-    struct hotkey : _::hotkey_impl<hotkey> {
+    struct hotkey :window_impl<hotkey,
+      policy::has_font,
+      policy::has_text,
+      wtf::policy::has_move
+    > {
 
       enum class modifiers : uint8_t{
         none = 0,
@@ -31,11 +30,6 @@ namespace wtf {
         alt = HOTKEYF_ALT,
         ext = HOTKEYF_EXT,
       };
-
-      hotkey() : _::hotkey_impl<hotkey>() {
-        wtf::_::init_common_controls<wtf::_::hotkey_classes>::get();
-      }
-
 
       uint8_t keycode() const {
         auto lRet = LOBYTE(LOWORD(::SendMessage(*this, HKM_GETHOTKEY, 0, 0)));
@@ -54,9 +48,7 @@ namespace wtf {
       void modifier(modifiers newval) {
         ::SendMessage(*this, WM_SETHOTKEY, MAKEWORD(keycode(), static_cast<uint8_t>(newval)), 0);
       }
-
-
-
+      
     };
 
   }

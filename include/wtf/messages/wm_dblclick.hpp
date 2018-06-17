@@ -10,7 +10,6 @@ namespace wtf{
 
       callback<void(window * sender, const mouse_msg_param<coord_frame::client>&)> OnDblClick;
       
-      wm_dblclick() : _super_t() {}
 
     protected:
 

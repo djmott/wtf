@@ -6,22 +6,13 @@
 namespace wtf {
   namespace controls {
 
-    namespace policy {
-
-      template <typename _impl_t> using listview_super_t = window_impl<_impl_t,
-        policy::has_text,
-        policy::has_font,
-        wtf::policy::has_enable,
-        wtf::policy::has_move,
-        wtf::policy::wm_command
-      >;
-    }
-
-    struct listview : policy::listview_super_t<listview> {
-      listview() : policy::listview_super_t<listview>() {
-        wtf::_::init_common_controls<wtf::_::listview_classes>::get();
-      }
-    };
+    struct listview : window_impl<listview,
+      policy::has_text,
+      policy::has_font,
+      wtf::policy::has_enable,
+      wtf::policy::has_move,
+      wtf::policy::wm_command
+    > {};
 
   }
 

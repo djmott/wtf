@@ -21,8 +21,6 @@ namespace wtf{
       */
       callback<void(window * sender, const point<coord_frame::client>&)> OnSize;
 
-      wm_size() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

@@ -9,8 +9,6 @@ namespace wtf {
     template <typename _super_t>
     struct has_style : _super_t {
 
-      has_style() : _super_t() {}
-
     protected:
       template <DWORD _style_flag>
       bool get_style() const {

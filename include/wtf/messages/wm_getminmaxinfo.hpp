@@ -11,8 +11,6 @@ namespace wtf{
 
       callback<void(window * sender, MINMAXINFO * param)> OnGetMinMaxInfo;
 
-      wm_getminmaxinfo() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

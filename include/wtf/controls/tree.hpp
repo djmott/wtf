@@ -22,11 +22,13 @@ namespace wtf {
     @ingroup Widgets
     @brief A tree-view control is a window that displays a hierarchical list of items, such as the headings in a document, the entries in an index, or the files and directories on a disk.
     */
-    struct tree : _::tree_impl<tree> {
-      tree() : _::tree_impl<tree>(), _items(this, nullptr) {
-        wtf::_::init_common_controls<wtf::_::treeview_classes>::get();
-      }
+    struct tree : window_impl<tree,
+      policy::has_font,
+      wtf::policy::has_move,
+      wtf::policy::wm_notify
+    > {
 
+      tree() : _items(this, nullptr){}
 
       callback<void(window*)> OnClick;
       callback<void(window*)> OnDblClick;

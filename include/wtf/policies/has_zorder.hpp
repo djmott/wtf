@@ -23,8 +23,6 @@ namespace wtf{
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b)noexcept { return !b; });
       }
 
-      has_zorder()  : _super_t(){}
-
     };
   }
 }

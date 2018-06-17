@@ -10,19 +10,6 @@ namespace wtf {
 
       TCHAR sMSFTEDIT_CLASS[] = MSFTEDIT_CLASS;
 
-      template <typename _impl_t> using richedit_impl = window_impl<_impl_t,
-        wtf::policy::has_border_style,
-        policy::has_font,
-        policy::has_text,
-        wtf::policy::has_enable,
-        wtf::policy::has_style,
-        wtf::policy::has_exstyle,
-        wtf::policy::has_move,
-        wtf::policy::nm_killfocus,
-        wtf::policy::nm_setfocus,
-        wtf::policy::wm_notify
-      >;
-
     }
 
     /** @class richedit
@@ -31,13 +18,24 @@ namespace wtf {
     @tparam _multiline indicates that multiple lines of text are permitted.
     */
     template <bool _multiline>
-    struct richedit : _::richedit_impl<richedit<_multiline>> {
+    struct richedit : window_impl<richedit<_multiline>,
+      wtf::policy::has_border_style,
+      policy::has_font,
+      policy::has_text,
+      wtf::policy::has_enable,
+      wtf::policy::has_style,
+      wtf::policy::has_exstyle,
+      wtf::policy::has_move,
+      wtf::policy::nm_killfocus,
+      wtf::policy::nm_setfocus,
+      wtf::policy::wm_notify
+    > {
 
       using char_range = std::tuple<uint32_t, uint32_t>;
 
       static constexpr DWORD Style = window::Style | (_multiline ? ES_MULTILINE : 0);
 
-      richedit() : _::richedit_impl<richedit<_multiline>>() {
+      richedit()  {
         wtf::exception::throw_lasterr_if(::LoadLibrary(_T("msftedit.dll")), [](HMODULE h) { return nullptr == h; });
       }
 

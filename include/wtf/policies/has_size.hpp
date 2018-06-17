@@ -34,7 +34,6 @@ namespace wtf{
                                          [](BOOL b)noexcept { return !b; });
       }
 
-      has_size()  : _super_t(){}
     };
   }
 }

@@ -2,7 +2,7 @@
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 #pragma once
-
+TODO("Review this");
 namespace wtf {
   namespace controls {
 
@@ -29,8 +29,6 @@ namespace wtf {
       static constexpr DWORD Style = window::Style |
         (orientations::vertical == _orientation ? PBS_VERTICAL : 0) |
         (_smooth ? PBS_SMOOTH : 0);
-
-      progressbar() : policy::progressbar_super_t<progressbar>() {}
 
       void set_range(uint32_t min, uint32_t max) { ::SendMessage(*this, PBM_SETRANGE32, min, max); }
 

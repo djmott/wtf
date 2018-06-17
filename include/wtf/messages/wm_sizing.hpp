@@ -10,7 +10,6 @@ namespace wtf{
 
       callback<void(window * sender, rect<coord_frame::screen>&)> OnSizing;
 
-      wm_sizing() : _super_t() {}
 
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;

@@ -12,8 +12,6 @@ namespace wtf{
 
       callback<void(const device_context&, const paint_struct&)> OnPaint;
 
-      wm_paint() : _super_t() {}
-
     protected:
 
       template <typename, template <typename> typename...> friend struct window_impl;

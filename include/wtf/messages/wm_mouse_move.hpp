@@ -11,8 +11,6 @@ namespace wtf{
 
       callback<void(window * sender, const mouse_msg_param<coord_frame::client>&)> OnMouseMove;
 
-      wm_mouse_move() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

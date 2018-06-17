@@ -12,8 +12,6 @@ namespace wtf{
     template <typename _super_t>
     struct has_caret : _super_t{
       
-      has_caret() = default;
-
       virtual int caret_width() const noexcept { return _width; }
       virtual void caret_width(int newval) noexcept { _width = newval; }
 

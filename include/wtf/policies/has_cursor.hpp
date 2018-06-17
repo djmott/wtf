@@ -22,8 +22,6 @@ namespace wtf{
 
       virtual const wtf::cursor &cursor_size_nesw() const{ return cursor::global(cursor::style::size_nesw); }
 
-      has_cursor() : _super_t() {}
-
     protected:
 
       void on_wm_setcursor(wm_nchittest_flags flags)  override{

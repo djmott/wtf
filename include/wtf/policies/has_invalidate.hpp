@@ -17,8 +17,6 @@ namespace wtf{
         }
       }
 
-      has_invalidate()  : _super_t(){}
-
     };
   }
 }

@@ -35,12 +35,20 @@
 #endif
 
 #if WTF_USE_VISUAL_STYLES
-#include <Uxtheme.h>
-#pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#pragma comment(lib, "uxtheme.lib")
+  #include <Uxtheme.h>
+  #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+  #pragma comment(lib, "uxtheme.lib")
 #endif
 
-#pragma comment(lib, "comctl32.lib")
+
+#if !defined(WTF_USE_COMMON_CONTROLS)
+  #define WTF_USE_COMMON_CONTROLS 1
+#endif
+
+#if WTF_USE_COMMON_CONTROLS
+  #pragma comment(lib, "comctl32.lib")
+#endif
+
 
 /** @defgroup Widgets Widgets
 WTF Visual components
@@ -211,11 +219,14 @@ namespace wtf {
   #define R_(...) __VA_ARGS__
 #endif
 
+#include "exception.hpp"
+
 #include "_/meta.hpp"
 #include "_/msg_names.hpp"
 #include "_/weak_enum.hpp"
+#include "_/coinitialize.hpp"
+#include "_/init_common_controls.hpp"
 
-#include "exception.hpp"
 #include "message_box.hpp"
 #include "callback.hpp"
 #include "point.hpp"
@@ -239,8 +250,6 @@ namespace wtf {
 #include "_/effects.hpp"
 #include "_/text_metrics.hpp"
 #include "_/SystemParameters.hpp"
-#include "_/coinitialize.hpp"
-#include "_/init_common_controls.hpp"
 
 #include "messages/messages.hpp"
 #include "messages/nm_killfocus.hpp"

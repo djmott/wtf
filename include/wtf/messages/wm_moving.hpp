@@ -11,8 +11,6 @@ namespace wtf{
 
       callback<void(window * sender, rect<coord_frame::screen>&)> OnMoving;
 
-      wm_moving() : _SuperT() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

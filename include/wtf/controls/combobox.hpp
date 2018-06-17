@@ -7,16 +7,10 @@ namespace wtf {
   namespace controls {
 
     namespace policy {
-
+      TODO("Fix up");
       template <typename _super_t> struct isa_combobox : _super_t {
 
         static constexpr DWORD ExStyle = 0;
-
-        explicit isa_combobox(window * pParent) : _super_t(pParent) {
-          wtf::_::init_common_controls<wtf::_::standard_classes>::get();
-        }
-
-        isa_combobox() : _super_t() {}
 
         struct item {
           using pointer = std::shared_ptr<item>;
@@ -105,7 +99,7 @@ namespace wtf {
         (combobox_styles::simple == _style ? CBS_SIMPLE : 0) |
         (combobox_styles::drop_down == _style ? CBS_DROPDOWN : 0) |
         (combobox_styles::drop_down_list == _style ? CBS_DROPDOWNLIST : 0);
-      combobox() : policy::combobox_super_t<combobox<_sorted, _style>>() {}
+
     };
   }
 

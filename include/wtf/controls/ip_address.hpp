@@ -10,20 +10,13 @@ namespace wtf {
 
       TCHAR sWC_IPADDRESS[] = WC_IPADDRESS;
 
-      template <typename _impl_t> using ip_address_impl = window_impl<_impl_t,
-        policy::has_font,
-        policy::has_text,
-        wtf::policy::has_move
-      >;
+   }
 
-    }
-
-    struct ip_address : _::ip_address_impl<ip_address> {
-
-      ip_address() : _::ip_address_impl<ip_address>() {
-        wtf::_::init_common_controls<wtf::_::internet_classes>::get();
-      }
-
+    struct ip_address : window_impl<ip_address,
+      policy::has_font,
+      policy::has_text,
+      wtf::policy::has_move
+    > {
 
     protected:
       void handle_msg(wtf::window_message& msg) override {

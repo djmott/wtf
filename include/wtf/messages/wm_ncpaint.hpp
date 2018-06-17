@@ -18,15 +18,10 @@ namespace wtf{
 
       callback<void(window * sender, const device_context&, const rect<coord_frame::client>&)> OnNCPaint;
 
-      wm_ncpaint() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
       virtual void on_wm_ncpaint(const device_context& dc, const rect<coord_frame::client>& rc){ OnNCPaint(this, dc, rc); }
-
-
-
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_NCPAINT == msg.umsg) {

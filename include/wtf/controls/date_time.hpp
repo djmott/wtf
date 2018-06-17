@@ -7,28 +7,18 @@ namespace wtf {
   namespace controls {
 
     namespace _ {
-
       TCHAR sDATETIMEPICK_CLASS[] = DATETIMEPICK_CLASS;
-
-      template <typename _impl_t> using date_time_impl = window_impl<_impl_t,
-        policy::has_font,
-        policy::has_text,
-        wtf::policy::has_move
-      >;
-
     }
 
     /** @class date_time
     @ingroup Widgets
     @brief A standard calendar to select a date and time
     */
-    struct date_time : _::date_time_impl<date_time> {
-      
-      date_time() : _::date_time_impl<date_time>() {
-        wtf::_::init_common_controls<wtf::_::date_classes>::get();
-      }
-
-    };
+    struct date_time : window_impl<date_time,
+      policy::has_font,
+      policy::has_text,
+      wtf::policy::has_move
+    > {};
 
   }
 

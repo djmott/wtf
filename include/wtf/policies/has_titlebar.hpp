@@ -22,7 +22,6 @@ namespace wtf{
         _titlebar = newval;
       }
 
-      has_titlebar() : _super_t(){}
     private:
       tstring _titlebar = _T("");
     };

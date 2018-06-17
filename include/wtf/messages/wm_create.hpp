@@ -10,8 +10,6 @@ namespace wtf{
 
       callback<void(window * sender)> OnCreate;
 
-      wm_create() : _super_t() {}
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 

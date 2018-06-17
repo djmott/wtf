@@ -23,12 +23,17 @@ namespace wtf{
 
     window& operator=(const window&) = delete;
 
-    window() = default;
+    window() {
+#if WTF_USE_COMMON_CONTROLS
+      wtf::_::init_common_controls::get();
+#endif
+    }
 
     window& operator=(window&& src) noexcept {
       std::swap(_parent, src._parent);
       std::swap(_handle, src._handle);
       std::swap(_children, src._children);
+      std::swap(OnCreated, src.OnCreated);
       return *this;
     }
 
@@ -81,8 +86,6 @@ namespace wtf{
   template <typename _impl_t, template <typename> typename _head_t, template <typename> typename..._tail_t>
   struct window_impl<_impl_t, _head_t, _tail_t...> :  _head_t<window_impl<_impl_t, _tail_t...>> {
     
-    window_impl() : _head_t<window_impl<_impl_t, _tail_t...>>(){}
-
   protected:
     template <typename, template <typename> typename...> friend struct window_impl;
 
@@ -108,8 +111,6 @@ namespace wtf{
 
 
   template <typename _impl_t> struct window_impl<_impl_t> : window {
-
-    window_impl() : window(){}
 
     const std::type_info& type() const noexcept final { return typeid(_impl_t); }
 

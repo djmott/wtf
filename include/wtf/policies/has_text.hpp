@@ -64,8 +64,6 @@ namespace wtf{
         return dc.get_text_extent(_text);
       }
 
-      has_text() : _super_t() {}
-
     protected:
 
       virtual bool auto_draw_text() const noexcept { return _auto_draw_text; }

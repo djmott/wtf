@@ -14,8 +14,6 @@ namespace wtf{
     template <typename _super_t>
     struct wm_geticon : _super_t{
 
-      wm_geticon() : _super_t() {}
-
     protected:
 
       template <typename, template <typename> typename...> friend struct window_impl;

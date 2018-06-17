@@ -7,8 +7,6 @@ namespace wtf{
   namespace policy{
     template <typename _super_t> struct wm_timer : _super_t{
 
-      wm_timer() : _super_t() {}
-
       callback<void(window * sender, UINT_PTR timer_id)> OnTimer;
 
     protected:

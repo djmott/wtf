@@ -10,26 +10,23 @@ namespace wtf {
       
       TCHAR sWC_TABCONTROL[] = WC_TABCONTROL;
 
-      template <typename _impl_t> using tab_impl = window_impl<_impl_t,
-        policy::has_font,
-        wtf::policy::has_move,
-        wtf::policy::wm_notify,
-        wtf::policy::wm_size
-      >;
-
     }
 
     /** @class tab
     @ingroup Widgets
     @brief A tab control is analogous to the dividers in a notebook or the labels in a file cabinet. By using a tab control, an application can define multiple pages for the same area of a window or dialog box.
     */
-    struct tab : _::tab_impl<tab> {
+    struct tab : window_impl<tab,
+      policy::has_font,
+      wtf::policy::has_move,
+      wtf::policy::wm_notify,
+      wtf::policy::wm_size
+    > {
       static constexpr DWORD ExStyle = WS_EX_CONTROLPARENT;
       static constexpr DWORD Style = TCS_FOCUSNEVER | WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN;
 
-      tab() : _::tab_impl<tab>(), _items(this){
-        wtf::_::init_common_controls<wtf::_::tab_classes>::get();
-      }
+
+      tab() : _items(this){}
 
       callback<void(window*)> OnClick;
       callback<void(window*)> OnDblClick;
@@ -104,7 +101,7 @@ namespace wtf {
 
       void on_wm_size(const point<coord_frame::client>& p) override {
         resize_children();
-        _::tab_impl<tab>::on_wm_size(p);
+        __super::on_wm_size(p);
       }
 
       void resize_children() {
@@ -130,7 +127,7 @@ namespace wtf {
           case TCN_SELCHANGE: OnChanged(this); resize_children();  break;
           case TCN_SELCHANGING: OnChanging(this); resize_children();  break;
         }
-        _::tab_impl<tab>::on_wm_notify(notification);
+        __super::on_wm_notify(notification);
       }
     };
 

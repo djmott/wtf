@@ -9,7 +9,6 @@ namespace wtf{
     template <typename _super_t>
     struct wm_setcursor : _super_t{
 
-      wm_setcursor() : _super_t() {}
 
     protected:
 
