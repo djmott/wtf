@@ -50,7 +50,7 @@ namespace wtf {
  
       static constexpr DWORD Style = progressbar<_orientation, _smooth>::Style | PBS_MARQUEE;
 
-      explicit marquee(window * pParent) : progressbar<_orientation, _smooth>(pParent) {}
+      explicit marquee() : progressbar<_orientation, _smooth>() {}
 
       void set_marque(bool on, uint32_t speedms = 30) { ::SendMessage(*this, PBM_SETMARQUEE, (on ? -1 : FALSE), speedms); }
 

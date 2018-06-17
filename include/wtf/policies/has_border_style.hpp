@@ -4,7 +4,6 @@
 #pragma once
 
 namespace wtf {
-  namespace controls {
 
     enum class border_styles {
       none,
@@ -15,14 +14,14 @@ namespace wtf {
 
     namespace policy {
       /**
-       * @class has_border
+       * @class has_border_style
        * Behavior policy of a widget or form with a border
        * @ingroup Policies
        */
       template <typename _super_t>
-      struct has_border: _super_t {
+      struct has_border_style: _super_t {
 
-        has_border() : _super_t(){}
+        has_border_style() : _super_t(){}
 
         /**
          * @fn void border(border_styles newval)
@@ -64,5 +63,4 @@ namespace wtf {
 
       };
     }
-  }
 }

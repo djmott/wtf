@@ -23,16 +23,63 @@ namespace wtf {
     @brief A tree-view control is a window that displays a hierarchical list of items, such as the headings in a document, the entries in an index, or the files and directories on a disk.
     */
     struct tree : _::tree_impl<tree> {
-      tree() : _::tree_impl<tree>() {
+      tree() : _::tree_impl<tree>(), _items(this, nullptr) {
         wtf::_::init_common_controls<wtf::_::treeview_classes>::get();
       }
 
+
+      callback<void(window*)> OnClick;
+      callback<void(window*)> OnDblClick;
+      callback<void(window*)> OnBeginEdit;
+      callback<void(window*)> OnEndEdit;
+
+      /** @class item
+      represents a node in the tree
+      */
       struct item : TVITEMEX {
         using pointer = std::shared_ptr<item>;
-        using weak_ptr = std::weak_ptr<item>;
-        using vector = std::vector<pointer>;
 
-        item(weak_ptr parent, const tstring& text) : _parent(parent), _text(text) {
+
+        /** @class collection
+        Maintains a collection of tree::item
+         */
+        struct collection {
+          size_t size() const { return _inner.size(); }
+          typename item::pointer& operator[](int index) { return _inner[index]; }
+          const typename item::pointer& operator[](int index) const { return _inner[index]; }
+
+          typename item::pointer add(const tstring& text) {
+            typename item::pointer oRet(new item(_tree, text));
+            TVINSERTSTRUCT oInsert;
+            memset(&oInsert, 0, sizeof(TVINSERTSTRUCT));
+            oInsert.hParent = (_parent ? _parent->hItem : nullptr);
+            oInsert.hInsertAfter = (nullptr == _parent ? TVI_ROOT : TVI_LAST);
+            memcpy(&oInsert.itemex, oRet.get(), sizeof(TVITEMEX));
+            oRet->hItem = wtf::exception::throw_lasterr_if(reinterpret_cast<HTREEITEM>(::SendMessage(*_tree, TVM_INSERTITEM, 0, reinterpret_cast<LPARAM>(&oInsert))), [](HTREEITEM h) { return nullptr == h; });
+            _inner.push_back(oRet);
+            return oRet;
+          }
+
+        private:
+          friend struct item;
+          friend struct tree;
+          using vector = std::vector<typename item::pointer>;
+          collection(tree * pTree, item * pParent) : _tree(pTree), _parent(pParent){}
+          vector _inner;
+          tree * _tree;
+          item * _parent;
+        };
+
+
+        const tstring& text() const noexcept { return _text; }
+
+        item::collection& items() { return _items; }
+        const item::collection& items() const { return _items; }
+
+      protected:
+        friend struct tree;
+
+        item(tree * pTree, const tstring& text) : _tree(pTree), _text(text), _items(pTree, this) {
           memset(this, 0, sizeof(TVITEMEX));
           lParam = reinterpret_cast<LPARAM>(this);
           pszText = &_text[0];
@@ -40,58 +87,24 @@ namespace wtf {
           mask = TVIF_CHILDREN | TVIF_TEXT | TVIF_PARAM;
         }
 
-        pointer parent() const noexcept { return _parent.lock(); }
-        const vector& children() const noexcept { return _children; }
-
-        const tstring& text() const noexcept { return _text; }
-      protected:
-        friend struct tree;
-        weak_ptr _parent;
-        vector _children;
+        tree * _tree;
         tstring _text;
+        collection _items;
       };
 
-      callback<void(window*)> OnClick;
-      callback<void(window*)> OnDblClick;
-      callback<void(window*)> OnBeginEdit;
-      callback<void(window*)> OnEndEdit;
-
-      typename item::pointer add_item(const tstring& text) {
-        auto oRet = std::make_shared<item>(typename item::weak_ptr(), text);
-        TVINSERTSTRUCT oInsert;
-        memset(&oInsert, 0, sizeof(TVINSERTSTRUCT));
-        oInsert.hInsertAfter = TVI_ROOT;
-        memcpy(&oInsert.itemex, oRet.get(), sizeof(TVITEMEX));
-        oRet->hItem = wtf::exception::throw_lasterr_if(reinterpret_cast<HTREEITEM>(::SendMessage(*this, TVM_INSERTITEM, 0, reinterpret_cast<LPARAM>(&oInsert))), [](HTREEITEM h) { return nullptr == h; });
-        _items.push_back(oRet);
-        return oRet;
-      }
-
-      typename item::pointer add_item(typename item::pointer parent, const tstring& text) {
-        auto oRet = std::make_shared<item>(parent, text);
-        TVINSERTSTRUCT oInsert;
-        memset(&oInsert, 0, sizeof(TVINSERTSTRUCT));
-        if (parent) {
-          oInsert.hParent = parent->hItem;
-          parent->_children.push_back(oRet);
-        }
-        oInsert.hInsertAfter = TVI_LAST;
-        memcpy(&oInsert.itemex, oRet.get(), sizeof(TVITEMEX));
-        oRet->hItem = wtf::exception::throw_lasterr_if(reinterpret_cast<HTREEITEM>(::SendMessage(*this, TVM_INSERTITEM, 0, reinterpret_cast<LPARAM>(&oInsert))), [](HTREEITEM h) { return nullptr == h; });
-        _items.push_back(oRet);
-        return oRet;
-      }
+      item::collection& items() { return _items; }
+      const item::collection& items() const { return _items; }
 
     protected:
 
       template <typename, template <typename> typename...> friend struct window_impl;
 
-      typename item::vector _items;
+      item::collection _items;
 
       void get_display_info(NMTVDISPINFO * pInfo){
-        const auto & oItem = std::find_if(_items.cbegin(), _items.cend(), [&pInfo](const typename item::pointer& it)->bool { return pInfo->item.hItem == it->hItem; });
-        if (_items.cend() == oItem) return;
-        if (pInfo->item.mask & TVIF_CHILDREN) pInfo->item.cChildren = static_cast<int>((*oItem)->children().size());
+        const auto & oItem = std::find_if(_items._inner.cbegin(), _items._inner.cend(), [&pInfo](const typename item::pointer& it)->bool { return pInfo->item.hItem == it->hItem; });
+        if (_items._inner.cend() == oItem) return;
+        if (pInfo->item.mask & TVIF_CHILDREN) pInfo->item.cChildren = static_cast<int>((*oItem)->items().size());
         if (pInfo->item.mask & TVIF_HANDLE) pInfo->item.hItem = (*oItem)->hItem;
         if (pInfo->item.mask & TVIF_TEXT) pInfo->item.pszText = const_cast<TCHAR*>((*oItem)->text().c_str());
       }

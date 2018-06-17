@@ -11,12 +11,12 @@ namespace wtf {
       TCHAR sMSFTEDIT_CLASS[] = MSFTEDIT_CLASS;
 
       template <typename _impl_t> using richedit_impl = window_impl<_impl_t,
-        policy::has_border,
+        wtf::policy::has_border_style,
         policy::has_font,
         policy::has_text,
-        policy::has_enable,
-        policy::has_style,
-        policy::has_exstyle,
+        wtf::policy::has_enable,
+        wtf::policy::has_style,
+        wtf::policy::has_exstyle,
         wtf::policy::has_move,
         wtf::policy::nm_killfocus,
         wtf::policy::nm_setfocus,

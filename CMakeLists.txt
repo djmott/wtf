@@ -153,7 +153,7 @@ if(BUILD_DOCS AND DOXYGEN_FOUND)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile)
   add_custom_target(
     docs ALL
-	COMMAND "${DOXYGEN_EXECUTABLE}" Doxyfile
+    COMMAND "${DOXYGEN_EXECUTABLE}" Doxyfile
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile
     COMMENT "Generating Doxygen API Documentation" VERBATIM
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/docs"

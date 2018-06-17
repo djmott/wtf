@@ -20,6 +20,7 @@ namespace wtf {
         policy::isa_button,
         policy::has_text,
         policy::has_font,
+        wtf::policy::has_enable,
         wtf::policy::has_invalidate,
         wtf::policy::has_move,
         wtf::policy::wm_command

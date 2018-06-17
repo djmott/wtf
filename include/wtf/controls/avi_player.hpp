@@ -15,14 +15,14 @@ namespace wtf {
     /** @class avi_player
     @brief displays an Audio-Video Interleaved (AVI) clip
     @implements wtf::controls::policy::has_enable
-    @implements wtf::controls::policy::has_border
+    @implements wtf::controls::policy::has_border_style
     @implements wtf::controls::policy::has_font
     @implements wtf::controls::policy::has_text
     @ingroup Widgets
     */
     struct avi_player : window_impl<avi_player,
-      wtf::controls::policy::has_enable,
-      wtf::controls::policy::has_border,
+      wtf::policy::has_enable,
+      wtf::policy::has_border_style,
       wtf::controls::policy::has_font,
       wtf::controls::policy::has_text,
       wtf::policy::wm_command,

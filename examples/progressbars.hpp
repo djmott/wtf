@@ -1,10 +1,14 @@
 #include "wtf/wtf.hpp"
 using namespace wtf;
 
-struct frmMain : form {
+struct ProgressBars : wtf::controls::label {
 
-  frmMain() : form(), _hprogressbar(this), _vprogressbar(this), _hmarquee(this){
-    OnCreate += [this](...) {
+  ProgressBars() : wtf::controls::label(), _hprogressbar(), _vprogressbar(), _hmarquee(){
+    add(_hprogressbar);
+    add(_vprogressbar);
+    add(_hmarquee);
+
+    OnCreated += [this](...) {
       _hprogressbar.set_range(0, 100);
       _hprogressbar.value(50);
       _vprogressbar.set_range(0, 100);
@@ -22,7 +26,3 @@ struct frmMain : form {
   controls::marquee<orientations::horizontal, true> _hmarquee;
 
 };
-
-int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-  return frmMain().run();
-}
