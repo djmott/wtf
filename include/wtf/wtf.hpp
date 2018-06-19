@@ -6,14 +6,42 @@
 #define NOMINMAX 1
 
 #if !defined(_WIN32_IE)
-#define _WIN32_IE 0x600
+  #define _WIN32_IE 0x600
+#endif
+
+
+#if !defined(WTF_USE_VISUAL_STYLES)
+  #define WTF_USE_VISUAL_STYLES 0
+#endif
+
+
+#if !defined(WTF_USE_COMMON_CONTROLS)
+  #define WTF_USE_COMMON_CONTROLS 1
+#endif
+
+#if !defined(WTF_USE_RICHEDIT)
+#define WTF_USE_RICHEDIT 0
 #endif
 
 #include <tchar.h>
 #include <Windows.h>
 #include <windowsx.h>
-#include <CommCtrl.h>
-#include <richedit.h>
+
+#if WTF_USE_VISUAL_STYLES
+  #pragma comment(lib, "uxtheme.lib")
+  #include <Uxtheme.h>
+  #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
+
+
+#if WTF_USE_COMMON_CONTROLS
+  #include <CommCtrl.h>
+  #pragma comment(lib, "comctl32.lib")
+#endif
+
+#if WTF_USE_RICHEDIT
+  #include <richedit.h>
+#endif
 
 #include <algorithm>
 #include <stdexcept>
@@ -29,25 +57,6 @@
 #include <mutex>
 #include <locale>
 #include <codecvt>
-
-#if !defined(WTF_USE_VISUAL_STYLES)
-  #define WTF_USE_VISUAL_STYLES 0
-#endif
-
-#if WTF_USE_VISUAL_STYLES
-  #include <Uxtheme.h>
-  #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-  #pragma comment(lib, "uxtheme.lib")
-#endif
-
-
-#if !defined(WTF_USE_COMMON_CONTROLS)
-  #define WTF_USE_COMMON_CONTROLS 1
-#endif
-
-#if WTF_USE_COMMON_CONTROLS
-  #pragma comment(lib, "comctl32.lib")
-#endif
 
 
 /** @defgroup Widgets Widgets
@@ -313,28 +322,33 @@ namespace wtf {
 
 #include "form.hpp"
 
-#include "controls/avi_player.hpp"
 #include "controls/button.hpp"
-#include "controls/calendar.hpp"
 #include "controls/combobox.hpp"
-#include "controls/date_time.hpp"
 #include "controls/edit.hpp"
-#include "controls/hotkey.hpp"
-#include "controls/image_list.hpp"
-#include "controls/ip_address.hpp"
 #include "controls/label.hpp"
 #include "controls/listbox.hpp"
-#include "controls/listview.hpp"
-#include "controls/pager.hpp"
-#include "controls/progressbar.hpp"
-#include "controls/property_sheet.hpp"
-#include "controls/rebar.hpp"
-#include "controls/richedit.hpp"
-#include "controls/statusbar.hpp"
-#include "controls/syslink.hpp"
-#include "controls/tab.hpp"
-#include "controls/task_dialog.hpp"
-#include "controls/tooltip.hpp"
-#include "controls/trackbar.hpp"
-#include "controls/tree.hpp"
-#include "controls/up_down.hpp"
+
+#if WTF_USE_COMMON_CONTROLS
+  #include "controls/avi_player.hpp"
+  #include "controls/date_time.hpp"
+  #include "controls/hotkey.hpp"
+  #include "controls/image_list.hpp"
+  #include "controls/ip_address.hpp"
+  #include "controls/listview.hpp"
+  #include "controls/pager.hpp"
+  #include "controls/property_sheet.hpp"
+  #include "controls/rebar.hpp"
+  #include "controls/progressbar.hpp"
+  #include "controls/tab.hpp"
+  #include "controls/tree.hpp"
+  #include "controls/statusbar.hpp"
+  #include "controls/syslink.hpp"
+  #include "controls/task_dialog.hpp"
+  #include "controls/tooltip.hpp"
+  #include "controls/trackbar.hpp"
+  #include "controls/up_down.hpp"
+#endif
+
+#if WTF_USE_RICHEDIT
+  #include "controls/richedit.hpp"
+#endif

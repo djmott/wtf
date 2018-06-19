@@ -130,7 +130,9 @@ namespace wtf{
 
     void fwd_msg(wtf::window_message& msg, const std::type_info&) override {
       if (msg.bhandled) return;
+      if (msg.hwnd != _handle) return;
       msg.lresult = CallWindowProc(window_class_type::get().default_window_proc(), msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
+      msg.bhandled = true;
       if (WM_DESTROY == msg.umsg) {
         SetWindowLongPtr(msg.hwnd, window_class_type::get().window_extra_offset(), 0);
         _handle = nullptr;
@@ -188,6 +190,7 @@ namespace wtf{
           }
         };
         if (!msg.bhandled) pThis->fwd_msg(msg, typeid(bool));
+        if (!msg.bhandled) return CallWindowProc(window_class_type::get().default_window_proc(), hwnd, umsg, wparam, lparam);
         return msg.lresult;
       }
       catch (const wtf::exception& ex) {

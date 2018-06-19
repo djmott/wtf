@@ -4,7 +4,13 @@
 #pragma once
 
 namespace wtf {
-  namespace _ { TCHAR sWC_COMBOBOX[] = WC_COMBOBOX; }
+  namespace _ { 
+#if WTF_USE_COMMON_CONTROLS
+    TCHAR sWC_COMBOBOX[] = WC_COMBOBOX;
+#else
+    TCHAR sWC_COMBOBOX[] = _T("COMBOBOX");
+#endif
+  }
 
   namespace policy {
 

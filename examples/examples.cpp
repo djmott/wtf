@@ -2,9 +2,13 @@
 @copyright David Mott (c) 2016. Distributed under the Boost Software License Version 1.0. See LICENSE.md or http://boost.org/LICENSE_1_0.txt for details.
 */
 
+#define WTF_USE_COMMON_CONTROLS 1
+#define WTF_USE_VISUAL_STYLES 0
+#define WTF_USE_RICHEDIT 1
+
 #include "wtf/wtf.hpp"
 using namespace wtf;
-
+#include "listviews.hpp"
 #include "buttons.hpp"
 #include "comboboxes.hpp"
 #include "progressbars.hpp"
@@ -12,15 +16,18 @@ using namespace wtf;
 
 struct frmMain : form {
 
-  frmMain() : form(), _tab(), _buttons(), _comboboxes(), _progressbars(), _trees(), _avi() {
+  frmMain() {
     add(_tab);
+    _tab.add(_listview);
+    _tab.add(_richedit);
     _tab.add(_buttons);
     _tab.add(_comboboxes);
     _tab.add(_progressbars);
     _tab.add(_trees);
     _tab.add(_avi);
-
     OnCreated += [this](...) {
+      _tab.items().add(_T("Richedit"), _richedit);
+      _tab.items().add(_T("Listview"), _listview);
       _tab.items().add(_T("Buttons"), _buttons);
       _tab.items().add(_T("Comboboxes"), _comboboxes);
       _tab.items().add(_T("Progress bars"), _progressbars);
@@ -34,6 +41,8 @@ struct frmMain : form {
 
 
   wtf::controls::tab _tab;
+  wtf::controls::richedit<true> _richedit;
+  ListViews _listview;
   Buttons _buttons;
   ComboBoxes _comboboxes;
   ProgressBars _progressbars;

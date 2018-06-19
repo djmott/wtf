@@ -6,7 +6,13 @@
 namespace wtf {
   namespace controls {
 
-    namespace _ { TCHAR sWC_STATIC[] = WC_STATIC; }
+    namespace _ { 
+#if WTF_USE_COMMON_CONTROLS
+      TCHAR sWC_STATIC[] = WC_STATIC;
+#else
+      TCHAR sWC_STATIC[] = _T("STATIC");
+#endif
+    }
 
     /** @class label
     @ingroup Widgets

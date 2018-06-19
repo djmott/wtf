@@ -8,8 +8,11 @@ namespace wtf {
 
     namespace _ {
 
+#if WTF_USE_COMMON_CONTROLS
       TCHAR sWC_EDIT[] = WC_EDIT;
-
+#else
+      TCHAR sWC_EDIT[] = _T("EDIT");
+#endif
     }
 
     /** @class edit

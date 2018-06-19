@@ -4,6 +4,7 @@
 #pragma once
 namespace wtf {
   namespace _ {
+#if WTF_USE_COMMON_CONTROLS
 
     struct init_common_controls : INITCOMMONCONTROLSEX {
       static init_common_controls& get() {
@@ -18,5 +19,6 @@ namespace wtf {
         InitCommonControlsEx(this);
       }
     };
+#endif
   }
 }

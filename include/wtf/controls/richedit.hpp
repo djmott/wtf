@@ -35,8 +35,12 @@ namespace wtf {
 
       static constexpr DWORD Style = window::Style | (_multiline ? ES_MULTILINE : 0);
 
-      richedit()  {
-        wtf::exception::throw_lasterr_if(::LoadLibrary(_T("msftedit.dll")), [](HMODULE h) { return nullptr == h; });
+      richedit() : _hdll(nullptr){
+        _hdll = wtf::exception::throw_lasterr_if(::LoadLibrary(_T("msftedit.dll")), [](HMODULE h) { return nullptr == h; });
+      }
+
+      virtual ~richedit() {
+        FreeLibrary(_hdll);
       }
 
       struct paragraph_formatting : PARAFORMAT2{
@@ -186,6 +190,8 @@ namespace wtf {
         wtf::exception::throw_lasterr_if(::SendMessage(*this, EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&newval)), [](LRESULT l) { return !l; });
       }
     protected:
+      HMODULE _hdll;
+
       void handle_msg(wtf::window_message& msg) override {
         if (WM_COMMAND != msg.umsg) return;
         //this control must not forward parent redirected WM_COMMAND messages

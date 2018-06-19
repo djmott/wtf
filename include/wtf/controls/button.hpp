@@ -62,7 +62,13 @@ namespace wtf {
     };
 
   }
-  namespace _ { TCHAR sWC_BUTTON[] = WC_BUTTON; }
+  namespace _ { 
+#if WTF_USE_COMMON_CONTROLS
+    TCHAR sWC_BUTTON[] = WC_BUTTON;
+#else
+    TCHAR sWC_BUTTON[] = _T("BUTTON");
+#endif
+  }
 
   template <WNDPROC window_proc> struct window_class<controls::button, window_proc> : super_window_class<_::sWC_BUTTON, controls::button, window_proc> {};
   template <WNDPROC window_proc> struct window_class<controls::checkbox, window_proc> : super_window_class<_::sWC_BUTTON, controls::checkbox, window_proc> {};

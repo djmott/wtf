@@ -18,12 +18,12 @@ namespace wtf {
     */
     struct tab : window_impl<tab,
       policy::has_font,
-      wtf::policy::has_move,
-      wtf::policy::wm_notify,
-      wtf::policy::wm_size
+      policy::has_move,
+      policy::wm_notify,
+      policy::wm_size
     > {
       static constexpr DWORD ExStyle = WS_EX_CONTROLPARENT;
-      static constexpr DWORD Style = TCS_FOCUSNEVER | WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN;
+      static constexpr DWORD Style = window::Style | TCS_FOCUSNEVER;
 
 
       tab() : _items(this){}
@@ -44,6 +44,14 @@ namespace wtf {
           template <typename _ty>
           void add(const tstring& text, _ty& newval) {
             _inner.push_back(std::unique_ptr<item>(new item(text, &newval)));
+            TCITEM oTCItem;
+            oTCItem.pszText = const_cast<LPTSTR>(text.c_str());
+            oTCItem.mask = TCIF_TEXT;
+            wtf::exception::throw_lasterr_if(::SendMessage(*_parent, TCM_INSERTITEM, _inner.size(), reinterpret_cast<LPARAM>(&oTCItem)), [](LRESULT l) { return -1 == l; });
+            _parent->resize_children();
+          }
+          void add(const tstring& text) {
+            _inner.push_back(std::unique_ptr<item>(new item(text, nullptr)));
             TCITEM oTCItem;
             oTCItem.pszText = const_cast<LPTSTR>(text.c_str());
             oTCItem.mask = TCIF_TEXT;
@@ -73,25 +81,6 @@ namespace wtf {
 
       const item& current_item() const { return _items[current_index()]; }
 
-      /*
-      item * get_item(int index) const { return _items[index].get(); }
-
-
-      item::pointer add_item(typename item::pointer Item) {
-        TCITEM oTCItem;
-        oTCItem.pszText = const_cast<LPTSTR>(Item->text().c_str());
-        oTCItem.mask = TCIF_TEXT;
-        wtf::exception::throw_lasterr_if(::SendMessage(*this, TCM_INSERTITEM, _items.size(), reinterpret_cast<LPARAM>(&oTCItem)), [](LRESULT l) { return -1 == l; });
-        _items.push_back(Item);
-        resize_children();
-        return Item;
-      }
-
-      item::pointer add_item(const tstring& text, ) {
-        return add_item(std::make_shared<item>(text));
-      }
-      */
-
       item::collection& items() { return _items; }
       const item::collection& items() const { return _items; }
 
@@ -110,25 +99,31 @@ namespace wtf {
         if (-1 == i) return;
 
         for (const auto & Item : _items._inner) {
-          ::ShowWindow(*Item->_window, SW_HIDE);
+          if (Item->_window) wtf::exception::throw_lasterr_if(::SetWindowPos(*Item->_window, HWND_BOTTOM, 0, 0, 0, 0, SWP_HIDEWINDOW | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE), [](BOOL b) { return !b; });
         }
 
         auto r = wtf::rect<coord_frame::client>::get(*this);
         ::SendMessage(*this, TCM_ADJUSTRECT, FALSE, reinterpret_cast<LPARAM>(&r));
         const auto & Item = _items[i];
-         wtf::exception::throw_lasterr_if(::MoveWindow(*Item._window, r.left, r.top, r.right - r.left, r.bottom - r.top, FALSE), [](BOOL b) { return 0 == b; });
-         ::ShowWindow(*Item._window, SW_SHOW);
+        if (Item._window) {
+          wtf::exception::throw_lasterr_if(::SetWindowPos(*Item._window, HWND_TOP, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_SHOWWINDOW), [](BOOL b) { return !b; });
+        }
       }
 
-      void on_wm_notify(NMHDR * notification) override {
+      void handle_msg(wtf::window_message& msg) override {
+        if (WM_NOTIFY != msg.umsg) return;
+        auto notification = reinterpret_cast<NMHDR*>(msg.lparam);
         switch (notification->code) {
           case NM_CLICK: OnClick(this); resize_children(); break;
           case NM_DBLCLK: OnDblClick(this); resize_children(); break;
           case TCN_SELCHANGE: OnChanged(this); resize_children();  break;
           case TCN_SELCHANGING: OnChanging(this); resize_children();  break;
         }
-        __super::on_wm_notify(notification);
+        if (msg.hwnd != window::_handle) {
+          msg.bhandled = true;
+        }
       }
+
     };
 
   }
