@@ -13,11 +13,13 @@ using namespace wtf;
 #include "comboboxes.hpp"
 #include "progressbars.hpp"
 #include "trees.hpp"
+#include "statusbars.hpp"
 
 struct frmMain : form {
 
   frmMain() {
     add(_tab);
+    add(_status);
     _tab.add(_listview);
     _tab.add(_richedit);
     _tab.add(_buttons);
@@ -35,7 +37,8 @@ struct frmMain : form {
       _tab.items().add(_T("AVI"), _avi);
     };
     OnSize += [this](...) {
-      _tab.move(5, 5, width() - 10, height() - 10);
+      _tab.move(5, 5, width() - 10, height() - 30);
+      _status.move(0, height() - 20, width(), 20);
     };
   }
 
@@ -48,6 +51,7 @@ struct frmMain : form {
   ProgressBars _progressbars;
   Trees _trees;
   wtf::controls::avi_player _avi;
+  StatusBar _status;
 };
 
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {

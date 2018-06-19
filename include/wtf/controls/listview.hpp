@@ -15,6 +15,7 @@ namespace wtf {
       policy::has_font,
       policy::has_enable,
       policy::has_move,
+      policy::has_exstyle,
       policy::has_style,
       policy::wm_command,
       policy::wm_notify
@@ -32,30 +33,6 @@ namespace wtf {
         report = LVS_REPORT,
       };
 
-      listview() : _items(this, nullptr), _columns(this){}
-
-      styles style() const {
-        auto iStyle = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
-        if (LVS_ICON & iStyle) return styles::icon;
-        if (LVS_SMALLICON & iStyle) return styles::small_icon;
-        if (LVS_LIST & iStyle) return styles::list;
-        return styles::report;          
-      }
-      void style(styles newval) {
-        auto iStyle = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
-        iStyle &= ~LVS_TYPEMASK;
-        iStyle |= static_cast<DWORD>(newval);
-        ::SetWindowLong(*this, GWL_STYLE, iStyle);
-      }
-
-      bool auto_arrange() const { return get_style<LVS_AUTOARRANGE>(); }
-      void auto_arrange(bool newval) { set_style<LVS_AUTOARRANGE>(newval); }
-
-      bool hide_headers() const { return get_style<LVS_NOCOLUMNHEADER>(); }
-      void hide_headers(bool newval) { set_style<LVS_NOCOLUMNHEADER>(newval); }
-
-      bool single_select() const { return get_style<LVS_SINGLESEL>(); }
-      void single_select(bool newval) { return set_style<LVS_SINGLESEL>(newval); }
 
 
 
@@ -197,7 +174,7 @@ namespace wtf {
         subitem(listview * pParent, item * pItem, const tstring& sText) : _parent(pParent), _item(pItem), _text(sText){
           memset(this, 0, sizeof(LVITEM));
           iItem = pItem->index();
-          mask = LVIF_TEXT | LVIF_PARAM;
+          mask = LVIF_TEXT;
           iSubItem = static_cast<int>(1 + pItem->_subitems.size());
           pszText = &_text[0];
           lParam = reinterpret_cast<LPARAM>(this);
@@ -286,6 +263,36 @@ namespace wtf {
       
       };
 
+      listview() : _items(this, nullptr), _columns(this) {}
+
+      styles style() const {
+        auto iStyle = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
+        if (LVS_ICON & iStyle) return styles::icon;
+        if (LVS_SMALLICON & iStyle) return styles::small_icon;
+        if (LVS_LIST & iStyle) return styles::list;
+        return styles::report;
+      }
+      void style(styles newval) {
+        auto iStyle = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
+        iStyle &= ~LVS_TYPEMASK;
+        iStyle |= static_cast<DWORD>(newval);
+        ::SetWindowLong(*this, GWL_STYLE, iStyle);
+      }
+
+      bool auto_arrange() const { return get_style<LVS_AUTOARRANGE>(); }
+      void auto_arrange(bool newval) { set_style<LVS_AUTOARRANGE>(newval); }
+
+      bool hide_headers() const { return get_style<LVS_NOCOLUMNHEADER>(); }
+      void hide_headers(bool newval) { set_style<LVS_NOCOLUMNHEADER>(newval); }
+
+      bool single_select() const { return get_style<LVS_SINGLESEL>(); }
+      void single_select(bool newval) { return set_style<LVS_SINGLESEL>(newval); }
+
+      bool row_select() const { return get_exstyle<LVS_EX_FULLROWSELECT>(); }
+      void row_select(bool newval) { set_exstyle<LVS_EX_FULLROWSELECT>(newval); }
+
+      bool grid_lines () const { return get_exstyle<LVS_EX_GRIDLINES>(); }
+      void grid_lines(bool newval) { set_exstyle<LVS_EX_GRIDLINES>(newval); }
 
       column::collection& columns() { return _columns; }
       const column::collection& columns() const { return _columns; }
