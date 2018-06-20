@@ -4,12 +4,12 @@
 #pragma once
 
 namespace wtf {
-  namespace custom {
     namespace policy {
 
       /**
        * @class wtf::policy::has_border
-       * @brief Creates a border
+       Creates a border
+       @ingroup Policies
        */
       template <typename _super_t>
       struct has_owner_drawn_border : _super_t {
@@ -20,22 +20,20 @@ namespace wtf {
          */
         virtual int border_width() const noexcept {
           switch (_border_style) {
-            case border_styles::none: return 0;
-            case border_styles::flat:
-            case border_styles::raised:
-            case border_styles::lowered: return 1;
+            case custom_border_styles::none: return 0;
+            case custom_border_styles::flat:
+            case custom_border_styles::raised:
+            case custom_border_styles::lowered: return 1;
             default: return 2;
           }
         }
         /**
          * @brief Border highlight color
-         *
          * @return const rgb& highlight color
          */
         virtual const rgb& border_highlight() const noexcept { return _border_highlight; }
         /**
          * @brief Border highlight color
-         *
          * @param newval new highlight color
          */
         virtual void border_highlight(const rgb& newval) {
@@ -45,13 +43,11 @@ namespace wtf {
 
         /**
          * @brief Border shadow color
-         *
          * @return const rgb& shadow color
          */
         virtual const rgb& border_shadow() const noexcept { return _border_shadow; }
         /**
          * @brief Border shadow color
-         *
          * @param newval new shadow color
          */
         virtual void border_shadow(const rgb& newval) {
@@ -61,16 +57,15 @@ namespace wtf {
 
         /**
          * @brief Border style
-         *
          * @return border_styles border style
          */
-        virtual border_styles border_style() const noexcept { return _border_style; }
+        virtual custom_border_styles border_style() const noexcept { return _border_style; }
         /**
          * @brief Border style
          *
          * @param newval new border style
          */
-        virtual void border_style(border_styles newval) {
+        virtual void border_style(custom_border_styles newval) {
           _border_style = newval;
           refresh_border();
         }
@@ -140,7 +135,7 @@ namespace wtf {
         LRESULT on_wm_nccalcsize(RECT *) override { return 0; }
 
       private:
-        border_styles _border_style = border_styles::none;
+        custom_border_styles _border_style = custom_border_styles::none;
         rgb _border_highlight = system_rgb<system_colors::button_highlight>();
         rgb _border_shadow = system_rgb<system_colors::button_shadow>();
         bool _draw_top = true;
@@ -149,5 +144,4 @@ namespace wtf {
         bool _draw_bottom = true;
       };
     }
-  }
 }

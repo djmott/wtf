@@ -354,3 +354,4 @@ namespace wtf {
 #endif
 
 #include "custom/splitter.hpp"
+#include "custom/panel.hpp"
