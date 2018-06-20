@@ -352,3 +352,5 @@ namespace wtf {
 #if WTF_USE_RICHEDIT
   #include "controls/richedit.hpp"
 #endif
+
+#include "custom/splitter.hpp"

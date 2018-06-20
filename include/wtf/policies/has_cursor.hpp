@@ -24,7 +24,7 @@ namespace wtf{
 
     protected:
 
-      void on_wm_setcursor(wm_nchittest_flags flags)  override{
+      void on_wm_setcursor(wm_nchittest_flags flags) override{
         switch (flags){
           case wm_nchittest_flags::top:
           case wm_nchittest_flags::bottom:

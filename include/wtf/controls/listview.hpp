@@ -18,7 +18,8 @@ namespace wtf {
       policy::has_exstyle,
       policy::has_style,
       policy::wm_command,
-      policy::wm_notify
+      policy::wm_notify, 
+      policy::wm_showwindow
     > {
       struct item;
       struct subitem;
