@@ -23,6 +23,14 @@
 #define WTF_USE_RICHEDIT 0
 #endif
 
+#if !defined(WTF_DEBUG_MESSAGES)
+  #if defined(DEBUG) || defined(_DEBUG)
+    #define WTF_DEBUG_MESSAGES 1
+  #else
+    #define WTF_DEBUG_MESSAGES 0
+  #endif
+#endif
+
 #include <tchar.h>
 #include <Windows.h>
 #include <windowsx.h>
@@ -57,6 +65,7 @@
 #include <mutex>
 #include <locale>
 #include <codecvt>
+#include <atomic>
 
 
 /** @defgroup Widgets Widgets
@@ -320,13 +329,13 @@ namespace wtf {
 #include "policies/has_vscroll.hpp"
 #include "policies/has_zorder.hpp"
 
-#include "form.hpp"
 
 #include "controls/button.hpp"
 #include "controls/combobox.hpp"
 #include "controls/edit.hpp"
 #include "controls/label.hpp"
 #include "controls/listbox.hpp"
+#include "controls/menu.hpp"
 
 #if WTF_USE_COMMON_CONTROLS
   #include "controls/avi_player.hpp"
@@ -355,3 +364,5 @@ namespace wtf {
 
 #include "custom/splitter.hpp"
 #include "custom/panel.hpp"
+
+#include "form.hpp"

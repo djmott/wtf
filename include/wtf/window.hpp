@@ -3,6 +3,10 @@
 */
 #pragma once
 
+#if !defined(WTF_DEBUG_MESSAGES)
+  #define WTF_DEBUG_MESSAGES 0
+#endif
+
 namespace wtf{
 
  
@@ -44,6 +48,8 @@ namespace wtf{
     const std::vector<window*>& children() const noexcept { return _children; }
 
     virtual const std::type_info& type() const noexcept = 0;
+
+    virtual HWND handle() const { return _handle; }
 
     HWND operator*() const noexcept { return _handle; }
 
@@ -146,7 +152,7 @@ namespace wtf{
     */
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
 
-#if defined(_DEBUG)
+#if WTF_DEBUG_MESSAGES
       auto sMsg = to_tstring(reinterpret_cast<size_t>(hwnd)) + _T(" ");
       sMsg += to_tstring(typeid(_impl_t).name());
       sMsg += _T(" ") + wtf::_::msg_name(umsg) + _T("\n");
@@ -176,11 +182,17 @@ namespace wtf{
 
         wtf::window_message msg{ hwnd, umsg, wparam, lparam, false, 0 };
 
-        if ((WM_COMMAND == umsg && lparam) || (WM_NOTIFY == umsg)) {
+        if (WM_COMMAND == umsg || 
+          WM_NOTIFY == umsg || 
+          WM_MENUSELECT == umsg ||
+          WM_INITMENU == umsg ||
+          WM_EXITMENULOOP == umsg || 
+          WM_ENTERMENULOOP == umsg ||
+          WM_MENUCOMMAND == umsg) {
           //legacy control notification messages sent to parent window. Forward them back to the originating control
           const HWND hTarget = (WM_NOTIFY == umsg ? reinterpret_cast<const NMHDR*>(lparam)->hwndFrom : reinterpret_cast<HWND>(lparam));
           for (const auto & pChild : pThis->children()) {
-            if (hTarget != pChild->_handle) continue;
+            if ((WM_COMMAND == umsg || WM_NOTIFY == umsg) && hTarget != pChild->handle()) continue;
             pChild->handle_msg(msg);
             pChild->fwd_msg(msg, typeid(bool));
             break;

@@ -5,21 +5,26 @@
 #define WTF_USE_COMMON_CONTROLS 1
 #define WTF_USE_VISUAL_STYLES 0
 #define WTF_USE_RICHEDIT 1
+#define WTF_DEBUG_MESSAGES 0
 
 #include "wtf/wtf.hpp"
 using namespace wtf;
+using namespace wtf::controls;
 #include "listviews.hpp"
 #include "buttons.hpp"
 #include "comboboxes.hpp"
 #include "progressbars.hpp"
 #include "trees.hpp"
 #include "statusbars.hpp"
+#include "menus.hpp"
+
 
 struct frmMain : form {
 
   frmMain() {
     add(_tab);
     add(_status);
+    add(_mnuMain);
     _tab.add(_listview);
     _tab.add(_richedit);
     _tab.add(_buttons);
@@ -50,9 +55,11 @@ struct frmMain : form {
   ComboBoxes _comboboxes;
   ProgressBars _progressbars;
   Trees _trees;
+  mnuMain _mnuMain;
   wtf::controls::avi_player _avi;
   StatusBar _status;
 };
+
 
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
   try {
