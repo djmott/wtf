@@ -101,7 +101,7 @@ namespace wtf{
       if (last_handler == typeid(&super::handle_msg)){
         super::fwd_msg(msg, last_handler);
       }else{
-#if _DEBUG
+#if WTF_DEBUG_MESSAGES
         if (WM_CREATE == msg.umsg) {
           tstring sMsg = _T("Forwarding message to ") + to_tstring(typeid(super).name()) + _T("\n");
           OutputDebugString(sMsg.c_str());

@@ -3,7 +3,9 @@
 */
 #pragma once
 
-#define NOMINMAX 1
+#if !defined(NOMINMAX)
+  #define NOMINMAX 1
+#endif
 
 #if !defined(_WIN32_IE)
   #define _WIN32_IE 0x600
@@ -214,19 +216,39 @@ namespace wtf {
 
 }
 
-#define PRAGMA_( ... ) __pragma( __VA_ARGS__ )
-#define NOVTABLE __declspec(novtable)
-#define _QUOTE( ... ) # __VA_ARGS__
-#define QUOTE( ... ) _QUOTE( __VA_ARGS__ )
-#define TODO( ... ) PRAGMA_(message ( __FILE__ "(" QUOTE(__LINE__) "): TODO : " __VA_ARGS__ ))
-#define NOTE( ... ) PRAGMA_(message ( __FILE__ "(" QUOTE(__LINE__) "): NOTE : " __VA_ARGS__ ))
+#if !defined(PRAGMA_)
+  #define PRAGMA_( ... ) __pragma( __VA_ARGS__ )
+#endif
+#if !defined(NOVTABLE)
+  #define NOVTABLE __declspec(novtable)
+#endif
+#if !defined(_QUOTE)
+  #define _QUOTE( ... ) # __VA_ARGS__
+#endif
+#if !defined(QUOTE)
+  #define QUOTE( ... ) _QUOTE( __VA_ARGS__ )
+#endif
+#if !defined(NOTE)
+  #define NOTE( ... ) PRAGMA_(message ( __FILE__ "(" QUOTE(__LINE__) "): TODO : " __VA_ARGS__ ))
+#endif
+#if !defined(NOTE)
+  #define NOTE( ... ) PRAGMA_(message ( __FILE__ "(" QUOTE(__LINE__) "): NOTE : " __VA_ARGS__ ))
+#endif
 
 #if defined(_DEBUG)
-  #define D_(...) __VA_ARGS__
-  #define R_(...)
+  #if !defined(D_)
+    #define D_(...) __VA_ARGS__
+  #endif
+  #if !defined(R_)
+    #define R_(...)
+  #endif
 #else
-  #define D_(...)
-  #define R_(...) __VA_ARGS__
+  #if !defined(D_)
+    #define D_(...)
+  #endif
+  #if !defined(R_)
+    #define R_(...) __VA_ARGS__
+  #endif
 #endif
 
 #include "exception.hpp"
