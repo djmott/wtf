@@ -10,8 +10,8 @@ else()
     add_definitions(-DNDEBUG)
 endif()
 
-option(BUILD_UNICODE "Build UNICODE" TRUE)
-if(BUILD_UNICODE)
+option(WTF_UNICODE "Build UNICODE" TRUE)
+if(WTF_UNICODE)
     add_definitions(-DUNICODE -D_UNICODE)
 else()
     add_definitions(-DMBCS -D_MBCS)
@@ -19,6 +19,9 @@ endif()
 
 include_directories(include)
 
+option(WTF_BUILD_EXAMPLES "Build examples" FALSE)
+
+if(WTF_BUILD_EXAMPLES)
 add_executable(wtf WIN32
     examples/examples.cpp
     include/wtf/_/coinitialize.hpp
@@ -143,14 +146,15 @@ add_executable(wtf WIN32
     include/wtf/policies/has_vscroll.hpp
     include/wtf/policies/has_zorder.hpp
 )
-
-if(DOXYGEN_FOUND)
-  option(BUILD_DOCS "Build doxygen documentation" NO)
-else()
-  set(BUILD_DOCS NO)
 endif()
 
-if(BUILD_DOCS AND DOXYGEN_FOUND)
+if(DOXYGEN_FOUND)
+  option(WTF_BUILD_DOCS "Build doxygen documentation" NO)
+else()
+  set(WTF_BUILD_DOCS NO)
+endif()
+
+if(WTF_BUILD_DOCS AND DOXYGEN_FOUND)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile)
   add_custom_target(
     docs ALL
