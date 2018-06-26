@@ -278,6 +278,7 @@ namespace wtf {
 #include "window_message.hpp"
 #include "menu.hpp"
 #include "window.hpp"
+#include "monitor.hpp"
 
 #include "_/effects.hpp"
 #include "_/text_metrics.hpp"

@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.0)
 
-project(wtf)
+project(wtf VERSION 0.0.1.0)
 
 find_package(Doxygen)
 
@@ -45,6 +45,7 @@ add_executable(wtf WIN32
     include/wtf/menu.hpp
     include/wtf/message.hpp
     include/wtf/message_box.hpp
+    include/wtf/monitor.hpp
     include/wtf/paint_struct.hpp
     include/wtf/pen.hpp
     include/wtf/point.hpp
