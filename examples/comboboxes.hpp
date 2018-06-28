@@ -4,24 +4,24 @@
 
 struct ComboBoxes : wtf::controls::label {
   ComboBoxes() : wtf::controls::label() {
+    add(_simple);
+    add(_dropdown);
+    add(_dropdown_list);
 
     OnCreated += [this](...) {
-      add(_simple);
-      add(_edit);
-      add(_static);
       _simple.move(10, 10, 100, 100);
-      _edit.move(120, 10, 100, 100);
-      _static.move(240, 10, 100, 100);
+      _dropdown.move(120, 10, 100, 100);
+      _dropdown_list.move(240, 10, 100, 100);
       for (TCHAR x = _T('z'); x >= _T('a'); --x) {
         tstring str = _T("Item ");
         str += x;
         _simple.add_item(str);
-        _edit.add_item(str);
-        _static.add_item(str);
+        _dropdown.add_item(str);
+        _dropdown_list.add_item(str);
       }
     };
   }
-  controls::combobox<true, controls::combobox_styles::simple> _simple;
-  controls::combobox<false, controls::combobox_styles::drop_down> _edit;
-  controls::combobox<true, controls::combobox_styles::drop_down_list> _static;
+  controls::simple_combobox _simple;
+  controls::dropdown_combobox _dropdown;
+  controls::dropdown_list_combobox _dropdown_list;
 };

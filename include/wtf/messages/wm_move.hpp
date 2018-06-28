@@ -8,14 +8,6 @@ namespace wtf{
     template <typename _super_t>
     struct wm_move : _super_t{
 
-      enum class wm_size_flags{
-        hide = SIZE_MAXHIDE,
-        maximized = SIZE_MAXIMIZED,
-        show = SIZE_MAXSHOW,
-        minimized = SIZE_MINIMIZED,
-        restored = SIZE_RESTORED,
-      };
-
       callback<void(window * sender, const point<coord_frame::client>&)> OnMove;
 
     protected:

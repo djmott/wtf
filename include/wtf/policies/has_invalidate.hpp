@@ -3,12 +3,20 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_HAS_INVALIDATE
+
 namespace wtf{
   namespace policy{
 
+    /** @class has_invalidate
+    @brief Behavior policy of a window that can be invalidated
+    @ingroup Policies
+    */
     template <typename _super_t>
     struct has_invalidate : _super_t{
       
+      //! @brief invalidates the window causing it to be repainted
+      //! @param[in] EraseBackground Set to true to also invalidate the background
       void invalidate(bool EraseBackground = true)  {
         if (_super_t::_handle) {
           wtf::exception::throw_lasterr_if(

@@ -33,7 +33,10 @@
   #endif
 #endif
 
+#define OEMRESOURCE
+
 #include <tchar.h>
+#include <WinSock2.h>
 #include <Windows.h>
 #include <windowsx.h>
 
@@ -69,62 +72,62 @@
 #include <codecvt>
 #include <atomic>
 
+#if !defined(DOXY_INVOKED)
+  #define DOXY_INVOKED 0
+#endif
 
-/** @defgroup Widgets Widgets
-WTF Visual components
-*/
+
 /** @defgroup Policies Policies
-Behavioral policies of widgets
+@brief Behavioral policies
+@details This group of classes are discrete behavioral components. They're composed to create feature-rich concrete widgets
 */
 
 /** @defgroup Messages Messages
-Message processing policies of widgets
+@brief Message handling policies
+@details This group of policy classes handle windows messages. They're composed to create feature-rich concrete widgets
+*/
+
+/** @defgroup Widgets Widgets
+@brief WTF Widgets
+@details This group of concrete classes are a composition of behavioral policies and message handlers
 */
 
 /** @namespace wtf
-Primary namespace
+@brief Primary namespace
 */
 namespace wtf {
-  /**
-  * @cond PRIVATE
-  * @namespace wtf::_
-  * Hidden namespace for internal structures and algorithms not for external consumption
-  */
+#if !DOXY_INVOKED
   namespace _ {}
-  //!@endcond
+#endif
 
   /** @namespace wtf::controls
-  Native Windows controls
+  @brief Native Windows controls
   */
   namespace controls {
-    /** @cond PRIVATE
-     * @namespace _
-     * Internal namespace
-     */
+#if !DOXY_INVOKED
     namespace _{}
-    //! @endcond
-
+#endif
   }
 
   /**
   @interface window window.hpp
   @brief Base class of widgets and forms
-  This class is inherited as the super-most base class of widgets and forms via hierarchy generation.
+  @details This class is inherited as the super-most base class of widgets and forms via hierarchy generation.
   */
   struct window;
   
   /**
   @class window_impl window.hpp
   @brief Implements a widgets or form
-  This is the hierarchy generator that composes a list of behavior patterns into a concrete widget or form. 
-  Policies are combine in a linear hierarchy in the order listed with the window class being the super-most base class.
+  @details This is the hierarchy generator that composes a collection of behavior policies and message handlers into a concrete widget or form. 
+  @details Policies are combine in a linear hierarchy in the order listed with the window class being the super-most base class.
   @tparam implementation_type The concrete implementation
   @tparam policy_list The list of behavioral policies that the implementation will inherit.
   */
   template <typename implementation_type, template <typename> typename...policy_list> struct window_impl;
 
   /** @enum coord_frame
-  Distinguishes coordinate frame relative to the screen or window client area
+  @brief Distinguishes coordinate frame relative to the screen or window client area
   */
   enum class coord_frame {
     screen, /**< screen relative */
@@ -132,22 +135,19 @@ namespace wtf {
   };
 
   /** @typedef tstring
-  Primary string representation. Can be either MULTIBYTE or UNICODE depending on compilation mode.
+  @brief Primary string representation. Can be either MULTIBYTE or UNICODE depending on compilation mode.
   */
   using tstring = std::basic_string<TCHAR>;
 
-  //!@cond PRIVATE
+#if !DOXY_INVOKED
   extern "C" HINSTANCE__ __ImageBase;
-  //!@endcond
+#endif
 
-  /** @fn HINSTANCE instance_handle()
-  Returns the instance handle of the current process.
-  */
+  //! @brief Returns the instance handle of the current process.
   inline static constexpr HINSTANCE instance_handle() noexcept { return &__ImageBase; }
 
-  /** 
-  @cond PRIVATE
-  */
+
+#if !DOXY_INVOKED
   namespace _ {
     static std::mutex& _active_forms_lock() noexcept {
       static std::mutex _forms_lock;
@@ -187,28 +187,22 @@ namespace wtf {
     };
 
   }
-  //!@endcond
+#endif
 
-  /**
-  @fn tstring to_tstring(_Ty value)
-  Constructs a tstring representation of a value
+  /** @brief Constructs a tstring representation of a value
   @param value value to convert
   @return a tstring representation of the value
   */
   template <typename _Ty> static tstring to_tstring(_Ty value){ return _::to_tstring_impl<_Ty, TCHAR>::get(value); }
 
   /** @namespace wtf::policy
-  Behavioral policies
+  @brief Behavioral policies
   @ingroup Policies
   */
   namespace policy{
-    /**
-    @cond PRIVATE
-    @namespace wtf::_
-    Hidden namespace for internal structures and algorithms not for external consumption
-    */
+#if !DOXY_INVOKED
     namespace _{}
-    //!@endcond
+#endif
 
   }
 
@@ -267,9 +261,11 @@ namespace wtf {
 #include "size.hpp"
 #include "icon.hpp"
 #include "cursor.hpp"
+#include "bitmap.hpp"
 #include "brush.hpp"
 #include "pen.hpp"
 #include "region.hpp"
+#include "resource.hpp"
 #include "font.hpp"
 #include "window_class.hpp"
 #include "device_context.hpp"

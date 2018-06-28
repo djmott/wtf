@@ -110,9 +110,9 @@ namespace wtf {
 
       };
 
-      void on_wm_size(const point<coord_frame::client>& p) override {
+      void on_wm_size(wm_size_flags flags, const point<coord_frame::client>& p) override {
         _reposition();
-        __super::on_wm_size(p);
+        __super::on_wm_size(flags, p);
       }
 
 

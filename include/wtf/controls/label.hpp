@@ -25,8 +25,42 @@ namespace wtf {
       policy::has_move,
       policy::has_size,
       policy::wm_size,
-      policy::wm_command
-    > {};
+      policy::wm_command,
+      policy::has_style
+    > {
+      static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+
+      text_horizontal_alignments alignment() const { 
+        if (get_style<SS_LEFT>()) return text_horizontal_alignments::left;
+        if (get_style<SS_CENTER>()) return text_horizontal_alignments::center;
+        return text_horizontal_alignments::right;
+      }
+
+      void alignment(text_horizontal_alignments newval) {
+        if (text_horizontal_alignments::left == newval) {
+          set_style<SS_LEFT>(true);
+        }
+        else if (text_horizontal_alignments::center == newval) {
+          set_style<SS_CENTER>(true);
+        }
+        else {
+          set_style<SS_RIGHT>(true);
+        }
+      }
+      void set_image(const icon& newval) {
+        set_style<SS_BITMAP | SS_ENHMETAFILE>(false);
+        set_style<SS_ICON>(true);
+        ::SendMessage(*this, STM_SETIMAGE, IMAGE_ICON, reinterpret_cast<LPARAM>(static_cast<HICON>(newval)));
+      }
+      void set_image(const bitmap& newval) {
+        ::SendMessage(*this, STM_SETIMAGE, IMAGE_BITMAP, reinterpret_cast<LPARAM>(static_cast<HBITMAP>(newval)));
+      }
+    protected:
+      void on_created() override {
+        alignment(text_horizontal_alignments::left);
+        __super::on_created();
+      }
+    };
     
   }
 

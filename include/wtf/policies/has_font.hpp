@@ -3,11 +3,13 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_HAS_FONT
+
 namespace wtf {
   namespace policy {
 
     /** @class has_font
-    Behavior policy of font settings
+    @brief Behavior policy of font settings
     @ingroup Policies
     */
     template <typename _super_t>
@@ -15,8 +17,10 @@ namespace wtf {
 
       has_font() : _super_t(), _font(wtf::_::non_client_metrics::get().lfMessageFont), _hfont(_font.open()) {}
 
+      //! @brief Gets the windows font      
       virtual const wtf::font& font() const noexcept { return _font; }
 
+      //! @brief Sets the windows font
       virtual void font(const wtf::font& newval) noexcept {
         _font = newval;
         _hfont = _font.open();
@@ -26,12 +30,15 @@ namespace wtf {
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 
+#if !defined(DOXY_INVOKED)
       void on_created() override {
         ::SendMessage(*this, WM_SETFONT, reinterpret_cast<WPARAM>(static_cast<HFONT>(_hfont)), TRUE);
         _super_t::on_created();
       }
-
+#endif
+      //! @brief windows font
       wtf::font _font;
+      //! @brief handle to the windows font
       wtf::font::handle _hfont;
     };
   }

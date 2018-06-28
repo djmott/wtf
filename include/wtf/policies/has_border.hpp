@@ -3,6 +3,8 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_HAS_BORDER
+
 namespace wtf {
 
     enum class border_styles {
@@ -13,21 +15,20 @@ namespace wtf {
     };
 
     namespace policy {
-      /**
-       * @class has_border
-       * Behavior policy of a widget or form with a border
-       * @ingroup Policies
-       */
+      /** @class has_border
+      @brief Behavior policy of a widget or form with a border
+      @ingroup Policies
+      */
       template <typename _super_t>
       struct has_border: _super_t {
 
-        /**
-         * @fn void border(border_styles newval)
-         * Sets the border style
+        /** 
+        @brief Sets the border style
+        @param[in] newval new border style
          */
         void border(border_styles newval) {
-          auto style = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
-          auto exstyle = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_EXSTYLE), [](LONG l) { return !l; });
+          auto style = wtf::exception::throw_lasterr_if(::GetWindowLongPtr(*this, GWL_STYLE), [](LONG_PTR l) { return !l; });
+          auto exstyle = wtf::exception::throw_lasterr_if(::GetWindowLongPtr(*this, GWL_EXSTYLE), [](LONG_PTR l) { return !l; });
           style &= ~WS_BORDER;
           exstyle &= ~WS_EX_CLIENTEDGE;
           exstyle &= ~WS_EX_STATICEDGE;
@@ -38,17 +39,17 @@ namespace wtf {
             default: break;
           }
           
-          wtf::exception::throw_lasterr_if(::SetWindowLong(*this, GWL_STYLE, style), [](LONG l) { return !l; });
-          wtf::exception::throw_lasterr_if(::SetWindowLong(*this, GWL_EXSTYLE, exstyle), [](LONG l) { return !l; });
+          wtf::exception::throw_lasterr_if(::SetWindowLongPtr(*this, GWL_STYLE, style), [](LONG_PTR l) { return !l; });
+          wtf::exception::throw_lasterr_if(::SetWindowLongPtr(*this, GWL_EXSTYLE, exstyle), [](LONG_PTR l) { return !l; });
+          ::SetWindowPos(*this, 0, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOSIZE | SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
         }
 
         /**
-         * @fn border_styles border()
-         * Gets the border style
-         */
+        @brief Gets the border style
+        */
         border_styles border() const {
-          auto style = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
-          auto exstyle = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_EXSTYLE), [](LONG l) { return !l; });
+          auto style = wtf::exception::throw_lasterr_if(::GetWindowLongPtr(*this, GWL_STYLE), [](LONG_PTR l) { return !l; });
+          auto exstyle = wtf::exception::throw_lasterr_if(::GetWindowLongPtr(*this, GWL_EXSTYLE), [](LONG_PTR l) { return !l; });
           if (style & WS_BORDER) return border_styles::single;
           if (style & WS_EX_CLIENTEDGE) return border_styles::thick;
           if (style & WS_EX_STATICEDGE) return border_styles::thin;
@@ -57,7 +58,6 @@ namespace wtf {
 
       protected:
         template <typename, template <typename> typename...> friend struct window_impl;
-
 
       };
     }

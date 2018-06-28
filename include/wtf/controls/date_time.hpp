@@ -3,27 +3,35 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_DATE_TIME_SUPER \
+  DOXY_INHERIT_HAS_FONT \
+  DOXY_INHERIT_HAS_TEXT \
+  DOXY_INHERIT_HAS_MOVE
+
 namespace wtf {
   namespace controls {
 
-    namespace _ {
-      TCHAR sDATETIMEPICK_CLASS[] = DATETIMEPICK_CLASS;
-    }
 
     /** @class date_time
-    @ingroup Widgets
     @brief A standard calendar to select a date and time
+    @ingroup Widgets
+    @image html date_time.png
     */
-    struct date_time : window_impl<date_time,
+    struct date_time : DOXY_INHERIT_DATE_TIME_SUPER window_impl<date_time,
       policy::has_font,
       policy::has_text,
-      wtf::policy::has_move
+      policy::has_move
     > {};
 
   }
 
+#if !DOXY_INVOKED
+  namespace _ {
+    TCHAR sDATETIMEPICK_CLASS[] = DATETIMEPICK_CLASS;
+  }
+
   template <WNDPROC window_proc>
   struct window_class<controls::date_time, window_proc> :
-    super_window_class<controls::_::sDATETIMEPICK_CLASS, controls::date_time, window_proc> {};
-
+    super_window_class<_::sDATETIMEPICK_CLASS, controls::date_time, window_proc> {};
+#endif
 }

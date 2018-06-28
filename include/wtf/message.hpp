@@ -23,10 +23,15 @@ namespace wtf {
       return ::PeekMessage(this, hwnd, msg, msg, remove ? PM_REMOVE : PM_NOREMOVE) ? true : false;
     }
 
-    int pump() {
+    bool is_dialog_msg(HWND hwnd = 0) noexcept {
+      return (::IsDialogMessage(hwnd, this) ? true : false);
+    }
+
+    int pump(HWND hwnd = 0) {
       try {
         message oMsg;
         while (oMsg.get()) {
+          if (oMsg.is_dialog_msg(hwnd)) continue;          
           oMsg.translate();
           oMsg.dispatch();
         }

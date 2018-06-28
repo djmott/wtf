@@ -63,7 +63,29 @@ struct frmMain : form {
 
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
   try {
-    return frmMain().run();
+
+    struct frm : form {
+      frm() {
+        add(_ctl);
+/*
+        add(_ctl2);
+        add(_ctl3);
+*/
+        OnCreated += [this](...) {
+          _ctl.move(10, 10, 150, 25);
+          
+          /*
+          _ctl2.move(10, 30, 150, 25);
+          _ctl2.text(_T("WTF radio_button"));
+          _ctl3.move(10, 50, 150, 25);
+          _ctl3.text(_T("WTF radio_button"));
+          */
+        };
+      }
+      edit _ctl;
+     // radio_button _ctl2, _ctl3;
+    };
+    return frm().run();
   }
   catch (const wtf::exception& ex) {
     tstring sMsg = _T("An exception occurred at ") + to_tstring(ex.file()) + _T(":") + to_tstring(ex.line()) + _T("\n") +

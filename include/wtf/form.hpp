@@ -89,7 +89,7 @@ namespace wtf {
     int run() override final {
       message oMsg;
       __super::run();
-      auto iRet = oMsg.pump();
+      auto iRet = oMsg.pump(*this);
       return iRet;
     }
 
@@ -102,18 +102,18 @@ namespace wtf {
   @ingroup Widgets
   @brief A parent window with a sizable border, title bar, control box, system menu, minimize and maximize
   */
-  struct form : form_impl<form, WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW> {};
+  struct form : form_impl<form, WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW > {};
 
   /** @class dialog
   @ingroup Widgets
   @brief A parent window with a fixed border, title bar and system menu.
   */
-  struct dialog : form_impl<dialog, WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE> {};
+  struct dialog : form_impl<dialog, WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE > {};
 
   /** @class tool_window
   @ingroup Widgets
   @brief A parent window with a sizable border and title bar.
   */
-  struct tool_window : form_impl<tool_window, WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW> {};
+  struct tool_window : form_impl<tool_window, WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW > {};
   
 }

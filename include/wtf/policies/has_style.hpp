@@ -3,18 +3,30 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_HAS_STYLE
+
 namespace wtf {
 
   namespace policy {
+
+    /** @internal
+    @class has_style
+    @brief Behavior policy that gets and sets window style bits
+    @ingroup Policies
+    @endinternal
+    */
+
     template <typename _super_t>
     struct has_style : _super_t {
 
     protected:
+      //! @brief Gets a window style bits
       template <DWORD _style_flag>
       bool get_style() const {
         return _style_flag & wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
       }
 
+      //! @brief Sets a window style bits
       template <DWORD _style_flag>
       void set_style(bool newval) {
         auto style = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });

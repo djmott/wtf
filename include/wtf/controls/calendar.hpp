@@ -3,6 +3,15 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_CALENDAR_SUPER \
+DOXY_INHERIT_HAS_TEXT \
+DOXY_INHERIT_HAS_FONT \
+DOXY_INHERIT_HAS_ENABLE \
+DOXY_INHERIT_HAS_MOVE \
+DOXY_INHERIT_HAS_SIZE \
+DOXY_INHERIT_WM_SIZE \
+DOXY_INHERIT_WM_COMMAND \
+
 namespace wtf {
   namespace controls {
 
@@ -11,10 +20,10 @@ namespace wtf {
     }
 
     /** @class calendar
-    A simple calendar
+    @brief A simple calendar control
     @ingroup Widgets
     */
-    struct calendar : window_impl<calendar,
+    struct calendar : DOXY_INHERIT_CALENDAR_SUPER window_impl<calendar,
       policy::has_text,
       policy::has_font,
       policy::has_enable,

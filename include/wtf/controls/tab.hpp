@@ -88,9 +88,9 @@ namespace wtf {
 
       item::collection _items;
 
-      void on_wm_size(const point<coord_frame::client>& p) override {
+      void on_wm_size(wm_size_flags flags, const point<coord_frame::client>& p) override {
         resize_children();
-        __super::on_wm_size(p);
+        __super::on_wm_size(flags, p);
       }
 
       void resize_children() {
