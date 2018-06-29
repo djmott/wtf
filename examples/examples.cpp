@@ -5,7 +5,7 @@
 #define WTF_USE_COMMON_CONTROLS 1
 #define WTF_USE_VISUAL_STYLES 0
 #define WTF_USE_RICHEDIT 1
-#define WTF_DEBUG_MESSAGES 0
+#define WTF_DEBUG_MESSAGES 1
 
 #include "wtf/wtf.hpp"
 using namespace wtf;
@@ -61,6 +61,21 @@ struct frmMain : form {
 };
 
 
+#if 0
+int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+  try {
+    return frmMain().run();
+  }
+  catch (const wtf::exception& ex) {
+    tstring sMsg = _T("An exception occurred at ") + to_tstring(ex.file()) + _T(":") + to_tstring(ex.line()) + _T("\n") +
+      to_tstring(ex.code()) + _T("\n") + to_tstring(ex.what());
+    wtf::message_box::exec(nullptr, sMsg);
+
+  }
+  return 0;
+}
+
+#else
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
   try {
 
@@ -72,7 +87,9 @@ int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         add(_ctl3);
 */
         OnCreated += [this](...) {
-          _ctl.move(10, 10, 150, 25);
+          move(400, 400, 400, 400);
+          _ctl.text(_T("WTF Label"));
+          _ctl.move(10, 30, 100, 25);
           
           /*
           _ctl2.move(10, 30, 150, 25);
@@ -82,7 +99,7 @@ int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
           */
         };
       }
-      edit _ctl;
+      label _ctl;
      // radio_button _ctl2, _ctl3;
     };
     return frm().run();
@@ -95,3 +112,4 @@ int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
   }
   return 0;
 }
+#endif

@@ -4,6 +4,7 @@
 #pragma once
 
 #define DOXY_INHERIT_BUTTON_SUPER \
+  DOXY_INHERIT_WINDOW \
   DOXY_INHERIT_HAS_TEXT \
   DOXY_INHERIT_HAS_FONT \
   DOXY_INHERIT_HAS_ENABLE \
@@ -15,28 +16,25 @@
 namespace wtf {
   namespace controls {
 
-#if !DOXY_INVOKED
-    namespace _ {
-      template <typename _impl_t> using button_super_t = window_impl<_impl_t,
-        policy::has_text,
-        policy::has_font,
-        policy::has_enable,
-        policy::has_invalidate,
-        policy::has_move,
-        policy::has_style,
-        policy::wm_command
-      >;
-    }
-#endif
-
     /** @class button
     @brief A standard clickable push style button.
     @ingroup Widgets
     @image html button.png
     */
-    struct button : DOXY_INHERIT_BUTTON_SUPER _::button_super_t<button> {
-      bool dialog_default() const { return get_style<BS_DEFPUSHBUTTON>(); }
-      void dialog_default(bool newval) { return set_style<BS_DEFPUSHBUTTON>(newval); }
+    struct button : DOXY_INHERIT_BUTTON_SUPER window_impl<button,
+      policy::has_text,
+      policy::has_font,
+      policy::has_enable,
+      policy::has_invalidate,
+      policy::has_move,
+      policy::has_style,
+      policy::wm_command
+    > {
+      size ideal_size() const {
+        size oRet;
+        wtf::exception::throw_lasterr_if(::SendMessage(*this, BCM_GETIDEALSIZE, 0, reinterpret_cast<LPARAM>(&oRet)), [](LRESULT l) { return !l; });
+        return oRet;
+      }
     };
   
 
@@ -45,7 +43,7 @@ namespace wtf {
     @ingroup Widgets
     @image html checkbox.png
     */
-    struct checkbox : DOXY_INHERIT_BUTTON_SUPER _::button_super_t<checkbox> {
+    struct checkbox : button {
       static constexpr DWORD Style = window::Style | BS_AUTOCHECKBOX;
     };
 
@@ -56,7 +54,7 @@ namespace wtf {
     @ingroup Widgets
     @image html radio_button.png
     */
-    struct radio_group : DOXY_INHERIT_BUTTON_SUPER _::button_super_t<radio_group> {
+    struct radio_group : button {
       static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON | WS_GROUP;
     };
 
@@ -66,7 +64,7 @@ namespace wtf {
     @ingroup Widgets
     @image html radio_button.png
     */
-    struct radio_button : DOXY_INHERIT_BUTTON_SUPER _::button_super_t<radio_button> {
+    struct radio_button : button {
       static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON;
     };
 
@@ -76,7 +74,7 @@ namespace wtf {
     @ingroup Widgets
      @image html tristate.png
    */
-    struct tristate : DOXY_INHERIT_BUTTON_SUPER _::button_super_t<tristate> {
+    struct tristate : button {
       static constexpr DWORD Style = window::Style | BS_AUTO3STATE;
     };
 

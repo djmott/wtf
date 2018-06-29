@@ -3,6 +3,8 @@
 */
 #pragma once
 
+#if 0
+#if !DOXY_INVOKED 
 #define DOXY_INHERIT_AVI_SUPER \
 DOXY_INHERIT_HAS_ENABLE \
 DOXY_INHERIT_HAS_BORDER \
@@ -14,11 +16,6 @@ DOXY_INHERIT_HAS_MOVE
 namespace wtf {
   namespace controls {
 
-    namespace _ {
-
-      TCHAR sANIMATE_CLASS[] = ANIMATE_CLASS;
-
-    }
 
     /** @class avi_player
     @brief displays an Audio-Video Interleaved (AVI) clip
@@ -41,18 +38,18 @@ namespace wtf {
       //! @brief opens an .avi file
       //! @param[in] path full path to the avi clip
       void open(const tstring& path) {
-        wtf::exception::throw_lasterr_if(::SendMessage(*this, ACM_OPEN, 0, reinterpret_cast<LPARAM>(path.c_str())), [](LRESULT l) { return 0 == l; });
+        wtf::exception::throw_lasterr_if(::SendMessage(*this, ACM_OPEN, 0, reinterpret_cast<LPARAM>(path.c_str())), [](LRESULT l) { return !l; });
       }
 
       //! @brief starts playing the .avi clip
       //! @param[in] first,last frames of the clip to play
       void start(uint16_t first = 0, uint16_t last = 0xffff) {
-        wtf::exception::throw_lasterr_if(::SendMessage(*this, ACM_PLAY, 0, MAKELONG(first, last)), [](LRESULT l) { return 0 == l; });
+        wtf::exception::throw_lasterr_if(::SendMessage(*this, ACM_PLAY, 0, MAKELONG(first, last)), [](LRESULT l) { return !l; });
       }
 
       //! @brief stops playing the .avi clip
       void stop() {
-        wtf::exception::throw_lasterr_if(::SendMessage(*this, ACM_STOP, 0, 0), [](LRESULT l) { return 0 == l; });
+        wtf::exception::throw_lasterr_if(::SendMessage(*this, ACM_STOP, 0, 0), [](LRESULT l) { return !l; });
       }
 
       //! @brief indicates whether the .avi clip is playing
@@ -73,8 +70,19 @@ namespace wtf {
 
   }
 
+#if !DOXY_INVOKED
+
+  namespace _ {
+
+    TCHAR sANIMATE_CLASS[] = ANIMATE_CLASS;
+
+  }
+
   template <WNDPROC window_proc>
   struct window_class<controls::avi_player, window_proc> :
-    super_window_class<controls::_::sANIMATE_CLASS, controls::avi_player, window_proc> {};
+    super_window_class<_::sANIMATE_CLASS, controls::avi_player, window_proc> {};
+#endif
 
 }
+#endif
+#endif

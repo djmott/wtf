@@ -4,6 +4,7 @@
 #pragma once
 
 #define DOXY_INHERIT_COMBOBOX_SUPER \
+  DOXY_INHERIT_WINDOW \
   DOXY_INHERIT_HAS_FONT \
   DOXY_INHERIT_HAS_ENABLE \
   DOXY_INHERIT_HAS_MOVE \
@@ -12,16 +13,6 @@
 
 
 namespace wtf {
-
-#if !DOXY_INVOKED
-  namespace _ {
-#if WTF_USE_COMMON_CONTROLS
-    TCHAR sWC_COMBOBOX[] = WC_COMBOBOX;
-#else
-    TCHAR sWC_COMBOBOX[] = _T("COMBOBOX");
-#endif
-  }
-#endif
 
   namespace policy {
 
@@ -170,6 +161,15 @@ namespace wtf {
   }
 
 #if !DOXY_INVOKED
+
+  namespace _ {
+#if WTF_USE_COMMON_CONTROLS
+    TCHAR sWC_COMBOBOX[] = WC_COMBOBOX;
+#else
+    TCHAR sWC_COMBOBOX[] = _T("COMBOBOX");
+#endif
+  }
+  
   template <WNDPROC window_proc> struct window_class<controls::simple_combobox, window_proc>
     : super_window_class<_::sWC_COMBOBOX, controls::simple_combobox, window_proc> {};
 
@@ -179,6 +179,5 @@ namespace wtf {
   template <WNDPROC window_proc> struct window_class<controls::dropdown_list_combobox, window_proc>
     : super_window_class<_::sWC_COMBOBOX, controls::dropdown_list_combobox, window_proc> {};
 #endif
-
-
+    
 }

@@ -18,3 +18,5 @@ The first place to visit for learning WTF is the documentation. [Using WTF](usin
 
 For a deep dive into the structure and architecture take a look at [The Hierarchy Generator Pattern](hierarchy_gen.md) which is the backbone of the framework. WTF uses a specialized hierarchy generator pattern for [Message Handling](message_handling.md).
 
+### Documentation Note
+Docs are generated with Doxygen which has trouble handling the hierarchy generator pattern so doesn't recognize the inheritance. The expansive inheritance of this library is its purpose, therefore rendering the documentation of little use without modifications. Some preprocessor macro trickery is used in the code to generate documentation which illustrates the inherited members. However, doing so produces misleading UML that illustrates multiple-inheritance. This is a doxygen bug; multiple inheritance is not used in WTF.

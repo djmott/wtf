@@ -358,6 +358,7 @@ namespace wtf {
 
 #if WTF_USE_COMMON_CONTROLS
   #include "controls/avi_player.hpp"
+  #include "controls/calendar.hpp"
   #include "controls/date_time.hpp"
   #include "controls/hotkey.hpp"
   #include "controls/image_list.hpp"

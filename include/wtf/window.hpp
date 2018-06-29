@@ -7,8 +7,9 @@
   #define WTF_DEBUG_MESSAGES 0
 #endif
 
-namespace wtf{
+#define DOXY_INHERIT_WINDOW
 
+namespace wtf{
  
   /** 
   @class window 
@@ -19,7 +20,8 @@ namespace wtf{
 
     /// an implementation may use different window styles 
     static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
-    static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
+//    static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
+    static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_TABSTOP;
 
     virtual ~window() { if (_handle) ::DestroyWindow(_handle); _handle = nullptr; }
 
@@ -90,7 +92,7 @@ namespace wtf{
 
 
   template <typename _impl_t, template <typename> typename _head_t, template <typename> typename..._tail_t>
-  struct window_impl<_impl_t, _head_t, _tail_t...> :  _head_t<window_impl<_impl_t, _tail_t...>> {
+  struct window_impl<_impl_t, _head_t, _tail_t...> : DOXY_INHERIT_WINDOW _head_t<window_impl<_impl_t, _tail_t...>> {
     
   protected:
     template <typename, template <typename> typename...> friend struct window_impl;
