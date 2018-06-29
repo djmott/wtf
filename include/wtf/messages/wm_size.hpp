@@ -36,7 +36,7 @@ namespace wtf{
       virtual void on_wm_size(wm_size_flags flags, const point<coord_frame::client>& p){
         OnSize(this, flags, p);
       }
-#if !defined(DOXY_INVOKED)
+#if !DOXY_INVOKED
       void handle_msg(wtf::window_message& msg) override {
         if (WM_SIZE == msg.umsg) on_wm_size(static_cast<wm_size_flags>(msg.wparam), point<coord_frame::client>(LOWORD(msg.lparam), HIWORD(msg.lparam)));
       }

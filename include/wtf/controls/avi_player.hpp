@@ -59,7 +59,7 @@ namespace wtf {
       }
 
     protected:
-#if !defined(DOXY_INVOKED)
+#if !DOXY_INVOKED
       void on_wm_command(WPARAM wparam, LPARAM lparam) override{
         if (lparam != reinterpret_cast<LPARAM>(this->_handle)) return;
         if (ACN_START == HIWORD(wparam)) OnStart(this);

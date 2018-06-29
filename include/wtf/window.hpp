@@ -20,7 +20,6 @@ namespace wtf{
 
     /// an implementation may use different window styles 
     static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
-//    static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
     static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_TABSTOP;
 
     virtual ~window() { if (_handle) ::DestroyWindow(_handle); _handle = nullptr; }

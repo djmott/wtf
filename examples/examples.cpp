@@ -31,7 +31,6 @@ struct frmMain : form {
     _tab.add(_comboboxes);
     _tab.add(_progressbars);
     _tab.add(_trees);
-    _tab.add(_avi);
     OnCreated += [this](...) {
       _tab.items().add(_T("Richedit"), _richedit);
       _tab.items().add(_T("Listview"), _listview);
@@ -39,7 +38,6 @@ struct frmMain : form {
       _tab.items().add(_T("Comboboxes"), _comboboxes);
       _tab.items().add(_T("Progress bars"), _progressbars);
       _tab.items().add(_T("Trees"), _trees);
-      _tab.items().add(_T("AVI"), _avi);
     };
     OnSize += [this](...) {
       _tab.move(5, 5, width() - 10, height() - 30);
@@ -56,12 +54,11 @@ struct frmMain : form {
   ProgressBars _progressbars;
   Trees _trees;
   mnuMain _mnuMain;
-  wtf::controls::avi_player _avi;
   StatusBar _status;
 };
 
 
-#if 0
+#if 1
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
   try {
     return frmMain().run();
