@@ -15,7 +15,7 @@ namespace wtf {
 
     /** @class hotkey
     @brief A hot key control enables the user to enter a combination of keystrokes to be used as a hot key.
-    @ingroup Widgets
+    @ingroup Controls
     @image html hotkey.png
     */
     struct hotkey : DOXY_INHERIT_HOTKEY_SUPER window_impl<hotkey,

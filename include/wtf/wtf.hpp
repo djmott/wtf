@@ -79,16 +79,16 @@
 
 /** @defgroup Policies Policies
 @brief Behavioral policies
-@details This group of classes are discrete behavioral components. They're composed to create feature-rich concrete widgets
+@details This group of classes are discrete behavioral components. They're composed to create feature-rich concrete controls
 */
 
 /** @defgroup Messages Messages
 @brief Message handling policies
-@details This group of policy classes handle windows messages. They're composed to create feature-rich concrete widgets
+@details This group of policy classes handle windows messages. They're composed to create feature-rich concrete controls
 */
 
-/** @defgroup Widgets Widgets
-@brief WTF Widgets
+/** @defgroup Controls Controls
+@brief WTF Controls
 @details This group of concrete classes are a composition of behavioral policies and message handlers
 */
 
@@ -111,15 +111,15 @@ namespace wtf {
 
   /**
   @interface window window.hpp
-  @brief Base class of widgets and forms
-  @details This class is inherited as the super-most base class of widgets and forms via hierarchy generation.
+  @brief Base class of controls and forms
+  @details This class is inherited as the super-most base class of controls and forms via hierarchy generation.
   */
   struct window;
   
   /**
   @class window_impl window.hpp
-  @brief Implements a widgets or form
-  @details This is the hierarchy generator that composes a collection of behavior policies and message handlers into a concrete widget or form. 
+  @brief Implements a control or form
+  @details This is the hierarchy generator that composes a collection of behavior policies and message handlers into a concrete control or form. 
   @details Policies are combine in a linear hierarchy in the order listed with the window class being the super-most base class.
   @tparam implementation_type The concrete implementation
   @tparam policy_list The list of behavioral policies that the implementation will inherit.

@@ -16,7 +16,7 @@ namespace wtf {
 
     namespace policy {
       /** @class has_border
-      @brief Behavior policy of a widget or form with a border
+      @brief Behavior policy of a control or form with a border
       @ingroup Policies
       */
       template <typename _super_t>

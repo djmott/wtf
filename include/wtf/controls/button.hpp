@@ -18,7 +18,7 @@ namespace wtf {
 
     /** @class button
     @brief A standard clickable push style button.
-    @ingroup Widgets
+    @ingroup Controls
     @image html button.png
     */
     struct button : DOXY_INHERIT_BUTTON_SUPER window_impl<button,
@@ -40,7 +40,7 @@ namespace wtf {
 
     /** @class checkbox
     @brief A dual state (boolean) check box.
-    @ingroup Widgets
+    @ingroup Controls
     @image html checkbox.png
     */
     struct checkbox : button {
@@ -51,7 +51,7 @@ namespace wtf {
     /** @class radio_group
     @brief A radio_button that starts a group.
     @details Only a single radio_button in a radio_group may be selected at a time
-    @ingroup Widgets
+    @ingroup Controls
     @image html radio_button.png
     */
     struct radio_group : button {
@@ -61,7 +61,7 @@ namespace wtf {
 
     /** @class radio_button
     @brief An element in a radio_group. Only a single item in a radio_group can be selected at one time
-    @ingroup Widgets
+    @ingroup Controls
     @image html radio_button.png
     */
     struct radio_button : button {
@@ -71,7 +71,7 @@ namespace wtf {
     /** @class tristate
     @brief A tri-state check box.
     @details A tristate is similar to a checkbox. It has an on-off state like a checkbox plus a third greyed state.
-    @ingroup Widgets
+    @ingroup Controls
      @image html tristate.png
    */
     struct tristate : button {

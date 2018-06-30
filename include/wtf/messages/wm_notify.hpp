@@ -3,6 +3,8 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_WM_NOTIFY
+
 namespace wtf {
 
   namespace policy {

@@ -185,7 +185,8 @@ PREDEFINED             = DOXY_INVOKED=1 \
                          DOXY_INHERIT_HAS_SIZE=wtf::policy::has_size, \
                          DOXY_INHERIT_WM_SIZE=wtf::policy::wm_size, \
                          DOXY_INHERIT_HAS_FOCUS=wtf::policy::has_focus, \
-                         DOXY_INHERIT_WINDOW=wtf::window,\
+                         DOXY_INHERIT_WINDOW=wtf::window, \
+                         DOXY_INHERIT_WM_NOTIFY=wtf::policy::wm_notify,
 EXPAND_AS_DEFINED      = YES
 SKIP_FUNCTION_MACROS   = YES
 TAGFILES               = 

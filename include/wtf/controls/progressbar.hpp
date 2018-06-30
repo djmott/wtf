@@ -7,7 +7,7 @@ namespace wtf {
   namespace controls {
 
     /** @class progressbar
-    @ingroup Widgets
+    @ingroup Controls
     @brief A progress bar is a window that an application can use to indicate the progress of a lengthy operation.
     @tparam _orientation Indicates a vertical or horizontal progress bar
     @tparam _smooth Indicates the progress bar should display a smooth or blocked progress.

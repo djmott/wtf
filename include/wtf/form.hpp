@@ -99,19 +99,19 @@ namespace wtf {
   };
 
   /** @class form
-  @ingroup Widgets
+  @ingroup Controls
   @brief A parent window with a sizable border, title bar, control box, system menu, minimize and maximize
   */
   struct form : form_impl<form, WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW > {};
 
   /** @class dialog
-  @ingroup Widgets
+  @ingroup Controls
   @brief A parent window with a fixed border, title bar and system menu.
   */
   struct dialog : form_impl<dialog, WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE > {};
 
   /** @class tool_window
-  @ingroup Widgets
+  @ingroup Controls
   @brief A parent window with a sizable border and title bar.
   */
   struct tool_window : form_impl<tool_window, WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW > {};

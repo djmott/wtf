@@ -19,7 +19,7 @@ namespace wtf {
 
     /** @class calendar
     @brief A simple calendar control
-    @ingroup Widgets
+    @ingroup Controls
     @image html calendar.png
     */
     struct calendar : DOXY_INHERIT_CALENDAR_SUPER window_impl<calendar,

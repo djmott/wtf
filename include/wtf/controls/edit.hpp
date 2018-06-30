@@ -19,7 +19,7 @@ namespace wtf {
 
     /** @class edit
     @brief An editable box of text
-    @ingroup Widgets
+    @ingroup Controls
     */
     struct edit : DOXY_INHERIT_EDIT_SUPER window_impl<edit,
       policy::has_font,
@@ -40,7 +40,7 @@ namespace wtf {
 
       //! @brief Gets the displayed character.
       //! @returns zero if no display masking is enabled or the display mask character
-      TCHAR password_char() const { return ::SendMessage(*this, EM_GETPASSWORDCHAR, 0, 0); }
+      TCHAR password_char() const { return static_cast<TCHAR>(::SendMessage(*this, EM_GETPASSWORDCHAR, 0, 0)); }
 
       //! @brief Sets or resets the display character.
       //! @param[in] newval the character that will be displayed to the user. Set to zero to disable masking
@@ -48,31 +48,31 @@ namespace wtf {
 
       //! @brief gets the lower-case conversion
       //! @returns true if the edit box converts all upper case input to lower case or false if the conversion is not enabled
-      bool lower_case() const { return get_style<ES_LOWERCASE>(); }
+      bool lower_case() const { return get_style_bit<ES_LOWERCASE>(); }
       //! @brief sets lower-case conversion
       //! @param[in] newval set to true to enable lower-case conversion of user input or false to disable
       void lower_case(bool newval) { 
-        set_style<ES_UPPERCASE>(false);
-        set_style<ES_LOWERCASE>(newval);
+        set_style_bit<ES_UPPERCASE>(false);
+        set_style_bit<ES_LOWERCASE>(newval);
       }
     
       //! @brief gets the upper-case conversion
       //! @returns true if the edit box converts all lower case input to upper case or false if the conversion is not enabled
-      bool upper_case() const { return get_style<ES_UPPERCASE>(); }
+      bool upper_case() const { return get_style_bit<ES_UPPERCASE>(); }
       //! @brief sets upper-case conversion
       //! @param[in] newval set to true to enable upper-case conversion of user input or false to disable
       void upper_case(bool newval) {
-        set_style<ES_LOWERCASE>(false);
-        set_style<ES_UPPERCASE>(newval);
+        set_style_bit<ES_LOWERCASE>(false);
+        set_style_bit<ES_UPPERCASE>(newval);
       }
 
       //! @brief gets the auto-hscroll setting
       //! @details Automatically scrolls text to the right by 10 characters when the user types a character at the end of the line
-      bool auto_hscroll() const { return get_style<ES_AUTOHSCROLL>(); }
+      bool auto_hscroll() const { return get_style_bit<ES_AUTOHSCROLL>(); }
       //! @brief Enables/disables auto horizontal scrolling
       //! @param[in] newval true to enable or false to disable
       //! @details @copydetails wtf::controls::edit::auto_hscroll() const
-      void auto_hscroll(bool newval) { set_style<ES_AUTOHSCROLL>(newval); }
+      void auto_hscroll(bool newval) { set_style_bit<ES_AUTOHSCROLL>(newval); }
 
       //! @brief gets the text limit
       uint16_t text_limit() const { return static_cast<uint16_t>(::SendMessage(*this, EM_GETLIMITTEXT, 0, 0)); }
@@ -83,7 +83,7 @@ namespace wtf {
 
     /** @class multiline_edit
     @brief An editable box of text
-    @ingroup Widgets
+    @ingroup Controls
     */
     struct multiline_edit : edit {
       static constexpr DWORD Style = window::Style | ES_MULTILINE;

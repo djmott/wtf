@@ -15,7 +15,7 @@ namespace wtf {
 
     /** @class date_picker
     @brief Select a date from a drop down calendar or enter a date in a text box
-    @ingroup Widgets
+    @ingroup Controls
     @image html date_picker.png
     */
     struct date_picker : DOXY_INHERIT_DATE_TIME_SUPER window_impl<date_picker,
@@ -28,7 +28,7 @@ namespace wtf {
 
     /** @class time_picker
     @brief Enter a time in a formatted text box with up-down arrows
-    @ingroup Widgets
+    @ingroup Controls
     @image html time_picker.png
     */
     struct time_picker : date_picker {

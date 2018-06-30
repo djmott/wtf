@@ -19,7 +19,7 @@ namespace wtf {
     }
 
     /** @class tree
-    @ingroup Widgets
+    @ingroup Controls
     @brief A tree-view control is a window that displays a hierarchical list of items, such as the headings in a document, the entries in an index, or the files and directories on a disk.
     */
     struct tree : window_impl<tree,

@@ -11,9 +11,9 @@ namespace wtf {
 
       has_hscroll() : _super_t() {}
 
-      bool hscroll() const { return _super_t::get_style<WS_HSCROLL>(); }
+      bool hscroll() const { return _super_t::get_style_bit<WS_HSCROLL>(); }
 
-      void hscroll(bool newval) { _super_t::set_style<WS_HSCROLL>(newval); }
+      void hscroll(bool newval) { _super_t::set_style_bit<WS_HSCROLL>(newval); }
 
     };
   }

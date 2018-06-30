@@ -17,7 +17,7 @@ namespace wtf {
     
     /** @class ip_address
     @brief Text box thats formatted to accept a IPv4 address
-    @ingroup Widgets
+    @ingroup Controls
     @image html ip_address.png
     */
     struct ip_address : DOXY_INHERIT_IPADDR_SUPER window_impl<ip_address,

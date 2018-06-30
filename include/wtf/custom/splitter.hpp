@@ -14,7 +14,7 @@ namespace wtf {
       wtf::policy::wm_showwindow
     > {
 
-      static constexpr DWORD Style = WS_VISIBLE | WS_CHILD;
+      static constexpr DWORD Style = WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN;
 
       template <typename _first_t, typename _second_t>
       splitter(_first_t& first, _second_t& second) : slider(this), _first(&first), _second(&second) {
@@ -59,7 +59,7 @@ namespace wtf {
       > {
         friend struct splitter;
 
-        static constexpr DWORD Style = WS_CHILD | WS_VISIBLE;
+        static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
 
         slider_t(splitter * Parent) : _splitter(Parent) {}
         splitter * _splitter;
@@ -97,14 +97,24 @@ namespace wtf {
 
         if (wtf::orientations::horizontal == __super::orientation()) {
           if (_slider_pos > height() - 10) _slider_pos = height() - 10;
+          ::SetWindowPos(*_first, 0, 0, 0, width(), _slider_pos, SWP_NOZORDER);
+          ::SetWindowPos(*_second,0, 0, _slider_pos + _slider_width, width(), height() - _slider_pos - _slider_width, SWP_NOZORDER);
+          ::SetWindowPos(*slider, 0, 0, _slider_pos, width(), _slider_width, SWP_NOZORDER);
+/*
           ::MoveWindow(*_first, 0, 0, width(), _slider_pos, TRUE);
           ::MoveWindow(*_second, 0, _slider_pos + _slider_width, width(), height() - _slider_pos - _slider_width, TRUE);
           ::MoveWindow(*slider, 0, _slider_pos, width(), _slider_width, TRUE);
+*/
         }else {
           if (_slider_pos > width() - 10) _slider_pos = width() - 10;
+          ::SetWindowPos(*_first,0, 0, 0, _slider_pos, height(), SWP_NOZORDER);
+          ::SetWindowPos(*_second,0, _slider_pos + _slider_width, 0, width() - _slider_pos - _slider_width, height(), SWP_NOZORDER);
+          ::SetWindowPos(*slider,0, _slider_pos, 0, _slider_width, height(), SWP_NOZORDER);
+/*
           ::MoveWindow(*_first, 0, 0, _slider_pos, height(), TRUE);
           ::MoveWindow(*_second, _slider_pos + _slider_width, 0, width() - _slider_pos - _slider_width, height(), TRUE);
-          ::MoveWindow(*slider,_slider_pos, 0, _slider_width, height(), TRUE);
+          ::MoveWindow(*slider, _slider_pos, 0, _slider_width, height(), TRUE);
+*/
         }
 
 

@@ -20,7 +20,7 @@ namespace wtf {
 
     /** @class label
     @brief A static control with text.
-    @ingroup Widgets
+    @ingroup Controls
     @image html label.png
     */
     struct label : DOXY_INHERIT_LABEL_SUPER window_impl<label,
@@ -36,28 +36,28 @@ namespace wtf {
 
       //! @brief gets the text horizontal alignment 
       text_horizontal_alignments alignment() const { 
-        if (get_style<SS_LEFT>()) return text_horizontal_alignments::left;
-        if (get_style<SS_CENTER>()) return text_horizontal_alignments::center;
+        if (get_style_bit<SS_LEFT>()) return text_horizontal_alignments::left;
+        if (get_style_bit<SS_CENTER>()) return text_horizontal_alignments::center;
         return text_horizontal_alignments::right;
       }
 
       //! @brief sets the text horizontal alignment
       void alignment(text_horizontal_alignments newval) {
         if (text_horizontal_alignments::left == newval) {
-          set_style<SS_LEFT>(true);
+          set_style_bit<SS_LEFT>(true);
         }
         else if (text_horizontal_alignments::center == newval) {
-          set_style<SS_CENTER>(true);
+          set_style_bit<SS_CENTER>(true);
         }
         else {
-          set_style<SS_RIGHT>(true);
+          set_style_bit<SS_RIGHT>(true);
         }
       }
 
       //! @brief draws an image
       void set_image(const icon& newval) {
-        set_style<SS_BITMAP | SS_ENHMETAFILE>(false);
-        set_style<SS_ICON>(true);
+        set_style_bit<SS_BITMAP | SS_ENHMETAFILE>(false);
+        set_style_bit<SS_ICON>(true);
         ::SendMessage(*this, STM_SETIMAGE, IMAGE_ICON, reinterpret_cast<LPARAM>(static_cast<HICON>(newval)));
       }
       //! @brief draws an image

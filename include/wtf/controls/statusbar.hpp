@@ -12,7 +12,7 @@ namespace wtf {
 
     /** @class statusbar
     Displays status information normally at the bottom of a form
-    @ingroup Widgets
+    @ingroup Controls
     */
     struct statusbar : window_impl<statusbar,
       policy::has_style,
@@ -93,8 +93,8 @@ namespace wtf {
         border_styles _border;
       };
 
-      bool size_grip() const { return get_style<SBARS_SIZEGRIP>(); }
-      void size_grip(bool newval) { return set_style<SBARS_SIZEGRIP>(newval); }
+      bool size_grip() const { return get_style_bit<SBARS_SIZEGRIP>(); }
+      void size_grip(bool newval) { return set_style_bit<SBARS_SIZEGRIP>(newval); }
 
       part::collection& parts() { return _parts; }
       const part::collection& parts() const { return _parts; }

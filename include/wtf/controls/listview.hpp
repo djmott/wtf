@@ -280,14 +280,14 @@ namespace wtf {
         ::SetWindowLong(*this, GWL_STYLE, iStyle);
       }
 
-      bool auto_arrange() const { return get_style<LVS_AUTOARRANGE>(); }
-      void auto_arrange(bool newval) { set_style<LVS_AUTOARRANGE>(newval); }
+      bool auto_arrange() const { return get_style_bit<LVS_AUTOARRANGE>(); }
+      void auto_arrange(bool newval) { set_style_bit<LVS_AUTOARRANGE>(newval); }
 
-      bool hide_headers() const { return get_style<LVS_NOCOLUMNHEADER>(); }
-      void hide_headers(bool newval) { set_style<LVS_NOCOLUMNHEADER>(newval); }
+      bool hide_headers() const { return get_style_bit<LVS_NOCOLUMNHEADER>(); }
+      void hide_headers(bool newval) { set_style_bit<LVS_NOCOLUMNHEADER>(newval); }
 
-      bool single_select() const { return get_style<LVS_SINGLESEL>(); }
-      void single_select(bool newval) { return set_style<LVS_SINGLESEL>(newval); }
+      bool single_select() const { return get_style_bit<LVS_SINGLESEL>(); }
+      void single_select(bool newval) { return set_style_bit<LVS_SINGLESEL>(newval); }
 
       bool row_select() const { return get_exstyle<LVS_EX_FULLROWSELECT>(); }
       void row_select(bool newval) { set_exstyle<LVS_EX_FULLROWSELECT>(newval); }

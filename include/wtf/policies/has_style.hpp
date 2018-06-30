@@ -20,19 +20,27 @@ namespace wtf {
     struct has_style : _super_t {
 
     protected:
-      //! @brief Gets a window style bits
-      template <DWORD _style_flag>
-      bool get_style() const {
-        return _style_flag & wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
+      //! @brief Gets a window style value
+      LONG_PTR get_style_value() const {
+        return wtf::exception::throw_lasterr_if(::GetWindowLongPtr(*this, GWL_STYLE), [](LONG_PTR l) { return !l; });
       }
 
+      //! @brief Gets a window style bits
+      template <DWORD _style_flag>
+      bool get_style_bit() const {
+        return _style_flag & get_style_value();
+      }
+
+      //! @brief Sets a window style value
+      void set_style_value(LONG_PTR newval) {
+        wtf::exception::throw_lasterr_if(::SetWindowLongPtr(*this, GWL_STYLE, newval), [](LONG_PTR l) { return !l; });
+      }
       //! @brief Sets a window style bits
       template <DWORD _style_flag>
-      void set_style(bool newval) {
-        auto style = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
-        style &= ~_style_flag;
+      void set_style_bit(bool newval) {
+        auto style = (get_style_value() & ~_style_flag);
         if (newval) style |= _style_flag;
-        wtf::exception::throw_lasterr_if(::SetWindowLong(*this, GWL_STYLE, style), [](LONG l) { return !l; });
+        set_style_value(style);
       }
 
     };

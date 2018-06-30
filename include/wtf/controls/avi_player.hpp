@@ -19,7 +19,7 @@ namespace wtf {
 
     /** @class avi_player
     @brief displays an Audio-Video Interleaved (AVI) clip
-    @ingroup Widgets
+    @ingroup Controls
     */
     struct avi_player : DOXY_INHERIT_AVI_SUPER window_impl<avi_player,
       policy::has_enable,

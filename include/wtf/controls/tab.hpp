@@ -3,29 +3,30 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_TAB_SUPER \
+  DOXY_INHERIT_HAS_FONT \
+  DOXY_INHERIT_HAS_MOVE \
+  DOXY_INHERIT_HAS_STYLE \
+  DOXY_INHERIT_WM_NOTIFY \
+  DOXY_INHERIT_WM_SIZE
+
 namespace wtf {
   namespace controls {
 
-    namespace _ {
-      
-      TCHAR sWC_TABCONTROL[] = WC_TABCONTROL;
-
-    }
-
     /** @class tab
-    @ingroup Widgets
     @brief A tab control is analogous to the dividers in a notebook or the labels in a file cabinet. By using a tab control, an application can define multiple pages for the same area of a window or dialog box.
+    @ingroup Controls
     */
-    struct tab : window_impl<tab,
+    struct tab : DOXY_INHERIT_TAB_SUPER window_impl<tab,
       policy::has_font,
       policy::has_move,
+      policy::has_style,
       policy::wm_notify,
       policy::wm_size
     > {
       static constexpr DWORD ExStyle = WS_EX_CONTROLPARENT;
       static constexpr DWORD Style = window::Style | TCS_FOCUSNEVER;
-
-
+      
       tab() : _items(this){}
 
       callback<void(window*)> OnClick;
@@ -33,6 +34,22 @@ namespace wtf {
       callback<void(window*)> OnChanging;
       callback<void(window*)> OnChanged;
 
+      bool recieves_focus() const { return !get_style_bit<TCS_FOCUSNEVER>(); }
+      void recieves_focus(bool newval) { set_style_bit<TCS_FOCUSNEVER>(!newval); }
+
+      bool flat_buttons() const { return get_style_bit<TCS_FLATBUTTONS>(); }
+      void flat_buttons(bool newval) { return set_style_bit<TCS_FLATBUTTONS>(newval); }
+
+      bool multi_line() const { return get_style_bit<TCS_MULTILINE>(); }
+      void multi_line(bool newval) { return set_style_bit<TCS_MULTILINE>(newval); }
+
+      wtf::quadrants placement() const {
+        auto iStyle = get_style_bit<TCS_VERTICAL | TCS_BOTTOM>();
+      }
+
+      /** @class item
+      @brief represents a single page in the tab control
+      */
       struct item {
 
         const tstring& text() const noexcept { return _text; }
@@ -128,6 +145,11 @@ namespace wtf {
 
   }
 
-  template <WNDPROC window_proc> struct window_class<controls::tab, window_proc> : super_window_class<controls::_::sWC_TABCONTROL, controls::tab, window_proc> {};
+#if !DOXY_INVOKED
 
+  namespace _ { TCHAR sWC_TABCONTROL[] = WC_TABCONTROL; }
+
+  template <WNDPROC window_proc> struct window_class<controls::tab, window_proc> : super_window_class<_::sWC_TABCONTROL, controls::tab, window_proc> {};
+
+#endif
 }

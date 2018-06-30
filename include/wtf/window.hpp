@@ -13,7 +13,7 @@ namespace wtf{
  
   /** 
   @class window 
-  @brief Super class of all widgets and forms
+  @brief Super class of all controls and forms
   */ 
   struct window{
     template <typename, template <typename> typename...> friend struct window_impl;

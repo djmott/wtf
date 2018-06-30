@@ -20,7 +20,7 @@ namespace wtf {
 
     /** @class listbox
     @brief Displays a selectable list of items
-    @ingroup Widgets
+    @ingroup Controls
     
     */
     struct listbox : DOXY_INHERIT_LISTBOX_SUPER window_impl<listbox,

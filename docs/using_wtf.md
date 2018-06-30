@@ -21,8 +21,8 @@ This creates a generic form and shows it then begins the main message pump. To m
 using namespace wtf;
 struct MyForm : form{
 
-  MyForm() : oPanel(this)
-  {
+  MyForm() {
+    add(oPanel);
     OnCreate.connect([this](){ 
       oPanel.border_style(border_styles::double_raised);
       oPanel.move(10, 10, 150, 25);
@@ -38,7 +38,7 @@ int main(){
 
 ~~~
 
-Here a form is sub-classed and it contains a panel. An important thing to note is the constructor of the panel which accepts a pointer to the parent form as it's argument e.g. `oPanel(this)`. Every child widget must be constructed in this manner to work properly. The _user side_ is notified of events using a callback mechanism. In this example a lambda is invoked when the form's window is created to change the panel's border and position it.  The callback mechanism is very flexible permitting a variety of ways to execute actions when various UI events occur.
+Here a form is sub-classed and it contains a panel. An important thing to note is that though the oPanel is a member of the form class its not a child of the window unless it's explicitly added, e.g.: `add(oPanel);` Add child controls must be added to the parent window in this fashion prior to calling `run()`. The _user side_ is notified of events using a callback mechanism. In this example a lambda is invoked when the form's window is created to change the panel's border and position it.  The callback mechanism is very flexible permitting a variety of ways to execute actions when various UI events occur.
 
 Callback objects exist for all the typically expected events. Zero or more _targets_ can be invoked by the callback objects when the event occurs. Targets are connected to callback objects with the `connect` method and can include lambdas, static methods and class members:
 

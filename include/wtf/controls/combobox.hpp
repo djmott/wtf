@@ -131,7 +131,7 @@ namespace wtf {
     /** @class simple_combobox
     @brief a simple combo box
     @details contains an edit box and a list of items that can be selected
-    @ingroup Widgets
+    @ingroup Controls
     @image html simple_combobox.png
     */
     struct simple_combobox : policy::combobox_super_t<simple_combobox> {
@@ -141,7 +141,7 @@ namespace wtf {
     /** @class dropdown_combobox
     @brief a drop-down combo box
     @details contains a drop-down list of items that can be selected and a text box 
-    @ingroup Widgets
+    @ingroup Controls
     @image html dropdown_combobox.png
     */
     struct dropdown_combobox : policy::combobox_super_t<dropdown_combobox> {
@@ -151,7 +151,7 @@ namespace wtf {
     /** @class dropdown_list_combobox
     @brief a drop-down list combo box
     @details contains and drop-down list of items that can be selected and displays the current selection in a read-only label
-    @ingroup Widgets
+    @ingroup Controls
     @image html dropdown_list_combobox.png
     */
     struct dropdown_list_combobox : policy::combobox_super_t<dropdown_list_combobox> {
