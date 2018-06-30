@@ -24,28 +24,8 @@ namespace wtf {
       policy::wm_notify,
       policy::wm_size
     > {
-      static constexpr DWORD ExStyle = WS_EX_CONTROLPARENT;
-      static constexpr DWORD Style = window::Style | TCS_FOCUSNEVER;
       
-      tab() : _items(this){}
 
-      callback<void(window*)> OnClick;
-      callback<void(window*)> OnDblClick;
-      callback<void(window*)> OnChanging;
-      callback<void(window*)> OnChanged;
-
-      bool recieves_focus() const { return !get_style_bit<TCS_FOCUSNEVER>(); }
-      void recieves_focus(bool newval) { set_style_bit<TCS_FOCUSNEVER>(!newval); }
-
-      bool flat_buttons() const { return get_style_bit<TCS_FLATBUTTONS>(); }
-      void flat_buttons(bool newval) { return set_style_bit<TCS_FLATBUTTONS>(newval); }
-
-      bool multi_line() const { return get_style_bit<TCS_MULTILINE>(); }
-      void multi_line(bool newval) { return set_style_bit<TCS_MULTILINE>(newval); }
-
-      wtf::quadrants placement() const {
-        auto iStyle = get_style_bit<TCS_VERTICAL | TCS_BOTTOM>();
-      }
 
       /** @class item
       @brief represents a single page in the tab control
@@ -91,14 +71,65 @@ namespace wtf {
         window * _window;
       };
 
+      tab() : _items(this) {}
 
+      //! @brief invoked when the user clicks the control
+      callback<void(window*)> OnClick;
+      //! @brief invoked when the user double-clicks the control
+      callback<void(window*)> OnDblClick;
+      //! @brief invoked when the active tab is about to change
+      callback<void(window*)> OnChanging;
+      //! @brief invoked when the active tab has changed
+      callback<void(window*)> OnChanged;
+
+      //! @brief determines if the control can receive input focus when clicked
+      bool recieves_focus() const { return !get_style_bit<TCS_FOCUSNEVER>(); }
+      //! @brief enables or disables input focus behavior
+      void recieves_focus(bool newval) { set_style_bit<TCS_FOCUSNEVER>(!newval); }
+
+      //! @brief gets the flat button style
+      bool flat_buttons() const { return get_style_bit<TCS_FLATBUTTONS>(); }
+      //! @brief sets the flat button style
+      void flat_buttons(bool newval) { return set_style_bit<TCS_FLATBUTTONS>(newval); }
+
+      //! @brief gets the multi-line style
+      bool multi_line() const { return get_style_bit<TCS_MULTILINE>(); }
+      //! @brief sets the multi-line style
+      void multi_line(bool newval) { return set_style_bit<TCS_MULTILINE>(newval); }
+
+      //! @brief gets the placement of the tab buttons
+      wtf::quadrants placement() const {
+        auto iStyle = get_style_value() & (TCS_BOTTOM | TCS_VERTICAL | TCS_MULTILINE);
+        switch (iStyle) {
+          case 0: return quadrants::top;
+          case TCS_BOTTOM: return quadrants::bottom;
+          case (TCS_VERTICAL | TCS_MULTILINE): return quadrants::left;
+          default: return quadrants::right;
+        }
+      }
+      //! @brief sets the placement of the tab buttons
+      void placement(wtf::quadrants newval) {
+        auto iStyle = get_style_value() & ~(TCS_BOTTOM | TCS_VERTICAL | TCS_MULTILINE);
+        switch (newval) {
+          case quadrants::top: break;
+          case quadrants::bottom: iStyle |= TCS_BOTTOM; break;
+          case quadrants::left: iStyle |= TCS_VERTICAL; break;
+          default: iStyle |= (TCS_VERTICAL | TCS_RIGHT); break;
+        }
+        set_style_value(iStyle);
+      }
+
+      //! @brief gets the index of the active tab page
       size_t current_index() const {
         return static_cast<size_t>(::SendMessage(*this, TCM_GETCURSEL, 0, 0));
       }
 
+      //! @brief gets the active tab page
       const item& current_item() const { return _items[current_index()]; }
 
+      //! @brief gets the collection of tab pages
       item::collection& items() { return _items; }
+      //! @brief gets the collection of tab pages
       const item::collection& items() const { return _items; }
 
     protected:

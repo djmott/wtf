@@ -19,7 +19,7 @@ namespace wtf{
     template <typename, template <typename> typename...> friend struct window_impl;
 
     /// an implementation may use different window styles 
-    static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
+    static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY | WS_EX_CONTROLPARENT;
     static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_TABSTOP;
 
     virtual ~window() { if (_handle) ::DestroyWindow(_handle); _handle = nullptr; }

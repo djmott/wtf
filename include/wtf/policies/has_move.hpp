@@ -20,7 +20,6 @@ namespace wtf{
       @param[in] x,y new position of the window
       @param[in] width,height new size of the window
       @param[in] repaint indicates whether the window should be repainted
-      @{
       */
       void move(int x, int y, int width, int height, bool repaint = true)  {
         wtf::exception::throw_lasterr_if(::MoveWindow(*this, x, y, width, height, repaint ? TRUE : FALSE),
@@ -36,7 +35,6 @@ namespace wtf{
       void move(const rect<_frame>& position, bool repaint = true) {
         move(position.left, position.top, position.right - position.left, position.bottom - position.top, repaint);
       }
-      //! @}
 
       //! @brief Gets the windows left position relative to its parent
       virtual int left() const{
