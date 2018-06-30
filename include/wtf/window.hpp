@@ -119,7 +119,7 @@ namespace wtf{
     const std::type_info& type() const noexcept final { return typeid(_impl_t); }
 
     int run() override {
-      auto & oWC = _impl_t::window_class_type<window_proc>::get();
+      const auto & oWC = _impl_t::window_class_type<window_proc>::get();
       window::_handle = wtf::exception::throw_lasterr_if(
         ::CreateWindowEx(_impl_t::ExStyle, oWC.lpszClassName, nullptr, _impl_t::Style,
           CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, (window::_parent ? window::_parent->_handle : nullptr),

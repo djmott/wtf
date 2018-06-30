@@ -70,19 +70,6 @@ namespace wtf {
 
   }
 
-#if !DOXY_INVOKED
-
-  namespace _ {
-
-    TCHAR sANIMATE_CLASS[] = ANIMATE_CLASS;
-
-  }
-
-  template <WNDPROC window_proc>
-  struct window_class<controls::avi_player, window_proc> :
-    super_window_class<_::sANIMATE_CLASS, controls::avi_player, window_proc> {};
-#endif
-
 }
 #endif
 #endif
