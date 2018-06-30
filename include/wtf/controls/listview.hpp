@@ -26,6 +26,9 @@ namespace wtf {
       struct column;
 
       static constexpr DWORD Style = window::Style | LVS_REPORT | LVS_EDITLABELS | LVS_AUTOARRANGE | LVS_SORTASCENDING;
+      static constexpr TCHAR sub_window_class_name[] = WC_LISTVIEW;
+      static constexpr TCHAR window_class_name[] = _T("wtf_listview");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       enum class styles {
         icon = LVS_ICON,
@@ -329,9 +332,5 @@ namespace wtf {
     };
 
   }
-
-  namespace _ { TCHAR sWC_LISTVIEW[] = WC_LISTVIEW; }
-
-  template <WNDPROC window_proc> struct window_class<controls::listview, window_proc> : super_window_class<_::sWC_LISTVIEW, controls::listview, window_proc> {};
 
 }

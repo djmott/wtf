@@ -32,6 +32,10 @@ namespace wtf {
       policy::wm_command
     > {
     
+      static constexpr TCHAR sub_window_class_name[] = MONTHCAL_CLASS; 
+      static constexpr TCHAR window_class_name[] = _T("wtf_calendar"); 
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+
       rect<coord_frame::client> minimum_size() const {
         rect<coord_frame::client> r;
         wtf::exception::throw_lasterr_if(::SendMessage(*this, MCM_GETMINREQRECT, 0, reinterpret_cast<LPARAM>(&r)), [](LRESULT L) {return !L; });
@@ -40,14 +44,5 @@ namespace wtf {
     };
 
   }
-
-#if !DOXY_INVOKED
-  namespace _ {
-    TCHAR sMONTHCAL_CLASS[] = MONTHCAL_CLASS;
-  }
-
-  template <WNDPROC window_proc> struct window_class<controls::calendar, window_proc>
-    : super_window_class<_::sMONTHCAL_CLASS, controls::calendar, window_proc> {};
-#endif
-
+  
 }

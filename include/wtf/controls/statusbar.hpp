@@ -21,6 +21,10 @@ namespace wtf {
       policy::wm_notify
     > {
       static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | SBARS_TOOLTIPS | SBARS_SIZEGRIP;
+      static constexpr TCHAR sub_window_class_name[] = STATUSCLASSNAME;
+      static constexpr TCHAR window_class_name[] = _T("wtf_statusbar");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+
       /** @class part
       represents a section of a status bar
       */
@@ -130,7 +134,7 @@ namespace wtf {
     };
 
   }
-
+#if 0
   template <WNDPROC window_proc> struct window_class<controls::statusbar, window_proc> : super_window_class<controls::_::sSTATUSCLASSNAME, controls::statusbar, window_proc> {};
-  
+#endif
 }

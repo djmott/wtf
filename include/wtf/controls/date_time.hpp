@@ -23,7 +23,11 @@ namespace wtf {
       policy::has_text,
       policy::has_move
     > {
-    
+
+      static constexpr TCHAR sub_window_class_name[] = DATETIMEPICK_CLASS; 
+      static constexpr TCHAR window_class_name[] = _T("wtf_date_picker"); 
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+
     };
 
     /** @class time_picker
@@ -31,27 +35,18 @@ namespace wtf {
     @ingroup Controls
     @image html time_picker.png
     */
-    struct time_picker : date_picker {
+    struct time_picker : window_impl<time_picker,
+      policy::has_font,
+      policy::has_text,
+      policy::has_move
+    > {
       static constexpr DWORD Style = window::Style | DTS_TIMEFORMAT | DTS_UPDOWN;
+      static constexpr TCHAR sub_window_class_name[] = DATETIMEPICK_CLASS; 
+      static constexpr TCHAR window_class_name[] = _T("wtf_time_picker"); 
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
     };
 
 
   }
-
-#if !DOXY_INVOKED
-
-  namespace _ {
-    TCHAR sDATETIMEPICK_CLASS[] = DATETIMEPICK_CLASS;
-  }
-
-  template <WNDPROC window_proc>
-  struct window_class<controls::time_picker, window_proc> :
-    super_window_class<_::sDATETIMEPICK_CLASS, controls::time_picker, window_proc> {};
-
-  template <WNDPROC window_proc>
-  struct window_class<controls::date_picker, window_proc> :
-    super_window_class<_::sDATETIMEPICK_CLASS, controls::date_picker, window_proc> {};
-
-#endif
-
+  
 }

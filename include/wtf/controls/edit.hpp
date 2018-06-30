@@ -31,6 +31,14 @@ namespace wtf {
       policy::has_style
     > {
 
+#if WTF_USE_COMMON_CONTROLS
+      static constexpr TCHAR sub_window_class_name[] = WC_EDIT; 
+#else
+      static constexpr TCHAR sub_window_class_name[] =  _T("EDIT"); 
+#endif
+      static constexpr TCHAR window_class_name[] = _T("wtf_edit"); 
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+
       static const uint16_t default_input_limit = 32767;
     
       //! @brief makes the edit box read-only so user input is ignored
@@ -90,25 +98,5 @@ namespace wtf {
     };
     
   }
-
-#if !DOXY_INVOKED
-
-  namespace _ {
-#if WTF_USE_COMMON_CONTROLS
-    TCHAR sWC_EDIT[] = WC_EDIT;
-#else
-    TCHAR sWC_EDIT[] = _T("EDIT");
-#endif
-  }
-
-  template <WNDPROC window_proc>
-  struct window_class<controls::edit, window_proc> :
-    super_window_class<_::sWC_EDIT, controls::edit, window_proc> {};
-
-  template <WNDPROC window_proc>
-  struct window_class<controls::multiline_edit, window_proc> :
-    super_window_class<_::sWC_EDIT, controls::multiline_edit, window_proc> {};
-
-#endif
 
 }

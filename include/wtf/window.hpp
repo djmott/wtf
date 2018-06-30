@@ -18,8 +18,8 @@ namespace wtf{
   struct window{
     template <typename, template <typename> typename...> friend struct window_impl;
 
-    /// an implementation may use different window styles 
-    static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY | WS_EX_CONTROLPARENT;
+    static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
+
     static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_TABSTOP;
 
     virtual ~window() { if (_handle) ::DestroyWindow(_handle); _handle = nullptr; }
@@ -87,9 +87,7 @@ namespace wtf{
     virtual void fwd_msg(wtf::window_message&, const std::type_info&) = 0;
   };
   
-
-
-
+  
   template <typename _impl_t, template <typename> typename _head_t, template <typename> typename..._tail_t>
   struct window_impl<_impl_t, _head_t, _tail_t...> : DOXY_INHERIT_WINDOW _head_t<window_impl<_impl_t, _tail_t...>> {
     
@@ -115,15 +113,15 @@ namespace wtf{
     }
   };
 
-
-
+  
   template <typename _impl_t> struct window_impl<_impl_t> : window {
 
     const std::type_info& type() const noexcept final { return typeid(_impl_t); }
 
     int run() override {
+      auto & oWC = _impl_t::window_class_type<window_proc>::get();
       window::_handle = wtf::exception::throw_lasterr_if(
-        ::CreateWindowEx(_impl_t::ExStyle, window_class_type::get().name(), nullptr, _impl_t::Style,
+        ::CreateWindowEx(_impl_t::ExStyle, oWC.lpszClassName, nullptr, _impl_t::Style,
           CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, (window::_parent ? window::_parent->_handle : nullptr),
           nullptr, instance_handle(), this), [](HWND h) noexcept { return nullptr == h; });
       this->on_created();
@@ -133,23 +131,10 @@ namespace wtf{
   protected:
     template <typename, template <typename> typename...> friend struct window_impl;
 
-    void handle_msg(wtf::window_message& msg) override {}
-
-    void fwd_msg(wtf::window_message& msg, const std::type_info&) override {
-      if (msg.bhandled) return;
-      if (msg.hwnd != _handle) return;
-      msg.lresult = CallWindowProc(window_class_type::get().default_window_proc(), msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
-      msg.bhandled = true;
-      if (WM_DESTROY == msg.umsg) {
-        SetWindowLongPtr(msg.hwnd, window_class_type::get().window_extra_offset(), 0);
-        _handle = nullptr;
-        _parent = nullptr;
-      }
-    }
-
-    /* messages arrive here from windows then are propagated from the implementation, through the
-    * inheritance chain and back through all the handle_message overrides in order from the
-    * bottom most inherited (_ImplT::handle_message) to top most parent (this class::handle_message)
+    /* @brief The main message handler of WTF controls and forms.
+    @details messages arrive here from windows then are propagated from the implementation, through the
+    inheritance chain and back through all the handle_message overrides in order from the
+    bottom most inherited (_ImplT::handle_message) to top most parent (this class::handle_message)
     */
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
 
@@ -159,6 +144,7 @@ namespace wtf{
       sMsg += _T(" ") + wtf::_::msg_name(umsg) + _T("\n");
       OutputDebugString(sMsg.c_str());
 #endif
+      using wc = typename _impl_t::window_class_type<window_proc>;
 
       try {
         _impl_t * pThis = nullptr;
@@ -169,25 +155,26 @@ namespace wtf{
           pThis = reinterpret_cast<_impl_t*>(pCreate->lpCreateParams);
           assert(pThis);
           pThis->_handle = hwnd;
-          SetWindowLongPtr(hwnd, window_class_type::get().window_extra_offset(), reinterpret_cast<LONG_PTR>(pThis));
+          SetWindowLongPtr(hwnd, wc::get().window_extra_offset(), reinterpret_cast<LONG_PTR>(pThis));
           if (WM_CREATE == umsg) {
             for (auto pChild : pThis->children()) {
               pChild->run();
             }
           }
-        } else {
-          pThis = reinterpret_cast<_impl_t*>(GetWindowLongPtr(hwnd, window_class_type::get().window_extra_offset()));
+        }
+        else {
+          pThis = reinterpret_cast<_impl_t*>(GetWindowLongPtr(hwnd, wc::get().window_extra_offset()));
         }
 
-        if (!pThis) return CallWindowProc(window_class_type::get().default_window_proc(), hwnd, umsg, wparam, lparam);
+        if (!pThis) return CallWindowProc(wc::get().default_window_proc(), hwnd, umsg, wparam, lparam);
 
         wtf::window_message msg{ hwnd, umsg, wparam, lparam, false, 0 };
 
-        if (WM_COMMAND == umsg || 
-          WM_NOTIFY == umsg || 
+        if (WM_COMMAND == umsg ||
+          WM_NOTIFY == umsg ||
           WM_MENUSELECT == umsg ||
           WM_INITMENU == umsg ||
-          WM_EXITMENULOOP == umsg || 
+          WM_EXITMENULOOP == umsg ||
           WM_ENTERMENULOOP == umsg ||
           WM_MENUCOMMAND == umsg) {
           //legacy control notification messages sent to parent window. Forward them back to the originating control
@@ -203,7 +190,7 @@ namespace wtf{
           }
         };
         if (!msg.bhandled) pThis->fwd_msg(msg, typeid(bool));
-        if (!msg.bhandled) return CallWindowProc(window_class_type::get().default_window_proc(), hwnd, umsg, wparam, lparam);
+        if (!msg.bhandled) return CallWindowProc(wc::get().default_window_proc(), hwnd, umsg, wparam, lparam);
         return msg.lresult;
       }
       catch (const wtf::exception& ex) {
@@ -217,9 +204,22 @@ namespace wtf{
       }
     }
 
-    using window_class_type = window_class<_impl_t, &window_impl<_impl_t>::window_proc>;
+    void handle_msg(wtf::window_message& msg) override {}
+
+    void fwd_msg(wtf::window_message& msg, const std::type_info&) override {
+      if (msg.bhandled) return;
+      if (msg.hwnd != _handle) return;
+      auto & oWC = typename _impl_t::window_class_type<window_proc>::get();
+      msg.lresult = CallWindowProc(oWC.default_window_proc(), msg.hwnd, msg.umsg, msg.wparam, msg.lparam);
+      msg.bhandled = true;
+      if (WM_DESTROY == msg.umsg) {
+        SetWindowLongPtr(msg.hwnd, typename _impl_t::window_class_type<window_proc>::get().window_extra_offset(), 0);
+        _handle = nullptr;
+        _parent = nullptr;
+      }
+    }
+
+
 
   };
-
-
 }

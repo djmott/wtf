@@ -6,8 +6,33 @@
 namespace wtf {
 
   namespace policy {
-    template <typename _super_t>
-    struct isa_form : _super_t {
+    template <typename _impl_t>
+    struct form_impl : window_impl < _impl_t,
+      policy::has_background,
+      policy::has_cursor,
+      policy::has_icon,
+      policy::has_titlebar,
+      policy::has_size,
+      policy::has_move,
+      policy::has_show,
+      policy::has_close,
+      policy::has_invalidate,
+      policy::wm_destroy,
+      policy::wm_create,
+      policy::wm_size,
+      policy::wm_close,
+      policy::wm_showwindow,
+      policy::wm_activate,
+      policy::wm_paint,
+      policy::wm_erasebkgnd,
+      policy::wm_setcursor,
+      policy::wm_notifyformat,
+      policy::wm_getminmaxinfo
+    >{
+
+      static constexpr TCHAR window_class_name[] = _T("wtf_form"); 
+
+      template <WNDPROC wp> using window_class_type = window_class<window_class_name, wp>;
 
       int top() const override {
         return rect<coord_frame::screen>::get(*this).top;
@@ -29,6 +54,13 @@ namespace wtf {
 
       void close() noexcept override { ::DestroyWindow(*this); }
 
+      int run() override final {
+        message oMsg;
+        __super::run();
+        auto iRet = oMsg.pump(*this);
+        return iRet;
+      }
+
     protected:
 
       void on_wm_destroy() override {
@@ -43,77 +75,45 @@ namespace wtf {
           }
         }
         if (bQuit) ::PostQuitMessage(0);
-        _super_t::on_wm_destroy();
-        _super_t::_handle = nullptr;
+        __super::on_wm_destroy();
+        __super::_handle = nullptr;
       }
 
       void on_wm_create() override {
         std::unique_lock<std::mutex> oLock(wtf::_::_active_forms_lock());
         wtf::_::_active_forms().push_back(this);
-        _super_t::on_wm_create();
+        __super::on_wm_create();
       }
 
     };
   }
 
 
-  template <typename _impl_t,  DWORD _ExStyle, DWORD _Style> struct form_impl : window_impl < form_impl<_impl_t, _ExStyle, _Style>,
-    policy::isa_form,
-    policy::has_background,
-    policy::has_cursor,
-    policy::has_icon,
-    policy::has_titlebar,
-    policy::has_size,
-    policy::has_move,
-    policy::has_show,
-    policy::has_close,
-    policy::has_invalidate,
-    policy::wm_destroy,
-    policy::wm_create,
-    policy::wm_size,
-    policy::wm_close,
-    policy::wm_showwindow,
-    policy::wm_activate,
-    policy::wm_paint,
-    policy::wm_erasebkgnd,
-    policy::wm_setcursor,
-    policy::wm_notifyformat,
-    policy::wm_getminmaxinfo
-  > {
-
-    static constexpr DWORD ExStyle = _ExStyle;
-    static constexpr DWORD Style = _Style;
-
-    form_impl() = default;
-
-    int run() override final {
-      message oMsg;
-      __super::run();
-      auto iRet = oMsg.pump(*this);
-      return iRet;
-    }
-
-  protected:
-
-
-  };
 
   /** @class form
   @ingroup Controls
   @brief A parent window with a sizable border, title bar, control box, system menu, minimize and maximize
   */
-  struct form : form_impl<form, WS_EX_OVERLAPPEDWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW > {};
+  struct form : policy::form_impl <form> {
+    static constexpr DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW;
+    static constexpr DWORD Style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
+  };
 
   /** @class dialog
   @ingroup Controls
   @brief A parent window with a fixed border, title bar and system menu.
   */
-  struct dialog : form_impl<dialog, WS_EX_DLGMODALFRAME, WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE > {};
-
+  struct dialog : policy::form_impl < dialog> {
+    static constexpr DWORD ExStyle = WS_EX_DLGMODALFRAME;
+    static constexpr DWORD Style = WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE;
+  };
   /** @class tool_window
   @ingroup Controls
   @brief A parent window with a sizable border and title bar.
   */
-  struct tool_window : form_impl<tool_window, WS_EX_TOOLWINDOW, WS_VISIBLE | WS_OVERLAPPEDWINDOW > {};
+  struct tool_window : policy::form_impl <tool_window> {
+    static constexpr DWORD ExStyle = WS_EX_TOOLWINDOW;
+    static constexpr DWORD Style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
+  };
   
 }

@@ -24,7 +24,11 @@ namespace wtf {
       policy::has_move
     > {
 
-      enum class modifiers : uint8_t{
+      static constexpr TCHAR sub_window_class_name[] = HOTKEY_CLASS;
+      static constexpr TCHAR window_class_name[] = _T("wtf_hotkey");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+
+      enum class modifiers : uint8_t {
         none = 0,
         shift = HOTKEYF_SHIFT,
         ctrl = HOTKEYF_CONTROL,
@@ -58,15 +62,4 @@ namespace wtf {
 
   }
 
-#if !DOXY_INVOKED
-
-  namespace _ {
-    TCHAR sHOTKEY_CLASS[] = HOTKEY_CLASS;
-  }
-  
-  template <WNDPROC window_proc>
-  struct window_class<controls::hotkey, window_proc> :
-    super_window_class<_::sHOTKEY_CLASS, controls::hotkey, window_proc> {};
-
-#endif
 }

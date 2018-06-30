@@ -25,6 +25,10 @@ namespace wtf {
       policy::wm_size
     > {
       
+      static const DWORD ExStyle = window::ExStyle | WS_EX_CONTROLPARENT;
+      static constexpr TCHAR sub_window_class_name[] = WC_TABCONTROL;
+      static constexpr TCHAR window_class_name[] = _T("wtf_tab");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
 
       /** @class item
@@ -176,11 +180,4 @@ namespace wtf {
 
   }
 
-#if !DOXY_INVOKED
-
-  namespace _ { TCHAR sWC_TABCONTROL[] = WC_TABCONTROL; }
-
-  template <WNDPROC window_proc> struct window_class<controls::tab, window_proc> : super_window_class<_::sWC_TABCONTROL, controls::tab, window_proc> {};
-
-#endif
 }

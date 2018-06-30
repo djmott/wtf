@@ -34,6 +34,14 @@ namespace wtf {
       policy::wm_command
     > {
 
+#if WTF_USE_COMMON_CONTROLS
+      static constexpr TCHAR sub_window_class_name[] = WC_STATIC;
+#else
+      static constexpr TCHAR sub_window_class_name[] =  _T("STATIC");
+#endif
+      static constexpr TCHAR window_class_name[] = _T("wtf_label");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+
       //! @brief gets the text horizontal alignment 
       text_horizontal_alignments alignment() const { 
         if (get_style_bit<SS_LEFT>()) return text_horizontal_alignments::left;
@@ -75,19 +83,4 @@ namespace wtf {
     
   }
 
-
-#if !DOXY_INVOKED
-
-  namespace _ {
-#if WTF_USE_COMMON_CONTROLS
-    TCHAR sWC_STATIC[] = WC_STATIC;
-#else
-    TCHAR sWC_STATIC[] = _T("STATIC");
-#endif
-  }
-
-  template <WNDPROC window_proc> struct window_class<controls::label, window_proc> 
-    : super_window_class<_::sWC_STATIC, controls::label, window_proc> {};
-
-#endif
 }

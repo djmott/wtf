@@ -27,7 +27,10 @@ namespace wtf {
       wtf::policy::wm_mouse_up,
       wtf::policy::wm_ncpaint,
       wtf::policy::wm_nccalcsize
-    > {};
+    > {
+      static constexpr TCHAR window_class_name[] = _T("wtf_panel");
+      template <WNDPROC wp> using window_class_type = window_class<window_class_name, wp>;
+    };
 
   }
 }

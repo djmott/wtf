@@ -35,6 +35,11 @@ namespace wtf {
 
       static constexpr DWORD Style = window::Style | (_multiline ? ES_MULTILINE : 0);
 
+      static constexpr TCHAR window_class_name[] = _T("wtf_richedit");
+      static constexpr TCHAR sub_window_class_name[] = MSFTEDIT_CLASS;
+
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+
       richedit() : _hdll(nullptr){
         _hdll = wtf::exception::throw_lasterr_if(::LoadLibrary(_T("msftedit.dll")), [](HMODULE h) { return nullptr == h; });
       }
@@ -189,6 +194,7 @@ namespace wtf {
       void character_format(const character_formatting& newval) {
         wtf::exception::throw_lasterr_if(::SendMessage(*this, EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&newval)), [](LRESULT l) { return !l; });
       }
+
     protected:
       HMODULE _hdll;
 
@@ -206,9 +212,9 @@ namespace wtf {
     };
 
   }
-
+#if 0
   template <bool _multiline, WNDPROC window_proc>
   struct window_class<controls::richedit<_multiline>, window_proc> :
     super_window_class<controls::_::sMSFTEDIT_CLASS, controls::richedit<_multiline>, window_proc> {};
-
+#endif
 }

@@ -14,14 +14,10 @@
   DOXY_INHERIT_WM_COMMAND
 
 namespace wtf {
-  namespace controls {
 
-    /** @class button
-    @brief A standard clickable push style button.
-    @ingroup Controls
-    @image html button.png
-    */
-    struct button : DOXY_INHERIT_BUTTON_SUPER window_impl<button,
+  namespace policy {
+    template <typename _impl_t>
+    struct button_impl : DOXY_INHERIT_BUTTON_SUPER window_impl<_impl_t,
       policy::has_text,
       policy::has_font,
       policy::has_enable,
@@ -30,11 +26,32 @@ namespace wtf {
       policy::has_style,
       policy::wm_command
     > {
+#if WTF_USE_COMMON_CONTROLS
+      static constexpr TCHAR sub_window_class_name[] = WC_BUTTON;
+#else
+      static constexpr TCHAR sub_window_class_name[] = _T("BUTTON");
+#endif
+
+
       size ideal_size() const {
         size oRet;
         wtf::exception::throw_lasterr_if(::SendMessage(*this, BCM_GETIDEALSIZE, 0, reinterpret_cast<LPARAM>(&oRet)), [](LRESULT l) { return !l; });
         return oRet;
       }
+    };
+
+  }
+
+  namespace controls {
+
+    /** @class button
+    @brief A standard clickable push style button.
+    @ingroup Controls
+    @image html button.png
+    */
+    struct button : policy::button_impl<button>{
+      static constexpr TCHAR window_class_name[] = _T("wtf_button"); 
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
     };
   
 
@@ -43,7 +60,9 @@ namespace wtf {
     @ingroup Controls
     @image html checkbox.png
     */
-    struct checkbox : button {
+    struct checkbox : policy::button_impl<checkbox> {
+      static constexpr TCHAR window_class_name[] = _T("wtf_checkbox"); 
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       static constexpr DWORD Style = window::Style | BS_AUTOCHECKBOX;
     };
 
@@ -54,7 +73,9 @@ namespace wtf {
     @ingroup Controls
     @image html radio_button.png
     */
-    struct radio_group : button {
+    struct radio_group : policy::button_impl<radio_group> {
+      static constexpr TCHAR window_class_name[] = _T("wtf_radio_group"); 
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON | WS_GROUP;
     };
 
@@ -64,7 +85,9 @@ namespace wtf {
     @ingroup Controls
     @image html radio_button.png
     */
-    struct radio_button : button {
+    struct radio_button : policy::button_impl<radio_button> {
+      static constexpr TCHAR window_class_name[] = _T("wtf_radio_button");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON;
     };
 
@@ -74,25 +97,12 @@ namespace wtf {
     @ingroup Controls
      @image html tristate.png
    */
-    struct tristate : button {
+    struct tristate : policy::button_impl<tristate> {
+      static constexpr TCHAR window_class_name[] = _T("wtf_tristate"); 
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       static constexpr DWORD Style = window::Style | BS_AUTO3STATE;
     };
 
   }
 
-#if !DOXY_INVOKED
-  namespace _ {
-#if WTF_USE_COMMON_CONTROLS
-    TCHAR sWC_BUTTON[] = WC_BUTTON;
-#else
-    TCHAR sWC_BUTTON[] = _T("BUTTON");
-#endif
-  }
-
-  template <WNDPROC window_proc> struct window_class<controls::button, window_proc> : super_window_class<_::sWC_BUTTON, controls::button, window_proc> {};
-  template <WNDPROC window_proc> struct window_class<controls::checkbox, window_proc> : super_window_class<_::sWC_BUTTON, controls::checkbox, window_proc> {};
-  template <WNDPROC window_proc> struct window_class<controls::radio_button, window_proc> : super_window_class<_::sWC_BUTTON, controls::radio_button, window_proc> {};
-  template <WNDPROC window_proc> struct window_class<controls::radio_group, window_proc> : super_window_class<_::sWC_BUTTON, controls::radio_group, window_proc> {};
-  template <WNDPROC window_proc> struct window_class<controls::tristate, window_proc> : super_window_class<_::sWC_BUTTON, controls::tristate, window_proc> {};
-#endif
 }

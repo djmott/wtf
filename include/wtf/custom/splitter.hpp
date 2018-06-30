@@ -15,6 +15,8 @@ namespace wtf {
     > {
 
       static constexpr DWORD Style = WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN;
+      static constexpr TCHAR window_class_name[] = _T("wtf_splitter");
+      template <WNDPROC wp> using window_class_type = window_class<window_class_name, wp>;
 
       template <typename _first_t, typename _second_t>
       splitter(_first_t& first, _second_t& second) : slider(this), _first(&first), _second(&second) {
@@ -60,6 +62,8 @@ namespace wtf {
         friend struct splitter;
 
         static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
+        static constexpr TCHAR window_class_name[] = _T("wtf_slider");
+        template <WNDPROC wp> using window_class_type = window_class<window_class_name, wp>;
 
         slider_t(splitter * Parent) : _splitter(Parent) {}
         splitter * _splitter;

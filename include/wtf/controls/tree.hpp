@@ -6,17 +6,6 @@
 namespace wtf {
   namespace controls {
 
-    namespace _ { 
-      
-      TCHAR sWC_TREEVIEW[] = WC_TREEVIEW;
-
-      template <typename _impl_t> using tree_impl = window_impl<_impl_t,
-        policy::has_font,
-        wtf::policy::has_move,
-        wtf::policy::wm_notify
-      >;
-
-    }
 
     /** @class tree
     @ingroup Controls
@@ -27,6 +16,10 @@ namespace wtf {
       wtf::policy::has_move,
       wtf::policy::wm_notify
     > {
+
+      static constexpr TCHAR sub_window_class_name[] = WC_TREEVIEW;
+      static constexpr TCHAR window_class_name[] = _T("wtf_tree");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       tree() : _items(this, nullptr){}
 
@@ -117,14 +110,12 @@ namespace wtf {
         else if (NM_DBLCLK == notification->code) OnDblClick(this);
         else if (TVN_BEGINLABELEDIT == notification->code) OnBeginEdit(this);
         else if (TVN_ENDLABELEDIT == notification->code) OnEndEdit(this);
-        _::tree_impl<tree>::on_wm_notify(notification);
+        __super::on_wm_notify(notification);
       }
 
     };
 
   }
-
-  template <WNDPROC window_proc> struct window_class<controls::tree, window_proc> : super_window_class<controls::_::sWC_TREEVIEW, controls::tree, window_proc> {};
 
 }
 

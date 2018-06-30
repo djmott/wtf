@@ -34,6 +34,13 @@ namespace wtf {
       policy::wm_command
     > {
 
+#if WTF_USE_COMMON_CONTROLS
+      static constexpr TCHAR sub_window_class_name[] = WC_LISTBOX;
+#else
+      static constexpr TCHAR sub_window_class_name[] = LISTBOX;
+#endif
+      static constexpr TCHAR window_class_name[] = _T("wtf_listbox");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       struct item {
         using pointer = std::shared_ptr<item>;
@@ -62,7 +69,7 @@ namespace wtf {
   }
 
 
-#if !DOXY_INVOKED
+#if 0
 
   namespace _ {
 #if WTF_USE_COMMON_CONTROLS
