@@ -4,8 +4,8 @@
 #pragma once
 
 namespace wtf{
+  namespace messages {
 
-  namespace policy{
     template <typename _super_t>
     struct wm_erasebkgnd : _super_t{
       
@@ -22,8 +22,6 @@ namespace wtf{
       void handle_msg(wtf::window_message& msg) override {
         if (WM_ERASEBKGND != msg.umsg) return;
         on_wm_erasebkgnd(device_context::get_client(*this), rect<coord_frame::client>::get(*this));
-        msg.lresult = TRUE;
-        msg.bhandled = true;
       }
 
     };

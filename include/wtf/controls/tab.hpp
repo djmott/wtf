@@ -17,19 +17,19 @@ namespace wtf {
     @brief A tab control is analogous to the dividers in a notebook or the labels in a file cabinet. By using a tab control, an application can define multiple pages for the same area of a window or dialog box.
     @ingroup Controls
     */
+
     struct tab : DOXY_INHERIT_TAB_SUPER window_impl<tab,
-      policy::has_font,
+       policy::has_font,
       policy::has_move,
       policy::has_style,
-      policy::wm_notify,
-      policy::wm_size
+      messages::wm_notify,
+      messages::wm_size
     > {
-      
       static const DWORD ExStyle = window::ExStyle | WS_EX_CONTROLPARENT;
+
       static constexpr TCHAR sub_window_class_name[] = WC_TABCONTROL;
       static constexpr TCHAR window_class_name[] = _T("wtf_tab");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
-
 
       /** @class item
       @brief represents a single page in the tab control
@@ -141,24 +141,26 @@ namespace wtf {
       item::collection _items;
 
       void on_wm_size(wm_size_flags flags, const point<coord_frame::client>& p) override {
-        resize_children();
+         resize_children();
         __super::on_wm_size(flags, p);
       }
 
       void resize_children() {
         if (!_items._inner.size()) return;
-        const auto i = current_index();
-        if (-1 == i) return;
-
-        for (const auto & Item : _items._inner) {
-          if (Item->_window) wtf::exception::throw_lasterr_if(::SetWindowPos(*Item->_window, HWND_BOTTOM, 0, 0, 0, 0, SWP_HIDEWINDOW | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE), [](BOOL b) { return !b; });
-        }
-
+        const auto x = current_index();
+        if (-1 == x) return;
         auto r = wtf::rect<coord_frame::client>::get(*this);
         ::SendMessage(*this, TCM_ADJUSTRECT, FALSE, reinterpret_cast<LPARAM>(&r));
-        const auto & Item = _items[i];
-        if (Item._window) {
-          wtf::exception::throw_lasterr_if(::SetWindowPos(*Item._window, HWND_TOP, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_SHOWWINDOW), [](BOOL b) { return !b; });
+
+        for (size_t i = 0; i < _items._inner.size(); ++i) {
+          auto & oItem = _items._inner[i];
+          if (!oItem->_window) continue;
+          if (i == x) {
+            ::ShowWindow(*oItem->_window, SW_SHOW);
+            wtf::exception::throw_lasterr_if(::SetWindowPos(*oItem->_window, HWND_TOP, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_SHOWWINDOW), [](BOOL b) { return !b; });
+          } else {
+            ::ShowWindow(*oItem->_window, SW_HIDE);
+          }
         }
       }
 
@@ -175,7 +177,6 @@ namespace wtf {
           msg.bhandled = true;
         }
       }
-
     };
 
   }

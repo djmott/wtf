@@ -12,18 +12,18 @@ namespace wtf{
     template <typename _super_t>
     struct has_timer : _super_t{
 
-      UINT_PTR set_timer(UINT elapse)  {
+      virtual UINT_PTR set_timer(UINT elapse)  {
         _next_timer_id++;
         return wtf::exception::throw_lasterr_if(::SetTimer(*this, _next_timer_id, elapse, nullptr),
                                                 [](UINT_PTR x)noexcept { return !x; });
       }
 
-      void set_timer(UINT elapse, UINT_PTR timer_id)  {
+      virtual void set_timer(UINT elapse, UINT_PTR timer_id)  {
         wtf::exception::throw_lasterr_if(::SetTimer(*this, timer_id, elapse, nullptr),
                                          [](UINT_PTR x)noexcept { return !x; });
       }
 
-      void kill_timer(UINT_PTR timer_id)  {
+      virtual void kill_timer(UINT_PTR timer_id)  {
         wtf::exception::throw_lasterr_if(::KillTimer(*this, timer_id), [](BOOL x)noexcept { return !x; });
       }
 

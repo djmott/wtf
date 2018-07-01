@@ -30,8 +30,8 @@ namespace wtf {
       policy::has_move,
       policy::has_size,
       policy::has_style,
-      policy::wm_size,
-      policy::wm_command
+      messages::wm_size,
+      messages::wm_command
     > {
 
 #if WTF_USE_COMMON_CONTROLS
@@ -68,19 +68,4 @@ namespace wtf {
 
   }
 
-
-#if 0
-
-  namespace _ {
-#if WTF_USE_COMMON_CONTROLS
-    TCHAR sWC_LISTBOX[] = WC_LISTBOX;
-#else
-    TCHAR sWC_LISTBOX[] = _T("LISTBOX ");
-#endif
-  }
-
-  template <WNDPROC window_proc> struct window_class<controls::listbox, window_proc>
-    : super_window_class<_::sWC_LISTBOX, controls::listbox, window_proc> {};
-
-#endif
 }

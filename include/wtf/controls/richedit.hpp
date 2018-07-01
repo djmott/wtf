@@ -6,12 +6,6 @@
 namespace wtf {
   namespace controls {
 
-    namespace _ {
-
-      TCHAR sMSFTEDIT_CLASS[] = MSFTEDIT_CLASS;
-
-    }
-
     /** @class richedit
     @ingroup Controls
     @brief A rich edit control enables the user to enter, edit, print, and save text.
@@ -26,9 +20,9 @@ namespace wtf {
       policy::has_style,
       policy::has_exstyle,
       policy::has_move,
-      policy::nm_killfocus,
-      policy::nm_setfocus,
-      policy::wm_notify
+      messages::nm_killfocus,
+      messages::nm_setfocus,
+      messages::wm_notify
     > {
 
       using char_range = std::tuple<uint32_t, uint32_t>;
@@ -212,9 +206,5 @@ namespace wtf {
     };
 
   }
-#if 0
-  template <bool _multiline, WNDPROC window_proc>
-  struct window_class<controls::richedit<_multiline>, window_proc> :
-    super_window_class<controls::_::sMSFTEDIT_CLASS, controls::richedit<_multiline>, window_proc> {};
-#endif
+
 }

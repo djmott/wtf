@@ -16,10 +16,10 @@ namespace wtf{
     struct has_focus : _super_t{
 
       //! @brief Sets input focus on the window
-      void set_focus() const  { wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h)noexcept { return !h; }); }
+      virtual void set_focus() const  { wtf::exception::throw_lasterr_if(::SetFocus(*this), [](HWND h)noexcept { return !h; }); }
 
       //! @brief Determines if the window has input focus
-      bool got_focus() const{ return _super_t::_handle == ::GetFocus(); }
+      virtual bool got_focus() const{ return _super_t::_handle == ::GetFocus(); }
 
     };
   }

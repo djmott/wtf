@@ -5,7 +5,8 @@
 
 namespace wtf{
 
-  namespace policy{
+  namespace messages {
+
     template <typename _super_t>
     struct wm_keyup : _super_t{
 

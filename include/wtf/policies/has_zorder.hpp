@@ -16,10 +16,10 @@ namespace wtf{
     template <typename _super_t>
     struct has_zorder : _super_t{
 
-      void zorder(zorders pos)  {
+      virtual void zorder(zorders pos)  {
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, reinterpret_cast<HWND>(pos), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b)noexcept { return !b; });
       }
-      void zorder(HWND insert_after)  {
+      virtual void zorder(HWND insert_after)  {
         wtf::exception::throw_lasterr_if(::SetWindowPos(*this, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS), [](BOOL b)noexcept { return !b; });
       }
 

@@ -18,15 +18,15 @@ namespace wtf {
       wtf::policy::has_background,
       wtf::policy::has_invalidate,
       wtf::policy::has_zorder,
-      wtf::policy::wm_erasebkgnd,
-      wtf::policy::wm_enable,
-      wtf::policy::wm_size,
-      wtf::policy::wm_paint,
-      wtf::policy::wm_create,
-      wtf::policy::wm_mouse_down,
-      wtf::policy::wm_mouse_up,
-      wtf::policy::wm_ncpaint,
-      wtf::policy::wm_nccalcsize
+      wtf::messages::wm_erasebkgnd,
+      wtf::messages::wm_enable,
+      wtf::messages::wm_size,
+      wtf::messages::wm_paint,
+      wtf::messages::wm_create,
+      wtf::messages::wm_mouse_down,
+      wtf::messages::wm_mouse_up,
+      wtf::messages::wm_ncpaint,
+      wtf::messages::wm_nccalcsize
     > {
       static constexpr TCHAR window_class_name[] = _T("wtf_panel");
       template <WNDPROC wp> using window_class_type = window_class<window_class_name, wp>;

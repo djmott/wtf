@@ -26,7 +26,7 @@ namespace wtf {
       policy::has_border,
       policy::has_font,
       policy::has_text,
-      policy::wm_command,
+      messages::wm_command,
       policy::has_move
     >{
 

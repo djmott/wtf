@@ -4,7 +4,7 @@
 #pragma once
 
 namespace wtf {
-  namespace policy {
+  namespace messages {
     template <typename _super_t>
     struct nm_setfocus : _super_t {
 

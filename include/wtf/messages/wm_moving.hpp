@@ -4,8 +4,8 @@
 #pragma once
 
 namespace wtf{
+  namespace messages {
 
-  namespace policy{
     template <typename _SuperT>
     struct wm_moving : _SuperT{
 

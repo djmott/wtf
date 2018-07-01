@@ -26,7 +26,7 @@ namespace wtf {
         @brief Sets the border style
         @param[in] newval new border style
          */
-        void border(border_styles newval) {
+        virtual void border(border_styles newval) {
           auto style = wtf::exception::throw_lasterr_if(::GetWindowLongPtr(*this, GWL_STYLE), [](LONG_PTR l) { return !l; });
           auto exstyle = wtf::exception::throw_lasterr_if(::GetWindowLongPtr(*this, GWL_EXSTYLE), [](LONG_PTR l) { return !l; });
           style &= ~WS_BORDER;
@@ -47,7 +47,7 @@ namespace wtf {
         /**
         @brief Gets the border style
         */
-        border_styles border() const {
+        virtual border_styles border() const {
           auto style = wtf::exception::throw_lasterr_if(::GetWindowLongPtr(*this, GWL_STYLE), [](LONG_PTR l) { return !l; });
           auto exstyle = wtf::exception::throw_lasterr_if(::GetWindowLongPtr(*this, GWL_EXSTYLE), [](LONG_PTR l) { return !l; });
           if (style & WS_BORDER) return border_styles::single;

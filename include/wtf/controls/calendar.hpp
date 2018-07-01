@@ -28,8 +28,8 @@ namespace wtf {
       policy::has_enable,
       policy::has_move,
       policy::has_size,
-      policy::wm_size,
-      policy::wm_command
+      messages::wm_size,
+      messages::wm_command
     > {
     
       static constexpr TCHAR sub_window_class_name[] = MONTHCAL_CLASS; 

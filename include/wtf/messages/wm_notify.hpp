@@ -6,8 +6,7 @@
 #define DOXY_INHERIT_WM_NOTIFY
 
 namespace wtf {
-
-  namespace policy {
+  namespace messages {
 
     template <typename _super_t>
     struct wm_notify : _super_t {

@@ -24,8 +24,10 @@ struct ListViews : wtf::custom::splitter {
       setup(_lv2);
     };
 
-    OnShow += [this](...) {
-      if (!_init) set_split_relative(50);
+    OnSize += [this](window * sender, wm_size_flags, const point<coord_frame::client>& size) {
+      if (_init) return;
+      set_split_absolute(size.y / 2);
+      _init = size.x && size.y;
     };
   }
   bool _init = false;

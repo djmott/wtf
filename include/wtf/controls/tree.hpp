@@ -14,7 +14,7 @@ namespace wtf {
     struct tree : window_impl<tree,
       policy::has_font,
       wtf::policy::has_move,
-      wtf::policy::wm_notify
+      wtf::messages::wm_notify
     > {
 
       static constexpr TCHAR sub_window_class_name[] = WC_TREEVIEW;

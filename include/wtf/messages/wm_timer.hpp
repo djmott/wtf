@@ -4,7 +4,8 @@
 #pragma once
 
 namespace wtf{
-  namespace policy{
+  namespace messages {
+
     template <typename _super_t> struct wm_timer : _super_t{
 
       callback<void(window * sender, UINT_PTR timer_id)> OnTimer;

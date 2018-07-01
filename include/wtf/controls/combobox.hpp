@@ -24,7 +24,7 @@ namespace wtf {
       policy::has_enable,
       policy::has_move,
       policy::has_style,
-      policy::wm_command
+      messages::wm_command
     > {
 
 #if WTF_USE_COMMON_CONTROLS

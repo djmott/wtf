@@ -4,10 +4,8 @@
 #pragma once
 
 namespace wtf{
-
-
-  namespace policy{
-    /** produces OnMouseLeave event 
+  namespace messages {
+    /** @brief produces OnMouseLeave event 
     */
     template <typename _super_t>
     struct wm_ncmouse_leave : _super_t{

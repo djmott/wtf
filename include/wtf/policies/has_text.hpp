@@ -17,14 +17,14 @@ namespace wtf {
     struct has_text : _super_t {
 
       //! @brief Sets the window text
-      void text(const tstring& newval) {
+      virtual void text(const tstring& newval) {
         wtf::exception::throw_lasterr_if(SetWindowText(*this, newval.c_str()), [](BOOL b) { return !b; });
       }
 
       //! @brief Gets the window text
-      tstring text() const {
+      virtual tstring text() const {
         tstring ret(GetWindowTextLength(*this), 0);
-        GetWindowText(*this, &ret[0], ret.size());
+        GetWindowText(*this, &ret[0], static_cast<int>(ret.size()));
         return ret;
       }
 

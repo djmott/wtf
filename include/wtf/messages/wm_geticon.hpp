@@ -10,7 +10,8 @@ namespace wtf{
     small2_icon = ICON_SMALL2,
   };
 
-  namespace policy{
+  namespace messages {
+
     template <typename _super_t>
     struct wm_geticon : _super_t{
 

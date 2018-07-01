@@ -6,7 +6,7 @@
 #define DOXY_INHERIT_WM_COMMAND
 
 namespace wtf {
-  namespace policy {
+  namespace messages {
 
     /** @class wm_command
     @brief WM_COMMAND message handler

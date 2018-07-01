@@ -4,8 +4,8 @@
 #pragma once
 
 namespace wtf{
+  namespace messages {
 
-  namespace policy{
     template <typename _super_t>
     struct wm_nccalcsize : _super_t{
 

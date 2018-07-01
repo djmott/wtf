@@ -17,7 +17,7 @@ namespace wtf{
       
       //! @brief invalidates the window causing it to be repainted
       //! @param[in] EraseBackground Set to true to also invalidate the background
-      void invalidate(bool EraseBackground = true)  {
+      virtual void invalidate(bool EraseBackground = true)  {
         if (_super_t::_handle) {
           wtf::exception::throw_lasterr_if(
             ::InvalidateRect(_super_t::_handle, nullptr, (EraseBackground ? TRUE : FALSE)),

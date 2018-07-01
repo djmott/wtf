@@ -3,7 +3,7 @@
 */
 
 #define WTF_USE_COMMON_CONTROLS 1
-#define WTF_USE_VISUAL_STYLES 0
+#define WTF_USE_VISUAL_STYLES 1
 #define WTF_USE_RICHEDIT 1
 #define WTF_DEBUG_MESSAGES 1
 
@@ -32,6 +32,7 @@ struct frmMain : form {
     _tab.add(_progressbars);
     _tab.add(_trees);
     OnCreated += [this](...) {
+      _tab.recieves_focus(false);
       _tab.items().add(_T("Richedit"), _richedit);
       _tab.items().add(_T("Listview"), _listview);
       _tab.items().add(_T("Buttons"), _buttons);
@@ -79,25 +80,16 @@ int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     struct frm : form {
       frm() {
         add(_ctl);
-/*
-        add(_ctl2);
-        add(_ctl3);
-*/
         OnCreated += [this](...) {
           move(400, 400, 400, 400);
-          _ctl.text(_T("WTF Label"));
-          _ctl.move(10, 30, 100, 25);
-          
-          /*
-          _ctl2.move(10, 30, 150, 25);
-          _ctl2.text(_T("WTF radio_button"));
-          _ctl3.move(10, 50, 150, 25);
-          _ctl3.text(_T("WTF radio_button"));
-          */
+          _ctl.items().add(_T("ABC"));
+          _ctl.items().add(_T("DEF"));         
+        };
+        OnSize += [this](...) {
+          _ctl.move(0, 0, width(), height());
         };
       }
-      label _ctl;
-     // radio_button _ctl2, _ctl3;
+      tab _ctl;
     };
     return frm().run();
   }

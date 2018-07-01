@@ -12,9 +12,9 @@
 #endif
 
 namespace wtf{
-  namespace policy{
-    template <typename _super_t>
-    struct wm_ncpaint : _super_t{
+  namespace messages {
+
+    template <typename _super_t> struct wm_ncpaint : _super_t{
 
       callback<void(window * sender, const device_context&, const rect<coord_frame::client>&)> OnNCPaint;
 

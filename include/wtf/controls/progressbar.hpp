@@ -19,14 +19,17 @@ namespace wtf {
       policy::has_enable,
       policy::has_move,
       policy::has_style,
-      policy::wm_command
+      messages::wm_command
     > {
 
       static constexpr DWORD Style = window::Style | (orientations::vertical == _orientation ? PBS_VERTICAL : 0);
       static constexpr TCHAR sub_window_class_name[] = PROGRESS_CLASS;
 
       bool smooth() const { return get_style_bit<PBS_SMOOTH>(); }
-      void smooth(bool newval) { set_style_bit<PBS_SMOOTH>(newval); }
+      void smooth(bool newval) { 
+        set_style_bit<PBS_SMOOTH>(newval); 
+        ::SetWindowPos(*this, 0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
+      }
 
 
       void set_range(uint32_t min, uint32_t max) { ::SendMessage(*this, PBM_SETRANGE32, min, max); }

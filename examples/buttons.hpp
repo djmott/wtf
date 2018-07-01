@@ -17,7 +17,7 @@ struct Buttons : wtf::controls::label {
       add(_option_z);
 
       int _top = 10;
-      auto top = [&_top]() { auto ret = _top; _top += 20; return ret; };
+      auto top = [&_top]() { auto ret = _top; _top += 30; return ret; };
       _button.text(_T("Click Me"));
       _button.move(10, top(), 70, 25);
       _checkbox.text(_T("Check me"));

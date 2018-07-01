@@ -4,10 +4,9 @@
 #pragma once
 
 namespace wtf{
+  namespace messages {
 
-  namespace policy{
-    template <typename _super_t>
-    struct wm_ncmouse_up : _super_t{
+    template <typename _super_t> struct wm_ncmouse_up : _super_t{
 
       callback<void(window *, const mouse_msg_param<coord_frame::screen>&)> OnNCMouseUp;
 

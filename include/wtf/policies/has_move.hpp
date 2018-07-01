@@ -21,7 +21,7 @@ namespace wtf{
       @param[in] width,height new size of the window
       @param[in] repaint indicates whether the window should be repainted
       */
-      void move(int x, int y, int width, int height, bool repaint = true)  {
+      virtual void move(int x, int y, int width, int height, bool repaint = true)  {
         wtf::exception::throw_lasterr_if(::MoveWindow(*this, x, y, width, height, repaint ? TRUE : FALSE),
                                          [](BOOL b)noexcept { return !b; });
       }

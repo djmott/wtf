@@ -6,10 +6,6 @@
 namespace wtf {
   namespace controls {
 
-    namespace _ {
-      TCHAR sSTATUSCLASSNAME[] = STATUSCLASSNAME;
-    }
-
     /** @class statusbar
     Displays status information normally at the bottom of a form
     @ingroup Controls
@@ -18,7 +14,7 @@ namespace wtf {
       policy::has_style,
       policy::has_font,
       policy::has_move,
-      policy::wm_notify
+      messages::wm_notify
     > {
       static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | SBARS_TOOLTIPS | SBARS_SIZEGRIP;
       static constexpr TCHAR sub_window_class_name[] = STATUSCLASSNAME;
@@ -134,7 +130,5 @@ namespace wtf {
     };
 
   }
-#if 0
-  template <WNDPROC window_proc> struct window_class<controls::statusbar, window_proc> : super_window_class<controls::_::sSTATUSCLASSNAME, controls::statusbar, window_proc> {};
-#endif
+
 }

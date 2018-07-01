@@ -30,8 +30,8 @@ namespace wtf {
       policy::has_move,
       policy::has_size,
       policy::has_style,
-      policy::wm_size,
-      policy::wm_command
+      messages::wm_size,
+      messages::wm_command
     > {
 
 #if WTF_USE_COMMON_CONTROLS
@@ -74,11 +74,15 @@ namespace wtf {
         ::SendMessage(*this, STM_SETIMAGE, IMAGE_BITMAP, reinterpret_cast<LPARAM>(static_cast<HBITMAP>(newval)));
       }
 
+      //! @brief gets the auto-size style
+      bool auto_size() const { return _auto_size; }
+      void auto_size(bool newval) { _auto_size = newval; }
     protected:
       void on_created() override {
         alignment(text_horizontal_alignments::left);
         __super::on_created();
       }
+      bool _auto_size = false;
     };
     
   }

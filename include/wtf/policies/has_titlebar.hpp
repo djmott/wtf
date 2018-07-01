@@ -13,11 +13,11 @@ namespace wtf{
     template <typename _super_t>
     struct has_titlebar : _super_t{
 
-      const tstring &titlebar() const{
+      virtual const tstring &titlebar() const{
         return _titlebar;
       }
 
-      void titlebar(const tstring& newval)  {
+      virtual void titlebar(const tstring& newval)  {
         wtf::exception::throw_lasterr_if(::SetWindowText(*this, newval.c_str()), [](BOOL b){ return !b; });
         _titlebar = newval;
       }

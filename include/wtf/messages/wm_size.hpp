@@ -7,7 +7,7 @@
 
 namespace wtf{
 
-  namespace policy{
+  namespace messages {
     /** @class wm_size 
     @brief WM_SIZE message handler
     @ingroup Messages

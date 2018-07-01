@@ -5,8 +5,8 @@
 
 
 namespace wtf{
+  namespace messages {
 
-  namespace policy{
     template <typename _super_t>
     struct wm_mouse_down : _super_t{
 

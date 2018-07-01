@@ -12,6 +12,7 @@ struct ProgressBars : wtf::controls::label {
     add(_vprogressbar);
 
     OnCreated += [this](...) {
+      _hprogressbar.smooth(true);
       _hprogressbar.set_range(0, 100);
       _hprogressbar.value(50);
       _vprogressbar.set_range(0, 100);

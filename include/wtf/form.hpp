@@ -17,17 +17,16 @@ namespace wtf {
       policy::has_show,
       policy::has_close,
       policy::has_invalidate,
-      policy::wm_destroy,
-      policy::wm_create,
-      policy::wm_size,
-      policy::wm_close,
-      policy::wm_showwindow,
-      policy::wm_activate,
-      policy::wm_paint,
-      policy::wm_erasebkgnd,
-      policy::wm_setcursor,
-      policy::wm_notifyformat,
-      policy::wm_getminmaxinfo
+      messages::wm_destroy,
+      messages::wm_create,
+      messages::wm_size,
+      messages::wm_close,
+      messages::wm_showwindow,
+      messages::wm_activate,
+      messages::wm_paint,
+      messages::wm_setcursor,
+      messages::wm_notifyformat,
+      messages::wm_getminmaxinfo
     >{
 
       static constexpr TCHAR window_class_name[] = _T("wtf_form"); 

@@ -173,20 +173,20 @@ SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = @CMAKE_CURRENT_SOURCE_DIR@/include
 INCLUDE_FILE_PATTERNS  = *.h \
                          *.hpp
-PREDEFINED             = DOXY_INVOKED=1 \
-                         DOXY_INHERIT_HAS_TEXT=wtf::policy::has_text, \
-                         DOXY_INHERIT_HAS_FONT=wtf::policy::has_font, \
-                         DOXY_INHERIT_HAS_ENABLE=wtf::policy::has_enable, \
-                         DOXY_INHERIT_HAS_INVALIDATE=wtf::policy::has_invalidate, \
-                         DOXY_INHERIT_HAS_MOVE=wtf::policy::has_move, \
-                         DOXY_INHERIT_HAS_STYLE=wtf::policy::has_style, \
-                         DOXY_INHERIT_WM_COMMAND=wtf::policy::wm_command, \
-                         DOXY_INHERIT_HAS_BORDER=wtf::policy::has_border, \
-                         DOXY_INHERIT_HAS_SIZE=wtf::policy::has_size, \
-                         DOXY_INHERIT_WM_SIZE=wtf::policy::wm_size, \
-                         DOXY_INHERIT_HAS_FOCUS=wtf::policy::has_focus, \
-                         DOXY_INHERIT_WINDOW=wtf::window, \
-                         DOXY_INHERIT_WM_NOTIFY=wtf::policy::wm_notify,
+PREDEFINED             = DOXY_INVOKED=1 
+PREDEFINED            += DOXY_INHERIT_HAS_BORDER=wtf::policy::has_border,
+PREDEFINED            += DOXY_INHERIT_HAS_ENABLE=wtf::policy::has_enable,
+PREDEFINED            += DOXY_INHERIT_HAS_FOCUS=wtf::policy::has_focus,
+PREDEFINED            += DOXY_INHERIT_HAS_FONT=wtf::policy::has_font,
+PREDEFINED            += DOXY_INHERIT_HAS_INVALIDATE=wtf::policy::has_invalidate,
+PREDEFINED            += DOXY_INHERIT_HAS_MOVE=wtf::policy::has_move,
+PREDEFINED            += DOXY_INHERIT_HAS_SIZE=wtf::policy::has_size,
+PREDEFINED            += DOXY_INHERIT_HAS_STYLE=wtf::policy::has_style,
+PREDEFINED            += DOXY_INHERIT_HAS_TEXT=wtf::policy::has_text,
+PREDEFINED            += DOXY_INHERIT_WINDOW=wtf::window,
+PREDEFINED            += DOXY_INHERIT_WM_COMMAND=wtf::messages::wm_command,
+PREDEFINED            += DOXY_INHERIT_WM_NOTIFY=wtf::messages::wm_notify,
+PREDEFINED            += DOXY_INHERIT_WM_SIZE=wtf::messages::wm_size,
 EXPAND_AS_DEFINED      = YES
 SKIP_FUNCTION_MACROS   = YES
 TAGFILES               = 

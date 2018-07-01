@@ -5,7 +5,7 @@
 
 namespace wtf{
 
-  namespace policy{
+  namespace messages {
     template <typename _super_t>
     struct wm_destroy : _super_t{
 

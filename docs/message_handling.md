@@ -15,7 +15,7 @@ The **window** interface is the base interface of all WTF forms and widgets and 
 ~~~cpp
 virtual void handle_msg(wtf::window_message& msg) = 0;
 ~~~
-Each policy that is interested in processing a message provides an override of the **handle_msg** method. The policies are careful to only process the specific message of interest. For example, the **wtf::policy::wm_timer** policy has the following override:
+Each policy that is interested in processing a message provides an override of the **handle_msg** method. The policies are careful to only process the specific message of interest. For example, the **wtf::messages::wm_timer** policy has the following override:
 
 ~~~cpp
 void handle_msg(wtf::window_message& msg) override {
@@ -23,7 +23,7 @@ void handle_msg(wtf::window_message& msg) override {
 }
 ~~~
 
-The **wtf::policy::wm_timer** policy calls the **on_wm_timer** member function only when a WM_TIMER message is recieved.
+The **wtf::messages::wm_timer** policy calls the **on_wm_timer** member function only when a WM_TIMER message is recieved.
 
 ### Message Propogation
 

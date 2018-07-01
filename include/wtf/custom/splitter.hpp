@@ -10,8 +10,8 @@ namespace wtf {
       wtf::policy::has_move,
       wtf::policy::has_orientation,
       wtf::policy::has_size,
-      wtf::policy::wm_size,
-      wtf::policy::wm_showwindow
+      wtf::messages::wm_size,
+      wtf::messages::wm_showwindow
     > {
 
       static constexpr DWORD Style = WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN;
@@ -52,12 +52,12 @@ namespace wtf {
 
 
       struct slider_t : wtf::window_impl<slider_t,
-        wtf::policy::has_cursor,
-        wtf::policy::has_move,
-        wtf::policy::wm_setcursor,
-        wtf::policy::wm_mouse_move,
-        wtf::policy::wm_mouse_down,
-        wtf::policy::wm_mouse_up
+        policy::has_cursor,
+        policy::has_move,
+        messages::wm_setcursor,
+        messages::wm_mouse_move,
+        messages::wm_mouse_down,
+        messages::wm_mouse_up
       > {
         friend struct splitter;
 

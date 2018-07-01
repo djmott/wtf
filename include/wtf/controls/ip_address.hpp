@@ -55,16 +55,6 @@ namespace wtf {
 
   }
 
-#if !DOXY_INVOKED
 
-  namespace _ {
-    TCHAR sWC_IPADDRESS[] = WC_IPADDRESS;
-  }
-
-  template <WNDPROC window_proc>
-  struct window_class<controls::ip_address, window_proc> :
-    super_window_class<_::sWC_IPADDRESS, controls::ip_address, window_proc> {};
-
-#endif
 }
 #endif

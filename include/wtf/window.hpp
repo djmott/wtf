@@ -42,37 +42,39 @@ namespace wtf{
       return *this;
     }
 
+
     window(window&& src) noexcept { *this = std::move(src); }
 
-    const window * const parent() const noexcept { return _parent; }
 
-    const std::vector<window*>& children() const noexcept { return _children; }
+    callback<void(window *)> OnCreated;
+
+    virtual int run() = 0;
+    
+    virtual const window * const parent() const noexcept { return _parent; }
+
+    virtual const std::vector<window*>& children() const noexcept { return _children; }
 
     virtual const std::type_info& type() const noexcept = 0;
 
     virtual HWND handle() const { return _handle; }
 
-    HWND operator*() const noexcept { return _handle; }
+    virtual HWND operator*() const noexcept { return _handle; }
 
-    operator HWND() const noexcept { return _handle; }
+    virtual operator HWND() const noexcept { return _handle; }
 
-    template <typename _child_t>
-    void add(_child_t& oChild){
+    virtual void add(window& oChild) {
       _children.push_back(static_cast<window*>(&oChild));
       oChild._parent = this;
-      if (_handle){
+      if (_handle) {
         _children.push_back(static_cast<window*>(&oChild));
         if (oChild._handle) {
           ::SetParent(*oChild, *this);
-        } else{
+        }
+        else {
           oChild.run();
         }
       }
     }
-
-    callback<void(window *)> OnCreated;
-
-    virtual int run() = 0;
 
   protected:
 

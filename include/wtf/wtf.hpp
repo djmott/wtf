@@ -11,20 +11,31 @@
   #define _WIN32_IE 0x600
 #endif
 
-
+/** @def WTF_USE_VISUAL_STYLES
+@brief Enables/disables the use of visual styles through uxtheme.dll
+*/
 #if !defined(WTF_USE_VISUAL_STYLES)
-  #define WTF_USE_VISUAL_STYLES 0
+  #define WTF_USE_VISUAL_STYLES 1
 #endif
 
-
+/** @def WTF_USE_COMMON_CONTROLS
+@brief Enables/disables the use and dependency of extended native controls in comctl32.dll
+@details The most basic set of controls are implemented in the Windows GDI subsystem and extended in the common controls library
+*/
 #if !defined(WTF_USE_COMMON_CONTROLS)
   #define WTF_USE_COMMON_CONTROLS 1
 #endif
 
+/** @def WTF_USE_RICHEDIT
+@brief Enables/disables the use and dependency of the rich edit control in msftedit.dll
+*/
 #if !defined(WTF_USE_RICHEDIT)
-#define WTF_USE_RICHEDIT 0
+  #define WTF_USE_RICHEDIT 1
 #endif
 
+/** @def WTF_DEBUG_MESSAGES
+@brief Debug windows messages with OutputDebugString
+*/
 #if !defined(WTF_DEBUG_MESSAGES)
   #if defined(DEBUG) || defined(_DEBUG)
     #define WTF_DEBUG_MESSAGES 1
@@ -43,7 +54,15 @@
 #if WTF_USE_VISUAL_STYLES
   #pragma comment(lib, "uxtheme.lib")
   #include <Uxtheme.h>
-  #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+  #if defined _M_IX86
+    #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+  #elif defined _M_IA64
+    #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='ia64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+  #elif defined _M_X64
+    #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+  #else
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+  #endif
 #endif
 
 
@@ -96,18 +115,24 @@
 @brief Primary namespace
 */
 namespace wtf {
-#if !DOXY_INVOKED
-  namespace _ {}
-#endif
 
   /** @namespace wtf::controls
-  @brief Native Windows controls
+  @brief Native controls
+  @details These controls are implemented by the Windows system
   */
-  namespace controls {
-#if !DOXY_INVOKED
-    namespace _{}
-#endif
-  }
+  namespace controls {}
+
+  /** @namespace wtf::custom
+  @brief Custom controls
+  @details These controls are implemented by WTF and only available in WTF binaries
+  */
+  namespace custom{}
+
+  /** @namespace wtf::layout
+  @brief Layout policies
+  @details These policies define how child windows are positioned and resized
+  */
+  namespace layouts {}
 
   /**
   @interface window window.hpp
@@ -147,6 +172,23 @@ namespace wtf {
   inline static constexpr HINSTANCE instance_handle() noexcept { return &__ImageBase; }
 
 
+
+  /** @brief Constructs a tstring representation of a value
+  @param value value to convert
+  @return a tstring representation of the value
+  */
+  template <typename _Ty> static tstring to_tstring(_Ty value){ return _::to_tstring_impl<_Ty, TCHAR>::get(value); }
+
+  /** @namespace wtf::policy
+  @brief Behavioral policies
+  @ingroup Policies
+  */
+  namespace policy{
+#if !DOXY_INVOKED
+    namespace _{}
+#endif
+  }
+
 #if !DOXY_INVOKED
   namespace _ {
     static std::mutex& _active_forms_lock() noexcept {
@@ -158,11 +200,19 @@ namespace wtf {
       static std::vector<const window*> _forms;
       return _forms;
     }
+  }
+#endif
+
+  //! @brief Contains the active WTF forms in the process
+  static const std::vector<const window*>& active_forms()  noexcept { return _::_active_forms(); }
+
+#if !DOXY_INVOKED
+  namespace _ {
 
     template <typename, typename> struct to_tstring_impl;
 
-    template <typename _Ty> struct to_tstring_impl<_Ty, wchar_t>{
-      static std::basic_string<wchar_t> get(const _Ty& value){ return std::to_wstring(value); }
+    template <typename _Ty> struct to_tstring_impl<_Ty, wchar_t> {
+      static std::basic_string<wchar_t> get(const _Ty& value) { return std::to_wstring(value); }
     };
     template <typename _Ty> struct to_tstring_impl<_Ty, char> {
       static std::basic_string<char> get(const _Ty& value) { return std::to_string(value); }
@@ -188,25 +238,6 @@ namespace wtf {
 
   }
 #endif
-
-  /** @brief Constructs a tstring representation of a value
-  @param value value to convert
-  @return a tstring representation of the value
-  */
-  template <typename _Ty> static tstring to_tstring(_Ty value){ return _::to_tstring_impl<_Ty, TCHAR>::get(value); }
-
-  /** @namespace wtf::policy
-  @brief Behavioral policies
-  @ingroup Policies
-  */
-  namespace policy{
-#if !DOXY_INVOKED
-    namespace _{}
-#endif
-
-  }
-
-  static const std::vector<const window*>& active_forms()  noexcept { return _::_active_forms(); }
 
 }
 
@@ -348,6 +379,7 @@ namespace wtf {
 #include "policies/has_vscroll.hpp"
 #include "policies/has_zorder.hpp"
 
+#include "layouts/grid.hpp"
 
 #include "controls/button.hpp"
 #include "controls/combobox.hpp"

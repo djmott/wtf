@@ -24,7 +24,7 @@ namespace wtf {
       policy::has_invalidate,
       policy::has_move,
       policy::has_style,
-      policy::wm_command
+      messages::wm_command
     > {
 #if WTF_USE_COMMON_CONTROLS
       static constexpr TCHAR sub_window_class_name[] = WC_BUTTON;

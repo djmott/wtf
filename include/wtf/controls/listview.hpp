@@ -17,9 +17,9 @@ namespace wtf {
       policy::has_move,
       policy::has_exstyle,
       policy::has_style,
-      policy::wm_command,
-      policy::wm_notify, 
-      policy::wm_showwindow
+      messages::wm_command,
+      messages::wm_notify, 
+      messages::wm_showwindow
     > {
       struct item;
       struct subitem;
