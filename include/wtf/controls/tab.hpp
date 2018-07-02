@@ -4,6 +4,7 @@
 #pragma once
 
 #define DOXY_INHERIT_TAB_SUPER \
+  DOXY_INHERIT_WINDOW \
   DOXY_INHERIT_HAS_FONT \
   DOXY_INHERIT_HAS_MOVE \
   DOXY_INHERIT_HAS_STYLE \
@@ -25,11 +26,6 @@ namespace wtf {
       messages::wm_notify,
       messages::wm_size
     > {
-      static const DWORD ExStyle = window::ExStyle | WS_EX_CONTROLPARENT;
-
-      static constexpr TCHAR sub_window_class_name[] = WC_TABCONTROL;
-      static constexpr TCHAR window_class_name[] = _T("wtf_tab");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       /** @class item
       @brief represents a single page in the tab control
@@ -137,7 +133,13 @@ namespace wtf {
       const item::collection& items() const { return _items; }
 
     protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static const DWORD ExStyle = window::ExStyle | WS_EX_CONTROLPARENT;
 
+      static constexpr TCHAR sub_window_class_name[] = WC_TABCONTROL;
+      static constexpr TCHAR window_class_name[] = _T("wtf_tab");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+      
       item::collection _items;
 
       void on_wm_size(wm_size_flags flags, const point<coord_frame::client>& p) override {

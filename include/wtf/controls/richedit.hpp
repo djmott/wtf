@@ -3,16 +3,30 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_RICHEDIT_SUPER \
+  DOXY_INHERIT_WINDOW \
+  DOXY_INHERIT_HAS_BORDER \
+  DOXY_INHERIT_HAS_FONT \
+  DOXY_INHERIT_HAS_TEXT \
+  DOXY_INHERIT_HAS_ENABLE \
+  DOXY_INHERIT_HAS_STYLE \
+  DOXY_INHERIT_HAS_EXSTYLE \
+  DOXY_INHERIT_HAS_MOVE \
+  DOXY_INHERIT_NM_KILLFOCUS \
+  DOXY_INHERIT_NM_SETFOCUS \
+  DOXY_INHERIT_WM_NOTIFY
+
+
 namespace wtf {
   namespace controls {
 
     /** @class richedit
-    @ingroup Controls
     @brief A rich edit control enables the user to enter, edit, print, and save text.
     @tparam _multiline indicates that multiple lines of text are permitted.
+    @ingroup Controls
     */
     template <bool _multiline>
-    struct richedit : window_impl<richedit<_multiline>,
+    struct richedit : DOXY_INHERIT_RICHEDIT_SUPER window_impl<richedit<_multiline>,
       policy::has_border,
       policy::has_font,
       policy::has_text,
@@ -27,12 +41,6 @@ namespace wtf {
 
       using char_range = std::tuple<uint32_t, uint32_t>;
 
-      static constexpr DWORD Style = window::Style | (_multiline ? ES_MULTILINE : 0);
-
-      static constexpr TCHAR window_class_name[] = _T("wtf_richedit");
-      static constexpr TCHAR sub_window_class_name[] = MSFTEDIT_CLASS;
-
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       richedit() : _hdll(nullptr){
         _hdll = wtf::exception::throw_lasterr_if(::LoadLibrary(_T("msftedit.dll")), [](HMODULE h) { return nullptr == h; });
@@ -190,6 +198,13 @@ namespace wtf {
       }
 
     protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr DWORD Style = window::Style | (_multiline ? ES_MULTILINE : 0);
+
+      static constexpr TCHAR window_class_name[] = _T("wtf_richedit");
+      static constexpr TCHAR sub_window_class_name[] = MSFTEDIT_CLASS;
+
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       HMODULE _hdll;
 
       void handle_msg(wtf::window_message& msg) override {

@@ -24,9 +24,6 @@ namespace wtf {
       policy::has_move
     > {
 
-      static constexpr TCHAR sub_window_class_name[] = HOTKEY_CLASS;
-      static constexpr TCHAR window_class_name[] = _T("wtf_hotkey");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       enum class modifiers : uint8_t {
         none = 0,
@@ -57,7 +54,12 @@ namespace wtf {
       void modifier(modifiers newval) {
         ::SendMessage(*this, WM_SETHOTKEY, MAKEWORD(keycode(), static_cast<uint8_t>(newval)), 0);
       }
-      
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr TCHAR sub_window_class_name[] = HOTKEY_CLASS;
+      static constexpr TCHAR window_class_name[] = _T("wtf_hotkey");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+
     };
 
   }

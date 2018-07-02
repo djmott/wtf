@@ -16,6 +16,9 @@
 namespace wtf {
 
   namespace policy {
+    /** @class button_impl
+    @brief default button implementation
+    */
     template <typename _impl_t>
     struct button_impl : DOXY_INHERIT_BUTTON_SUPER window_impl<_impl_t,
       policy::has_text,
@@ -26,18 +29,24 @@ namespace wtf {
       policy::has_style,
       messages::wm_command
     > {
-#if WTF_USE_COMMON_CONTROLS
-      static constexpr TCHAR sub_window_class_name[] = WC_BUTTON;
-#else
-      static constexpr TCHAR sub_window_class_name[] = _T("BUTTON");
-#endif
 
-
+      //! @brief Gets the ideal size of the control
       size ideal_size() const {
         size oRet;
         wtf::exception::throw_lasterr_if(::SendMessage(*this, BCM_GETIDEALSIZE, 0, reinterpret_cast<LPARAM>(&oRet)), [](LRESULT l) { return !l; });
         return oRet;
       }
+
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+#if WTF_USE_COMMON_CONTROLS
+      static constexpr TCHAR sub_window_class_name[] = WC_BUTTON;
+#else
+      static constexpr TCHAR sub_window_class_name[] = _T("BUTTON");
+#endif
+    private:
+      void add(window &) override {}
+
     };
 
   }
@@ -50,7 +59,9 @@ namespace wtf {
     @image html button.png
     */
     struct button : policy::button_impl<button>{
-      static constexpr TCHAR window_class_name[] = _T("wtf_button"); 
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr TCHAR window_class_name[] = _T("wtf_button");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
     };
   
@@ -61,7 +72,9 @@ namespace wtf {
     @image html checkbox.png
     */
     struct checkbox : policy::button_impl<checkbox> {
-      static constexpr TCHAR window_class_name[] = _T("wtf_checkbox"); 
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr TCHAR window_class_name[] = _T("wtf_checkbox");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       static constexpr DWORD Style = window::Style | BS_AUTOCHECKBOX;
     };
@@ -74,7 +87,9 @@ namespace wtf {
     @image html radio_button.png
     */
     struct radio_group : policy::button_impl<radio_group> {
-      static constexpr TCHAR window_class_name[] = _T("wtf_radio_group"); 
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr TCHAR window_class_name[] = _T("wtf_radio_group");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON | WS_GROUP;
     };
@@ -86,6 +101,8 @@ namespace wtf {
     @image html radio_button.png
     */
     struct radio_button : policy::button_impl<radio_button> {
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
       static constexpr TCHAR window_class_name[] = _T("wtf_radio_button");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON;
@@ -98,7 +115,9 @@ namespace wtf {
      @image html tristate.png
    */
     struct tristate : policy::button_impl<tristate> {
-      static constexpr TCHAR window_class_name[] = _T("wtf_tristate"); 
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr TCHAR window_class_name[] = _T("wtf_tristate");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       static constexpr DWORD Style = window::Style | BS_AUTO3STATE;
     };

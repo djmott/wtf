@@ -3,6 +3,8 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_HAS_EXSTYLE
+
 namespace wtf {
 
   namespace policy {

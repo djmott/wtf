@@ -17,6 +17,7 @@ namespace wtf {
       policy::has_show,
       policy::has_close,
       policy::has_invalidate,
+      messages::wm_erasebkgnd,
       messages::wm_destroy,
       messages::wm_create,
       messages::wm_size,
@@ -26,7 +27,11 @@ namespace wtf {
       messages::wm_paint,
       messages::wm_setcursor,
       messages::wm_notifyformat,
-      messages::wm_getminmaxinfo
+      messages::wm_getminmaxinfo,
+      messages::wm_mouse_up,
+      messages::wm_mouse_down,
+      messages::wm_mouse_leave,
+      messages::wm_mouse_wheel
     >{
 
       static constexpr TCHAR window_class_name[] = _T("wtf_form"); 
@@ -95,7 +100,7 @@ namespace wtf {
   */
   struct form : policy::form_impl <form> {
     static constexpr DWORD ExStyle = WS_EX_OVERLAPPEDWINDOW;
-    static constexpr DWORD Style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
+    static constexpr DWORD Style = WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
   };
 
   /** @class dialog
@@ -104,7 +109,7 @@ namespace wtf {
   */
   struct dialog : policy::form_impl < dialog> {
     static constexpr DWORD ExStyle = WS_EX_DLGMODALFRAME;
-    static constexpr DWORD Style = WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE;
+    static constexpr DWORD Style = WS_SYSMENU | WS_DLGFRAME | WS_CAPTION | WS_VISIBLE | WS_CLIPCHILDREN;
   };
   /** @class tool_window
   @ingroup Controls
@@ -112,7 +117,7 @@ namespace wtf {
   */
   struct tool_window : policy::form_impl <tool_window> {
     static constexpr DWORD ExStyle = WS_EX_TOOLWINDOW;
-    static constexpr DWORD Style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
+    static constexpr DWORD Style = WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
   };
   
 }

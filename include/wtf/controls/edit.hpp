@@ -31,13 +31,6 @@ namespace wtf {
       policy::has_style
     > {
 
-#if WTF_USE_COMMON_CONTROLS
-      static constexpr TCHAR sub_window_class_name[] = WC_EDIT; 
-#else
-      static constexpr TCHAR sub_window_class_name[] =  _T("EDIT"); 
-#endif
-      static constexpr TCHAR window_class_name[] = _T("wtf_edit"); 
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       static const uint16_t default_input_limit = 32767;
     
@@ -86,7 +79,15 @@ namespace wtf {
       uint16_t text_limit() const { return static_cast<uint16_t>(::SendMessage(*this, EM_GETLIMITTEXT, 0, 0)); }
       //! @brief sets the text limit
       void text_limit(uint16_t newval) { ::SendMessage(*this, EM_LIMITTEXT, newval, 0); }
-
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+#if WTF_USE_COMMON_CONTROLS
+      static constexpr TCHAR sub_window_class_name[] = WC_EDIT;
+#else
+      static constexpr TCHAR sub_window_class_name[] = _T("EDIT");
+#endif
+      static constexpr TCHAR window_class_name[] = _T("wtf_edit");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
     };
 
     /** @class multiline_edit
@@ -94,7 +95,11 @@ namespace wtf {
     @ingroup Controls
     */
     struct multiline_edit : edit {
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
       static constexpr DWORD Style = window::Style | ES_MULTILINE;
+      static constexpr TCHAR window_class_name[] = _T("wtf_multiline_edit");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
     };
     
   }

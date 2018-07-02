@@ -3,14 +3,27 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_LISTVIEW_SUPER \
+  DOXY_INHERIT_WINDOW \
+  DOXY_INHERIT_HAS_TEXT \
+  DOXY_INHERIT_HAS_FONT \
+  DOXY_INHERIT_HAS_ENABLE \
+  DOXY_INHERIT_HAS_MOVE \
+  DOXY_INHERIT_HAS_EXSTYLE \
+  DOXY_INHERIT_HAS_STYLE \
+  DOXY_INHERIT_WM_COMMAND \
+  DOXY_INHERIT_WM_NOTIFY \
+  DOXY_INHERIT_WM_SHOWWINDOW
+
 namespace wtf {
   namespace controls {
 
 
     /** @class listview
-    Shows a list of items as text and/or icons
-     */
-    struct listview : window_impl<listview,
+    @brief Shows a list of items as text and/or icons
+    @ingroup Controls
+    */
+    struct listview : DOXY_INHERIT_LISTVIEW_SUPER window_impl<listview,
       policy::has_text,
       policy::has_font,
       policy::has_enable,
@@ -25,10 +38,6 @@ namespace wtf {
       struct subitem;
       struct column;
 
-      static constexpr DWORD Style = window::Style | LVS_REPORT | LVS_EDITLABELS | LVS_AUTOARRANGE | LVS_SORTASCENDING;
-      static constexpr TCHAR sub_window_class_name[] = WC_LISTVIEW;
-      static constexpr TCHAR window_class_name[] = _T("wtf_listview");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       enum class styles {
         icon = LVS_ICON,
@@ -58,7 +67,7 @@ namespace wtf {
 
 
         /** @class collection
-        maintains a collection of columns
+        @brief maintains a collection of columns
         */
         struct collection {
           collection() = delete;
@@ -114,7 +123,7 @@ namespace wtf {
 
 
       /** @class subitem
-      represents a subitem of an item
+      @brief represents a subitem of an item
       */
       struct subitem : LVITEM {
         using pointer = std::shared_ptr<subitem>;
@@ -130,7 +139,7 @@ namespace wtf {
         }
 
         /** @class collection
-        represents a collection of subitems
+        @brief represents a collection of subitems
         */
         struct collection {
           collection() = delete;
@@ -308,6 +317,11 @@ namespace wtf {
       callback<void(window*, typename item::pointer item)> OnItemClick;
 
     protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr DWORD Style = window::Style | LVS_REPORT | LVS_EDITLABELS | LVS_AUTOARRANGE | LVS_SORTASCENDING;
+      static constexpr TCHAR sub_window_class_name[] = WC_LISTVIEW;
+      static constexpr TCHAR window_class_name[] = _T("wtf_listview");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       item::collection _items;
       column::collection _columns;
 

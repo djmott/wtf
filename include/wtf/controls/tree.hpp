@@ -3,23 +3,27 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_TREE_SUPER \
+  DOXY_INHERIT_WINDOW \
+  DOXY_INHERIT_HAS_FONT \
+  DOXY_INHERIT_HAS_MOVE \
+  DOXY_INHERIT_WM_NOTIFY
+
+
 namespace wtf {
   namespace controls {
 
 
     /** @class tree
-    @ingroup Controls
     @brief A tree-view control is a window that displays a hierarchical list of items, such as the headings in a document, the entries in an index, or the files and directories on a disk.
+    @ingroup Controls
     */
-    struct tree : window_impl<tree,
+    struct tree : DOXY_INHERIT_TREE_SUPER window_impl<tree,
       policy::has_font,
       wtf::policy::has_move,
       wtf::messages::wm_notify
     > {
 
-      static constexpr TCHAR sub_window_class_name[] = WC_TREEVIEW;
-      static constexpr TCHAR window_class_name[] = _T("wtf_tree");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       tree() : _items(this, nullptr){}
 
@@ -93,6 +97,9 @@ namespace wtf {
     protected:
 
       template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr TCHAR sub_window_class_name[] = WC_TREEVIEW;
+      static constexpr TCHAR window_class_name[] = _T("wtf_tree");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       item::collection _items;
 

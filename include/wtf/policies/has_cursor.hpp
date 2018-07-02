@@ -6,8 +6,8 @@
 namespace wtf{
   namespace policy{
 
-    /** has_cursor
-    * Provides mouse pointer customization
+    /** @class has_cursor
+    @brief Provides mouse pointer customization
     */
     template <typename _super_t>
     struct has_cursor : _super_t{

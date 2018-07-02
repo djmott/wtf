@@ -15,9 +15,9 @@ namespace wtf{
 
     protected:
 
-      void on_wm_erasebkgnd(const device_context& dc, const rect<coord_frame::client>& client) {
+      void on_wm_erasebkgnd(const device_context& dc, const rect<coord_frame::client>& client) override {
           dc.fill(client, background_brush());
-        _super_t::on_wm_erasebkgnd(dc, client);
+          __super::on_wm_erasebkgnd(dc, client);
       }
 
     private:

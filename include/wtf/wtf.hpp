@@ -128,7 +128,7 @@ namespace wtf {
   */
   namespace custom{}
 
-  /** @namespace wtf::layout
+  /** @namespace wtf::layouts
   @brief Layout policies
   @details These policies define how child windows are positioned and resized
   */
@@ -389,12 +389,10 @@ namespace wtf {
 #include "controls/menu.hpp"
 
 #if WTF_USE_COMMON_CONTROLS
-  #include "controls/avi_player.hpp"
   #include "controls/calendar.hpp"
   #include "controls/date_time.hpp"
   #include "controls/hotkey.hpp"
   #include "controls/image_list.hpp"
-  #include "controls/ip_address.hpp"
   #include "controls/listview.hpp"
   #include "controls/pager.hpp"
   #include "controls/property_sheet.hpp"

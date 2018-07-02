@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(wtf VERSION 0.0.1.0)
+project(WTF LANGUAGES CXX VERSION 0.0.1.0 )
 
 find_package(Doxygen)
 
@@ -24,7 +24,6 @@ option(WTF_BUILD_EXAMPLES "Build examples" FALSE)
 if(WTF_BUILD_EXAMPLES)
   add_executable(wtf WIN32
       examples/examples.cpp
-      docs/images/clock.avi
       include/wtf/_/coinitialize.hpp
       include/wtf/_/effects.hpp
       include/wtf/_/init_common_controls.hpp
@@ -57,7 +56,6 @@ if(WTF_BUILD_EXAMPLES)
       include/wtf/window_class.hpp
       include/wtf/window_message.hpp
       include/wtf/wtf.hpp
-      include/wtf/controls/avi_player.hpp
       include/wtf/controls/button.hpp
       include/wtf/controls/calendar.hpp
       include/wtf/controls/combobox.hpp
@@ -65,7 +63,6 @@ if(WTF_BUILD_EXAMPLES)
       include/wtf/controls/edit.hpp
       include/wtf/controls/hotkey.hpp
       include/wtf/controls/image_list.hpp
-      include/wtf/controls/ip_address.hpp
       include/wtf/controls/label.hpp
       include/wtf/controls/listbox.hpp
       include/wtf/controls/listview.hpp

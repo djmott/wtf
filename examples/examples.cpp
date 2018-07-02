@@ -18,7 +18,6 @@ using namespace wtf::controls;
 #include "statusbars.hpp"
 #include "menus.hpp"
 
-
 struct frmMain : form {
 
   frmMain() {
@@ -79,17 +78,15 @@ int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     struct frm : form {
       frm() {
-        add(_ctl);
+         add(_ctl);
         OnCreated += [this](...) {
           move(400, 400, 400, 400);
-          _ctl.items().add(_T("ABC"));
-          _ctl.items().add(_T("DEF"));         
         };
         OnSize += [this](...) {
-          _ctl.move(0, 0, width(), height());
+          _ctl.move(0, 0, 100, 25);
         };
       }
-      tab _ctl;
+      edit _ctl;
     };
     return frm().run();
   }

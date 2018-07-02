@@ -6,6 +6,25 @@
 
 namespace wtf{
 
+  enum class horizontal_alignment{
+    left,
+    center,
+    right,
+  };
+
+  enum class vertical_alignment{
+    top,
+    center,
+    bottom,
+  };
+
+  enum class quadrant {
+    left,
+    top,
+    right,
+    bottom,
+  };
+
   enum class mouse_buttons {
     unspecified = 0,
     left = MK_LBUTTON,

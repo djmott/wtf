@@ -19,7 +19,8 @@ namespace wtf {
     /** @brief Behavior policy of a combobox
     @ingroup Policies
     */
-    template <typename _impl_t> struct combobox_impl : DOXY_INHERIT_COMBOBOX_SUPER window_impl < _impl_t,
+    template <typename _impl_t> 
+    struct combobox_impl : DOXY_INHERIT_COMBOBOX_SUPER window_impl < _impl_t,
       policy::has_font,
       policy::has_enable,
       policy::has_move,
@@ -27,11 +28,6 @@ namespace wtf {
       messages::wm_command
     > {
 
-#if WTF_USE_COMMON_CONTROLS
-      static constexpr TCHAR sub_window_class_name[] = WC_COMBOBOX; 
-#else
-      static constexpr TCHAR sub_window_class_name[] =  _T("COMBOBOX"); 
-#endif
 
       /** @brief represents a single item in a combobox that can be selected
       */
@@ -109,8 +105,16 @@ namespace wtf {
       callback<void(window*)> OnSetFocus;
 
 
-    private:
-#if !DOXY_INVOKED
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      void add(window &) override {}
+
+#if WTF_USE_COMMON_CONTROLS
+      static constexpr TCHAR sub_window_class_name[] = WC_COMBOBOX;
+#else
+      static constexpr TCHAR sub_window_class_name[] = _T("COMBOBOX");
+#endif
+
       void on_wm_command(WPARAM wparam, LPARAM lparam) override {
         switch (HIWORD(wparam)) {
           case CBN_CLOSEUP: OnCloseUp(this); break;
@@ -127,7 +131,6 @@ namespace wtf {
 
       typename item::vector _items;
       bool _sorted = false;
-#endif
     };
   }
 
@@ -141,6 +144,8 @@ namespace wtf {
     @image html simple_combobox.png
     */
     struct simple_combobox : policy::combobox_impl<simple_combobox> {
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
       static constexpr TCHAR window_class_name[] = _T("wtf_simple_combobox");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
@@ -154,7 +159,9 @@ namespace wtf {
     @image html dropdown_combobox.png
     */
     struct dropdown_combobox : policy::combobox_impl<dropdown_combobox> {
-      static constexpr TCHAR window_class_name[] = _T("wtf_dropdown_combobox"); 
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr TCHAR window_class_name[] = _T("wtf_dropdown_combobox");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       static constexpr DWORD Style = window::Style | CBS_DROPDOWN;
     };
@@ -166,7 +173,9 @@ namespace wtf {
     @image html dropdown_list_combobox.png
     */
     struct dropdown_list_combobox : policy::combobox_impl<dropdown_list_combobox> {
-      static constexpr TCHAR window_class_name[] = _T("wtf_dropdown_list_combobox"); 
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr TCHAR window_class_name[] = _T("wtf_dropdown_list_combobox");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       static constexpr DWORD Style = window::Style | CBS_DROPDOWNLIST;
     };

@@ -3,6 +3,8 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_WM_SHOWWINDOW
+
 namespace wtf{
   namespace messages {
 

@@ -29,7 +29,7 @@ namespace wtf {
     }
 
     rect& offset(const point<_frame>& oPoint) {
-      wtf::exception::throw_lasterr_if(::OffsetRect(this, -oPoint.x, -oPoint.y), [](BOOL b)noexcept { return !b; });
+      wtf::exception::throw_lasterr_if(::OffsetRect(this, oPoint.x, oPoint.y), [](BOOL b)noexcept { return !b; });
       return *this;
     }
 

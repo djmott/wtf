@@ -24,7 +24,10 @@ namespace wtf {
       policy::has_move
     > {
 
-      static constexpr TCHAR sub_window_class_name[] = DATETIMEPICK_CLASS; 
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      void add(window &) override {}
+      static constexpr TCHAR sub_window_class_name[] = DATETIMEPICK_CLASS;
       static constexpr TCHAR window_class_name[] = _T("wtf_date_picker"); 
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
@@ -40,6 +43,9 @@ namespace wtf {
       policy::has_text,
       policy::has_move
     > {
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      void add(window &) override {}
       static constexpr DWORD Style = window::Style | DTS_TIMEFORMAT | DTS_UPDOWN;
       static constexpr TCHAR sub_window_class_name[] = DATETIMEPICK_CLASS; 
       static constexpr TCHAR window_class_name[] = _T("wtf_time_picker"); 

@@ -127,7 +127,7 @@ SOURCE_TOOLTIPS        = YES
 USE_HTAGS              = NO
 VERBATIM_HEADERS       = YES
 CLANG_ASSISTED_PARSING = YES
-CLANG_OPTIONS          = std=c++14
+CLANG_OPTIONS          = -std=c++1z
 ALPHABETICAL_INDEX     = YES
 COLS_IN_ALPHA_INDEX    = 2
 IGNORE_PREFIX          = 
@@ -143,9 +143,10 @@ HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
 HTML_TIMESTAMP         = YES
+HTML_DYNAMIC_MENUS     = YES
 HTML_DYNAMIC_SECTIONS  = YES
 HTML_INDEX_NUM_ENTRIES = 100
-GENERATE_DOCSET        = NO
+GENERATE_DOCSET        = YES
 GENERATE_HTMLHELP      = NO
 GENERATE_ECLIPSEHELP   = NO
 GENERATE_TREEVIEW      = YES
@@ -176,6 +177,7 @@ INCLUDE_FILE_PATTERNS  = *.h \
 PREDEFINED             = DOXY_INVOKED=1 
 PREDEFINED            += DOXY_INHERIT_HAS_BORDER=wtf::policy::has_border,
 PREDEFINED            += DOXY_INHERIT_HAS_ENABLE=wtf::policy::has_enable,
+PREDEFINED            += DOXY_INHERIT_HAS_EXSTYLE=wtf::policy::has_exstyle,
 PREDEFINED            += DOXY_INHERIT_HAS_FOCUS=wtf::policy::has_focus,
 PREDEFINED            += DOXY_INHERIT_HAS_FONT=wtf::policy::has_font,
 PREDEFINED            += DOXY_INHERIT_HAS_INVALIDATE=wtf::policy::has_invalidate,
@@ -184,9 +186,14 @@ PREDEFINED            += DOXY_INHERIT_HAS_SIZE=wtf::policy::has_size,
 PREDEFINED            += DOXY_INHERIT_HAS_STYLE=wtf::policy::has_style,
 PREDEFINED            += DOXY_INHERIT_HAS_TEXT=wtf::policy::has_text,
 PREDEFINED            += DOXY_INHERIT_WINDOW=wtf::window,
+PREDEFINED            += DOXY_INHERIT_NM_KILLFOCUS=wtf::messages::nm_killfocus,
+PREDEFINED            += DOXY_INHERIT_NM_SETFOCUS=wtf::messages::nm_setfocus,
 PREDEFINED            += DOXY_INHERIT_WM_COMMAND=wtf::messages::wm_command,
 PREDEFINED            += DOXY_INHERIT_WM_NOTIFY=wtf::messages::wm_notify,
+PREDEFINED            += DOXY_INHERIT_WM_SHOWWINDOW=wtf::messages::wm_showwindow,
 PREDEFINED            += DOXY_INHERIT_WM_SIZE=wtf::messages::wm_size,
+
+
 EXPAND_AS_DEFINED      = YES
 SKIP_FUNCTION_MACROS   = YES
 TAGFILES               = 

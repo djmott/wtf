@@ -34,13 +34,6 @@ namespace wtf {
       messages::wm_command
     > {
 
-#if WTF_USE_COMMON_CONTROLS
-      static constexpr TCHAR sub_window_class_name[] = WC_STATIC;
-#else
-      static constexpr TCHAR sub_window_class_name[] =  _T("STATIC");
-#endif
-      static constexpr TCHAR window_class_name[] = _T("wtf_label");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
 
       //! @brief gets the text horizontal alignment 
       text_horizontal_alignments alignment() const { 
@@ -78,6 +71,14 @@ namespace wtf {
       bool auto_size() const { return _auto_size; }
       void auto_size(bool newval) { _auto_size = newval; }
     protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+#if WTF_USE_COMMON_CONTROLS
+      static constexpr TCHAR sub_window_class_name[] = WC_STATIC;
+#else
+      static constexpr TCHAR sub_window_class_name[] = _T("STATIC");
+#endif
+      static constexpr TCHAR window_class_name[] = _T("wtf_label");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       void on_created() override {
         alignment(text_horizontal_alignments::left);
         __super::on_created();

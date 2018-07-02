@@ -3,23 +3,27 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_STATUSBAR_SUPER \
+  DOXY_INHERIT_WINDOW \
+  DOXY_INHERIT_HAS_STYLE \
+  DOXY_INHERIT_HAS_FONT \
+  DOXY_INHERIT_HAS_MOVE \
+  DOXY_INHERIT_WM_NOTIFY 
+
 namespace wtf {
   namespace controls {
 
     /** @class statusbar
-    Displays status information normally at the bottom of a form
+    @brief Displays status information normally at the bottom of a form
     @ingroup Controls
     */
-    struct statusbar : window_impl<statusbar,
+    struct statusbar : DOXY_INHERIT_STATUSBAR_SUPER window_impl<statusbar,
       policy::has_style,
       policy::has_font,
       policy::has_move,
       messages::wm_notify
     > {
-      static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | SBARS_TOOLTIPS | SBARS_SIZEGRIP;
-      static constexpr TCHAR sub_window_class_name[] = STATUSCLASSNAME;
-      static constexpr TCHAR window_class_name[] = _T("wtf_statusbar");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+
 
       /** @class part
       represents a section of a status bar
@@ -102,6 +106,11 @@ namespace wtf {
       statusbar() : _parts(this){}
 
     protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | SBARS_TOOLTIPS | SBARS_SIZEGRIP;
+      static constexpr TCHAR sub_window_class_name[] = STATUSCLASSNAME;
+      static constexpr TCHAR window_class_name[] = _T("wtf_statusbar");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       friend struct part;
       friend struct part::collection;
       part::collection _parts;

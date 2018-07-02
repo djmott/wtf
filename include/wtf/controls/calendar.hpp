@@ -32,15 +32,18 @@ namespace wtf {
       messages::wm_command
     > {
     
-      static constexpr TCHAR sub_window_class_name[] = MONTHCAL_CLASS; 
-      static constexpr TCHAR window_class_name[] = _T("wtf_calendar"); 
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
-
       rect<coord_frame::client> minimum_size() const {
         rect<coord_frame::client> r;
         wtf::exception::throw_lasterr_if(::SendMessage(*this, MCM_GETMINREQRECT, 0, reinterpret_cast<LPARAM>(&r)), [](LRESULT L) {return !L; });
         return r;
       }
+    protected:
+      void add(window &) override {}
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr TCHAR sub_window_class_name[] = MONTHCAL_CLASS;
+      static constexpr TCHAR window_class_name[] = _T("wtf_calendar");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+
     };
 
   }

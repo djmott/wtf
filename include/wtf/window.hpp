@@ -14,12 +14,12 @@ namespace wtf{
   /** 
   @class window 
   @brief Super class of all controls and forms
+  @details This class is inherited as the final super-class during hierarchy generation
   */ 
   struct window{
-    template <typename, template <typename> typename...> friend struct window_impl;
-
+    //! @brief The windows extended style
     static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
-
+    //! @brief The windows style
     static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_TABSTOP;
 
     virtual ~window() { if (_handle) ::DestroyWindow(_handle); _handle = nullptr; }
@@ -45,23 +45,28 @@ namespace wtf{
 
     window(window&& src) noexcept { *this = std::move(src); }
 
-
+    //! @brief Invoked after the window and all child windows have been created
     callback<void(window *)> OnCreated;
-
+    //! @brief Creates the window and child windows
     virtual int run() = 0;
-    
+    //! @brief Returns the parent window or nullptr for top-level forms
     virtual const window * const parent() const noexcept { return _parent; }
-
+    //! @brief collection of child windows
     virtual const std::vector<window*>& children() const noexcept { return _children; }
-
+    //! @brief returns the type info of the concrete implementation
     virtual const std::type_info& type() const noexcept = 0;
 
+    //! @brief provides access to the underlying window handle
+    //!@{
     virtual HWND handle() const { return _handle; }
 
     virtual HWND operator*() const noexcept { return _handle; }
 
     virtual operator HWND() const noexcept { return _handle; }
-
+    //!@}
+    //!@brief Adds a child window to the children collection
+    //!@details Child windows are created when run() is invoked on the parent.
+    //!This results in recursive parent/child window creation, typically as a result of run() invoked on a form.
     virtual void add(window& oChild) {
       _children.push_back(static_cast<window*>(&oChild));
       oChild._parent = this;
@@ -77,25 +82,42 @@ namespace wtf{
     }
 
   protected:
+    template <typename, template <typename> typename...> friend struct window_impl;
 
     window * _parent = nullptr;
     HWND _handle = nullptr;
     std::vector<window*> _children;
-
+    //! @brief Indicates the window and all child windows have been created.
     virtual void on_created() { OnCreated(this); }
-      
+    //! @brief Handle various window messages
+    //! @param[in,out] msg Details of the message
     virtual void handle_msg(wtf::window_message& msg) = 0;
-
+#if !DOXY_INVOKED
+    //! @internal
     virtual void fwd_msg(wtf::window_message&, const std::type_info&) = 0;
+    //! @endinternal
+#endif
   };
   
-  
+
+  /** @class window_impl
+  @brief Specialization of window_impl that participates in the hierarchy generation pattern.
+  @details Policies are recursively inherited by inheriting this class and passing one or more policies as template parameters
+  @tparam _impl_t The concrete implementation
+  @tparam _head_t,_tail_t List of policies to inherit
+  */
   template <typename _impl_t, template <typename> typename _head_t, template <typename> typename..._tail_t>
   struct window_impl<_impl_t, _head_t, _tail_t...> : DOXY_INHERIT_WINDOW _head_t<window_impl<_impl_t, _tail_t...>> {
     
   protected:
     template <typename, template <typename> typename...> friend struct window_impl;
 
+    /** @brief forwards messages to inherited policies
+    @details Messages are forwarded to each policy in the generated hierarchy. Policies may or may not override handle_msg.
+    @param[in,out] msg The window message
+    @param[in] last_handler is used to determine whether or not handle_msg has been invoked on a policy for a given message.
+    It prevents handle_msg from being invoked twice on a super-class when _head_t does not override handle_msg.
+    */
     void fwd_msg(wtf::window_message& msg, const std::type_info& last_handler) override {
       using super = _head_t<window_impl<_impl_t, _tail_t...>>;
       if (msg.bhandled) return;
@@ -115,11 +137,17 @@ namespace wtf{
     }
   };
 
-  
+  /** @class window_impl
+  @brief Specialization of window_impl that participates in the hierarchy generation pattern.
+  @details This is the final generator that is selected when no policies are specified. It causes the concrete impelemntation to inherit from window.
+  @tparam _impl_t The concrete implementation
+  */
   template <typename _impl_t> struct window_impl<_impl_t> : window {
 
+    //! @brief returns the type info of the concrete implementation
     const std::type_info& type() const noexcept final { return typeid(_impl_t); }
 
+    //! @brief Creates the window and child windows
     int run() override {
       const auto & oWC = _impl_t::window_class_type<window_proc>::get();
       window::_handle = wtf::exception::throw_lasterr_if(
@@ -133,9 +161,9 @@ namespace wtf{
   protected:
     template <typename, template <typename> typename...> friend struct window_impl;
 
-    /* @brief The main message handler of WTF controls and forms.
+    /** @brief The main message handler of WTF controls and forms.
     @details messages arrive here from windows then are propagated from the implementation, through the
-    inheritance chain and back through all the handle_message overrides in order from the
+    inheritance hierarchy and back through all the handle_message overrides in order from the
     bottom most inherited (_ImplT::handle_message) to top most parent (this class::handle_message)
     */
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {

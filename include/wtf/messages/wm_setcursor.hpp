@@ -9,13 +9,11 @@ namespace wtf{
     template <typename _super_t>
     struct wm_setcursor : _super_t{
 
-
     protected:
 
       template <typename, template <typename> typename...> friend struct window_impl;
       
       virtual void on_wm_setcursor(wm_nchittest_flags) {}
-
 
       void handle_msg(wtf::window_message& msg) override {
         if (WM_SETCURSOR == msg.umsg) {
