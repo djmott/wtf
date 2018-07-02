@@ -10,7 +10,8 @@ struct ProgressBars : wtf::controls::label {
   ProgressBars() : wtf::controls::label(), _hprogressbar(), _vprogressbar(){
     add(_hprogressbar);
     add(_vprogressbar);
-
+    _hprogressbar.orientation(orientations::horizontal);
+    _vprogressbar.orientation(orientations::vertical);
     OnCreated += [this](...) {
       _hprogressbar.set_range(0, 100);
       _hprogressbar.value(50);
@@ -22,7 +23,7 @@ struct ProgressBars : wtf::controls::label {
       _vprogressbar.move(10, 40, 200, this->height() - 60);
     };
   }
-  controls::hprogressbar _hprogressbar;
-  controls::vprogressbar _vprogressbar;
+  controls::progressbar _hprogressbar;
+  controls::progressbar _vprogressbar;
 
 };

@@ -10,7 +10,7 @@ namespace wtf {
   namespace controls {
     struct image_list : window {
 
-      enum class types {
+      enum class styles {
         color = ILC_COLOR, //!< Use the default behavior if none of the other ILC_COLOR* flags is specified.Typically, the default is ILC_COLOR4, but for older display drivers, the default is ILC_COLORDDB.
         color4 = ILC_COLOR4,//!< Use a 4 - bit(16 - color) device - independent bitmap(DIB) section as the bitmap for the image list.
         color8 = ILC_COLOR8,//!< Use an 8 - bit DIB section.The colors used for the color table are the same colors as the halftone palette.
@@ -23,15 +23,15 @@ namespace wtf {
         perite_mirror = ILC_PERITEMMIRROR,//!< Version 6.00.Specify this flag if ILC_MIRROR is used on an image list that contains a strip of images.In order for this flag to have any effect, ILC_MIRROR must also be specified.
       };
 
-      types type() const { return _types; }
-      void type(types newval) { _types = newval; }
+      styles style() const { return _style; }
+      void style(styles newval) { _style = newval; }
 
     protected:
       int run() override {
-        _himagelist = ImageList_Create()
+        //_himagelist = ImageList_Create()
       }
       HIMAGELIST _himagelist;
-      types _type;
+      styles _style;
     };
   }
 

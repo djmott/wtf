@@ -13,16 +13,13 @@
   DOXY_INHERIT_WM_COMMAND
 
 namespace wtf {
-  namespace policy {
+  namespace controls {
 
-    /** @class progressbar_impl
-    @brief Default progress bar implementation
-    @tparam _impl_t the concrete implementation
-    @tparam _orientation Indicates a vertical or horizontal progress bar
-    @ingroup Policies
+    /** @class progressbar
+    @brief Displays the progress of an operation
+    @ingroup Controls
     */
-    template <typename _impl_t, orientations _orientation>
-    struct progressbar_impl : DOXY_INHERIT_PROGRESSBAR_SUPER window_impl<_impl_t,
+    struct progressbar : DOXY_INHERIT_PROGRESSBAR_SUPER window_impl<progressbar,
       policy::has_text,
       policy::has_font,
       policy::has_enable,
@@ -33,42 +30,44 @@ namespace wtf {
 
       void set_range(uint32_t min, uint32_t max) { ::SendMessage(*this, PBM_SETRANGE32, min, max); }
            
-      uint32_t value() const { return ::SendMessage(*this, PBM_GETPOS, 0, 0); }
+      uint32_t value() const { return static_cast<uint32_t>(::SendMessage(*this, PBM_GETPOS, 0, 0)); }
 
       void value(uint32_t newval) { ::SendMessage(*this, PBM_SETPOS, newval, 0); }
 
+      //! @brief determines if smooth style is enabled
+      bool smooth() const { return (window::_style & PBS_SMOOTH ? true : false); }
+      //! @brief sets the smooth style
+      //! @details NOTE: this style can only be set prior to calling run()
+      void smooth(bool newval) {
+        window::_style &= ~PBS_SMOOTH;
+        window::_style |= (newval ? PBS_SMOOTH : 0);
+      }
+
+      //! @brief gets the orientation
+      orientations orientation() const { return (window::_style & PBS_VERTICAL ? orientations::vertical : orientations::horizontal); }
+      //! @brief sets the orientation
+      //! @details NOTE: this style can only be set prior to calling run()
+      void orientation(orientations newval) {
+        window::_style &= ~PBS_VERTICAL;
+        window::_style |= (orientations::vertical == newval ? PBS_VERTICAL : 0);
+      }
+
+      //! @brief gets the marquee style
+      bool marquee() const { return (window::_style & PBS_MARQUEE ? true : false); }
+      //! @brief sets the marquee style
+      //! @details NOTE: this style can only be set prior to calling run()
+      void marquee(bool newval) {
+        window::_style &= ~PBS_MARQUEE;
+        window::_style |= (newval ? PBS_MARQUEE : 0);
+      }
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr DWORD Style = window::Style | PBS_SMOOTH | (orientations::vertical == _orientation ? PBS_VERTICAL : 0);
       static constexpr TCHAR sub_window_class_name[] = PROGRESS_CLASS;
 
-    };
-  }
-
-  namespace controls{
-    /** @class hprogressbar
-    @brief a horizontal progress bar
-    @ingroup Controls
-    */
-    struct hprogressbar : policy::progressbar_impl<hprogressbar, orientations::horizontal> {
-    protected:
-      template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr TCHAR window_class_name[] = _T("wtf_hprogressbar");
+      static constexpr TCHAR window_class_name[] = _T("wtf_progressbar");
 
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
-    };
-    /** @class vprogressbar
-    @brief a vertical progress bar
-    @ingroup Controls
-    */
-    struct vprogressbar : policy::progressbar_impl<vprogressbar, orientations::vertical> {
-    protected:
-      template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr TCHAR window_class_name[] = _T("wtf_vprogressbar");
-
-
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+    
     };
   }
-
 }

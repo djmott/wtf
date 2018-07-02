@@ -15,12 +15,13 @@
 
 namespace wtf {
 
-  namespace policy {
-    /** @class button_impl
-    @brief default button implementation
+  namespace controls {
+    /** @class button
+    @brief A standard clickable push style button.
+    @ingroup Controls
+    @image html button.png
     */
-    template <typename _impl_t>
-    struct button_impl : DOXY_INHERIT_BUTTON_SUPER window_impl<_impl_t,
+    struct button : DOXY_INHERIT_BUTTON_SUPER window_impl<button,
       policy::has_text,
       policy::has_font,
       policy::has_enable,
@@ -44,39 +45,23 @@ namespace wtf {
 #else
       static constexpr TCHAR sub_window_class_name[] = _T("BUTTON");
 #endif
+      static constexpr TCHAR window_class_name[] = _T("wtf_button");
+      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
     private:
       void add(window &) override {}
 
     };
 
-  }
-
-  namespace controls {
-
-    /** @class button
-    @brief A standard clickable push style button.
-    @ingroup Controls
-    @image html button.png
-    */
-    struct button : policy::button_impl<button>{
-    protected:
-      template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr TCHAR window_class_name[] = _T("wtf_button");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
-    };
-  
 
     /** @class checkbox
     @brief A dual state (boolean) check box.
     @ingroup Controls
     @image html checkbox.png
     */
-    struct checkbox : policy::button_impl<checkbox> {
-    protected:
-      template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr TCHAR window_class_name[] = _T("wtf_checkbox");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
-      static constexpr DWORD Style = window::Style | BS_AUTOCHECKBOX;
+    struct checkbox : button {
+      checkbox() {
+        window::_style |= BS_AUTOCHECKBOX;
+      }
     };
 
 
@@ -86,12 +71,10 @@ namespace wtf {
     @ingroup Controls
     @image html radio_button.png
     */
-    struct radio_group : policy::button_impl<radio_group> {
-    protected:
-      template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr TCHAR window_class_name[] = _T("wtf_radio_group");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
-      static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON | WS_GROUP;
+    struct radio_group : button {
+      radio_group() {
+        window::_style |= (BS_AUTORADIOBUTTON | WS_GROUP);
+      }
     };
 
 
@@ -100,12 +83,10 @@ namespace wtf {
     @ingroup Controls
     @image html radio_button.png
     */
-    struct radio_button : policy::button_impl<radio_button> {
-    protected:
-      template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr TCHAR window_class_name[] = _T("wtf_radio_button");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
-      static constexpr DWORD Style = window::Style | BS_AUTORADIOBUTTON;
+    struct radio_button : button {
+      radio_button() {
+        window::_style |= BS_AUTORADIOBUTTON;
+      }
     };
 
     /** @class tristate
@@ -114,12 +95,10 @@ namespace wtf {
     @ingroup Controls
      @image html tristate.png
    */
-    struct tristate : policy::button_impl<tristate> {
-    protected:
-      template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr TCHAR window_class_name[] = _T("wtf_tristate");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
-      static constexpr DWORD Style = window::Style | BS_AUTO3STATE;
+    struct tristate : button {
+      tristate() {
+        window::_style |= BS_AUTO3STATE;
+      }
     };
 
   }

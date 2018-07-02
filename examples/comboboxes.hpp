@@ -7,7 +7,9 @@ struct ComboBoxes : wtf::controls::label {
     add(_simple);
     add(_dropdown);
     add(_dropdown_list);
-
+    _simple.style(combobox::styles::simple);
+    _dropdown.style(combobox::styles::dropdown);
+    _dropdown_list.style(combobox::styles::dropdown_list);
     OnCreated += [this](...) {
       _simple.move(10, 10, 100, 100);
       _dropdown.move(120, 10, 100, 100);
@@ -21,7 +23,7 @@ struct ComboBoxes : wtf::controls::label {
       }
     };
   }
-  controls::simple_combobox _simple;
-  controls::dropdown_combobox _dropdown;
-  controls::dropdown_list_combobox _dropdown_list;
+  controls::combobox _simple;
+  controls::combobox _dropdown;
+  controls::combobox _dropdown_list;
 };

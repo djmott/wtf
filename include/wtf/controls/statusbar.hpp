@@ -103,16 +103,18 @@ namespace wtf {
       part::collection& parts() { return _parts; }
       const part::collection& parts() const { return _parts; }
 
-      statusbar() : _parts(this){}
+      statusbar() : _parts(this){
+        window::_style |= SBARS_SIZEGRIP;
+      }
 
     protected:
+      friend struct part;
+      friend struct part::collection;
       template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | SBARS_TOOLTIPS | SBARS_SIZEGRIP;
+
       static constexpr TCHAR sub_window_class_name[] = STATUSCLASSNAME;
       static constexpr TCHAR window_class_name[] = _T("wtf_statusbar");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
-      friend struct part;
-      friend struct part::collection;
       part::collection _parts;
 
       void set_parts() {

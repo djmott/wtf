@@ -47,7 +47,7 @@ struct frmMain : form {
 
 
   wtf::controls::tab _tab;
-  wtf::controls::richedit<true> _richedit;
+  wtf::controls::richedit _richedit;
   ListViews _listview;
   Buttons _buttons;
   ComboBoxes _comboboxes;
@@ -86,7 +86,7 @@ int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
           _ctl.move(0, 0, 100, 25);
         };
       }
-      edit _ctl;
+      richedit _ctl;
     };
     return frm().run();
   }

@@ -22,11 +22,9 @@ namespace wtf {
 
     /** @class richedit
     @brief A rich edit control enables the user to enter, edit, print, and save text.
-    @tparam _multiline indicates that multiple lines of text are permitted.
     @ingroup Controls
     */
-    template <bool _multiline>
-    struct richedit : DOXY_INHERIT_RICHEDIT_SUPER window_impl<richedit<_multiline>,
+    struct richedit : DOXY_INHERIT_RICHEDIT_SUPER window_impl<richedit,
       policy::has_border,
       policy::has_font,
       policy::has_text,
@@ -43,11 +41,21 @@ namespace wtf {
 
 
       richedit() : _hdll(nullptr){
+        window::_style |= (ES_MULTILINE | ES_WANTRETURN);
         _hdll = wtf::exception::throw_lasterr_if(::LoadLibrary(_T("msftedit.dll")), [](HMODULE h) { return nullptr == h; });
       }
 
       virtual ~richedit() {
         FreeLibrary(_hdll);
+      }
+
+      //! @brief gets the multi-line style
+      bool multiline() const noexcept { return (window::_style & ES_MULTILINE ? true : false); }
+      //! @brief sets the multi-line style
+      //! @details NOTE: this style can only be set prior to calling run()
+      void multiline(bool newval) {
+        window::_style &= ~ES_MULTILINE;
+        window::_style |= (newval ? ES_MULTILINE : 0);
       }
 
       struct paragraph_formatting : PARAFORMAT2{
@@ -113,30 +121,30 @@ namespace wtf {
       void max_chars(uint16_t newval) { ::SendMessage(*this, EM_EXLIMITTEXT, 0, newval); }
 
       //! Disables scroll bars instead of hiding them when they are not needed.
-      bool disable_noscroll() const { return _::richedit_impl<richedit<_multiline>>::template get_style_bit<ES_DISABLENOSCROLL>(); }
+      bool disable_noscroll() const { return get_style_bit<ES_DISABLENOSCROLL>(); }
 
       //! Disables scroll bars instead of hiding them when they are not needed.
-      void disable_noscroll(bool newval) { _::richedit_impl<richedit<_multiline>>::template set_style_bit<ES_DISABLENOSCROLL>(newval); }
+      void disable_noscroll(bool newval) { set_style_bit<ES_DISABLENOSCROLL>(newval); }
 
       //! Preserves the selection when the control loses the focus. By default, the entire contents of the control are selected when it regains the focus.
-      bool save_selection() const { return _::richedit_impl<richedit<_multiline>>::template get_style_bit<ES_SAVESEL>(); }
+      bool save_selection() const { return get_style_bit<ES_SAVESEL>(); }
 
       //! Preserves the selection when the control loses the focus. By default, the entire contents of the control are selected when it regains the focus.
-      void save_selection(bool newval) { return _::richedit_impl<richedit<_multiline>>::template set_style_bit<ES_SAVESEL>(newval); }
+      void save_selection(bool newval) { return set_style_bit<ES_SAVESEL>(newval); }
 
-      bool auto_hscroll() const { return _::richedit_impl<richedit<_multiline>>::get_style_bit<ES_AUTOHSCROLL>(); }
-      void auto_hscroll(bool newval) { return _::richedit_impl<richedit<_multiline>>::template set_style_bit<ES_AUTOHSCROLL>(newval); }
+      bool auto_hscroll() const { return get_style_bit<ES_AUTOHSCROLL>(); }
+      void auto_hscroll(bool newval) { return set_style_bit<ES_AUTOHSCROLL>(newval); }
 
       void show_hscroll(bool newval) const { ::SendMessage(*this, EM_SHOWSCROLLBAR, SB_HORZ, (newval ? TRUE : FALSE)); }
 
-      bool auto_vscroll() const { return _::richedit_impl<richedit<_multiline>>::get_style_bit<ES_AUTOVSCROLL>(); }
-      void auto_vscroll(bool newval) { return _::richedit_impl<richedit<_multiline>>::template set_style_bit<ES_AUTOVSCROLL>(newval); }
+      bool auto_vscroll() const { return get_style_bit<ES_AUTOVSCROLL>(); }
+      void auto_vscroll(bool newval) { return set_style_bit<ES_AUTOVSCROLL>(newval); }
 
       void show_vscroll(bool newval) const { ::SendMessage(*this, EM_SHOWSCROLLBAR, SB_VERT, (newval ? TRUE : FALSE)); }
 
 
-      bool want_return() const { return _::richedit_impl<richedit<_multiline>>::get_style_bit<ES_WANTRETURN>(); }
-      void want_return(bool newval) { return _::richedit_impl<richedit<_multiline>>::template set_style_bit<ES_WANTRETURN>(newval); }
+      bool want_return() const { return get_style_bit<ES_WANTRETURN>(); }
+      void want_return(bool newval) { return set_style_bit<ES_WANTRETURN>(newval); }
 
       uint32_t text_length() const {
         GETTEXTLENGTHEX gt;
@@ -180,7 +188,7 @@ namespace wtf {
 
       paragraph_formatting paragraph_format() const {
         paragraph_formatting oRet;
-        ::SendMessage(*this, EM_GETPARAFORMAT, 0, &oRet);
+        ::SendMessage(*this, EM_GETPARAFORMAT, 0, reinterpret_cast<LPARAM>(&oRet));
         return oRet;
       }
 
@@ -190,7 +198,7 @@ namespace wtf {
 
       character_formatting character_format() const {
         character_formatting oRet;
-        ::SendMessage(*this, EM_GETCHARFORMAT, SCF_SELECTION, &oRet);
+        ::SendMessage(*this, EM_GETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&oRet));
       }
 
       void character_format(const character_formatting& newval) {
@@ -199,7 +207,6 @@ namespace wtf {
 
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr DWORD Style = window::Style | (_multiline ? ES_MULTILINE : 0);
 
       static constexpr TCHAR window_class_name[] = _T("wtf_richedit");
       static constexpr TCHAR sub_window_class_name[] = MSFTEDIT_CLASS;

@@ -276,7 +276,9 @@ namespace wtf {
       
       };
 
-      listview() : _items(this, nullptr), _columns(this) {}
+      listview() : _items(this, nullptr), _columns(this) {
+        window::_style |= (LVS_REPORT | LVS_EDITLABELS | LVS_AUTOARRANGE | LVS_SORTASCENDING);
+      }
 
       styles style() const {
         auto iStyle = wtf::exception::throw_lasterr_if(::GetWindowLong(*this, GWL_STYLE), [](LONG l) { return !l; });
@@ -318,7 +320,6 @@ namespace wtf {
 
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr DWORD Style = window::Style | LVS_REPORT | LVS_EDITLABELS | LVS_AUTOARRANGE | LVS_SORTASCENDING;
       static constexpr TCHAR sub_window_class_name[] = WC_LISTVIEW;
       static constexpr TCHAR window_class_name[] = _T("wtf_listview");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;

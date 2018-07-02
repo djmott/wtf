@@ -17,11 +17,6 @@ namespace wtf{
   @details This class is inherited as the final super-class during hierarchy generation
   */ 
   struct window{
-    //! @brief The windows extended style
-    static constexpr DWORD ExStyle = WS_EX_NOPARENTNOTIFY;
-    //! @brief The windows style
-    static constexpr DWORD Style = WS_CHILD | WS_VISIBLE | WS_TABSTOP;
-
     virtual ~window() { if (_handle) ::DestroyWindow(_handle); _handle = nullptr; }
 
     window(const window&) = delete;
@@ -87,6 +82,12 @@ namespace wtf{
     window * _parent = nullptr;
     HWND _handle = nullptr;
     std::vector<window*> _children;
+
+    //! @brief The windows extended style
+    DWORD _exstyle = WS_EX_NOPARENTNOTIFY;
+    //! @brief The windows style
+    DWORD _style = WS_CHILD | WS_VISIBLE | WS_TABSTOP;
+
     //! @brief Indicates the window and all child windows have been created.
     virtual void on_created() { OnCreated(this); }
     //! @brief Handle various window messages
@@ -151,7 +152,7 @@ namespace wtf{
     int run() override {
       const auto & oWC = _impl_t::window_class_type<window_proc>::get();
       window::_handle = wtf::exception::throw_lasterr_if(
-        ::CreateWindowEx(_impl_t::ExStyle, oWC.lpszClassName, nullptr, _impl_t::Style,
+        ::CreateWindowEx(window::_exstyle, oWC.lpszClassName, nullptr, window::_style,
           CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, (window::_parent ? window::_parent->_handle : nullptr),
           nullptr, instance_handle(), this), [](HWND h) noexcept { return nullptr == h; });
       this->on_created();

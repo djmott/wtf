@@ -21,8 +21,8 @@ namespace wtf {
 
     protected:
       //! @brief Gets a window style value
-      LONG_PTR get_style_value() const {
-        return wtf::exception::throw_lasterr_if(::GetWindowLongPtr(*this, GWL_STYLE), [](LONG_PTR l) { return !l; });
+      DWORD get_style_value() const {
+        return wtf::exception::throw_lasterr_if(static_cast<DWORD>(::GetWindowLongPtr(*this, GWL_STYLE)), [](DWORD l) { return !l; });
       }
 
       //! @brief Gets a window style bits
@@ -32,7 +32,7 @@ namespace wtf {
       }
 
       //! @brief Sets a window style value
-      void set_style_value(LONG_PTR newval) {
+      void set_style_value(DWORD newval) {
         wtf::exception::throw_lasterr_if(::SetWindowLongPtr(*this, GWL_STYLE, newval), [](LONG_PTR l) { return !l; });
       }
       //! @brief Sets a window style bits

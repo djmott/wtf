@@ -79,6 +79,16 @@ namespace wtf {
       uint16_t text_limit() const { return static_cast<uint16_t>(::SendMessage(*this, EM_GETLIMITTEXT, 0, 0)); }
       //! @brief sets the text limit
       void text_limit(uint16_t newval) { ::SendMessage(*this, EM_LIMITTEXT, newval, 0); }
+
+      //! @brief gets the multi-line style
+      bool multiline() const { return (window::_style & ES_MULTILINE ? true : false); }
+      //! @brief sets the edit box to multiline
+      //! @details NOTE: this only takes effect when set prior to calling run()
+      void multiline(bool newval){
+        window::_style &= ~ES_MULTILINE;
+        window::_style |= (newval ? ES_MULTILINE : 0);
+      }
+
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 #if WTF_USE_COMMON_CONTROLS
@@ -87,18 +97,6 @@ namespace wtf {
       static constexpr TCHAR sub_window_class_name[] = _T("EDIT");
 #endif
       static constexpr TCHAR window_class_name[] = _T("wtf_edit");
-      template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
-    };
-
-    /** @class multiline_edit
-    @brief An editable box of text
-    @ingroup Controls
-    */
-    struct multiline_edit : edit {
-    protected:
-      template <typename, template <typename> typename...> friend struct window_impl;
-      static constexpr DWORD Style = window::Style | ES_MULTILINE;
-      static constexpr TCHAR window_class_name[] = _T("wtf_multiline_edit");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
     };
     

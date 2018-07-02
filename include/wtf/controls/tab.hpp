@@ -71,7 +71,9 @@ namespace wtf {
         window * _window;
       };
 
-      tab() : _items(this) {}
+      tab() : _items(this) {
+        window::_exstyle |= WS_EX_CONTROLPARENT;
+      }
 
       //! @brief invoked when the user clicks the control
       callback<void(window*)> OnClick;
@@ -98,7 +100,7 @@ namespace wtf {
       void multi_line(bool newval) { return set_style_bit<TCS_MULTILINE>(newval); }
 
       //! @brief gets the placement of the tab buttons
-      wtf::quadrants placement() const {
+      quadrants placement() const {
         auto iStyle = get_style_value() & (TCS_BOTTOM | TCS_VERTICAL | TCS_MULTILINE);
         switch (iStyle) {
           case 0: return quadrants::top;
@@ -108,14 +110,11 @@ namespace wtf {
         }
       }
       //! @brief sets the placement of the tab buttons
-      void placement(wtf::quadrants newval) {
+      void placement(quadrants newval) {
         auto iStyle = get_style_value() & ~(TCS_BOTTOM | TCS_VERTICAL | TCS_MULTILINE);
-        switch (newval) {
-          case quadrants::top: break;
-          case quadrants::bottom: iStyle |= TCS_BOTTOM; break;
-          case quadrants::left: iStyle |= TCS_VERTICAL; break;
-          default: iStyle |= (TCS_VERTICAL | TCS_RIGHT); break;
-        }
+        iStyle |= (quadrants::bottom == newval ? TCS_BOTTOM : 0);
+        iStyle |= (quadrants::left == newval ? TCS_VERTICAL : 0);
+        iStyle |= (quadrants::right == newval ? (TCS_VERTICAL | TCS_RIGHT) : 0);
         set_style_value(iStyle);
       }
 
@@ -134,7 +133,6 @@ namespace wtf {
 
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
-      static const DWORD ExStyle = window::ExStyle | WS_EX_CONTROLPARENT;
 
       static constexpr TCHAR sub_window_class_name[] = WC_TABCONTROL;
       static constexpr TCHAR window_class_name[] = _T("wtf_tab");

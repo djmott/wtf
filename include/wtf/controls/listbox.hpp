@@ -54,7 +54,6 @@ namespace wtf {
       };
 
 
-
     protected:
       template <typename, template <typename> typename...> friend struct window_impl;
 #if WTF_USE_COMMON_CONTROLS
