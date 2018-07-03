@@ -7,10 +7,9 @@ namespace wtf{
 
   #define throw_lasterr_if(_test, _expression) _throw_lasterr_if( _test, __FILE__, __LINE__, #_test, _expression )
 
-#define throw_err( ... ) _throw_err( __VA_ARGS__ , __FILE__, __LINE__, # __VA_ARGS__ )
+  #define throw_err( ... ) _throw_err( __VA_ARGS__ , __FILE__, __LINE__, # __VA_ARGS__ )
 
     struct exception : std::runtime_error{
-      using _super_t = std::runtime_error;
 
       template<typename _TestT, typename _ExprT>
       static _TestT _throw_lasterr_if(_TestT test, const char *sfile, int line, const char *sTest, _ExprT expr) noexcept(false) {
@@ -26,7 +25,7 @@ namespace wtf{
 
       ~exception() = default;
 
-      exception(const char *sfile, int line, const char *code, DWORD last_error) : _super_t(""), _file(sfile),
+      exception(const char *sfile, int line, const char *code, DWORD last_error) : std::runtime_error(""), _file(sfile),
         _code(code),
         _what(code),
         _line(line)
@@ -82,13 +81,14 @@ namespace wtf{
     #elif defined(_MSC_VER)
       char const* what() const override { return _what.c_str(); }
     #endif
-
+    protected:
+      exception(const char *sfile, int line, const char *code, const char * what) : std::runtime_error(""), _file(sfile), _line(line), _code(code), _what(what){}
     private:
 
       std::string _file;
+      int _line;
       std::string _code;
       std::string _what;
-      int _line;
     };
 
 

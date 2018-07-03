@@ -65,7 +65,7 @@ namespace wtf {
       }
 
     protected:
-      COLORREF _colorref;
+      COLORREF _colorref = 0;
     };
 
     template<system_colors _id>

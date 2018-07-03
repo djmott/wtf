@@ -33,6 +33,13 @@
   #define WTF_USE_RICHEDIT 1
 #endif
 
+/** @def WTF_USE_COMMON_DIALOGS
+@brief Enables/disables the use and dependency of common dialogs implemented in comdlg32.dll
+*/
+#if !defined(WTF_USE_COMMON_DIALOGS)
+  #define WTF_USE_COMMON_DIALOGS 1
+#endif
+
 /** @def WTF_DEBUG_MESSAGES
 @brief Debug windows messages with OutputDebugString
 */
@@ -43,6 +50,7 @@
     #define WTF_DEBUG_MESSAGES 0
   #endif
 #endif
+
 
 #define OEMRESOURCE
 
@@ -73,6 +81,12 @@
 
 #if WTF_USE_RICHEDIT
   #include <richedit.h>
+#endif
+
+#if WTF_USE_COMMON_DIALOGS
+  #include <commdlg.h>
+  #include <cderr.h>
+  #pragma comment(lib, "comdlg32.lib")
 #endif
 
 #include <algorithm>
@@ -413,6 +427,12 @@ namespace wtf {
 
 #if WTF_USE_RICHEDIT
   #include "controls/richedit.hpp"
+#endif
+
+#if WTF_USE_COMMON_DIALOGS
+  #include "dialogs/exception.hpp"
+  #include "dialogs/choose_color.hpp"
+  #include "dialogs/file_open_save.hpp"
 #endif
 
 #include "custom/splitter.hpp"
