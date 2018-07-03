@@ -312,7 +312,10 @@ namespace wtf {
 #include "_/SystemParameters.hpp"
 
 #include "messages/messages.hpp"
+#include "messages/nm_click.hpp"
+#include "messages/nm_dblclick.hpp"
 #include "messages/nm_killfocus.hpp"
+#include "messages/nm_rclick.hpp"
 #include "messages/nm_setfocus.hpp"
 #include "messages/wm_activate.hpp"
 #include "messages/wm_char.hpp"

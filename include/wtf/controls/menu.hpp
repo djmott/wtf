@@ -6,6 +6,19 @@
 namespace wtf {
   namespace controls {
     
+    struct menu_separator : MENUITEMINFO {
+      ~menu_separator() = default;
+      menu_separator(const menu_separator&) = delete;
+      menu_separator& operator=(const menu_separator&) = delete;
+      menu_separator(){
+        memset(this, 0, sizeof(MENUITEMINFO));
+        cbSize = sizeof(MENUITEMINFO);
+        fMask = MIIM_DATA | MIIM_FTYPE;
+        fType = MFT_SEPARATOR;
+        dwItemData = reinterpret_cast<ULONG_PTR>(this);
+      }
+    };
+
     /** @class menu_item
     @brief a clickable menu command
     @ingroup Controls
@@ -61,13 +74,19 @@ namespace wtf {
         flags |= (vertical_alignment::center== valign ? TPM_VCENTERALIGN: 0);
         auto bRet = TrackPopupMenuEx(*this, flags, pos.x, pos.y, *_parent, nullptr);
       }
-      //! @brief adds a menu_item to the popup_menu
-      void add(menu_item& oMenu) {
+      //! @brief adds a menu_item, menu_separator or popup_menu
+      template <typename _ty>
+      void add(_ty& oMenu) {
+        static_assert(std::is_same<_ty, menu_item>::value ||
+          std::is_same<_ty, popup_menu>::value ||
+          std::is_same<_ty, menu_separator>::value
+          , "Invalid parameter type.");
         _items.push_back(&oMenu);
         if (_hmenu) {
           wtf::exception::throw_lasterr_if(::InsertMenuItem(_hmenu, oMenu.wID, FALSE, &oMenu), [](BOOL b) { return !b; });
         }
       }
+
 
     protected:
       friend struct menu_bar;
@@ -79,6 +98,9 @@ namespace wtf {
         _hmenu = wtf::exception::throw_lasterr_if(::CreatePopupMenu(), [](HMENU h) { return nullptr == h; });
         hSubMenu = _hmenu;
         for (auto & oItem : _items) {
+          if (oItem->fMask & MIIM_SUBMENU) {
+            static_cast<popup_menu*>(oItem)->run();
+          }
           wtf::exception::throw_lasterr_if(::InsertMenuItem(_hmenu, oItem->wID, FALSE, oItem), [](BOOL b) { return !b; });
         }
         return 0;

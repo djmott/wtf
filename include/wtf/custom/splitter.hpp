@@ -14,12 +14,10 @@ namespace wtf {
       wtf::messages::wm_showwindow
     > {
 
-      static constexpr DWORD Style = WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN;
-      static constexpr TCHAR window_class_name[] = _T("wtf_splitter");
-      template <WNDPROC wp> using window_class_type = window_class<window_class_name, wp>;
 
       template <typename _first_t, typename _second_t>
       splitter(_first_t& first, _second_t& second) : slider(this), _first(&first), _second(&second) {
+        window::_style |= WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN;
         add(slider);
         add(first);
         add(second);
@@ -44,6 +42,10 @@ namespace wtf {
       }
 
     protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
+      static constexpr TCHAR window_class_name[] = _T("wtf_splitter");
+      template <WNDPROC wp> using window_class_type = window_class<window_class_name, wp>;
+
       window * _first;
       window * _second;
       int _slider_width = 10;

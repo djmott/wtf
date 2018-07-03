@@ -186,13 +186,15 @@ PREDEFINED            += DOXY_INHERIT_HAS_SIZE=wtf::policy::has_size,
 PREDEFINED            += DOXY_INHERIT_HAS_STYLE=wtf::policy::has_style,
 PREDEFINED            += DOXY_INHERIT_HAS_TEXT=wtf::policy::has_text,
 PREDEFINED            += DOXY_INHERIT_WINDOW=wtf::window,
+PREDEFINED            += DOXY_INHERIT_NM_CLICK=wtf::messages::nm_click,
+PREDEFINED            += DOXY_INHERIT_NM_DBLCLICK=wtf::messages::nm_dblclick,
 PREDEFINED            += DOXY_INHERIT_NM_KILLFOCUS=wtf::messages::nm_killfocus,
+PREDEFINED            += DOXY_INHERIT_NM_RCLICK=wtf::messages::nm_rclick,
 PREDEFINED            += DOXY_INHERIT_NM_SETFOCUS=wtf::messages::nm_setfocus,
 PREDEFINED            += DOXY_INHERIT_WM_COMMAND=wtf::messages::wm_command,
 PREDEFINED            += DOXY_INHERIT_WM_NOTIFY=wtf::messages::wm_notify,
 PREDEFINED            += DOXY_INHERIT_WM_SHOWWINDOW=wtf::messages::wm_showwindow,
 PREDEFINED            += DOXY_INHERIT_WM_SIZE=wtf::messages::wm_size,
-
 
 EXPAND_AS_DEFINED      = YES
 SKIP_FUNCTION_MACROS   = YES

@@ -7,7 +7,13 @@
   DOXY_INHERIT_WINDOW \
   DOXY_INHERIT_HAS_FONT \
   DOXY_INHERIT_HAS_MOVE \
-  DOXY_INHERIT_WM_NOTIFY
+  DOXY_INHERIT_NM_KILLFOCUS \
+  DOXY_INHERIT_NM_SETFOCUS \
+  DOXY_INHERIT_NM_CLICK \
+  DOXY_INHERIT_NM_RCLICK \
+  DOXY_INHERIT_NM_DBLCLICK \
+  DOXY_INHERIT_WM_NOTIFY 
+
 
 
 namespace wtf {
@@ -20,15 +26,18 @@ namespace wtf {
     */
     struct tree : DOXY_INHERIT_TREE_SUPER window_impl<tree,
       policy::has_font,
-      wtf::policy::has_move,
-      wtf::messages::wm_notify
+      policy::has_move,
+      messages::nm_killfocus,
+      messages::nm_setfocus,
+      messages::nm_click,
+      messages::nm_rclick,
+      messages::nm_dblclick,
+      messages::wm_notify
     > {
 
 
       tree() : _items(this, nullptr){}
 
-      callback<void(window*)> OnClick;
-      callback<void(window*)> OnDblClick;
       callback<void(window*)> OnBeginEdit;
       callback<void(window*)> OnEndEdit;
 
@@ -113,8 +122,6 @@ namespace wtf {
 
       void on_wm_notify(NMHDR * notification) override{
         if (TVN_GETDISPINFO == notification->code) get_display_info(reinterpret_cast<NMTVDISPINFO*>(notification));
-        else if (NM_CLICK == notification->code) OnClick(this);
-        else if (NM_DBLCLK == notification->code) OnDblClick(this);
         else if (TVN_BEGINLABELEDIT == notification->code) OnBeginEdit(this);
         else if (TVN_ENDLABELEDIT == notification->code) OnEndEdit(this);
         __super::on_wm_notify(notification);

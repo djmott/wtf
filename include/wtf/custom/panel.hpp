@@ -28,6 +28,8 @@ namespace wtf {
       wtf::messages::wm_ncpaint,
       wtf::messages::wm_nccalcsize
     > {
+    protected:
+      template <typename, template <typename> typename...> friend struct window_impl;
       static constexpr TCHAR window_class_name[] = _T("wtf_panel");
       template <WNDPROC wp> using window_class_type = window_class<window_class_name, wp>;
     };
