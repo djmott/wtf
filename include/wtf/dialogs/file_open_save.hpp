@@ -116,7 +116,7 @@ namespace wtf {
       std::vector<tstring> _files;
 
 
-      template <BOOL (*dlgfn)(LPOPENFILENAME)>
+      template <BOOL (*dlgfn)(OPENFILENAME*)>
       bool _run(window * owner) {
         OPENFILENAME ofn;
         memset(&ofn, 0, sizeof(OPENFILENAME));

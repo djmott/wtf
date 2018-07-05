@@ -38,8 +38,6 @@ namespace wtf {
 
       tree() : _items(this, nullptr){}
 
-      callback<void(window*)> OnBeginEdit;
-      callback<void(window*)> OnEndEdit;
 
       /** @class item
       represents a node in the tree
@@ -47,6 +45,13 @@ namespace wtf {
       struct item : TVITEMEX {
         using pointer = std::shared_ptr<item>;
 
+        item(const tstring& text) : _text(text), _items(nullptr, this) {
+          memset(this, 0, sizeof(TVITEMEX));
+          lParam = reinterpret_cast<LPARAM>(this);
+          pszText = &_text[0];
+          cChildren = I_CHILDRENCALLBACK;
+          mask = TVIF_CHILDREN | TVIF_TEXT | TVIF_PARAM;
+        }
 
         /** @class collection
         Maintains a collection of tree::item
@@ -66,6 +71,23 @@ namespace wtf {
             oRet->hItem = wtf::exception::throw_lasterr_if(reinterpret_cast<HTREEITEM>(::SendMessage(*_tree, TVM_INSERTITEM, 0, reinterpret_cast<LPARAM>(&oInsert))), [](HTREEITEM h) { return nullptr == h; });
             _inner.push_back(oRet);
             return oRet;
+          }
+
+          void add(item::pointer& oItem) {
+            oItem->_items._tree = _tree;
+            oItem->_tree = _tree;
+            TVINSERTSTRUCT oInsert;
+            memset(&oInsert, 0, sizeof(TVINSERTSTRUCT));
+            oInsert.hParent = (_parent ? _parent->hItem : nullptr);
+            oInsert.hInsertAfter = (nullptr == _parent ? TVI_ROOT : TVI_LAST);
+            memcpy(&oInsert.itemex, oItem.get(), sizeof(TVITEMEX));
+            oItem->hItem = wtf::exception::throw_lasterr_if(reinterpret_cast<HTREEITEM>(::SendMessage(*_tree, TVM_INSERTITEM, 0, reinterpret_cast<LPARAM>(&oInsert))), [](HTREEITEM h) { return nullptr == h; });
+            _inner.push_back(oItem);
+          }
+
+          void clear() {
+            wtf::exception::throw_lasterr_if(::SendMessage(*_tree, TVM_DELETEITEM, 0, 0), [](LRESULT l) { return !l; });
+            _inner.clear();
           }
 
         private:
@@ -103,12 +125,21 @@ namespace wtf {
       item::collection& items() { return _items; }
       const item::collection& items() const { return _items; }
 
+      typename item::pointer selected_item() { return _selected_item; }
+      const typename item::pointer selected_item() const { return _selected_item; }
+
+      callback<void(tree*)> OnBeginEdit;
+      callback<void(tree*)> OnEndEdit;
+      callback<void(tree*, typename item::pointer, typename item::pointer)> OnItemSelected;
+
+
     protected:
 
       template <typename, template <typename> typename...> friend struct window_impl;
       static constexpr TCHAR sub_window_class_name[] = WC_TREEVIEW;
       static constexpr TCHAR window_class_name[] = _T("wtf_tree");
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
+      typename item::pointer _selected_item;
 
       item::collection _items;
 
@@ -120,10 +151,20 @@ namespace wtf {
         if (pInfo->item.mask & TVIF_TEXT) pInfo->item.pszText = const_cast<TCHAR*>((*oItem)->text().c_str());
       }
 
+      void on_tvn_selchanged(NMTREEVIEW * param) {
+        _selected_item.reset();
+        auto & oPrev = std::find_if(_items._inner.begin(), _items._inner.end(), [&param](const typename item::pointer& it)->bool { return param->itemOld.hItem == it->hItem; });
+        auto & oNew = std::find_if(_items._inner.begin(), _items._inner.end(), [&param](const typename item::pointer& it)->bool { return param->itemNew.hItem == it->hItem; });
+        if (_items._inner.end() == oPrev || _items._inner.end() == oNew) return;
+        _selected_item = *oNew;
+        OnItemSelected(this, *oPrev, *oNew);
+      }
+
       void on_wm_notify(NMHDR * notification) override{
         if (TVN_GETDISPINFO == notification->code) get_display_info(reinterpret_cast<NMTVDISPINFO*>(notification));
         else if (TVN_BEGINLABELEDIT == notification->code) OnBeginEdit(this);
         else if (TVN_ENDLABELEDIT == notification->code) OnEndEdit(this);
+        else if (TVN_SELCHANGED == notification->code) on_tvn_selchanged(reinterpret_cast<LPNMTREEVIEW>(notification));
         __super::on_wm_notify(notification);
       }
 

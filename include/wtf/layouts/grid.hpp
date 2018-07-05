@@ -4,49 +4,55 @@
 #pragma once
 namespace wtf {
   namespace layouts {
+
     struct grid {
-
-      struct cell {
-        using pointer = std::shared_ptr<cell>;
-        using vector = std::vector<pointer>;
-        enum class locations {
-          top,
-          left,
-          bottom,
-          right,
-          center,
-        };
-
-        locations location() const { return _location; }
-        void location(locations newval) { _location = newval; }
-
-
-        ~cell() = default;
-        cell() = delete;
-        cell(const cell&) = default;
-        cell& operator=(const cell&) = default;
-
-        pointer make(window * wnd, locations loc) { return pointer(new cell(wnd, loc)); }
-
-      protected:
-        cell(window * wnd, locations loc) : _window(wnd), _location(loc) {}
-        window * _window;
-        locations _location;
+      enum class size_strategies {
+        spring,
+        fixed,
+        none,
+      };
+      enum class halign_strategies {
+        left,
+        center,
+        right,
+      };
+      enum class valign_strategies {
+        top,
+        center,
+        bottom,
       };
 
+
+      struct column {
+        using vector = std::vector<column>;
+        column(size_strategies WidthStrategy, halign_strategies HAlignStrategy, uint32_t Width)
+          :width_strategy(WidthStrategy), halign_strategy(HAlignStrategy), width(Width){}
+        column() = delete;
+        ~column() = default;
+        column(const column&) = default;
+        size_strategies width_strategy;
+        halign_strategies halign_strategy;
+        uint32_t width = -1;
+
+      };
+
+      void add_column(size_strategies WidthStrategy = size_strategies::none, halign_strategies HAlign= halign_strategies::center, uint32_t Width = -1)
+      {
+        _columns.push_back(column{ WidthStrategy, HAlign, Width });
+      }
+      
       struct row {
-        using pointer = std::shared_ptr<row>;
-        using vector = std::vector<pointer>;
-        enum class sizes {
-          fill,
-          fixed,
-          none,
-        };
-        sizes size() const { return _size; }
-        void size(sizes newval) { _size = newval; }
-      protected:
-        sizes _size;
+        size_strategies height_strategy;
+        valign_strategies valign_strategy;
+        uint32_t height;
       };
+
+      void add_row(size_strategies HeightStrategy = size_strategies::none, valign_strategies VAlign = valign_strategies::center, uint32_t Height = -1) {
+
+      }
+
+    protected:
+      column::vector _columns;
 
     };
   }

@@ -19,6 +19,15 @@ endif()
 
 include_directories(include)
 
+get_directory_property(hasParent PARENT_DIRECTORY)
+set(WTF_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(WTF_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+if(hasParent)
+  set(WTF_SOURCE_DIR ${WTF_SOURCE_DIR} PARENT_SCOPE)
+  set(WTF_BINARY_DIR ${WTF_BINARY_DIR} PARENT_SCOPE)
+endif()
+
 option(WTF_BUILD_EXAMPLES "Build examples" FALSE)
 
 if(WTF_BUILD_EXAMPLES)
