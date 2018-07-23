@@ -209,7 +209,7 @@ namespace wtf {
       template <typename, template <typename> typename...> friend struct window_impl;
 
       static constexpr TCHAR window_class_name[] = _T("wtf_richedit");
-      static constexpr TCHAR sub_window_class_name[] = MSFTEDIT_CLASS;
+      static constexpr TCHAR sub_window_class_name[] = RICHEDIT_CLASS;
 
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;
       HMODULE _hdll;

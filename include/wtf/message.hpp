@@ -29,11 +29,10 @@ namespace wtf {
 
     int pump(HWND hwnd = 0) {
       try {
-        message oMsg;
-        while (oMsg.get()) {
-          if (oMsg.is_dialog_msg(hwnd)) continue;          
-          oMsg.translate();
-          oMsg.dispatch();
+        while (get()) {
+          if (is_dialog_msg(hwnd)) continue;          
+          translate();
+          dispatch();
         }
         return 0;
       }

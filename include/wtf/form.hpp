@@ -57,7 +57,7 @@ namespace wtf {
 
     void close() noexcept override { ::DestroyWindow(*this); }
 
-    int run() override final {
+    int run() override {
       message oMsg;
       __super::run();
       auto iRet = oMsg.pump(*this);
