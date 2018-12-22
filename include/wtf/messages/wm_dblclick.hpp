@@ -3,6 +3,8 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_WM_DBLCLICK
+
 namespace wtf{
   namespace messages {
     template <typename _super_t>

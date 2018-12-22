@@ -14,7 +14,14 @@
   DOXY_INHERIT_HAS_MOVE \
   DOXY_INHERIT_NM_KILLFOCUS \
   DOXY_INHERIT_NM_SETFOCUS \
-  DOXY_INHERIT_WM_NOTIFY
+  DOXY_INHERIT_WM_ACTIVATE \
+  DOXY_INHERIT_WM_CHAR \
+  DOXY_INHERIT_WM_DBLCLICK \
+  DOXY_INHERIT_WM_NOTIFY \
+  DOXY_INHERIT_WM_KEYDOWN \
+  DOXY_INHERIT_WM_KEYUP \
+  DOXY_INHERIT_WM_MOUSE_DOWN \
+  DOXY_INHERIT_WM_MOUSE_UP
 
 
 namespace wtf {
@@ -34,7 +41,14 @@ namespace wtf {
       policy::has_move,
       messages::nm_killfocus,
       messages::nm_setfocus,
-      messages::wm_notify
+      messages::wm_activate,
+      messages::wm_char,
+      messages::wm_dblclick,
+      messages::wm_notify,
+      messages::wm_keyup,
+      messages::wm_keydown,
+      messages::wm_mouse_down,
+      messages::wm_mouse_up
     > {
 
       using char_range = std::tuple<uint32_t, uint32_t>;
@@ -209,6 +223,7 @@ namespace wtf {
       template <typename, template <typename> typename...> friend struct window_impl;
 
       static constexpr TCHAR window_class_name[] = _T("wtf_richedit");
+      //static constexpr TCHAR sub_window_class_name[] = RICHEDIT_CLASS;
       static constexpr TCHAR sub_window_class_name[] = RICHEDIT_CLASS;
 
       template <WNDPROC wp> using window_class_type = super_window_class<window_class_name, sub_window_class_name, wp>;

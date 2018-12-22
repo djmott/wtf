@@ -43,7 +43,7 @@ namespace wtf{
     //! @brief Invoked after the window and all child windows have been created
     callback<void(window *)> OnCreated;
     //! @brief Creates the window and child windows
-    virtual int run() = 0;
+    virtual int run() = 0 { return 0; };
     //! @brief Returns the parent window or nullptr for top-level forms
     virtual const window * const parent() const noexcept { return _parent; }
     //! @brief collection of child windows
@@ -77,6 +77,7 @@ namespace wtf{
     }
 
   protected:
+    window(HWND hwnd) : _handle(hwnd){}
     template <typename, template <typename> typename...> friend struct window_impl;
 
     window * _parent = nullptr;

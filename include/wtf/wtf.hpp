@@ -439,3 +439,4 @@ namespace wtf {
 #include "custom/panel.hpp"
 
 #include "form.hpp"
+#include "console.hpp"

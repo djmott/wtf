@@ -3,6 +3,7 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_WM_MOUSE_DOWN
 
 namespace wtf{
   namespace messages {

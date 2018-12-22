@@ -11,7 +11,9 @@
   DOXY_INHERIT_HAS_BORDER \
   DOXY_INHERIT_HAS_FOCUS \
   DOXY_INHERIT_HAS_MOVE \
-  DOXY_INHERIT_HAS_STYLE
+  DOXY_INHERIT_HAS_STYLE \
+  DOXY_INHERIT_WM_KEYDOWN \
+  DOXY_INHERIT_WM_KEYUP
 
 namespace wtf {
   
@@ -28,7 +30,9 @@ namespace wtf {
       policy::has_border,
       policy::has_focus,
       policy::has_move,
-      policy::has_style
+      policy::has_style,
+      messages::wm_keydown,
+      messages::wm_keyup
     > {
 
 
@@ -74,6 +78,14 @@ namespace wtf {
       //! @param[in] newval true to enable or false to disable
       //! @details @copydetails wtf::controls::edit::auto_hscroll() const
       void auto_hscroll(bool newval) { set_style_bit<ES_AUTOHSCROLL>(newval); }
+
+      //! @brief gets the auto-vscroll setting
+      //! @details Automatically scrolls text vertically when the user types a character at the bottom of the text box
+      bool auto_vscroll() const { return get_style_bit<ES_AUTOVSCROLL>(); }
+      //! @brief Enables/disables auto vertical scrolling
+      //! @param[in] newval true to enable or false to disable
+      //! @details @copydetails wtf::controls::edit::auto_vscroll() const
+      void auto_vscroll(bool newval) { set_style_bit<ES_AUTOVSCROLL>(newval); }
 
       //! @brief gets the text limit
       uint16_t text_limit() const { return static_cast<uint16_t>(::SendMessage(*this, EM_GETLIMITTEXT, 0, 0)); }

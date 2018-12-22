@@ -3,6 +3,8 @@
 */
 #pragma once
 
+#define DOXY_INHERIT_WM_KEYDOWN
+
 namespace wtf{
 
   namespace messages {

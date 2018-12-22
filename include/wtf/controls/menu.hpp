@@ -77,10 +77,12 @@ namespace wtf {
       //! @brief adds a menu_item, menu_separator or popup_menu
       template <typename _ty>
       void add(_ty& oMenu) {
+        /*
         static_assert(std::is_same<_ty, menu_item>::value ||
           std::is_same<_ty, popup_menu>::value ||
           std::is_same<_ty, menu_separator>::value
           , "Invalid parameter type.");
+          */
         _items.push_back(&oMenu);
         if (_hmenu) {
           wtf::exception::throw_lasterr_if(::InsertMenuItem(_hmenu, oMenu.wID, FALSE, &oMenu), [](BOOL b) { return !b; });
